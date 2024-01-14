@@ -15,7 +15,7 @@ import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter
         "rapid-auth.loginBruteforceProtection=true",
         "rapid-auth.maxLoginAttempts=5"
 })
-public class LoginBruteForceTest extends AbstractRapidAuthIntegrationTest {
+public class LoginBruteForceTest extends RapidAuthIntegrationTest {
 
     private static final int MAX_LOGIN_TRIES = 5;
 

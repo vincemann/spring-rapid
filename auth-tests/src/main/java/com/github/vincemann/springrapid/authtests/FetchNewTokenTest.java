@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.test.web.servlet.MvcResult;
 
-public class FetchNewTokenTest extends AbstractRapidAuthIntegrationTest {
+public class FetchNewTokenTest extends RapidAuthIntegrationTest {
 
 
 	@Test

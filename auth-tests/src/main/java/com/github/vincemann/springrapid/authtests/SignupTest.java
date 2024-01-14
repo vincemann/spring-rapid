@@ -4,8 +4,6 @@ import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.mail.MailData;
-import com.github.vincemann.springrapid.core.security.Roles;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static com.github.vincemann.springrapid.core.util.ProxyUtils.aopUnproxy;
-public class SignupTest extends AbstractRapidAuthIntegrationTest {
+public class SignupTest extends RapidAuthIntegrationTest {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;

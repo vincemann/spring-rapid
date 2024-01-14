@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acldemo.MyRoles;
+import com.github.vincemann.springrapid.acldemo.controller.templates.VetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.FullUserDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
@@ -13,6 +14,7 @@ import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 
 import java.util.Optional;
@@ -23,8 +25,12 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.creat
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class VetControllerTest extends AbstractControllerIntegrationTest<VetController, VetService> {
+public class VetControllerTest extends MyAbstractIntegrationTest {
 
+    @Autowired
+    VetControllerTestTemplate vetController;
+    @Autowired
+    VetService vetService;
 
     @Test
     public void canRegisterVet() throws Exception {
@@ -41,7 +47,7 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
 
 
         CreateVetDto createVetDto = new CreateVetDto(vetDiCaprio, uuid);
-        FullVetDto createdDto = performDs2xx(create(createVetDto), FullVetDto.class);
+        FullVetDto createdDto = performDs2xx(vetController.create(createVetDto), FullVetDto.class);
 
         compare(createVetDto).with(createdDto)
                 .properties()
@@ -66,7 +72,7 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
                 .assertNull(dbUserDiCaprio::getUuid);
 
 
-        Optional<Vet> vetDiCaprioByLastName = getService().findByLastName(VET_DICAPRIO);
+        Optional<Vet> vetDiCaprioByLastName = vetService.findByLastName(VET_DICAPRIO);
         Assertions.assertTrue(vetDiCaprioByLastName.isPresent());
         Vet dbDiCaprio = vetDiCaprioByLastName.get();
 

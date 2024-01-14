@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 import static com.github.vincemann.springrapid.core.util.ProxyUtils.aopUnproxy;
-public class ForgotPasswordTest extends AbstractRapidAuthIntegrationTest {
+public class ForgotPasswordTest extends RapidAuthIntegrationTest {
 
 
 	@Test

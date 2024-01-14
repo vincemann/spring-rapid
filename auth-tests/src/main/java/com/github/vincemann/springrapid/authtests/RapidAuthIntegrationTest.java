@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.authtests;
 
+import com.github.vincemann.acltest.controller.AclMvcIntegrationTest;
 import com.github.vincemann.springrapid.acl.proxy.Acl;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.config.RapidAdminAutoConfiguration;
@@ -15,6 +16,7 @@ import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.authtest.controller.UserIntegrationControllerTest;
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.core.CoreProperties;
+import com.github.vincemann.springrapid.coretest.controller.integration.MvcIntegrationTest;
 import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.Getter;
@@ -30,7 +32,6 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
 import javax.sql.DataSource;
@@ -65,8 +66,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Slf4j
 // dont do like that because its db impl specific - use service
 //@Sql(scripts = "classpath:/remove-user.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public abstract class AbstractRapidAuthIntegrationTest
-        extends UserIntegrationControllerTest<AbstractUserController> {
+public abstract class RapidAuthIntegrationTest extends AclMvcIntegrationTest {
 
 
 

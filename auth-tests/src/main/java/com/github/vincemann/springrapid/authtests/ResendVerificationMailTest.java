@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 import static com.github.vincemann.springrapid.core.util.ProxyUtils.aopUnproxy;
-public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest {
+public class ResendVerificationMailTest extends RapidAuthIntegrationTest {
 
 	@Test
 	public void canResendVerificationMailForOwnAccount() throws Exception {

@@ -4,8 +4,7 @@ import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
-import com.github.vincemann.springrapid.coretest.controller.AbstractCrudControllerTest;
-import com.github.vincemann.springrapid.coretest.controller.template.AbstractCrudControllerTestTemplate;
+import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
 import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -14,8 +13,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.io.Serializable;
 
 /**
  * BaseClass for Controller Integration tests performing basic {@link MockMvc} auto-config.
@@ -48,6 +45,6 @@ import java.io.Serializable;
         initializers = ConfigFileApplicationContextInitializer.class
 )
 public abstract class AbstractAutoMockCrudControllerTest
-        <C extends GenericCrudController,T extends AbstractCrudControllerTestTemplate>
-                extends AbstractCrudControllerTest<C,T> {
+        <C extends GenericCrudController>
+                extends AbstractMvcTest<C> {
 }

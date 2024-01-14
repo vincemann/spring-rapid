@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
+public class ChangePasswordTest extends RapidAuthIntegrationTest {
 
 	private ChangePasswordDto changePasswordDto(String oldPassword){
 		return ChangePasswordDto.builder()

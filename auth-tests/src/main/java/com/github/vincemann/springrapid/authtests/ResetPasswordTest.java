@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
 
-public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
+public class ResetPasswordTest extends RapidAuthIntegrationTest {
 
     // todo maybe add mod token tests like in changeContactInformationTests
 //    @Autowired

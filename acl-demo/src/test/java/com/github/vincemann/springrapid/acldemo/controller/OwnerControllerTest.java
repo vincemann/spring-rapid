@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acldemo.MyRoles;
+import com.github.vincemann.springrapid.acldemo.controller.templates.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.FullOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
@@ -13,6 +14,7 @@ import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 
 import java.util.Optional;
@@ -24,7 +26,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @Tag(value = "demo-projects")
-public class OwnerControllerTest extends AbstractControllerIntegrationTest<OwnerController, OwnerService> {
+public class OwnerControllerTest extends MyAbstractIntegrationTest {
+
+    @Autowired
+    OwnerControllerTestTemplate ownerController;
+    @Autowired
+    OwnerService ownerService;
 
 
 
@@ -43,7 +50,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
 
 
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(kahn, uuid);
-        FullOwnerDto createdDto = performDs2xx(create(createOwnerDto), FullOwnerDto.class);
+        FullOwnerDto createdDto = performDs2xx(ownerController.create(createOwnerDto), FullOwnerDto.class);
 
         compare(createOwnerDto).with(createdDto)
                 .properties()
@@ -69,7 +76,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
                 .assertNull(dbUserKahn::getUuid);
 
 
-        Optional<Owner> kahnByLastName = getService().findByLastName(OWNER_KAHN);
+        Optional<Owner> kahnByLastName = ownerService.findByLastName(OWNER_KAHN);
         Assertions.assertTrue(kahnByLastName.isPresent());
         Owner dbKahn = kahnByLastName.get();
 

@@ -41,22 +41,22 @@ public abstract class AbstractCrudControllerTestTemplate
     private ApplicationContext applicationContext;
 
 
-    public MockHttpServletRequestBuilder delete(String id) throws Exception {
+    public MockHttpServletRequestBuilder delete(Serializable id) throws Exception {
         return MockMvcRequestBuilders.delete(getDeleteUrl())
                 /*.contentType(getContentType())*/
-                .param("id",id);
+                .param("id",id.toString());
     }
 
-    public MockHttpServletRequestBuilder find(String id) throws Exception {
+    public MockHttpServletRequestBuilder find(Serializable id) throws Exception {
         return get(getFindUrl())
                 /*.contentType(getContentType())*/
-                .param("id",id);
+                .param("id",id.toString());
     }
 
-    public MockHttpServletRequestBuilder update(String patchString,String id) throws Exception {
+    public MockHttpServletRequestBuilder update(String patchString,Serializable id) throws Exception {
 //        String fullUpdateQueryParam = getController().getFullUpdateQueryParam();
         return put(getUpdateUrl())
-                .param("id",id)
+                .param("id",id.toString())
                 .content(patchString)
                 .contentType(getController().getCoreProperties().getController().getMediaType());
     }
@@ -68,8 +68,6 @@ public abstract class AbstractCrudControllerTestTemplate
                 .contentType(getController().getCoreProperties().getController().getMediaType());
     }
 
-
-    // todo duplicated in TestTemplate
 
     public <Dto> Dto performDs2xx(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
         return performDsWithStatus(requestBuilder,status().is2xxSuccessful(),dtoClass);

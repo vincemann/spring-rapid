@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
 
-public class FetchUserByContactInformationTest extends AbstractRapidAuthIntegrationTest {
+public class FetchUserByContactInformationTest extends RapidAuthIntegrationTest {
 	
 
 

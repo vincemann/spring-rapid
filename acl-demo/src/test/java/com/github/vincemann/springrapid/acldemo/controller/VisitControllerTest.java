@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
+import com.github.vincemann.springrapid.acldemo.controller.templates.VisitControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.dto.VisitDto;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
@@ -7,10 +8,10 @@ import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import com.github.vincemann.springrapid.core.util.Lists;
-import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 
 import java.util.HashSet;
@@ -20,7 +21,11 @@ import static com.github.vincemann.ezcompare.PropertyMatchers.propertyAssert;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class VisitControllerTest extends AbstractControllerIntegrationTest<VisitController, VisitService> {
+public class VisitControllerTest extends MyAbstractIntegrationTest {
+
+
+    @Autowired
+    VisitControllerTestTemplate visitController;
 
 
     @Test
@@ -36,7 +41,7 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
         createVisitDto.setPetIds(new HashSet<>(Lists.newArrayList(savedBella.getId())));
         createVisitDto.setVetId(savedVet.getId());
 
-        VisitDto responseDto = performDs2xx(create(createVisitDto)
+        VisitDto responseDto = performDs2xx(visitController.create(createVisitDto)
                 .header(HttpHeaders.AUTHORIZATION,dicaprioToken),
                 VisitDto.class);
         compare(createVisitDto).with(responseDto)
@@ -75,7 +80,7 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
         createVisitDto.setPetIds(new HashSet<>(Lists.newArrayList(savedBella.getId())));
         createVisitDto.setVetId(savedVetMax.getId());
 
-        mvc.perform(create(createVisitDto)
+        mvc.perform(visitController.create(createVisitDto)
                         .header(HttpHeaders.AUTHORIZATION,dicaprioToken))
                 .andExpect(status().isForbidden());
 
@@ -95,7 +100,7 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
         createVisitDto.setPetIds(new HashSet<>(Lists.newArrayList(savedBella.getId())));
         createVisitDto.setVetId(savedVetMax.getId());
 
-        mvc.perform(create(createVisitDto)
+        mvc.perform(visitController.create(createVisitDto)
                 .header(HttpHeaders.AUTHORIZATION,ownerKahnToken))
                 .andExpect(status().isForbidden());
 
@@ -113,7 +118,7 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
         String maxToken = userController.login2xx(VET_MAX_CONTACT_INFORMATION, VET_MAX_PASSWORD);
 
         Visit visit = createVisit(dicaprioToken, savedKahn, savedDicaprio, checkTeethVisit, savedBella);
-        mvc.perform(find(visit.getId().toString())
+        mvc.perform(visitController.find(visit.getId().toString())
                 .header(HttpHeaders.AUTHORIZATION,maxToken))
                 .andExpect(status().is2xxSuccessful());
     }
@@ -130,7 +135,7 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
 
         Visit visit = createVisit(vetDiCaprioToken, savedKahn, savedDicaprio, checkTeethVisit, savedBella);
 
-        performDs2xx(find(visit.getId())
+        performDs2xx(visitController.find(visit.getId().toString())
                         .header(HttpHeaders.AUTHORIZATION, kahnToken),
                 VisitDto.class);
     }
@@ -148,7 +153,7 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
 
         Visit visit = createVisit(vetDiCaprioToken, savedKahn, savedDicaprio, checkTeethVisit, savedBella);
 
-        mvc.perform(find(visit.getId())
+        mvc.perform(visitController.find(visit.getId().toString())
                 .header(HttpHeaders.AUTHORIZATION,meierToken))
                 .andExpect(status().isForbidden());
     }
@@ -167,11 +172,11 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
         Visit visit = createVisit(vetDiCaprioToken, savedKahn, savedDicaprio, checkTeethVisit, savedBella);
 
         // meier cant read visit
-        mvc.perform(find(visit.getId())
+        mvc.perform(visitController.find(visit.getId())
                 .header(HttpHeaders.AUTHORIZATION,meierToken))
                 .andExpect(status().isForbidden());
 
-        mvc.perform(get(getController().getSubscribeOwnerUrl())
+        mvc.perform(get(visitController.getController().getSubscribeOwnerUrl())
                 .header(HttpHeaders.AUTHORIZATION,vetDiCaprioToken)
                 .param("ownerid",savedMeier.getId().toString())
                 .param("visitid",visit.getId().toString())
@@ -179,7 +184,7 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
                 .andExpect(status().is2xxSuccessful());
         // now meier should be able to read visit
 
-        mvc.perform(find(visit.getId())
+        mvc.perform(visitController.find(visit.getId())
                 .header(HttpHeaders.AUTHORIZATION,meierToken))
                 .andExpect(status().is2xxSuccessful());
     }
@@ -198,11 +203,11 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
         Visit visit = createVisit(vetDiCaprioToken, savedKahn, savedDicaprio, checkTeethVisit, savedBella);
 
         // meier cant read visit
-        mvc.perform(find(visit.getId())
+        mvc.perform(visitController.find(visit.getId())
                 .header(HttpHeaders.AUTHORIZATION,meierToken))
                 .andExpect(status().isForbidden());
 
-        mvc.perform(get(getController().getSubscribeOwnerUrl())
+        mvc.perform(get(visitController.getController().getSubscribeOwnerUrl())
                 .header(HttpHeaders.AUTHORIZATION,vetDiCaprioToken)
                 .param("ownerid",savedMeier.getId().toString())
                 .param("visitid",visit.getId().toString())
@@ -210,19 +215,19 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
                 .andExpect(status().is2xxSuccessful());
         // now meier should be able to read visit
 
-        mvc.perform(find(visit.getId())
+        mvc.perform(visitController.find(visit.getId())
                 .header(HttpHeaders.AUTHORIZATION,meierToken))
                 .andExpect(status().is2xxSuccessful());
 
         // revoke
-        mvc.perform(get(getController().getSubscribeOwnerUrl())
+        mvc.perform(get(visitController.getController().getSubscribeOwnerUrl())
                 .header(HttpHeaders.AUTHORIZATION,vetDiCaprioToken)
                 .param("ownerid",savedMeier.getId().toString())
                 .param("visitid",visit.getId().toString())
                 .param("read",Boolean.FALSE.toString()))
                 .andExpect(status().is2xxSuccessful());
 
-        mvc.perform(find(visit.getId())
+        mvc.perform(visitController.find(visit.getId())
                 .header(HttpHeaders.AUTHORIZATION,meierToken))
                 .andExpect(status().isForbidden());
     }

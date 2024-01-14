@@ -20,7 +20,7 @@ import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class ChangeContactInformationTest extends AbstractRapidAuthIntegrationTest {
+public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 
 
 	@Autowired
