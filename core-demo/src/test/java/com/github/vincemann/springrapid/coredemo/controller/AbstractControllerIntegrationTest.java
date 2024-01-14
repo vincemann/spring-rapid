@@ -12,7 +12,7 @@ import com.github.vincemann.springrapid.coredemo.repo.*;
 import com.github.vincemann.springrapid.coredemo.service.*;
 import com.github.vincemann.springrapid.coredemo.service.ext.OwnerOfTheYearExtension;
 import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
-import com.github.vincemann.springrapid.coredemo.suite.OwnerControllerTestTemplate;
+import com.github.vincemann.springrapid.coredemo.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationCrudControllerTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coredemo.suite;
+package com.github.vincemann.springrapid.coredemo;
 
 import com.github.vincemann.springrapid.core.slicing.WebController;
 import com.github.vincemann.springrapid.coredemo.controller.OwnerController;

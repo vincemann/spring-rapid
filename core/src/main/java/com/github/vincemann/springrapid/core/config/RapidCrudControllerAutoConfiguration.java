@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.core.controller.fetchid.LongUrlParamIdFe
 //import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.UrlParamIdFetchingStrategyImpl;
 import com.github.vincemann.springrapid.core.controller.MergeUpdateStrategy;
 import com.github.vincemann.springrapid.core.controller.MergeUpdateStrategyImpl;
-import com.github.vincemann.springrapid.core.controller.parentaware.ParentAwareEndpointInfo;
+import com.github.vincemann.springrapid.core.controller.parent.ParentAwareEndpointInfo;
 import com.github.vincemann.springrapid.core.controller.JavaXDtoValidationStrategy;
 import com.github.vincemann.springrapid.core.controller.DtoValidationStrategy;
 import com.github.vincemann.springrapid.core.service.EndpointService;

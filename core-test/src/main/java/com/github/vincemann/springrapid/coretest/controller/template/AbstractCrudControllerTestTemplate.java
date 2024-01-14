@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.coretest.controller.template;
 
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
+import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.filter.ArgAware;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
@@ -13,14 +15,17 @@ import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -86,6 +91,12 @@ public abstract class AbstractCrudControllerTestTemplate
 
     public  MockHttpServletRequestBuilder findAll() throws Exception {
         return get(getController().getFindAllUrl())/*.contentType(getContentType())*/;
+    }
+
+    public  MockHttpServletRequestBuilder findSome(Set<String> ids) throws Exception {
+        return post(controller.getFindSomeUrl())
+                .content(getController().getJsonMapper().writeDto(ids))
+                .contentType(MediaType.APPLICATION_JSON_VALUE);
     }
 
 

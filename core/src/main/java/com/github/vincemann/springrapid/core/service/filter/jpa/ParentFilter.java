@@ -9,11 +9,16 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-public class ParentFilter implements QueryFilter<IdentifiableEntity<?>> {
+// alternative to ParentAwareController
+public abstract class ParentFilter implements QueryFilter<IdentifiableEntity<?>> {
 
     private String parentName;
     private String parentId;
     private IdConverter idConverter;
+
+    public ParentFilter(String parentName) {
+        this.parentName = parentName;
+    }
 
     @Autowired
     public void setIdConverter(IdConverter idConverter) {
@@ -22,10 +27,13 @@ public class ParentFilter implements QueryFilter<IdentifiableEntity<?>> {
 
     @Override
     public void setArgs(String... args) throws BadEntityException {
-        if (args.length != 2)
-            throw new BadEntityException("invalid amount args for filter, need 3: parentName and parentId");
-        this.parentName = args[0];
-        this.parentId = args[1];
+        if (args.length != 1)
+            throw new BadEntityException("invalid amount args for filter, need 1: parentId");
+        try {
+            this.parentId = idConverter.toId(args[0]).toString();
+        }catch (ClassCastException e){
+            throw new BadEntityException("Invalid id type: ", e);
+        }
     }
 
     @Override

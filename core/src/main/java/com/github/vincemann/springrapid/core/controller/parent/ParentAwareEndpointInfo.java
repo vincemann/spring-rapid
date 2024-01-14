@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.parentaware;
+package com.github.vincemann.springrapid.core.controller.parent;
 
 import com.github.vincemann.springrapid.core.controller.CrudEndpointInfo;
 import lombok.Getter;

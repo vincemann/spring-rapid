@@ -9,9 +9,9 @@ import org.springframework.context.annotation.Scope;
 @Configuration
 public class RapidFilterAutoConfiguration {
 
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    @Bean
-    public ParentFilter parentFilter(){
-        return new ParentFilter();
-    }
+//    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+//    @Bean
+//    public ParentFilter parentFilter(){
+//        return new ParentFilter();
+//    }
 }

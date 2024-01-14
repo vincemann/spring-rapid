@@ -1,11 +1,9 @@
 package com.github.vincemann.springrapid.syncdemo.controller;
 
-import com.github.vincemann.springrapid.core.controller.CrudController;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
-import com.github.vincemann.springrapid.core.controller.parentaware.ParentAwareCrudController;
-import com.github.vincemann.springrapid.core.controller.parentaware.ParentAwareDtoMappingContextBuilder;
+import com.github.vincemann.springrapid.core.controller.parent.ParentAwareCrudController;
+import com.github.vincemann.springrapid.core.controller.parent.ParentAwareDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.core.slicing.WebController;
 import com.github.vincemann.springrapid.syncdemo.dto.pet.PetDto;
 import com.github.vincemann.springrapid.syncdemo.dto.pet.UpdatePetDto;

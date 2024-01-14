@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.model.Toy;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
+import com.github.vincemann.springrapid.coredemo.service.filter.PetsOfOwnerFilter;
 import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -68,7 +69,7 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
         assertPetHasOwner(BELLA,KAHN);
         assertPetHasOwner(KITTY,MEIER);
 
-        UrlExtension parentFilter = new UrlExtension(ParentFilter.class,"owner",savedKahn.getId().toString());
+        UrlExtension parentFilter = new UrlExtension(PetsOfOwnerFilter.class,savedKahn.getId().toString());
         String json = perform(findAll(parentFilter))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();

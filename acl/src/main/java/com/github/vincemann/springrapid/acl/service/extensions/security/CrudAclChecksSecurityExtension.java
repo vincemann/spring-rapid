@@ -67,8 +67,8 @@ public class CrudAclChecksSecurityExtension
     }
 
     @Override
-    public Set findAll(List jpqlFilters, List list) {
-        Set<IdentifiableEntity> entities = getNext().findAll(jpqlFilters,list);
+    public Set findAll(List jpqlFilters, List entityFilters, List sortingStrategies) {
+        Set<IdentifiableEntity> entities = getNext().findAll(jpqlFilters,entityFilters,sortingStrategies);
         entities.stream().forEach(entity -> getSecurityChecker().checkPermission(entity,BasePermission.READ));
         return entities;
     }

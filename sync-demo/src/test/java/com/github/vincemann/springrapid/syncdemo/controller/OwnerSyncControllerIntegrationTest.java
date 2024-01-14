@@ -2,20 +2,13 @@ package com.github.vincemann.springrapid.syncdemo.controller;
 
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.Entity;
-import com.github.vincemann.springrapid.core.controller.AbstractEntityController;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.service.filter.jpa.ParentFilter;
-import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
-import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
 import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
-import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import com.github.vincemann.springrapid.sync.controller.EntitySyncStatusSerializer;
 import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
-import com.github.vincemann.springrapid.syncdemo.controller.sync.OwnerSyncController;
-import com.github.vincemann.springrapid.syncdemo.controller.sync.PetSyncController;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.pet.PetDto;
 import com.github.vincemann.springrapid.syncdemo.model.ClinicCard;
@@ -23,13 +16,13 @@ import com.github.vincemann.springrapid.syncdemo.model.Owner;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
 import com.github.vincemann.springrapid.syncdemo.service.OwnerService;
 import com.github.vincemann.springrapid.syncdemo.service.filter.OwnerTelNumberFilter;
+import com.github.vincemann.springrapid.syncdemo.service.filter.PetsOfOwnerFilter;
 import com.google.common.collect.Sets;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -37,25 +30,23 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegrationTest<OwnerController, OwnerService>{
 
-    @Autowired
-    OwnerSyncController ownerSyncController;
 
     @Autowired
-    PetSyncController petSyncController;
+    OwnerSyncControllerTestTemplate ownerSyncController;
+
+    @Autowired
+    PetControllerTestTemplate petController;
+
+    @Autowired
+    PetSyncControllerTestTemplate petSyncController;
 
     @Autowired
     EntitySyncStatusSerializer syncStatusSerializer;
-
-    @Autowired
-    PetController petController;
-
 
     @Autowired
     ApplicationContext applicationContext;
@@ -79,7 +70,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
 
         Assertions.assertTrue(oneHourBeforeServerUpdate.before(lastServerUpdate));
 
-        fetchOwnerSyncStatus_assertUpdate(owner.getId(),oneHourBeforeServerUpdate,SyncStatus.UPDATED);
+        ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(),oneHourBeforeServerUpdate,SyncStatus.UPDATED);
     }
 
     @Test
@@ -100,7 +91,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
 
         Assertions.assertTrue(oneHourAfterServerUpdate.after(lastServerUpdate));
 
-        fetchOwnerSyncStatus_assertNoUpdate(owner.getId(),oneHourAfterServerUpdate);
+        ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(),oneHourAfterServerUpdate);
     }
 
     @Test
@@ -117,7 +108,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
 
         Assertions.assertTrue(now.after(lastServerUpdate));
 
-        fetchOwnerSyncStatus_assertNoUpdate(owner.getId(),now);
+        ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(),now);
     }
 
     @Test
@@ -138,7 +129,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
 
 
-        fetchOwnerSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
+        ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
 
 
         String updatedFirstName = owner.getFirstName()+"-updated";
@@ -151,7 +142,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Assertions.assertTrue(clientUpdate.before(updated.getLastModifiedDate()));
 
         // now should need update
-        EntitySyncStatus status = fetchOwnerSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
+        EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
         securityContext.login(TestPrincipal.withName(KAHN));
         ReadOwnOwnerDto updatedEG = performDs2xx(testTemplate.find(status.getId())
@@ -180,7 +171,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Timestamp clientUpdate = new Timestamp(new Date().getTime());
         Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
 
-        fetchOwnerSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
+        ownerSyncController.fetchSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
 
         // update owner 2 and 3
         Owner updateOwner2 = Entity.createUpdate(owner2);
@@ -197,7 +188,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Assertions.assertTrue(updatedOwner3.getLastModifiedDate().after(lastServerUpdate));
 
         // now should need update for owner2 and owner3
-        Set<EntitySyncStatus> statuses = fetchOwnerSyncStatusesSinceTs_assertUpdates(clientUpdate);
+        Set<EntitySyncStatus> statuses = ownerSyncController.fetchSyncStatusesSinceTs_assertUpdates(clientUpdate);
         Assertions.assertEquals(2,statuses.size());
         EntitySyncStatus owner2SyncStatus = statuses.stream().filter(s -> s.getId().equals(updatedOwner2.getId().toString())).findFirst().get();
         EntitySyncStatus owner3SyncStatus = statuses.stream().filter(s -> s.getId().equals(updatedOwner3.getId().toString())).findFirst().get();
@@ -247,7 +238,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Timestamp clientUpdate = new Timestamp(new Date().getTime());
         Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
 
-        fetchOwnerSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
+        ownerSyncController.fetchSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
 
         // update owner 2 and 3
         Owner updateOwner2 = Entity.createUpdate(owner2);
@@ -267,7 +258,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Set<EntityLastUpdateInfo> lastUpdateInfos = new HashSet<>();
         lastUpdateInfos.add(new EntityLastUpdateInfo(owner.getId(),clientUpdate));
         lastUpdateInfos.add(new EntityLastUpdateInfo(owner2.getId(),clientUpdate));
-        Set<EntitySyncStatus> statuses = fetchOwnerSyncStatuses_assertUpdates(lastUpdateInfos);
+        Set<EntitySyncStatus> statuses = ownerSyncController.fetchSyncStatuses_assertUpdates(lastUpdateInfos);
         Assertions.assertEquals(1,statuses.size());
         EntitySyncStatus owner2SyncStatus = statuses.stream().filter(s -> s.getId().equals(updatedOwner2.getId().toString())).findFirst().get();
 
@@ -313,7 +304,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Timestamp clientUpdate1 = new Timestamp(new Date().getTime());
         Assertions.assertTrue(clientUpdate1.after(lastServerUpdate));
 
-        fetchOwnerSyncStatusesSinceTs_assertNoUpdates(clientUpdate1);
+        ownerSyncController.fetchSyncStatusesSinceTs_assertNoUpdates(clientUpdate1);
 
         // update owner 2 and 3
         Owner updateOwner2 = Entity.createUpdate(owner2);
@@ -337,7 +328,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Set<EntityLastUpdateInfo> lastUpdateInfos = new HashSet<>();
         lastUpdateInfos.add(new EntityLastUpdateInfo(owner2.getId(),clientUpdate1));
         lastUpdateInfos.add(new EntityLastUpdateInfo(owner3.getId(),clientUpdate2));
-        Set<EntitySyncStatus> statuses = fetchOwnerSyncStatuses_assertUpdates(lastUpdateInfos);
+        Set<EntitySyncStatus> statuses = ownerSyncController.fetchSyncStatuses_assertUpdates(lastUpdateInfos);
         Assertions.assertEquals(1,statuses.size());
         EntitySyncStatus owner2SyncStatus = statuses.stream().filter(s -> s.getId().equals(updatedOwner2.getId().toString())).findFirst().get();
 
@@ -382,7 +373,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Timestamp clientUpdate = new Timestamp(new Date().getTime());
         Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
 
-        fetchOwnerSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
+        ownerSyncController.fetchSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
 
         // update owner 2 and 3
         Owner updateOwner2 = Entity.createUpdate(owner2);
@@ -400,7 +391,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
 
         // now should ask for update info for owner2 and owner3
         UrlExtension telPrefixFilter0176 = new UrlExtension(OwnerTelNumberFilter.class,"0176");
-        Set<EntitySyncStatus> statuses = fetchOwnerSyncStatusesSinceTs_assertUpdates(clientUpdate,telPrefixFilter0176);
+        Set<EntitySyncStatus> statuses = ownerSyncController.fetchSyncStatusesSinceTs_assertUpdates(clientUpdate,telPrefixFilter0176);
         Assertions.assertEquals(1,statuses.size());
         EntitySyncStatus owner3SyncStatus = statuses.stream().filter(s -> s.getId().equals(updatedOwner3.getId().toString())).findFirst().get();
 
@@ -448,7 +439,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Timestamp clientUpdate = new Timestamp(new Date().getTime());
         Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
 
-        fetchOwnerSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
+        ownerSyncController.fetchSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
 
         // update bello and bella
         Pet updateBello = Entity.createUpdate(bello);
@@ -465,8 +456,8 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Assertions.assertTrue(updatedBella.getLastModifiedDate().after(lastServerUpdate));
 
         // now should ask for update infos for all pets with owner=kahn since clientUpdate ts
-        UrlExtension parentFilter = new UrlExtension(ParentFilter.class,"owner",owner.getId().toString());
-        Set<EntitySyncStatus> statuses = fetchPetSyncStatusesSinceTs_assertUpdates(clientUpdate,parentFilter);
+        UrlExtension parentFilter = new UrlExtension(PetsOfOwnerFilter.class,owner.getId().toString());
+        Set<EntitySyncStatus> statuses = petSyncController.fetchSyncStatusesSinceTs_assertUpdates(clientUpdate,parentFilter);
 
         Assertions.assertEquals(1,statuses.size());
         EntitySyncStatus belloSyncStatus = statuses.stream().filter(s -> s.getId().equals(savedBello.getId().toString())).findFirst().get();
@@ -475,16 +466,12 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Set<String> idsToSync = Sets.newHashSet(belloSyncStatus.getId());
 
         securityContext.login(TestPrincipal.withName(KAHN));
-        String json = perform(post(petController.getFindSomeUrl())
-                .content(getController().getJsonMapper().writeDto(idsToSync))
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+        String json = perform(petController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.logout();
 
-        CollectionType petSetType = getController().getJsonMapper().getObjectMapper()
-                .getTypeFactory().constructCollectionType(Set.class, PetDto.class);
-        Set<PetDto> updatedPets = deserialize(json, petSetType);
+        Set<PetDto> updatedPets = deserializeToSet(json,PetDto.class);
 
         Assertions.assertEquals(1,updatedPets.size());
 
@@ -517,7 +504,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Timestamp clientUpdate = new Timestamp(new Date().getTime());
         Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
 
-        fetchOwnerSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
+        ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
 
         // update owner by unlinking pet bello
         Owner unlinkBello = Entity.createUpdate(owner);
@@ -537,7 +524,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Assertions.assertEquals(lastServerUpdate, updatedOwner.getLastModifiedDate());
 
 
-        fetchOwnerSyncStatus_assertNoUpdate(owner.getId(), clientUpdate);
+        ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(), clientUpdate);
 
         Set<String> idsToSync = Sets.newHashSet(owner.getId().toString());
 
@@ -583,7 +570,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Timestamp clientUpdate = new Timestamp(new Date().getTime());
         Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
 
-        fetchOwnerSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
+        ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
 
         // update owner by unlinking all pets
         Owner unlinkPets = Entity.createUpdate(owner);
@@ -599,7 +586,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         // has not changed
         Assertions.assertEquals(lastServerUpdate, updatedOwner.getLastModifiedDate());
 
-        fetchOwnerSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
+        ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
     }
 
 
@@ -627,7 +614,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Timestamp clientUpdate = new Timestamp(new Date().getTime());
         Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
 
-        fetchOwnerSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
+        ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
 
         // update owner by unlinking all pets
         Owner removeHobby = Entity.createUpdate(owner);
@@ -642,7 +629,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Assertions.assertTrue(lastServerUpdate.before(updatedOwner.getLastModifiedDate()));
 
 //        EntitySyncStatus status = fetchOwnerSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
-        EntitySyncStatus status = fetchOwnerSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
+        EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
         securityContext.login(TestPrincipal.withName(KAHN));
         ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(find(status.getId()), ReadOwnOwnerDto.class);
@@ -675,7 +662,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Timestamp clientUpdate = new Timestamp(new Date().getTime());
         Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
 
-        fetchOwnerSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
+        ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
 
         // update owner by unlinking all pets
         Owner removeHobby = Entity.createUpdate(owner);
@@ -690,7 +677,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Assertions.assertTrue(lastServerUpdate.before(updatedOwner.getLastModifiedDate()));
 
 //        EntitySyncStatus status = fetchOwnerSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
-        EntitySyncStatus status = fetchOwnerSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
+        EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
         securityContext.login(TestPrincipal.withName(KAHN));
         ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(find(status.getId()), ReadOwnOwnerDto.class);
@@ -733,7 +720,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Assertions.assertTrue(lastServerUpdate.before(updatedOwner.getLastModifiedDate()));
 
 
-        EntitySyncStatus status = fetchOwnerSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
+        EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
         Set<String> idsToSync = Sets.newHashSet(status.getId());
 
@@ -789,7 +776,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Assertions.assertTrue(lastServerUpdate.before(updatedOwner.getLastModifiedDate()));
 
 
-        EntitySyncStatus status = fetchOwnerSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
+        EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
         Set<String> idsToSync = Sets.newHashSet(status.getId());
 
@@ -813,91 +800,6 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
 
 
     // sync specific helpers
-
-    public EntitySyncStatus fetchOwnerSyncStatus_assertUpdate(Long ownerId, Date lastClientUpdate, SyncStatus expectedStatus) throws Exception {
-
-        String responseString = perform(get(ownerSyncController.getFetchEntitySyncStatusUrl())
-                .param("id", ownerId.toString())
-                .param("ts", String.valueOf(lastClientUpdate.getTime())))
-                .andExpect(status().is(200))
-                .andReturn().getResponse().getContentAsString();
-
-
-        EntitySyncStatus status = syncStatusSerializer.deserialize(responseString);
-        Assertions.assertEquals(status.getStatus(), expectedStatus);
-        Assertions.assertEquals(status.getId(),ownerId.toString());
-        return status;
-    }
-
-    public void fetchOwnerSyncStatus_assertNoUpdate(Long ownerId, Date lastClientUpdate) throws Exception {
-        perform(get(ownerSyncController.getFetchEntitySyncStatusUrl())
-                .param("id", ownerId.toString())
-                .param("ts", String.valueOf(lastClientUpdate.getTime())))
-                .andExpect(status().is(204))
-                .andExpect(content().string(""));
-    }
-
-    public void fetchOwnerSyncStatusesSinceTs_assertNoUpdates(Date clientUpdate, String... jpqlFilters) throws Exception {
-        MockHttpServletRequestBuilder requestBuilder = get(ownerSyncController.getFetchEntitySyncStatusesSinceTsUrl())
-                .param("ts", String.valueOf(clientUpdate.getTime()));
-        if (jpqlFilters.length != 0){
-            Assertions.assertEquals(1,jpqlFilters.length);
-            requestBuilder.param("jpql-filter",jpqlFilters[0]);
-        }
-        perform(requestBuilder)
-                .andExpect(status().is(204))
-                .andExpect(content().string(""));
-    }
-
-    public Set<EntitySyncStatus> fetchOwnerSyncStatusesSinceTs_assertUpdates(Timestamp clientUpdate, UrlExtension... jpqlFilters) throws Exception {
-        MockHttpServletRequestBuilder requestBuilder = get(ownerSyncController.getFetchEntitySyncStatusesSinceTsUrl())
-                .param("ts", String.valueOf(clientUpdate.getTime()));
-        if (jpqlFilters.length != 0){
-            for (UrlExtension filter : jpqlFilters) {
-                Assertions.assertTrue(QueryFilter.class.isAssignableFrom(filter.getExtensionType()));
-            }
-            RapidTestUtil.addUrlExtensionsToRequest(applicationContext,requestBuilder,jpqlFilters);
-        }
-        String responseString = perform(requestBuilder)
-                .andExpect(status().is(200))
-                .andReturn().getResponse().getContentAsString();
-
-        return syncStatusSerializer.deserializeToSet(responseString);
-    }
-
-    public Set<EntitySyncStatus> fetchPetSyncStatusesSinceTs_assertUpdates(Timestamp clientUpdate, UrlExtension... jpqlFilters) throws Exception {
-        MockHttpServletRequestBuilder requestBuilder = get(petSyncController.getFetchEntitySyncStatusesSinceTsUrl())
-                .param("ts", String.valueOf(clientUpdate.getTime()));
-        if (jpqlFilters.length != 0){
-            for (UrlExtension filter : jpqlFilters) {
-                Assertions.assertTrue(QueryFilter.class.isAssignableFrom(filter.getExtensionType()));
-            }
-            RapidTestUtil.addUrlExtensionsToRequest(applicationContext,requestBuilder,jpqlFilters);
-        }
-        String responseString = perform(requestBuilder)
-                .andExpect(status().is(200))
-                .andReturn().getResponse().getContentAsString();
-
-        return syncStatusSerializer.deserializeToSet(responseString);
-    }
-
-    public Set<EntitySyncStatus> fetchOwnerSyncStatuses_assertUpdates(Set<EntityLastUpdateInfo> updateInfos) throws Exception {
-        String jsonUpdateInfos = getController().getJsonMapper().writeDto(updateInfos);
-        String responseString = perform(post(ownerSyncController.getFetchEntitySyncStatusesUrl())
-                .content(jsonUpdateInfos).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(200))
-                .andReturn().getResponse().getContentAsString();
-
-        return syncStatusSerializer.deserializeToSet(responseString);
-    }
-
-    public void fetchOwnerSyncStatuses_assertNoUpdates(Set<EntityLastUpdateInfo> updateInfos) throws Exception {
-        String jsonUpdateInfos = getController().getJsonMapper().writeDto(updateInfos);
-        perform(post(ownerSyncController.getFetchEntitySyncStatusesUrl())
-                .content(jsonUpdateInfos))
-                .andExpect(status().is(204))
-                .andExpect(content().string(""));
-    }
 
 
 
