@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.service.password;
+package com.github.vincemann.springrapid.core.service.pass;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

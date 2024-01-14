@@ -1,11 +1,11 @@
 package com.github.vincemann.springrapid.core.proxy;
 
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
-import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.EntityFilter;
-import com.github.vincemann.springrapid.core.service.JPQLEntityFilter;
+import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
+import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 
@@ -37,9 +37,10 @@ public interface GenericCrudServiceExtension
     }
 
     @Override
-    default Set<E> findAll(List<JPQLEntityFilter<E>> jpqlFilters, List<EntityFilter<E>> entityFilters) {
-        return getNext().findAll(jpqlFilters,entityFilters);
+    default Set<E> findAll(List<QueryFilter<E>> jpqlFilters, List<EntityFilter<E>> entityFilters, List<EntitySortingStrategy<E>> sortingStrategies){
+        return getNext().findAll(jpqlFilters,entityFilters,sortingStrategies);
     }
+
 
     @Override
     default Set<E> findSome(Set<Id> ids) {

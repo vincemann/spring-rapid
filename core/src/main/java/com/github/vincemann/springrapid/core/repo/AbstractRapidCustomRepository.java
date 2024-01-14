@@ -1,19 +1,26 @@
 package com.github.vincemann.springrapid.core.repo;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.JPQLEntityFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
+import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.List;
 
 public abstract class AbstractRapidCustomRepository<E extends IdentifiableEntity<?>> {
 
-    protected void applyFilters(CriteriaQuery<E> cq, Root<E> root, CriteriaBuilder cb, List<JPQLEntityFilter<E>> filters) {
+    protected void applyFilters(CriteriaQuery<E> cq, Root<E> root, CriteriaBuilder cb, List<QueryFilter<E>> filters) {
         if (!filters.isEmpty())
-            cq.where(filters.stream().map(f -> f.getPredicates(cb,root)).toArray(Predicate[]::new));
+            cq.where(filters.stream().map(f -> f.getPredicate(cb,root)).toArray(Predicate[]::new));
+    }
+
+    protected void applySortingStrategies(CriteriaQuery<E> cq, Root<E> root, CriteriaBuilder cb, List<EntitySortingStrategy<E>> sortingStrategies){
+        if (!sortingStrategies.isEmpty()){
+            for (EntitySortingStrategy<E> sortingStrategy : sortingStrategies) {
+                cq.orderBy(sortingStrategy.getOrders(root,cb));
+            }
+        }
+//            cq.orderBy(sortingStrategies.stream().map(f -> f.getOrders(root,cb)).collect(Collectors.toList()));
     }
 
 }

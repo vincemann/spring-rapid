@@ -4,11 +4,17 @@ import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.EndpointService;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.filter.ArgAware;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.ui.Model;
@@ -19,14 +25,20 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Getter
 public abstract class AbstractEntityController<E extends IdentifiableEntity<ID>, ID extends Serializable>
-        implements ApplicationListener<ContextRefreshedEvent>, InitializingBean
-
+        implements ApplicationListener<ContextRefreshedEvent>, InitializingBean, ApplicationContextAware
 {
+
+    public static final String QUERY_FILTER_URL_KEY = "qfilter";
+    public static final String ENTITY_FILTER_URL_KEY = "filter";
+    public static final String ENTITY_SORTING_STRATEGY_URL_KEY = "sort";
+
     protected Class<E> entityClass;
     protected Class<ID> idClass;
     protected String baseUrl;
@@ -35,6 +47,13 @@ public abstract class AbstractEntityController<E extends IdentifiableEntity<ID>,
     protected CoreProperties coreProperties;
     protected EndpointService endpointService;
     protected JsonMapper jsonMapper;
+
+    protected ApplicationContext applicationContext;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 
     public AbstractEntityController() {
         this.entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
@@ -50,6 +69,42 @@ public abstract class AbstractEntityController<E extends IdentifiableEntity<ID>,
         this.urlEntityName = createUrlEntityName();
         this.baseUrl = createBaseUrl();
         this.entityBaseUrl = baseUrl + "/" + urlEntityName + "/";
+    }
+
+    /**
+     * extracts entity filters, queryFilters or EntitySortingStrategies from http request url parameter
+     * i.E.:
+     *  REQUEST URL: /api/core/...?filter=filter1:arg1:arg2,filter2,filter3:myarg&sort=sortById
+     */
+    protected  <F extends ArgAware> List<F> extractArgAwareExtension(HttpServletRequest request, String urlParamKey) throws BadEntityException {
+        String extensionParam = request.getParameter(urlParamKey);
+        List<F> extensions = new ArrayList<>();
+
+        // Check if the "filter" parameter is not null and not empty
+        if (extensionParam != null && !extensionParam.isEmpty()) {
+            // Split the parameter value into individual filter bean names
+            for (String extensionString : extensionParam.split(",")) {
+                try {
+                    String[] extensionElements = extensionString.split(":");
+                    String beanName = extensionElements[0];
+                    F filter = (F) applicationContext.getBean(beanName);
+                    if (extensionElements.length > 1) {
+                        // Create a new array with length-1 elements
+                        String[] args = new String[extensionElements.length - 1];
+                        // Copy elements from the original array starting from index 1 to the new array
+                        System.arraycopy(extensionElements, 1, args, 0, extensionElements.length - 1);
+                        filter.setArgs(args);
+                    }
+                    extensions.add(filter);
+                } catch (NoSuchBeanDefinitionException e) {
+                    throw new BadEntityException("No extension bean found with name: " + extensionString);
+                } catch (ClassCastException e) {
+                    throw new BadEntityException("Extension bean not applicable for entity type: " + extensionString);
+                }
+
+            }
+        }
+        return extensions;
     }
 
 

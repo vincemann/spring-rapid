@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.sync.service;
 import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.service.AbstractCrudService;
-import com.github.vincemann.springrapid.core.service.JPQLEntityFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
@@ -79,7 +79,7 @@ public class JpaSyncService
 
     @Transactional
     @Override
-    public Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch, List<JPQLEntityFilter<E>> jpqlFilters) {
+    public Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch, List<QueryFilter<E>> jpqlFilters) {
         // server side update info
         Set<EntitySyncStatus> result = new HashSet<>();
         // todo overwrite and check soft delete timestamp

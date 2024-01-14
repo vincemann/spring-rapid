@@ -4,6 +4,9 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.repo.CustomFilterRepository;
 import com.github.vincemann.springrapid.core.repo.RapidCustomFilterRepository;
 import com.github.vincemann.springrapid.core.repo.RapidJpaRepository;
+import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
+import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import lombok.Getter;
 import org.springframework.aop.TargetClassAware;
@@ -13,10 +16,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.util.List;
+import java.util.Set;
 
 
 @ServiceComponent

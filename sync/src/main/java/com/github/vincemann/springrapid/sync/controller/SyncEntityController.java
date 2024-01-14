@@ -5,11 +5,10 @@ import com.github.vincemann.springrapid.core.controller.AbstractEntityController
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingException;
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
-import com.github.vincemann.springrapid.core.service.EntityFilter;
-import com.github.vincemann.springrapid.core.service.JPQLEntityFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.HttpServletRequestUtils;
+import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
@@ -17,9 +16,7 @@ import com.github.vincemann.springrapid.sync.service.SyncService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.MediaType;
@@ -51,7 +48,6 @@ public class SyncEntityController<
         extends AbstractEntityController<E, ID>
         implements ApplicationContextAware {
 
-    private ApplicationContext applicationContext;
     private IdFetchingStrategy<ID> idFetchingStrategy;
     private S service;
     @Setter
@@ -68,10 +64,6 @@ public class SyncEntityController<
         super();
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
 
     /**
      * used for single entity sync.
@@ -133,21 +125,21 @@ public class SyncEntityController<
 
     /**
      * client passes timestamp, of when last update for find-all (with potential filter) was performed, to server.
-     * searched entity space can be reduced with {@link com.github.vincemann.springrapid.core.service.EntityFilter}s.
+     * searched entity space can be reduced with {@link EntityFilter}s.
      * Client can pass list of filters bean names, that should be applied in that order.
      * <p>
      * Server returns Set of {@link EntitySyncStatus} of all entities, that have been removed, added or updated since then.
      * <p>
      * GET /api/core/entity/fetch-entity-sync-statuses-since-ts?ts=...&jpql-filter=filter1:arg1:arg2,filter2
      *
-     * Filters are optional and only {@link JPQLEntityFilter} is supported.
+     * Filters are optional and only {@link QueryFilter} is supported.
      */
     public ResponseEntity<String> fetchEntitySyncStatusesSinceTimestamp(HttpServletRequest request, HttpServletResponse response) throws BadEntityException {
         // todo maybe add allowed list of filters hardcoded for more security
         // what about default filters? rather integrate as ServiceExtensions?
         // what about JPQL where clause filters for performance or smth like that
         long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
-        List<JPQLEntityFilter<E>> filters = HttpServletRequestUtils.extractFilters(request,applicationContext,"jpql-filter");
+        List<QueryFilter<E>> filters = extractArgAwareExtension(request,QUERY_FILTER_URL_KEY);
         Set<EntitySyncStatus> syncStatuses = serviceFindUpdatesSinceTimestamp(new Timestamp(lastUpdateTimestamp),filters);
         if (syncStatuses.isEmpty())
             return ResponseEntity.noContent().build();
@@ -174,7 +166,7 @@ public class SyncEntityController<
         return service.findEntitySyncStatuses(lastUpdateInfos);
     }
 
-    protected Set<EntitySyncStatus> serviceFindUpdatesSinceTimestamp(Timestamp lastUpdate, List<JPQLEntityFilter<E>> filters) {
+    protected Set<EntitySyncStatus> serviceFindUpdatesSinceTimestamp(Timestamp lastUpdate, List<QueryFilter<E>> filters) {
         return service.findEntitySyncStatusesSinceTimestamp(lastUpdate,filters);
     }
 
@@ -227,7 +219,7 @@ public class SyncEntityController<
     }
 
     @Autowired
-    public void setEntitySyncStatusSerializer(EntitySyncStatusSerializer entitySyncStatusSerializer) {
+    public void injectEntitySyncStatusSerializer(EntitySyncStatusSerializer entitySyncStatusSerializer) {
         this.entitySyncStatusSerializer = entitySyncStatusSerializer;
     }
 }

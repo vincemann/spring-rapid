@@ -6,6 +6,9 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
+import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 
 import java.io.Serializable;
 import java.util.List;
@@ -26,7 +29,6 @@ public interface CrudServiceExtension<S extends CrudService>
 
     @Override
     default IdentifiableEntity partialUpdate(IdentifiableEntity entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-//        System.err.println("invokoing this " + this.getClass().getSimpleName() +" partialUpdate " + JPACrudService.count++);
         return getNext().partialUpdate(entity,fieldsToRemove);
     }
 
@@ -35,12 +37,10 @@ public interface CrudServiceExtension<S extends CrudService>
 //        return getNext().partialUpdate(update,collectionsToUpdate,fieldsToRemove);
 //    }
 
-
     @Override
-    default Set findAll(List jpqlFilters, List list) {
-        return getNext().findAll(jpqlFilters,list);
+    default Set findAll(List jpqlFilters, List entityFilters, List sortingStrategies){
+        return getNext().findAll(jpqlFilters,entityFilters,sortingStrategies);
     }
-
     @Override
     default Set<IdentifiableEntity> findSome(Set ids) {
         return getNext().findSome(ids);

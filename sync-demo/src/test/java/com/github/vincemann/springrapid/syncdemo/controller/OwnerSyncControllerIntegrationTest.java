@@ -2,9 +2,14 @@ package com.github.vincemann.springrapid.syncdemo.controller;
 
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.Entity;
+import com.github.vincemann.springrapid.core.controller.AbstractEntityController;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.service.ParentFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.ParentFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
+import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
+import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
+import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import com.github.vincemann.springrapid.sync.controller.EntitySyncStatusSerializer;
 import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
@@ -22,6 +27,7 @@ import com.google.common.collect.Sets;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
@@ -51,6 +57,8 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
     PetController petController;
 
 
+    @Autowired
+    ApplicationContext applicationContext;
 
 
     @Test
@@ -391,7 +399,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Assertions.assertTrue(updatedOwner3.getLastModifiedDate().after(lastServerUpdate));
 
         // now should ask for update info for owner2 and owner3
-        String telPrefixFilter0176 = createFilterString(new Filter(OwnerTelNumberFilter.class,"0176"));
+        UrlExtension telPrefixFilter0176 = new UrlExtension(OwnerTelNumberFilter.class,"0176");
         Set<EntitySyncStatus> statuses = fetchOwnerSyncStatusesSinceTs_assertUpdates(clientUpdate,telPrefixFilter0176);
         Assertions.assertEquals(1,statuses.size());
         EntitySyncStatus owner3SyncStatus = statuses.stream().filter(s -> s.getId().equals(updatedOwner3.getId().toString())).findFirst().get();
@@ -457,7 +465,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Assertions.assertTrue(updatedBella.getLastModifiedDate().after(lastServerUpdate));
 
         // now should ask for update infos for all pets with owner=kahn since clientUpdate ts
-        String parentFilter = createFilterString(new Filter(ParentFilter.class,"owner",owner.getId().toString()));
+        UrlExtension parentFilter = new UrlExtension(ParentFilter.class,"owner",owner.getId().toString());
         Set<EntitySyncStatus> statuses = fetchPetSyncStatusesSinceTs_assertUpdates(clientUpdate,parentFilter);
 
         Assertions.assertEquals(1,statuses.size());
@@ -841,12 +849,14 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
                 .andExpect(content().string(""));
     }
 
-    public Set<EntitySyncStatus> fetchOwnerSyncStatusesSinceTs_assertUpdates(Timestamp clientUpdate, String... jpqlFilters) throws Exception {
+    public Set<EntitySyncStatus> fetchOwnerSyncStatusesSinceTs_assertUpdates(Timestamp clientUpdate, UrlExtension... jpqlFilters) throws Exception {
         MockHttpServletRequestBuilder requestBuilder = get(ownerSyncController.getFetchEntitySyncStatusesSinceTsUrl())
                 .param("ts", String.valueOf(clientUpdate.getTime()));
         if (jpqlFilters.length != 0){
-            Assertions.assertEquals(1,jpqlFilters.length);
-            requestBuilder.param("jpql-filter",jpqlFilters[0]);
+            for (UrlExtension filter : jpqlFilters) {
+                Assertions.assertTrue(QueryFilter.class.isAssignableFrom(filter.getExtensionType()));
+            }
+            RapidTestUtil.addUrlExtensionsToRequest(applicationContext,requestBuilder,jpqlFilters);
         }
         String responseString = perform(requestBuilder)
                 .andExpect(status().is(200))
@@ -855,12 +865,14 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         return syncStatusSerializer.deserializeToSet(responseString);
     }
 
-    public Set<EntitySyncStatus> fetchPetSyncStatusesSinceTs_assertUpdates(Timestamp clientUpdate, String... jpqlFilters) throws Exception {
+    public Set<EntitySyncStatus> fetchPetSyncStatusesSinceTs_assertUpdates(Timestamp clientUpdate, UrlExtension... jpqlFilters) throws Exception {
         MockHttpServletRequestBuilder requestBuilder = get(petSyncController.getFetchEntitySyncStatusesSinceTsUrl())
                 .param("ts", String.valueOf(clientUpdate.getTime()));
         if (jpqlFilters.length != 0){
-            Assertions.assertEquals(1,jpqlFilters.length);
-            requestBuilder.param("jpql-filter",jpqlFilters[0]);
+            for (UrlExtension filter : jpqlFilters) {
+                Assertions.assertTrue(QueryFilter.class.isAssignableFrom(filter.getExtensionType()));
+            }
+            RapidTestUtil.addUrlExtensionsToRequest(applicationContext,requestBuilder,jpqlFilters);
         }
         String responseString = perform(requestBuilder)
                 .andExpect(status().is(200))

@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.service.filter;
 
-import com.github.vincemann.springrapid.core.service.JPQLEntityFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 @Component("telprefix")
-public class OwnerTelNumberFilter implements JPQLEntityFilter<Owner> {
+public class OwnerTelNumberFilter implements QueryFilter<Owner> {
 
 
     private String telNrPrefix;
@@ -23,7 +23,7 @@ public class OwnerTelNumberFilter implements JPQLEntityFilter<Owner> {
     }
 
     @Override
-    public Predicate getPredicates(CriteriaBuilder cb, Root<Owner> root) {
+    public Predicate getPredicate(CriteriaBuilder cb, Root<Owner> root) {
         return cb.like(root.get("telephone"), telNrPrefix + "%");
     }
 }

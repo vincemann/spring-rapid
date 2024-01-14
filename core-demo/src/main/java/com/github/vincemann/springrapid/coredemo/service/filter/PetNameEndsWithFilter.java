@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.service.filter;
 
-import com.github.vincemann.springrapid.core.service.EntityFilter;
+import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;

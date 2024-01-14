@@ -4,15 +4,16 @@ import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.IBeanNameAware;
 import com.github.vincemann.aoplog.api.annotation.LogConfig;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
-import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
+import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -72,7 +73,9 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
 
         // can always add own find methods using jpql or native sql to fetch entities instead of using this
         @Transactional
-        Set<E> findAll(List<JPQLEntityFilter<E>> jpqlFilters, List<EntityFilter<E>> filters);
+        Set<E> findAll(List<QueryFilter<E>> jpqlFilters, List<EntityFilter<E>> filters, List<EntitySortingStrategy<E>> sortingStrategies);
+
+
 
 
 

@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.service.password;
+package com.github.vincemann.springrapid.core.service.pass;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 

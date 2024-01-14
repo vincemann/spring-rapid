@@ -1,18 +1,15 @@
-package com.github.vincemann.springrapid.core.service;
+package com.github.vincemann.springrapid.core.service.filter.jpa;
 
 import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.io.Serializable;
-import java.util.List;
 
-public class ParentFilter implements JPQLEntityFilter<IdentifiableEntity<?>> {
+public class ParentFilter implements QueryFilter<IdentifiableEntity<?>> {
 
     private String parentName;
     private String parentId;
@@ -32,7 +29,7 @@ public class ParentFilter implements JPQLEntityFilter<IdentifiableEntity<?>> {
     }
 
     @Override
-    public Predicate getPredicates(CriteriaBuilder cb, Root<IdentifiableEntity<?>> root) {
+    public Predicate getPredicate(CriteriaBuilder cb, Root<IdentifiableEntity<?>> root) {
         return cb.equal(root.join(parentName).get("id"), idConverter.toId(parentId));
     }
 }

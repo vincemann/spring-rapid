@@ -1,7 +1,8 @@
 package com.github.vincemann.springrapid.core.repo;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.JPQLEntityFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
+import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -28,13 +29,15 @@ public class RapidCustomFilterRepository<E extends IdentifiableEntity<?>>
     }
 
     @Override
-    public List<E> findAll(List<JPQLEntityFilter<E>> filters) {
+    public List<E> findAll(List<QueryFilter<E>> filters, List<EntitySortingStrategy<E>> sortingStrategies) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<E> cq = cb.createQuery(entityClass);
         Root<E> root = cq.from(entityClass);
 
         cq.select(root);
         applyFilters(cq,root,cb,filters);
+        applySortingStrategies(cq,root,cb,sortingStrategies);
+
 
         TypedQuery<E> query = entityManager.createQuery(cq);
         return query.getResultList();

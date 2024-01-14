@@ -1,10 +1,7 @@
-package com.github.vincemann.springrapid.core.service;
+package com.github.vincemann.springrapid.core.service.filter;
 
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 
-import java.util.List;
-
-public interface ArgAwareFilter {
-
+public interface ArgAware {
     public void setArgs(String... args) throws BadEntityException;
 }

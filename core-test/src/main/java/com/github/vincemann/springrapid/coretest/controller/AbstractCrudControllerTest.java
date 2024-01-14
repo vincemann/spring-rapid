@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.ArgAwareFilter;
+import com.github.vincemann.springrapid.core.service.filter.ArgAware;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
@@ -68,8 +68,6 @@ public abstract class AbstractCrudControllerTest
     private MediaType contentType;
     protected C controller;
     @Autowired
-    private ApplicationContext applicationContext;
-    @Autowired
     private WebApplicationContext wac;
 
     // use TestTemplate as member and not inherit so in one test multiple TestTemplates can be used and @Autowired in
@@ -92,36 +90,6 @@ public abstract class AbstractCrudControllerTest
         setTestTemplatesMvc();
     }
 
-    protected static class Filter{
-        Class<? extends ArgAwareFilter> filterType;
-        String[] args;
-
-        public Filter(Class<? extends ArgAwareFilter> filterType, String... args) {
-            this.filterType = filterType;
-            this.args = args;
-        }
-    }
-
-    public String createFilterString(Filter... filters){
-        StringBuilder sb = new StringBuilder();
-        int filterCount = 0;
-        for (Filter filter : filters) {
-            String[] beanNamesForType = applicationContext.getBeanNamesForType(filter.filterType);
-            Assertions.assertEquals(1,beanNamesForType.length,"no single bean found with type: " + filter.filterType.getSimpleName() + ". Found beanNames: " + Arrays.toString(beanNamesForType));
-            sb.append(beanNamesForType[0]);
-            int count = 0;
-            String[] args = filter.args;
-            for (String arg : args) {
-                if (count++ != args.length)
-                    sb.append(":");
-                sb.append(arg);
-            }
-            if (++filterCount < filters.length){
-                sb.append(",");
-            }
-        }
-        return sb.toString();
-    }
 
 
     protected void setTestTemplatesMvc(){
@@ -205,12 +173,8 @@ public abstract class AbstractCrudControllerTest
         return testTemplate.findAll();
     }
 
-    public  MockHttpServletRequestBuilder findAll(String jpqlFilters) throws Exception {
-        return testTemplate.findAll(jpqlFilters);
-    }
-
-    public  MockHttpServletRequestBuilder findAll(String jpqlFilters, String memoryFilters) throws Exception {
-        return testTemplate.findAll(jpqlFilters,memoryFilters);
+    public  MockHttpServletRequestBuilder findAll(UrlExtension... extensions) throws Exception {
+        return testTemplate.findAll(extensions);
     }
 
     public  String getCreateUrl() {

@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.sync.repo;
 
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.repo.AbstractRapidCustomRepository;
-import com.github.vincemann.springrapid.core.service.JPQLEntityFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
 
 import javax.persistence.EntityManager;
@@ -12,7 +12,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,7 +47,7 @@ public class RapidCustomAuditingRepository<E extends AuditingEntity<Id>,Id exten
      * @return
      */
     @Override
-    public List<EntityLastUpdateInfo> findLastUpdateInfosSince(Timestamp since, List<JPQLEntityFilter<E>> filters) {
+    public List<EntityLastUpdateInfo> findLastUpdateInfosSince(Timestamp since, List<QueryFilter<E>> filters) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<EntityLastUpdateInfo> cq = cb.createQuery(EntityLastUpdateInfo.class);
         Root<E> root = cq.from(entityClass);
@@ -64,8 +63,8 @@ public class RapidCustomAuditingRepository<E extends AuditingEntity<Id>,Id exten
         // Combine the date predicate with custom filters
         List<Predicate> allPredicates = new ArrayList<>();
         allPredicates.add(datePredicate);
-        for (JPQLEntityFilter<E> filter : filters) {
-            Predicate filterPredicate = filter.getPredicates(cb,root);
+        for (QueryFilter<E> filter : filters) {
+            Predicate filterPredicate = filter.getPredicate(cb,root);
             allPredicates.add(filterPredicate);
         }
 

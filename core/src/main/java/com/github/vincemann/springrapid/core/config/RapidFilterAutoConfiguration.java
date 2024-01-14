@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.config;
 
-import com.github.vincemann.springrapid.core.service.ParentFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.ParentFilter;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

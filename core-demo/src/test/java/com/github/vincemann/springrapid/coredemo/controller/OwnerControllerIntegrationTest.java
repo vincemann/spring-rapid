@@ -1,8 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
-import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coredemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadForeignOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
@@ -15,10 +13,9 @@ import com.github.vincemann.springrapid.coredemo.service.filter.HasPetsFilter;
 import com.github.vincemann.springrapid.coredemo.service.filter.OwnerTelNumberFilter;
 import com.github.vincemann.springrapid.coredemo.service.filter.PetNameEndsWithFilter;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
+import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Arrays;
@@ -378,8 +375,8 @@ public class OwnerControllerIntegrationTest
 
         securityContext.login(TestPrincipal.withName(KAHN));
         // memory filter
-        String filter = createFilterString(new Filter(HasPetsFilter.class));
-        Set<ReadOwnOwnerDto> responseDtos = deserializeToSet(getMvc().perform(findAll(null,filter))
+        Set<ReadOwnOwnerDto> responseDtos = deserializeToSet(getMvc().perform(
+                findAll(new UrlExtension(HasPetsFilter.class)))
                 .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
         RapidSecurityContext.logout();
 
@@ -418,8 +415,8 @@ public class OwnerControllerIntegrationTest
 
         securityContext.login(TestPrincipal.withName(KAHN));
         // memory filter
-        String hasPetsFilter = createFilterString(new Filter(HasPetsFilter.class));
-        String telNrPrefixFilter = createFilterString(new Filter(OwnerTelNumberFilter.class,telnrPrefix));
+        UrlExtension hasPetsFilter = new UrlExtension(HasPetsFilter.class);
+        UrlExtension telNrPrefixFilter = new UrlExtension(OwnerTelNumberFilter.class,telnrPrefix);
         Set<ReadOwnOwnerDto> responseDtos = deserializeToSet(getMvc().perform(findAll(telNrPrefixFilter,hasPetsFilter))
                 .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
         RapidSecurityContext.logout();
@@ -459,10 +456,11 @@ public class OwnerControllerIntegrationTest
 
         securityContext.login(TestPrincipal.withName(KAHN));
         // memory filter
-        String memoryFilters = createFilterString(new Filter(HasPetsFilter.class),new Filter(PetNameEndsWithFilter.class,"a"));
-        // jpql filters (always come first)
-        String telNrPrefixFilter = createFilterString(new Filter(OwnerTelNumberFilter.class,telnrPrefix));
-        Set<ReadForeignOwnerDto> responseDtos = deserializeToSet(getMvc().perform(findAll(telNrPrefixFilter,memoryFilters))
+        UrlExtension hasPetsFilter = new UrlExtension(HasPetsFilter.class);
+        UrlExtension petNameEndsWithAFilter = new UrlExtension(PetNameEndsWithFilter.class,"a");
+        // jpql query filters (always come first)
+        UrlExtension telNrPrefixFilter = new UrlExtension(OwnerTelNumberFilter.class,telnrPrefix);
+        Set<ReadForeignOwnerDto> responseDtos = deserializeToSet(getMvc().perform(findAll(telNrPrefixFilter,hasPetsFilter,petNameEndsWithAFilter))
                 .andReturn().getResponse().getContentAsString(), ReadForeignOwnerDto.class);
         RapidSecurityContext.logout();
 
@@ -508,10 +506,11 @@ public class OwnerControllerIntegrationTest
 
         securityContext.login(TestPrincipal.withName(KAHN));
         // memory filter
-        String memoryFilters = createFilterString(new Filter(HasPetsFilter.class));
+        UrlExtension hasPetsFilter = new UrlExtension(HasPetsFilter.class);
         // jpql filters (always come first)
-        String telNrPrefixFilter = createFilterString(new Filter(OwnerTelNumberFilter.class,telnrPrefix),new Filter(CityPrefixFilter.class,niceCityPrefix));
-        Set<ReadOwnOwnerDto> responseDtos = deserializeToSet(getMvc().perform(findAll(telNrPrefixFilter,memoryFilters))
+        UrlExtension telNrPrefixFilter = new UrlExtension(OwnerTelNumberFilter.class,telnrPrefix);
+        UrlExtension cityPrefixFilter = new UrlExtension(CityPrefixFilter.class, niceCityPrefix);
+        Set<ReadOwnOwnerDto> responseDtos = deserializeToSet(getMvc().perform(findAll(telNrPrefixFilter,cityPrefixFilter,hasPetsFilter))
                 .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
         RapidSecurityContext.logout();
 

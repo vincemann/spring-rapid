@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.service.filter;
 
-import com.github.vincemann.springrapid.core.service.JPQLEntityFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -13,7 +13,7 @@ import javax.persistence.criteria.Root;
 
 @Component("city")
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class CityPrefixFilter implements JPQLEntityFilter<Owner> {
+public class CityPrefixFilter implements QueryFilter<Owner> {
 
     private String cityPrefix;
 
@@ -25,7 +25,7 @@ public class CityPrefixFilter implements JPQLEntityFilter<Owner> {
     }
 
     @Override
-    public Predicate getPredicates(CriteriaBuilder cb, Root<Owner> root) {
+    public Predicate getPredicate(CriteriaBuilder cb, Root<Owner> root) {
         return cb.like(root.get("city"), cityPrefix + "%");
     }
 }
