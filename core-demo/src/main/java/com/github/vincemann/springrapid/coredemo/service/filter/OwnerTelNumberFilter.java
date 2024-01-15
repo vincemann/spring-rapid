@@ -32,7 +32,7 @@ public class OwnerTelNumberFilter implements QueryFilter<Owner> {
     }
 
     @Override
-    public Predicate getPredicate(CriteriaBuilder cb, Root<Owner> root) {
+    public Predicate getPredicate(CriteriaBuilder cb, Root<? extends Owner> root) {
         return cb.like(root.get("telephone"), telNrPrefix + "%");
     }
 }

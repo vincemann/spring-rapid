@@ -3,7 +3,9 @@ package com.github.vincemann.springrapid.sync.service;
 import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.service.AbstractCrudService;
+import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
+import com.github.vincemann.springrapid.core.util.FilterUtils;
 import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
@@ -12,11 +14,9 @@ import com.github.vincemann.springrapid.sync.repo.RapidCustomAuditingRepository;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.*;
@@ -63,7 +63,7 @@ public class JpaSyncService<E extends AuditingEntity<Id>, Id extends Serializabl
 
     @Transactional
     @Override
-    public Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch, List<QueryFilter<E>> jpqlFilters) {
+    public Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch, List<QueryFilter<? super E>> jpqlFilters) {
         // server side update info
         Set<EntitySyncStatus> result = new HashSet<>();
         // todo overwrite and check soft delete timestamp
@@ -73,6 +73,27 @@ public class JpaSyncService<E extends AuditingEntity<Id>, Id extends Serializabl
                 result.add(
                         EntitySyncStatus.builder()
                                 .id(lastUpdateInfo.getId())
+                                .status(SyncStatus.UPDATED)
+                                .build());
+            }
+        }
+        return result;
+    }
+
+    // not very fast, but comfortable if ram filters are needed (EntityFilter)
+    @Transactional
+    @Override
+    public Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch, List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> entityFilters) {
+        // server side update info
+        Set<EntitySyncStatus> result = new HashSet<>();
+        // todo overwrite and check soft delete timestamp
+        List<E> updatedEntities = auditingRepository.findEntitiesLastUpdatedSince(lastClientFetch, jpqlFilters);
+        List<E> filtered = FilterUtils.applyMemoryFilters(updatedEntities, entityFilters);
+        for (E entity : filtered) {
+            if (entity.getLastModifiedDate().after(lastClientFetch)) {
+                result.add(
+                        EntitySyncStatus.builder()
+                                .id(entity.getId().toString())
                                 .status(SyncStatus.UPDATED)
                                 .build());
             }

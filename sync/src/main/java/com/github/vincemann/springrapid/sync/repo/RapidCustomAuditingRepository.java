@@ -42,12 +42,43 @@ public class RapidCustomAuditingRepository<E extends AuditingEntity<Id>,Id exten
         return entityManager.createQuery(query).getSingleResult();
     }
 
+    @Override
+    public List<E> findEntitiesLastUpdatedSince(Timestamp since, List<QueryFilter<? super E>> filters) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<E> cq = cb.createQuery(entityClass);
+        Root<E> root = cq.from(entityClass);
+
+        // Create the predicate for filtering
+        Predicate datePredicate = cb.greaterThan(root.get("lastModifiedDate"), since);
+
+        // Construct the EntityLastUpdateInfo with the required fields
+        cq.select(root);
+
+        // Combine the date predicate with custom filters
+        List<Predicate> allPredicates = new ArrayList<>();
+        allPredicates.add(datePredicate);
+        for (QueryFilter<? super E> filter : filters) {
+            Predicate filterPredicate = filter.getPredicate(cb,root);
+            allPredicates.add(filterPredicate);
+        }
+
+        // Apply all predicates to the query
+        cq.where(cb.and(allPredicates.toArray(new Predicate[0])));
+
+        // not needed
+//        // Order by lastModifiedDate
+//        cq.orderBy(cb.desc(root.get("lastModifiedDate")));
+
+        TypedQuery<E> query = entityManager.createQuery(cq);
+        return query.getResultList();
+    }
+
     /**
      * sorted in order to find latest updates
      * @return
      */
     @Override
-    public List<EntityLastUpdateInfo> findLastUpdateInfosSince(Timestamp since, List<QueryFilter<E>> filters) {
+    public List<EntityLastUpdateInfo> findLastUpdateInfosSince(Timestamp since, List<QueryFilter<? super E>> filters) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<EntityLastUpdateInfo> cq = cb.createQuery(EntityLastUpdateInfo.class);
         Root<E> root = cq.from(entityClass);
@@ -63,7 +94,7 @@ public class RapidCustomAuditingRepository<E extends AuditingEntity<Id>,Id exten
         // Combine the date predicate with custom filters
         List<Predicate> allPredicates = new ArrayList<>();
         allPredicates.add(datePredicate);
-        for (QueryFilter<E> filter : filters) {
+        for (QueryFilter<? super E> filter : filters) {
             Predicate filterPredicate = filter.getPredicate(cb,root);
             allPredicates.add(filterPredicate);
         }

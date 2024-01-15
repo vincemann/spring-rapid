@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.synctest;
 
+import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
 import com.github.vincemann.springrapid.coretest.controller.template.MvcControllerTestTemplate;
@@ -23,7 +24,7 @@ import java.util.Date;
 import java.util.Set;
 
 @Getter
-public abstract class AbstractSyncControllerTestTemplate<C extends SyncEntityController>
+public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
         extends MvcControllerTestTemplate<C> {
     
     protected EntitySyncStatusSerializer syncStatusSerializer;
@@ -46,14 +47,14 @@ public abstract class AbstractSyncControllerTestTemplate<C extends SyncEntityCon
                 .param("ts", String.valueOf(lastClientUpdate.getTime()));
     }
 
-    public MockHttpServletRequestBuilder fetchSyncStatusesSinceTs(Date clientUpdate, UrlExtension... jpqlFilters) {
+    public MockHttpServletRequestBuilder fetchSyncStatusesSinceTs(Date clientUpdate, UrlExtension... filters) {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controller.getFetchEntitySyncStatusesSinceTsUrl())
                 .param("ts", String.valueOf(clientUpdate.getTime()));
-        if (jpqlFilters.length != 0){
-            for (UrlExtension filter : jpqlFilters) {
-                assert QueryFilter.class.isAssignableFrom(filter.getExtensionType());
+        if (filters.length != 0){
+            for (UrlExtension filter : filters) {
+                assert QueryFilter.class.isAssignableFrom(filter.getExtensionType()) || EntityFilter.class.isAssignableFrom(filter.getExtensionType());
             }
-            RapidTestUtil.addUrlExtensionsToRequest(applicationContext,requestBuilder,jpqlFilters);
+            RapidTestUtil.addUrlExtensionsToRequest(applicationContext,requestBuilder,filters);
         }
         return requestBuilder;
     }

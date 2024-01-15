@@ -12,6 +12,7 @@ import java.util.List;
 public interface CustomAuditingRepository<E extends AuditingEntity<Id>,Id extends Serializable>
 {
 //    @Query("SELECT e FROM E e ORDER BY e.lastModifiedDate DESC")
-    List<EntityLastUpdateInfo> findLastUpdateInfosSince(Timestamp until, List<QueryFilter<E>> filters);
+    List<EntityLastUpdateInfo> findLastUpdateInfosSince(Timestamp until, List<QueryFilter<? super E>> filters);
+    List<E> findEntitiesLastUpdatedSince(Timestamp until, List<QueryFilter<? super E>> filters);
     Date findLastModifiedDateById(Id id);
 }

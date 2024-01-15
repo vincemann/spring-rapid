@@ -135,12 +135,10 @@ public class SyncEntityController<
      * Filters are optional and only {@link QueryFilter} is supported.
      */
     public ResponseEntity<String> fetchEntitySyncStatusesSinceTimestamp(HttpServletRequest request, HttpServletResponse response) throws BadEntityException {
-        // todo maybe add allowed list of filters hardcoded for more security
-        // what about default filters? rather integrate as ServiceExtensions?
-        // what about JPQL where clause filters for performance or smth like that
         long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
-        List<QueryFilter<E>> filters = extractExtensions(request,QUERY_FILTER_URL_KEY);
-        Set<EntitySyncStatus> syncStatuses = serviceFindUpdatesSinceTimestamp(new Timestamp(lastUpdateTimestamp),filters);
+        List<QueryFilter<? super E>> filters = extractExtensions(request,QUERY_FILTER_URL_KEY);
+        List<EntityFilter<? super E>> ramFilters = extractExtensions(request,ENTITY_FILTER_URL_KEY);
+        Set<EntitySyncStatus> syncStatuses = serviceFindUpdatesSinceTimestamp(new Timestamp(lastUpdateTimestamp),filters,ramFilters);
         if (syncStatuses.isEmpty())
             return ResponseEntity.noContent().build();
         else
@@ -166,8 +164,11 @@ public class SyncEntityController<
         return service.findEntitySyncStatuses(lastUpdateInfos);
     }
 
-    protected Set<EntitySyncStatus> serviceFindUpdatesSinceTimestamp(Timestamp lastUpdate, List<QueryFilter<E>> filters) {
-        return service.findEntitySyncStatusesSinceTimestamp(lastUpdate,filters);
+    protected Set<EntitySyncStatus> serviceFindUpdatesSinceTimestamp(Timestamp lastUpdate, List<QueryFilter<? super E>> filters, List<EntityFilter<? super E>> ramFilters) {
+        if (ramFilters.isEmpty())
+            return service.findEntitySyncStatusesSinceTimestamp(lastUpdate,filters);
+        else
+            return service.findEntitySyncStatusesSinceTimestamp(lastUpdate,filters,ramFilters);
     }
 
     protected RequestMappingInfo createFetchEntitySyncStatusRequestMappingInfo() {
