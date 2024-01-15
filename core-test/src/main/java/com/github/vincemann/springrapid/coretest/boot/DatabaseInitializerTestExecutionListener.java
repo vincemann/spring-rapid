@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coretest.bootstrap;
+package com.github.vincemann.springrapid.coretest.boot;
 
 
 import com.github.vincemann.springrapid.core.bootstrap.DatabaseInitializer;

@@ -1,10 +1,9 @@
 package com.github.vincemann.springrapid.coretest;
 
-import com.github.vincemann.springrapid.coretest.bootstrap.DatabaseInitializerTestExecutionListener;
+import com.github.vincemann.springrapid.coretest.boot.DatabaseInitializerTestExecutionListener;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ReflectionUtils;

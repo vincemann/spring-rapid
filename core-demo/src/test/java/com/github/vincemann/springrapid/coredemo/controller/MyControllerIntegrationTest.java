@@ -1,10 +1,9 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
-import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.util.Lists;
+import com.github.vincemann.springrapid.coredemo.controller.template.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.coredemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.coredemo.model.*;
@@ -12,10 +11,7 @@ import com.github.vincemann.springrapid.coredemo.repo.*;
 import com.github.vincemann.springrapid.coredemo.service.*;
 import com.github.vincemann.springrapid.coredemo.service.ext.OwnerOfTheYearExtension;
 import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
-import com.github.vincemann.springrapid.coredemo.OwnerControllerTestTemplate;
-import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationCrudControllerTest;
 import com.github.vincemann.springrapid.coretest.controller.integration.MvcIntegrationTest;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class AbstractControllerIntegrationTest extends MvcIntegrationTest
+public class MyControllerIntegrationTest extends MvcIntegrationTest
 {
 
     //Types

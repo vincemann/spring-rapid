@@ -1,10 +1,12 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
+import com.github.vincemann.springrapid.coredemo.controller.template.VisitControllerTestTemplate;
 import com.github.vincemann.springrapid.coredemo.dto.VisitDto;
 import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.coredemo.service.VisitService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -17,7 +19,10 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.creat
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class VisitControllerTest extends AbstractControllerIntegrationTest<VisitController, VisitService> {
+public class VisitControllerTest extends MyControllerIntegrationTest {
+
+    @Autowired
+    VisitControllerTestTemplate controller;
 
     @Test
     public void canSaveVisit_linkToSomePetsAndOwner() throws Exception {
@@ -94,7 +99,7 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
                 createUpdateJsonLine("remove", "/petIds",savedBella.getId().toString())
 
         );
-        VisitDto responseDto = deserialize(getMvc().perform(update(updateJson, createdVetDto.getId()))
+        VisitDto responseDto = deserialize(getMvc().perform(controller.update(updateJson, createdVetDto.getId()))
                 .andReturn().getResponse().getContentAsString(), VisitDto.class);
         propertyAssert(responseDto)
                 .assertSize(responseDto::getPetIds,1)
@@ -131,7 +136,7 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
                 createUpdateJsonLine("add", "/petIds/-",savedBella.getId().toString())
 
         );
-        VisitDto responseDto = deserialize(getMvc().perform(update(updateJson, createdVetDto.getId()))
+        VisitDto responseDto = deserialize(getMvc().perform(controller.update(updateJson, createdVetDto.getId()))
                 .andReturn().getResponse().getContentAsString(), VisitDto.class);
         propertyAssert(responseDto)
                 .assertSize(responseDto::getPetIds,2)
@@ -168,7 +173,7 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
                 createUpdateJsonLine("add", "/petIds/-",savedBella.getId().toString())
 
         );
-        VisitDto responseDto = deserialize(getMvc().perform(update(updateJson, createdVetDto.getId()))
+        VisitDto responseDto = deserialize(getMvc().perform(controller.update(updateJson, createdVetDto.getId()))
                 .andReturn().getResponse().getContentAsString(), VisitDto.class);
         propertyAssert(responseDto)
                 .assertSize(responseDto::getPetIds,3)
@@ -198,7 +203,7 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
 
 
         VisitDto createdVetDto = saveVisitLinkedTo(checkHeartVisit, savedVetMax, savedKahn,savedKitty);
-        getMvc().perform(delete(createdVetDto.getId()))
+        getMvc().perform(controller.delete(createdVetDto.getId()))
                 .andExpect(status().is2xxSuccessful());
 
         Assertions.assertFalse(visitRepository.findById(createdVetDto.getId()).isPresent());
@@ -251,7 +256,7 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
             visitDto.setPetIds(Arrays.stream(pets).map(Pet::getId).collect(Collectors.toSet()));
 
 
-        return deserialize(getMvc().perform(create(visitDto))
+        return deserialize(getMvc().perform(controller.create(visitDto))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn()
                 .getResponse().getContentAsString(), VisitDto.class);

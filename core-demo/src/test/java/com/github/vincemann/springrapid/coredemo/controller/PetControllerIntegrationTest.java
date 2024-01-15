@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
 import com.fasterxml.jackson.databind.type.CollectionType;
-import com.github.vincemann.springrapid.core.service.filter.jpa.ParentFilter;
+import com.github.vincemann.springrapid.coredemo.controller.template.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.pet.PetDto;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
@@ -12,6 +12,7 @@ import com.github.vincemann.springrapid.coredemo.service.filter.PetsOfOwnerFilte
 import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -21,13 +22,16 @@ import static com.github.vincemann.ezcompare.Comparator.compare;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class PetControllerIntegrationTest extends AbstractControllerIntegrationTest<PetController, PetService>
+public class PetControllerIntegrationTest extends MyControllerIntegrationTest
 {
+
+    @Autowired
+    PetControllerTestTemplate controller;
 
     @Test
     public void canSavePetWithoutOwner() throws Exception {
         PetDto createPetDto = new PetDto(bella);
-        PetDto responseDto = deserialize(getMvc().perform(create(createPetDto))
+        PetDto responseDto = deserialize(getMvc().perform(controller.create(createPetDto))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn()
                 .getResponse().getContentAsString(), PetDto.class);
@@ -70,13 +74,11 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
         assertPetHasOwner(KITTY,MEIER);
 
         UrlExtension parentFilter = new UrlExtension(PetsOfOwnerFilter.class,savedKahn.getId().toString());
-        String json = perform(findAll(parentFilter))
+        String json = perform(controller.findAll(parentFilter))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
 
-        CollectionType petSetType = getController().getJsonMapper().getObjectMapper()
-                .getTypeFactory().constructCollectionType(Set.class, PetDto.class);
-        Set<PetDto> petsOfKahn = deserialize(json, petSetType);
+        Set<PetDto> petsOfKahn = deserializeToSet(json, PetDto.class);
 
         Assertions.assertEquals(2,petsOfKahn.size());
         PetDto belloDto = petsOfKahn.stream().filter(p -> p.getId().equals(savedBello.getId())).findFirst().get();
@@ -152,7 +154,7 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
         PetDto createdBellaDto = savePetLinkedToOwnerAndToys(bella, savedKahn.getId());
         String removeOwnerJson = createUpdateJsonRequest(createUpdateJsonLine("remove", "/ownerId"));
 
-        PetDto responseDto = deserialize(getMvc().perform(update(removeOwnerJson, createdBellaDto.getId()))
+        PetDto responseDto = deserialize(getMvc().perform(controller.update(removeOwnerJson, createdBellaDto.getId()))
                 .andReturn().getResponse().getContentAsString(), PetDto.class);
         Assertions.assertNull(responseDto.getOwnerId());
 
@@ -182,7 +184,7 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
                 createUpdateJsonLine("remove", "/toyIds",savedRubberDuck.getId().toString())
         );
 
-        PetDto responseDto = deserialize(getMvc().perform(update(removeOwnerJson, createdBellaDto.getId()))
+        PetDto responseDto = deserialize(getMvc().perform(controller.update(removeOwnerJson, createdBellaDto.getId()))
                 .andReturn().getResponse().getContentAsString(), PetDto.class);
         Assertions.assertNull(responseDto.getOwnerId());
         Assertions.assertEquals(1,responseDto.getToyIds().size());
@@ -215,7 +217,7 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
                 createUpdateJsonLine("add", "/toyIds/-",savedBall.getId().toString())
         );
 
-        PetDto responseDto = deserialize(getMvc().perform(update(removeOwnerJson, createdBellaDto.getId()))
+        PetDto responseDto = deserialize(getMvc().perform(controller.update(removeOwnerJson, createdBellaDto.getId()))
                 .andReturn().getResponse().getContentAsString(), PetDto.class);
         Assertions.assertNull(responseDto.getOwnerId());
         Assertions.assertEquals(3,responseDto.getToyIds().size());
@@ -236,7 +238,7 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
         PetDto createdBellaDto = savePetLinkedToOwnerAndToys(bella,null);
         String removePetTypeJson = createUpdateJsonRequest(createUpdateJsonLine("remove", "/petTypeId"));
 
-        PetDto responseDto = deserialize(getMvc().perform(update(removePetTypeJson, createdBellaDto.getId()))
+        PetDto responseDto = deserialize(getMvc().perform(controller.update(removePetTypeJson, createdBellaDto.getId()))
                 .andReturn().getResponse().getContentAsString(), PetDto.class);
         Assertions.assertNull(responseDto.getPetTypeId());
 
@@ -251,7 +253,7 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
         PetDto createdBellaDto = savePetLinkedToOwnerAndToys(bella,null);
         String addOwnerJson = createUpdateJsonRequest(createUpdateJsonLine("add", "/ownerId",savedKahn.getId().toString()));
 
-        PetDto responseDto = deserialize(getMvc().perform(update(addOwnerJson, createdBellaDto.getId()))
+        PetDto responseDto = deserialize(getMvc().perform(controller.update(addOwnerJson, createdBellaDto.getId()))
                 .andReturn().getResponse().getContentAsString(), PetDto.class);
         Assertions.assertEquals(savedKahn.getId(),responseDto.getOwnerId());
 
@@ -274,7 +276,7 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
 
         );
 
-        PetDto responseDto = deserialize(getMvc().perform(update(updateJson, createdBellaDto.getId()))
+        PetDto responseDto = deserialize(getMvc().perform(controller.update(updateJson, createdBellaDto.getId()))
                 .andReturn().getResponse().getContentAsString(), PetDto.class);
         Assertions.assertEquals(savedKahn.getId(),responseDto.getOwnerId());
         Assertions.assertEquals(2,responseDto.getToyIds().size());
@@ -306,7 +308,7 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
 
         );
 
-        PetDto responseDto = deserialize(getMvc().perform(update(updateJson, createdBellaDto.getId()))
+        PetDto responseDto = deserialize(getMvc().perform(controller.update(updateJson, createdBellaDto.getId()))
                 .andReturn().getResponse().getContentAsString(), PetDto.class);
         Assertions.assertEquals(savedKahn.getId(),responseDto.getOwnerId());
         Assertions.assertEquals(1,responseDto.getToyIds().size());
@@ -328,7 +330,7 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
         PetDto createdBellaDto = savePetLinkedToOwnerAndToys(bella,null);
         String addPetTypeJson = createUpdateJsonRequest(createUpdateJsonLine("add", "/petTypeId",savedCatPetType.getId().toString()));
 
-        PetDto responseDto = deserialize(getMvc().perform(update(addPetTypeJson, createdBellaDto.getId()))
+        PetDto responseDto = deserialize(getMvc().perform(controller.update(addPetTypeJson, createdBellaDto.getId()))
                 .andReturn().getResponse().getContentAsString(), PetDto.class);
         Assertions.assertEquals(savedCatPetType.getId(),responseDto.getPetTypeId());
 
@@ -347,7 +349,7 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
                 createUpdateJsonLine("replace", "/ownerId",savedMeier.getId().toString())
         );
 
-        PetDto responseDto = deserialize(getMvc().perform(update(updateOwnerJson, createdBellaDto.getId()))
+        PetDto responseDto = deserialize(getMvc().perform(controller.update(updateOwnerJson, createdBellaDto.getId()))
                 .andReturn().getResponse().getContentAsString(), PetDto.class);
         Assertions.assertEquals(savedMeier.getId(),responseDto.getOwnerId());
 
@@ -370,7 +372,7 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
 
         );
 
-        PetDto responseDto = deserialize(getMvc().perform(update(updateOwnerJson, createdBellaDto.getId()))
+        PetDto responseDto = deserialize(getMvc().perform(controller.update(updateOwnerJson, createdBellaDto.getId()))
                 .andReturn().getResponse().getContentAsString(), PetDto.class);
         Assertions.assertEquals(savedMeier.getId(),responseDto.getOwnerId());
 
@@ -384,7 +386,7 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
         Owner savedKahn = ownerRepository.save(kahn);
         PetDto createdBellaDto = savePetLinkedToOwnerAndToys(bella,savedKahn.getId());
 
-        getMvc().perform(delete(createdBellaDto.getId()))
+        getMvc().perform(controller.delete(createdBellaDto.getId()))
                 .andExpect(status().is2xxSuccessful());
 
         Assertions.assertFalse(petRepository.findByName(BELLA).isPresent());
@@ -400,7 +402,7 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
         Owner savedKahn = ownerRepository.save(kahn);
         PetDto createdBellaDto = savePetLinkedToOwnerAndToys(bella,savedKahn.getId(),savedBall,savedBone,savedRubberDuck);
 
-        getMvc().perform(delete(createdBellaDto.getId()))
+        getMvc().perform(controller.delete(createdBellaDto.getId()))
                 .andExpect(status().is2xxSuccessful());
 
         Assertions.assertFalse(petRepository.findByName(BELLA).isPresent());
@@ -419,7 +421,7 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
         if (toys.length > 0)
             createPetDto.setToyIds(Arrays.stream(toys).map(Toy::getId).collect(Collectors.toSet()));
 
-        return deserialize(getMvc().perform(create(createPetDto))
+        return deserialize(getMvc().perform(controller.create(createPetDto))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn()
                 .getResponse().getContentAsString(),PetDto.class);
