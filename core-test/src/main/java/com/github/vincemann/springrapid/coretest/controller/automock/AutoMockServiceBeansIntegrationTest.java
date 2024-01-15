@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
 import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
@@ -15,10 +16,10 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.MockMvc;
 
 /**
- * BaseClass for Controller Integration tests performing basic {@link MockMvc} auto-config.
+ * BaseClass for Integration tests performing basic {@link MockMvc} auto-config.
  * Does not load {@link ServiceComponent}s and {@link ServiceConfig}s.
  * All service beans are automatically mocked by {@link AutoMockServiceBeansGenericAnnotationWebConfigContextLoader}.
- * You can get the mocks by using @{@link org.springframework.beans.factory.annotation.Autowired}.
+ * You can get the mocks by using {@link org.springframework.beans.factory.annotation.Autowired}.
  * Mocks are reset after each test-method and shared across test-context.
  * This means that mocks are also shared between test classes if the test-context is cached (which is intended).
  *
@@ -44,7 +45,5 @@ import org.springframework.test.web.servlet.MockMvc;
         classes = PropertyPlaceholderAutoConfiguration.class*/,
         initializers = ConfigFileApplicationContextInitializer.class
 )
-public abstract class AbstractAutoMockCrudControllerTest
-        <C extends GenericCrudController>
-                extends AbstractMvcTest<C> {
+public abstract class AutoMockServiceBeansIntegrationTest extends AbstractMvcTest {
 }

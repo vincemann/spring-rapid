@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
-import com.github.vincemann.springrapid.coretest.controller.automock.AbstractAutoMockCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.automock.AutoMockServiceBeansIntegrationTest;
 import com.github.vincemann.springrapid.coretest.controller.integration.MvcIntegrationTest;
 import com.github.vincemann.springrapid.coretest.controller.template.AbstractControllerTestTemplate;
 import lombok.Getter;
@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Base class for tests of {@link GenericCrudController}.
  * Use either implementations of
- *  {@link AbstractAutoMockCrudControllerTest}
+ *  {@link AutoMockServiceBeansIntegrationTest}
  * or
  *  {@link MvcIntegrationTest}
  * to test your {@link GenericCrudController}s.
@@ -52,24 +52,20 @@ public abstract class AbstractMvcTest extends InitializingTest implements Initia
 
 
     protected MockMvc mvc;
-    @Autowired
     private WebApplicationContext wac;
-
-    @Autowired
     protected JsonMapper jsonMapper;
 
 
     @Override
     public void afterPropertiesSet() throws Exception {
-//        this.getTestTemplate().setController(controller);
         DefaultMockMvcBuilder mvcBuilder = createMvcBuilder();
-//        this.contentType = MediaType.valueOf(controller.getCoreProperties().getController().getMediaType());
         mvc = mvcBuilder.build();
         setTestTemplatesMvc();
     }
 
 
 
+    // iterates over all fields containing AbstractControllerTestTemplates and sets mvc
     protected void setTestTemplatesMvc(){
         ReflectionUtils.doWithFields(this.getClass(),field -> {
             Class<?> fieldType = field.getType();
@@ -144,10 +140,13 @@ public abstract class AbstractMvcTest extends InitializingTest implements Initia
         return (Dto) jsonMapper.readDto(s,dtoClass);
     }
 
+    @Autowired
+    public void injectJsonMapper(JsonMapper jsonMapper) {
+        this.jsonMapper = jsonMapper;
+    }
 
-
-//    @Autowired
-//    public void injectController(C controller) {
-//        this.controller = controller;
-//    }
+    @Autowired
+    public void injectWac(WebApplicationContext wac) {
+        this.wac = wac;
+    }
 }

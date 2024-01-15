@@ -14,6 +14,8 @@ import com.github.vincemann.springrapid.coredemo.service.ext.OwnerOfTheYearExten
 import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import com.github.vincemann.springrapid.coredemo.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.integration.MvcIntegrationTest;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class AbstractControllerIntegrationTest<C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>
-        extends IntegrationCrudControllerTest<C,S>
+public class AbstractControllerIntegrationTest extends MvcIntegrationTest
 {
 
     //Types

@@ -2,11 +2,11 @@ package com.github.vincemann.springrapid.coredemo.controller;
 
 
 import com.github.vincemann.springrapid.core.Entity;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
+import com.github.vincemann.springrapid.coredemo.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.coredemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadForeignOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
@@ -15,9 +15,8 @@ import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
-import com.github.vincemann.springrapid.coretest.controller.automock.AutoMockCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.automock.AutoMockServiceBeansIntegrationTest;
 import com.google.common.collect.Sets;
-import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -26,9 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.validation.ValidationException;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Optional;
@@ -42,8 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 // todo fix
 @Disabled
-public class MockServiceOwnerControllerTest
-        extends AutoMockCrudControllerTest<OwnerController> {
+public class OwnerControllerTest extends AutoMockServiceBeansIntegrationTest {
 
     CreateOwnerDto createOwnerDto;
     ReadForeignOwnerDto readForeignOwnerDto;
@@ -61,6 +57,9 @@ public class MockServiceOwnerControllerTest
 
     @Autowired
     RapidSecurityContext<RapidAuthenticatedPrincipal> rapidSecurityContext;
+
+    @Autowired
+    OwnerControllerTestTemplate ownerController;
 
     String addressPatch;
     String blankCityPatch;
@@ -135,10 +134,11 @@ public class MockServiceOwnerControllerTest
     @Test
     public void canCreateOwner() throws Exception {
 
-        String readOwnerDtoJson = serialize(readForeignOwnerDto);
+
+        String readOwnerDtoJson = getJsonMapper().writeDto(readForeignOwnerDto);
         when(ownerService.save(refEq(owner, "id"))).thenReturn(owner);
 
-        getMvc().perform(create(createOwnerDto))
+        perform(ownerController.create(createOwnerDto))
                 .andExpect(status().isOk())
                 .andExpect(content().json(readOwnerDtoJson));
 
@@ -148,7 +148,7 @@ public class MockServiceOwnerControllerTest
 
     @Test
     public void canDeleteOwner() throws Exception {
-        getMvc().perform(delete(owner.getId()))
+        perform(ownerController.delete(owner.getId()))
                 .andExpect(status().is2xxSuccessful());
 
         Mockito.verify(ownerService).deleteById(owner.getId());
@@ -158,9 +158,9 @@ public class MockServiceOwnerControllerTest
     @Test
     public void canFindForeignOwnerById() throws Exception {
         when(ownerService.findById(owner.getId())).thenReturn(Optional.of(owner));
-        String readDtoJson = serialize(readForeignOwnerDto);
+        String readDtoJson = getJsonMapper().writeDto(readForeignOwnerDto);
 
-        getMvc().perform(find(owner.getId()))
+        perform(ownerController.find(owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(readDtoJson));
 
@@ -172,9 +172,9 @@ public class MockServiceOwnerControllerTest
         rapidSecurityContext.login(TestPrincipal.withName(owner.getLastName()));
 
         when(ownerService.findById(owner.getId())).thenReturn(Optional.of(owner));
-        String readDtoJson = serialize(readOwnOwnerDto);
+        String readDtoJson = getJsonMapper().writeDto(readOwnOwnerDto);
 
-        getMvc().perform(find(owner.getId()))
+        perform(ownerController.find(owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(readDtoJson));
 
@@ -196,7 +196,7 @@ public class MockServiceOwnerControllerTest
         when(ownerService.partialUpdate(refEq(ownerPatch),any(),any())).thenReturn(ownerPatch);
 
         //when
-        getMvc().perform(update(addressPatch, owner.getId()))
+        perform(ownerController.update(addressPatch, owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.address").value(updatedAddress));
 
@@ -221,7 +221,7 @@ public class MockServiceOwnerControllerTest
         when(ownerService.partialUpdate(any(),any(),any()))
                 .thenThrow(ConstraintViolationException.class);
 
-        getMvc().perform(update(blankCityPatch, owner.getId()))
+        perform(ownerController.update(blankCityPatch, owner.getId()))
                 .andExpect(status().isBadRequest());
 
 
@@ -248,7 +248,7 @@ public class MockServiceOwnerControllerTest
         when(ownerService.partialUpdate(refEq(ownerPatch),any(),any()))
                 .thenReturn(ownerPatch);
 
-        getMvc().perform(update(addPetPatch, owner.getId()))
+        getMvc().perform(ownerController.update(addPetPatch, owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.petIds[0]").value(petId));
 

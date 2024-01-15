@@ -1,11 +1,10 @@
 package com.github.vincemann.springrapid.syncdemo.controller;
 
-import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
-import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.integration.MvcIntegrationTest;
+import com.github.vincemann.springrapid.syncdemo.controller.template.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.model.*;
@@ -26,8 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class AbstractControllerIntegrationTest<C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>
-        extends IntegrationCrudControllerTest<C,S>
+public class AbstractControllerIntegrationTest extends MvcIntegrationTest
 {
 
     //Types
@@ -144,6 +142,9 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
 
     @Autowired
     protected TransactionalTemplate transactionalTemplate;
+
+    @Autowired
+    protected OwnerControllerTestTemplate ownerController;
 
     @BeforeEach
     public void setupTestData() throws Exception {
@@ -410,7 +411,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         createOwnerDto.getPetIds().addAll(Lists.newArrayList(petIds));
 
 
-        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(create(createOwnerDto), ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(ownerController.create(createOwnerDto), ReadOwnOwnerDto.class);
         Assertions.assertNotNull(readOwnOwnerDto.getId());
         Owner saved = fetchOwner(readOwnOwnerDto.getId());
         Assertions.assertNotNull(saved.getCreatedDate());
@@ -424,7 +425,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     protected Owner saveOwnerLinkedToClinicCard(Owner owner, ClinicCard clinicCard) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
         createOwnerDto.setClinicCardId(clinicCard.getId());
-        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(create(createOwnerDto), ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(ownerController.create(createOwnerDto), ReadOwnOwnerDto.class);
         Assertions.assertNotNull(readOwnOwnerDto.getId());
         Owner saved = fetchOwner(readOwnOwnerDto.getId());
         Assertions.assertNotNull(saved.getCreatedDate());
@@ -437,7 +438,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
 
     protected ReadOwnOwnerDto saveOwner(Owner owner) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
-        return performDs2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
+        return performDs2xx(ownerController.create(createOwnerDto),ReadOwnOwnerDto.class);
     }
 
 

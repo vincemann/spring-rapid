@@ -10,7 +10,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.jdbc.Sql;
 
 
-// todo this annotation can be removed: test
+// todo double acl cache clearing?
 @TestExecutionListeners(
         value = {
                 ClearAclCacheTestExecutionListener.class,

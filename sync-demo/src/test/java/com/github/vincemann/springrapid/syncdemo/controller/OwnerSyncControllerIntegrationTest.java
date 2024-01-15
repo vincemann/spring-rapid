@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.syncdemo.controller;
 
-import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.Entity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
@@ -9,12 +8,14 @@ import com.github.vincemann.springrapid.sync.controller.EntitySyncStatusSerializ
 import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
+import com.github.vincemann.springrapid.syncdemo.controller.template.OwnerSyncControllerTestTemplate;
+import com.github.vincemann.springrapid.syncdemo.controller.template.PetControllerTestTemplate;
+import com.github.vincemann.springrapid.syncdemo.controller.template.PetSyncControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.pet.PetDto;
 import com.github.vincemann.springrapid.syncdemo.model.ClinicCard;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
-import com.github.vincemann.springrapid.syncdemo.service.OwnerService;
 import com.github.vincemann.springrapid.syncdemo.service.filter.OwnerTelNumberFilter;
 import com.github.vincemann.springrapid.syncdemo.service.filter.PetsOfOwnerFilter;
 import com.google.common.collect.Sets;
@@ -22,7 +23,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.MediaType;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -30,10 +30,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegrationTest<OwnerController, OwnerService>{
+public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegrationTest{
 
 
     @Autowired
@@ -145,7 +144,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
         securityContext.login(TestPrincipal.withName(KAHN));
-        ReadOwnOwnerDto updatedEG = performDs2xx(testTemplate.find(status.getId())
+        ReadOwnOwnerDto updatedEG = performDs2xx(ownerController.find(status.getId())
                 , ReadOwnOwnerDto.class);
         RapidSecurityContext.logout();
 
@@ -200,16 +199,12 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Set<String> idsToSync = Sets.newHashSet(owner2SyncStatus.getId(),owner3SyncStatus.getId());
 
         securityContext.login(TestPrincipal.withName(KAHN));
-        String json = perform(post(getFindSomeUrl())
-                .content(getController().getJsonMapper().writeDto(idsToSync))
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+        String json = perform(ownerController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.logout();
 
-        CollectionType ownerSetType = getController().getJsonMapper().getObjectMapper()
-                .getTypeFactory().constructCollectionType(Set.class, ReadOwnOwnerDto.class);
-        Set<ReadOwnOwnerDto> updatedOwners = deserialize(json, ownerSetType);
+        Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json,ReadOwnOwnerDto.class);
 
         Assertions.assertEquals(2,updatedOwners.size());
 
@@ -267,16 +262,12 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Set<String> idsToSync = Sets.newHashSet(owner2SyncStatus.getId());
 
         securityContext.login(TestPrincipal.withName(KAHN));
-        String json = perform(post(getFindSomeUrl())
-                .content(getController().getJsonMapper().writeDto(idsToSync))
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+        String json = perform(ownerController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.logout();
 
-        CollectionType ownerSetType = getController().getJsonMapper().getObjectMapper()
-                .getTypeFactory().constructCollectionType(Set.class, ReadOwnOwnerDto.class);
-        Set<ReadOwnOwnerDto> updatedOwners = deserialize(json, ownerSetType);
+        Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json,ReadOwnOwnerDto.class);
 
         Assertions.assertEquals(1,updatedOwners.size());
 
@@ -337,16 +328,12 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Set<String> idsToSync = Sets.newHashSet(owner2SyncStatus.getId());
 
         securityContext.login(TestPrincipal.withName(KAHN));
-        String json = perform(post(getFindSomeUrl())
-                .content(getController().getJsonMapper().writeDto(idsToSync))
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+        String json = perform(ownerController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.logout();
 
-        CollectionType ownerSetType = getController().getJsonMapper().getObjectMapper()
-                .getTypeFactory().constructCollectionType(Set.class, ReadOwnOwnerDto.class);
-        Set<ReadOwnOwnerDto> updatedOwners = deserialize(json, ownerSetType);
+        Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json,ReadOwnOwnerDto.class);
 
         Assertions.assertEquals(1,updatedOwners.size());
 
@@ -400,16 +387,12 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Set<String> idsToSync = Sets.newHashSet(owner3SyncStatus.getId());
 
         securityContext.login(TestPrincipal.withName(KAHN));
-        String json = perform(post(getFindSomeUrl())
-                .content(getController().getJsonMapper().writeDto(idsToSync))
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+        String json = perform(ownerController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.logout();
 
-        CollectionType ownerSetType = getController().getJsonMapper().getObjectMapper()
-                .getTypeFactory().constructCollectionType(Set.class, ReadOwnOwnerDto.class);
-        Set<ReadOwnOwnerDto> updatedOwners = deserialize(json, ownerSetType);
+        Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json,ReadOwnOwnerDto.class);
 
         Assertions.assertEquals(1,updatedOwners.size());
 
@@ -529,16 +512,12 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Set<String> idsToSync = Sets.newHashSet(owner.getId().toString());
 
         securityContext.login(TestPrincipal.withName(KAHN));
-        String json = perform(post(getFindSomeUrl())
-                .content(getController().getJsonMapper().writeDto(idsToSync))
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+        String json = perform(ownerController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.logout();
 
-        CollectionType ownerSetType = getController().getJsonMapper().getObjectMapper()
-                .getTypeFactory().constructCollectionType(Set.class, ReadOwnOwnerDto.class);
-        Set<ReadOwnOwnerDto> updatedOwners = deserialize(json, ownerSetType);
+        Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json,ReadOwnOwnerDto.class);
 
         Assertions.assertEquals(1,updatedOwners.size());
 
@@ -632,7 +611,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
         securityContext.login(TestPrincipal.withName(KAHN));
-        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(find(status.getId()), ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(ownerController.find(status.getId()), ReadOwnOwnerDto.class);
         RapidSecurityContext.logout();
 
         Assertions.assertEquals(updatedHobbies,readOwnOwnerDto.getHobbies());
@@ -680,7 +659,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
         securityContext.login(TestPrincipal.withName(KAHN));
-        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(find(status.getId()), ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(ownerController.find(status.getId()), ReadOwnOwnerDto.class);
         RapidSecurityContext.logout();
 
         Assertions.assertEquals(updatedHobbies,readOwnOwnerDto.getHobbies());
@@ -725,16 +704,12 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Set<String> idsToSync = Sets.newHashSet(status.getId());
 
         securityContext.login(TestPrincipal.withName(KAHN));
-        String json = perform(post(getFindSomeUrl())
-                .content(getController().getJsonMapper().writeDto(idsToSync))
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+        String json = perform(ownerController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.logout();
 
-        CollectionType ownerSetType = getController().getJsonMapper().getObjectMapper()
-                .getTypeFactory().constructCollectionType(Set.class, ReadOwnOwnerDto.class);
-        Set<ReadOwnOwnerDto> updatedOwners = deserialize(json, ownerSetType);
+        Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json,ReadOwnOwnerDto.class);
 
         Assertions.assertEquals(1,updatedOwners.size());
 
@@ -781,16 +756,12 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Set<String> idsToSync = Sets.newHashSet(status.getId());
 
         securityContext.login(TestPrincipal.withName(KAHN));
-        String json = perform(post(getFindSomeUrl())
-                .content(getController().getJsonMapper().writeDto(idsToSync))
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+        String json = perform(ownerController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.logout();
 
-        CollectionType ownerSetType = getController().getJsonMapper().getObjectMapper()
-                .getTypeFactory().constructCollectionType(Set.class, ReadOwnOwnerDto.class);
-        Set<ReadOwnOwnerDto> updatedOwners = deserialize(json, ownerSetType);
+        Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json,ReadOwnOwnerDto.class);
 
         Assertions.assertEquals(1,updatedOwners.size());
 
