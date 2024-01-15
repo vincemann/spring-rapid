@@ -83,15 +83,18 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 //    }
 
     public String login(AbstractUser user) throws Exception {
-        return mvc.perform(login_builder(user.getContactInformation(),user.getPassword()))
+        return mvc.perform(login(user.getContactInformation(),user.getPassword()))
                 .andReturn()
                 .getResponse()
                 .getHeader(HttpHeaders.AUTHORIZATION);
     }
 
-    public RequestBuilder login_builder(String contactInformation, String password) throws Exception {
-        return login_raw(contactInformation, password);
-    }
+//    public String login(String user, String password) throws Exception {
+//        return mvc.perform(login_builder(user,password))
+//                .andReturn()
+//                .getResponse()
+//                .getHeader(HttpHeaders.AUTHORIZATION);
+//    }
 
 
     public RequestBuilder changeContactInformation(String code, String token) throws Exception {
@@ -194,7 +197,8 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .andReturn().getResponse().getContentAsString(), ResponseToken.class).getToken();
     }
 
-    protected MockHttpServletRequestBuilder login_raw(String contactInformation, String password) {
+
+    public MockHttpServletRequestBuilder login(String contactInformation, String password) {
         return post(getController().getLoginUrl())
                 .param("username", contactInformation)
                 .param("password", password)
@@ -208,7 +212,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     public String login2xx(String contactInformation, String password) throws Exception {
-        return getMvc().perform(login_raw(contactInformation, password))
+        return getMvc().perform(login(contactInformation, password))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getHeader(HttpHeaders.AUTHORIZATION);
     }

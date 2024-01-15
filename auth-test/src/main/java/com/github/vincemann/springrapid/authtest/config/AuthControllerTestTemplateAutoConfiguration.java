@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.authtest.config;
 
 import com.github.vincemann.springrapid.authtest.controller.template.UserControllerTestTemplate;
-import com.github.vincemann.springrapid.coretest.config.RapidControllerTestTemplateAutoconfiguration;
 import com.github.vincemann.springrapid.coretest.slicing.WebTestConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;

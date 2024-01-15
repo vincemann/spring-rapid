@@ -23,7 +23,7 @@ public class LoginTest extends RapidAuthIntegrationTest {
 
 	@Test
 	public void canLogin() throws Exception {
-		String token = mvc.perform(testTemplate.login_builder(USER_CONTACT_INFORMATION, USER_PASSWORD))
+		String token = mvc.perform(userController.login(USER_CONTACT_INFORMATION, USER_PASSWORD))
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").doesNotExist())
@@ -81,13 +81,13 @@ public class LoginTest extends RapidAuthIntegrationTest {
 
 	@Test
 	public void cantLoginWithWrongPassword() throws Exception {
-		login(ADMIN_CONTACT_INFORMATION,"wrong-password")
+		mvc.perform(userController.login(ADMIN_CONTACT_INFORMATION,"wrong-password"))
 				.andExpect(status().isUnauthorized());
 	}
 
 	@Test
 	public void cantLoginWithBlankPassword() throws Exception {
-		login(ADMIN_CONTACT_INFORMATION,"")
+		mvc.perform(userController.login(ADMIN_CONTACT_INFORMATION,""))
 				.andExpect(status().isUnauthorized());
 	}
 

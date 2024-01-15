@@ -24,9 +24,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class VisitControllerTest extends MyAbstractIntegrationTest {
 
 
-    @Autowired
-    VisitControllerTestTemplate visitController;
-
 
     @Test
     public void vetCanCreateVisit() throws Exception {

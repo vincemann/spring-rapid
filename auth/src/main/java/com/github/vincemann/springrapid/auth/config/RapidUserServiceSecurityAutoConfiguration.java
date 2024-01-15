@@ -2,14 +2,12 @@ package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.acl.config.RapidAclExtensionsAutoConfiguration;
 import com.github.vincemann.springrapid.acl.service.AclPermissionService;
-import com.github.vincemann.springrapid.acl.service.extensions.acl.AdminGainsAdminPermissionAboutSavedAclExtension;
 import com.github.vincemann.springrapid.acl.service.extensions.security.CrudAclChecksSecurityExtension;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.extension.AclUserExtension;
 import com.github.vincemann.springrapid.auth.service.extension.UserServiceSecurityExtension;
 import com.github.vincemann.springrapid.acl.config.RapidAclAutoConfiguration;
 import com.github.vincemann.springrapid.acl.proxy.*;
-import com.github.vincemann.springrapid.acl.service.RapidPermissionService;
 import com.github.vincemann.springrapid.acl.service.extensions.acl.CleanUpAclExtension;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
@@ -66,7 +64,7 @@ public class RapidUserServiceSecurityAutoConfiguration {
     ) {
         return new ServiceExtensionProxyBuilder<>(service)
                 // dont work with default extensions to keep things simple and concrete for user
-                .toggleDefaultExtensions(false)
+                .setDefaultExtensionsEnabled(false)
                 .addExtension(aclUserServiceExtension)
                 .addExtension(cleanUpAclExtension)
                 .build();
@@ -82,7 +80,7 @@ public class RapidUserServiceSecurityAutoConfiguration {
     ) {
         return new ServiceExtensionProxyBuilder<>(service)
                 // dont work with default extensions to keep things safer for user related stuff
-                .toggleDefaultExtensions(false)
+                .setDefaultExtensionsEnabled(false)
                 .addExtension(securityRule)
                 .addExtension(crudAclChecksSecurityExtension)
                 .build();

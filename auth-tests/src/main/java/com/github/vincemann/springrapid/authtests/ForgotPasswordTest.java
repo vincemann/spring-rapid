@@ -17,7 +17,7 @@ public class ForgotPasswordTest extends RapidAuthIntegrationTest {
 
 	@Test
 	public void anonCanIssueForgotPassword() throws Exception {
-		MailData mailData = testTemplate.forgotPassword2xx(USER_CONTACT_INFORMATION);
+		MailData mailData = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
 		Assertions.assertEquals(FORGOT_PASSWORD_AUDIENCE, mailData.getTopic());
 		Assertions.assertEquals(USER_CONTACT_INFORMATION,mailData.getTo());
 	}
@@ -27,16 +27,16 @@ public class ForgotPasswordTest extends RapidAuthIntegrationTest {
 	public void cantIssueForgotPasswordForInvalidContactInformation() throws Exception {
 
 		// Unknown contactInformation
-		mvc.perform(testTemplate.forgotPassword(UNKNOWN_CONTACT_INFORMATION))
+		mvc.perform(userController.forgotPassword(UNKNOWN_CONTACT_INFORMATION))
 				.andExpect(status().isNotFound());
 
 
 		// Null contactInformation
-		mvc.perform(testTemplate.forgotPassword(null))
+		mvc.perform(userController.forgotPassword(null))
 				.andExpect(status().isBadRequest());
 
 		// Blank contactInformation
-		mvc.perform(testTemplate.forgotPassword(""))
+		mvc.perform(userController.forgotPassword(""))
 				.andExpect(status().isBadRequest());
 
 		verify(aopUnproxy(mailSender), never()).send(any());

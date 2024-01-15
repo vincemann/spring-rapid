@@ -29,7 +29,7 @@ public abstract class UpdateUserTest extends RapidAuthIntegrationTest
 		);
 		Set<String> oldRoles = new HashSet<>(getUser().getRoles());
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-		mvc.perform(update(patchRoleJson,getUser().getId())
+		mvc.perform(userController.update(patchRoleJson,getUser().getId())
 						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
 
@@ -50,7 +50,7 @@ public abstract class UpdateUserTest extends RapidAuthIntegrationTest
 		);
 
 		String token = login2xx(ADMIN_CONTACT_INFORMATION, ADMIN_PASSWORD);
-		mvc.perform(update(patchRoleAndContactInformationJson,getUser().getId())
+		mvc.perform(userController.update(patchRoleAndContactInformationJson,getUser().getId())
 						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
@@ -73,7 +73,7 @@ public abstract class UpdateUserTest extends RapidAuthIntegrationTest
 				createUpdateJsonLine("replace", "/"+testAdapter.getUpdatableFieldName(), testAdapter.getNewValidFieldValue())
 		);
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-		mvc.perform(update(patchFieldJson,UNKNOWN_USER_ID)
+		mvc.perform(userController.update(patchFieldJson,UNKNOWN_USER_ID)
 						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
     }
@@ -85,7 +85,7 @@ public abstract class UpdateUserTest extends RapidAuthIntegrationTest
 				createUpdateJsonLine("replace", "/"+testAdapter.getUpdatableFieldName(), testAdapter.getNewValidFieldValue())
 		);
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-		mvc.perform(update(patchFieldJson,getUser().getId())
+		mvc.perform(userController.update(patchFieldJson,getUser().getId())
 						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().is2xxSuccessful());
 	}
@@ -101,7 +101,7 @@ public abstract class UpdateUserTest extends RapidAuthIntegrationTest
 				createUpdateJsonLine("replace", "/"+testAdapter.getUpdatableFieldName(), testAdapter.getInvalidFieldValue())
 		);
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-		mvc.perform(update(invalidFieldPatchJson,getUser().getId())
+		mvc.perform(userController.update(invalidFieldPatchJson,getUser().getId())
 						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isBadRequest());
 	}
@@ -117,7 +117,7 @@ public abstract class UpdateUserTest extends RapidAuthIntegrationTest
 				createUpdateJsonLine("replace", "/"+testAdapter.getUpdatableFieldName(), testAdapter.getNewValidFieldValue())
 		);
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-		mvc.perform(update(invalidFieldPatchJson,getSecondUser().getId())
+		mvc.perform(userController.update(invalidFieldPatchJson,getSecondUser().getId())
 						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
 	}
@@ -129,7 +129,7 @@ public abstract class UpdateUserTest extends RapidAuthIntegrationTest
 				createUpdateJsonLine("replace", "/"+testAdapter.getUpdatableFieldName(), testAdapter.getNewValidFieldValue())
 		);
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-		mvc.perform(update(invalidFieldPatchJson,getAdmin().getId())
+		mvc.perform(userController.update(invalidFieldPatchJson,getAdmin().getId())
 						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
 	}
@@ -140,7 +140,7 @@ public abstract class UpdateUserTest extends RapidAuthIntegrationTest
 				createUpdateJsonLine("replace", "/contactInformation", NEW_CONTACT_INFORMATION)
 		);
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-		mvc.perform(update(patchContactInformationJson,getUser().getId())
+		mvc.perform(userController.update(patchContactInformationJson,getUser().getId())
 						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
 

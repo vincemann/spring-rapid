@@ -28,11 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Tag(value = "demo-projects")
 public class OwnerControllerTest extends MyAbstractIntegrationTest {
 
-    @Autowired
-    OwnerControllerTestTemplate ownerController;
-    @Autowired
-    OwnerService ownerService;
-
 
 
     @Test

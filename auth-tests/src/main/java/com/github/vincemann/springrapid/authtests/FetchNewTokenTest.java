@@ -18,7 +18,7 @@ public class FetchNewTokenTest extends RapidAuthIntegrationTest {
 	@Test
 	public void canFetchNewTokenForOwnUser() throws Exception {
 		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
-		MvcResult result = mvc.perform(testTemplate.fetchNewToken(token))
+		MvcResult result = mvc.perform(userController.fetchNewToken(token))
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(jsonPath("$.token").value(containsString(".")))
 				.andReturn();
@@ -36,7 +36,7 @@ public class FetchNewTokenTest extends RapidAuthIntegrationTest {
 		Mockito.doReturn(mockedExpireTime).when(jwt).getExpirationMillis();
 
 		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
-		testTemplate.fetchNewToken2xx(token);
+		userController.fetchNewToken2xx(token);
 
 		Thread.sleep(mockedExpireTime+1L);
 		assertTokenDoesNotWork(token);
@@ -46,7 +46,7 @@ public class FetchNewTokenTest extends RapidAuthIntegrationTest {
 	@Test
 	public void adminCanFetchNewTokenForDiffUser() throws Exception {
 		String token = login2xx(ADMIN_CONTACT_INFORMATION,ADMIN_PASSWORD);
-		MvcResult result = mvc.perform(testTemplate.fetchNewToken(token, USER_CONTACT_INFORMATION))
+		MvcResult result = mvc.perform(userController.fetchNewToken(token, USER_CONTACT_INFORMATION))
 				.andExpect(status().is2xxSuccessful())
 				.andReturn();
 
@@ -58,7 +58,7 @@ public class FetchNewTokenTest extends RapidAuthIntegrationTest {
 	@Test
 	public void cantFetchTokenForDiffUser() throws Exception {
 		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
-		mvc.perform(testTemplate.fetchNewToken(token,SECOND_USER_CONTACT_INFORMATION))
+		mvc.perform(userController.fetchNewToken(token,SECOND_USER_CONTACT_INFORMATION))
 				.andExpect(status().isForbidden());
 	}
 

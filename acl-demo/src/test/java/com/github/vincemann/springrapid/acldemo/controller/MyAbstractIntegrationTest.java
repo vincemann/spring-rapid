@@ -1,10 +1,11 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
-import com.github.vincemann.acltest.controller.AclIntegrationCrudControllerTest;
+import com.github.vincemann.acltest.controller.AclMvcIntegrationTest;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.controller.templates.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.templates.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.templates.VetControllerTestTemplate;
+import com.github.vincemann.springrapid.acldemo.controller.templates.VisitControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.dto.VisitDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.FullOwnerDto;
@@ -20,6 +21,7 @@ import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.authtest.controller.template.UserControllerTestTemplate;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.coretest.controller.integration.MvcIntegrationTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +43,7 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.creat
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 // add admin before each test
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class MyAbstractIntegrationTest extends AclIntegrationCrudControllerTest
+public class MyAbstractIntegrationTest extends AclMvcIntegrationTest
 {
 
     //Types
@@ -179,6 +181,9 @@ public class MyAbstractIntegrationTest extends AclIntegrationCrudControllerTest
 
     @Autowired
     protected VetControllerTestTemplate vetController;
+
+    @Autowired
+    protected VisitControllerTestTemplate visitController;
 
     @Autowired
     protected RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
@@ -417,7 +422,7 @@ public class MyAbstractIntegrationTest extends AclIntegrationCrudControllerTest
         createVisitDto.setPetIds(Arrays.stream(pets).map(Pet::getId).collect(Collectors.toSet()));
         createVisitDto.setVetId(vet.getId());
 
-        VisitDto responseDto = performDs2xx(create(createVisitDto)
+        VisitDto responseDto = performDs2xx(visitController.create(createVisitDto)
                         .header(HttpHeaders.AUTHORIZATION,token)
                 , VisitDto.class);
         return visitRepository.findById(responseDto.getId()).get();
@@ -436,18 +441,18 @@ public class MyAbstractIntegrationTest extends AclIntegrationCrudControllerTest
         return ownerService.findById(fullOwnerDto.getId()).get();
     }
 
-    @AfterEach
-    public void tearDown() {
-        clearAclCache();
-//        aclCache.clearCache();
-
-//        TransactionalRapidTestUtil.clear(visitService);
-//        TransactionalRapidTestUtil.clear(petService);
-//        TransactionalRapidTestUtil.clear(illnessService);
-//        TransactionalRapidTestUtil.clear(ownerService);
-//        TransactionalRapidTestUtil.clear(petTypeService);
-//        TransactionalRapidTestUtil.clear(specialtyService);
-//        TransactionalRapidTestUtil.clear(vetService);
-//        TransactionalRapidTestUtil.clear(userService);
-    }
+//    @AfterEach
+//    public void tearDown() {
+////        clearAclCache();
+////        aclCache.clearCache();
+//
+////        TransactionalRapidTestUtil.clear(visitService);
+////        TransactionalRapidTestUtil.clear(petService);
+////        TransactionalRapidTestUtil.clear(illnessService);
+////        TransactionalRapidTestUtil.clear(ownerService);
+////        TransactionalRapidTestUtil.clear(petTypeService);
+////        TransactionalRapidTestUtil.clear(specialtyService);
+////        TransactionalRapidTestUtil.clear(vetService);
+////        TransactionalRapidTestUtil.clear(userService);
+//    }
 }

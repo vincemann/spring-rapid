@@ -26,10 +26,10 @@ public class LoginBruteForceTest extends RapidAuthIntegrationTest {
     public void tooManyLoginTries_tooManyRequestsResponse() throws Exception {
         String wrongPassword = "bruteWrongPw";
         for (int i =0 ;i<MAX_LOGIN_TRIES;i++){
-            login(ADMIN_CONTACT_INFORMATION,wrongPassword+i)
+            mvc.perform(userController.login(ADMIN_CONTACT_INFORMATION,wrongPassword+i))
                     .andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
         }
-        login(ADMIN_CONTACT_INFORMATION,wrongPassword)
+        mvc.perform(userController.login(ADMIN_CONTACT_INFORMATION,wrongPassword))
                 .andExpect(status().is(HttpStatus.TOO_MANY_REQUESTS.value()));
 
     }
@@ -38,13 +38,13 @@ public class LoginBruteForceTest extends RapidAuthIntegrationTest {
     public void maxLoginTries_thenCorrectLogin_resetsEverything() throws Exception {
         String wrongPassword = "bruteWrongPw";
         for (int i =0 ;i<MAX_LOGIN_TRIES-1;i++){
-            login(ADMIN_CONTACT_INFORMATION,wrongPassword+i)
+            mvc.perform(userController.login(ADMIN_CONTACT_INFORMATION,wrongPassword+i))
                     .andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
         }
-        login(ADMIN_CONTACT_INFORMATION,ADMIN_PASSWORD)
+        mvc.perform(userController.login(ADMIN_CONTACT_INFORMATION,ADMIN_PASSWORD))
                 .andExpect(status().is(200));
         for (int i =0 ;i<MAX_LOGIN_TRIES-1;i++){
-            login(ADMIN_CONTACT_INFORMATION,wrongPassword+i)
+            mvc.perform(userController.login(ADMIN_CONTACT_INFORMATION,wrongPassword+i))
                     .andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
         }
 

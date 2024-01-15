@@ -4,7 +4,6 @@ import com.github.vincemann.acltest.controller.AclMvcIntegrationTest;
 import com.github.vincemann.springrapid.acl.proxy.Acl;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.config.RapidAdminAutoConfiguration;
-import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
@@ -13,10 +12,9 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
-import com.github.vincemann.springrapid.authtest.controller.UserIntegrationControllerTest;
+import com.github.vincemann.springrapid.authtest.controller.template.UserControllerTestTemplate;
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.coretest.controller.integration.MvcIntegrationTest;
 import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.Getter;
@@ -53,9 +51,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Creates All Test Users.
- * Fills tokens Map in an integration test manner by creating and logging all users in
+ * Fills tokens Map in an integration test manner by creating and logging all users in.
  */
-//@Transactional - dont do transactional bc controller will be wrapped in transaction as well -> lazyLoad Exceptions ect. wont be detected
 @SpringBootTest({
 //        "logging.level.com.naturalprogrammer=ERROR", // logging.level.root=ERROR does not work: https://stackoverflow.com/questions/49048298/springboottest-not-overriding-logging-level
 //        "logging.level.org.springframework=ERROR",
@@ -112,6 +109,9 @@ public abstract class RapidAuthIntegrationTest extends AclMvcIntegrationTest {
 
     @Autowired
     protected AuthProperties authProperties;
+
+    @Autowired
+    protected UserControllerTestTemplate userController;
 
     @BeforeEach
     protected void setup() throws Exception {
@@ -172,7 +172,11 @@ public abstract class RapidAuthIntegrationTest extends AclMvcIntegrationTest {
 
     protected String login2xx(String username, String password, long expirationMillis) throws Exception {
         mockJwtExpirationTime(expirationMillis);
-        return login2xx(username,password);
+        return userController.login2xx(username,password);
+    }
+
+    protected String login2xx(String username, String password) throws Exception {
+        return userController.login2xx(username,password);
     }
 
     protected void ensureTokenWorks(String token, Serializable id) throws Exception {
@@ -198,7 +202,7 @@ public abstract class RapidAuthIntegrationTest extends AclMvcIntegrationTest {
         return testAdapter.createInvalidSignupDto();
     }
 
-    protected String modCode(String code, String aud, String subject, Long expirationMillis,Long issuedAt, Map<String,Object> otherClaims) throws BadTokenException, ParseException {
+    protected String modifyCode(String code, String aud, String subject, Long expirationMillis, Long issuedAt, Map<String,Object> otherClaims) throws BadTokenException, ParseException {
         JWTClaimsSet claims = jweTokenService.parseToken(code);
         claims = RapidJwt.mod(claims,aud,subject,expirationMillis,issuedAt,otherClaims);
         return jweTokenService.createToken(claims);

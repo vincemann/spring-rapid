@@ -28,8 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class VetControllerTest extends MyAbstractIntegrationTest {
 
     @Autowired
-    VetControllerTestTemplate vetController;
-    @Autowired
     VetService vetService;
 
     @Test

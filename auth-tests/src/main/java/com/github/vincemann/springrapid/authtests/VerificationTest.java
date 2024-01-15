@@ -25,9 +25,9 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 	@Test
 	public void canVerifyContactInformation() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
-		MailData mailData = testTemplate.signup2xx(signupDto);
+		MailData mailData = userController.signup2xx(signupDto);
 		AbstractUser<Serializable> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
-		mvc.perform(testTemplate.verifyContactInformationWithLink(mailData.getLink()))
+		mvc.perform(userController.verifyContactInformationWithLink(mailData.getLink()))
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").value(savedUser.getId()))
@@ -43,19 +43,19 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 	@Test
 	public void cantVerifyContactInformationTwiceWithSameCode() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
-		MailData mailData = testTemplate.signup2xx(signupDto);
-		mvc.perform(testTemplate.verifyContactInformationWithLink(mailData.getLink()))
+		MailData mailData = userController.signup2xx(signupDto);
+		mvc.perform(userController.verifyContactInformationWithLink(mailData.getLink()))
 				.andExpect(status().is2xxSuccessful());
 
-		mvc.perform(testTemplate.verifyContactInformationWithLink(mailData.getLink()))
+		mvc.perform(userController.verifyContactInformationWithLink(mailData.getLink()))
 				.andExpect(status().isForbidden());
 	}
 
 //	@Test
 //	public void cantVerifyContactInformationOfUnknownUser() throws Exception {
 //		SignupDto signupDto = createValidSignupDto();
-//		MailData mailData = testTemplate.signup2xx(signupDto);
-//		testTemplate.verifyContactInformation(UNKNOWN_USER_ID,mailData.getCode())
+//		MailData mailData = userController.signup2xx(signupDto);
+//		userController.verifyContactInformation(UNKNOWN_USER_ID,mailData.getCode())
 //				.andExpect(status().isNotFound());
 //	}
 
@@ -63,30 +63,30 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 	@Test
 	public void cantVerifyContactInformationWithInvalidData() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
-		MailData mailData = testTemplate.signup2xx(signupDto);
+		MailData mailData = userController.signup2xx(signupDto);
 
 		// null code
-		mvc.perform(testTemplate.verifyContactInformation(null))
+		mvc.perform(userController.verifyContactInformation(null))
 				.andExpect(status().isBadRequest());
 
 		// blank code
-		mvc.perform(testTemplate.verifyContactInformation(""))
+		mvc.perform(userController.verifyContactInformation(""))
 				.andExpect(status().isBadRequest());
 
 		// Wrong audience
-		String code = modCode(mailData.getCode(),"wrong-audience",null,null,null,null);
-		mvc.perform(testTemplate.verifyContactInformation(code))
+		String code = modifyCode(mailData.getCode(),"wrong-audience",null,null,null,null);
+		mvc.perform(userController.verifyContactInformation(code))
 				.andExpect(status().isForbidden());
 
 		// test makes no sense
 //		// Wrong contactInformation/ userid
 //		code = modCode(mailData.getCode(),null,getUnverifiedUser().getId().toString(),null,null,null);
-//		testTemplate.verifyContactInformation(code)
+//		userController.verifyContactInformation(code)
 //				.andExpect(status().isForbidden());
 
 //		// Wrong user id
 //		code = modCode(mailData.getCode(),null,getSecondUser().getId().toString(),null,null,null);
-//		testTemplate.verifyContactInformation(code)
+//		userController.verifyContactInformation(code)
 //				.andExpect(status().isForbidden());
 	}
 
@@ -95,11 +95,11 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 
 		SignupDto signupDto = createValidSignupDto();
 		mockJwtExpirationTime(50L);
-		MailData mailData = testTemplate.signup2xx(signupDto);
+		MailData mailData = userController.signup2xx(signupDto);
 		AbstractUser<Serializable> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
 		// expired token
 		Thread.sleep(51L);
-		mvc.perform(testTemplate.verifyContactInformationWithLink(mailData.getLink()))
+		mvc.perform(userController.verifyContactInformationWithLink(mailData.getLink()))
 				.andExpect(status().isForbidden());
 
 //
@@ -118,7 +118,7 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 	@Test
 	public void usersCredentialsUpdatedAfterSignup_cantUseObsoleteVerificationCode() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
-		MailData mailData = testTemplate.signup2xx(signupDto);
+		MailData mailData = userController.signup2xx(signupDto);
 		transactionalTemplate.doInTransaction(new Runnable() {
 			@SneakyThrows
 			@Override
@@ -132,7 +132,7 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 		});
 
 
-		mvc.perform(testTemplate.verifyContactInformationWithLink(mailData.getLink()))
+		mvc.perform(userController.verifyContactInformationWithLink(mailData.getLink()))
 				.andExpect(status().isForbidden());
 	}
 }

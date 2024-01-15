@@ -29,7 +29,7 @@ public class SignupTest extends RapidAuthIntegrationTest {
 	@Test
 	public void cantSignupWithInvalidData() throws Exception {
 		SignupDto signupDto = createInvalidSignupDto();
-		mvc.perform(testTemplate.signup(signupDto))
+		mvc.perform(userController.signup(signupDto))
 				.andExpect(status().isBadRequest());
 
 		verify(aopUnproxy(mailSender), never()).send(any());
@@ -40,7 +40,7 @@ public class SignupTest extends RapidAuthIntegrationTest {
 		SignupDto signupDto = createValidSignupDto();
 		Set<String> roles = signupDto.getRoles();
 
-		mvc.perform(testTemplate.signup(signupDto))
+		mvc.perform(userController.signup(signupDto))
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").exists())
@@ -55,7 +55,7 @@ public class SignupTest extends RapidAuthIntegrationTest {
 				.andExpect(jsonPath("$.admin").value(false))
 				.andExpect(jsonPath("$.goodUser").value(false));
 
-		MailData mailData = testTemplate.verifyMailWasSend();
+		MailData mailData = userController.verifyMailWasSend();
 		Assertions.assertEquals(signupDto.getContactInformation(), mailData.getTo());
 		Assertions.assertNotNull(mailData.getCode());
 
@@ -72,10 +72,10 @@ public class SignupTest extends RapidAuthIntegrationTest {
 	@Test
 	public void cantSignupWithDuplicateContactInformation() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
-		testTemplate.signup2xx(signupDto);
+		userController.signup2xx(signupDto);
 		signupDto.setPassword(signupDto.getPassword()+"new");
 
-		mvc.perform(testTemplate.signup(signupDto))
+		mvc.perform(userController.signup(signupDto))
 				.andExpect(status().isBadRequest());
 		// mock is reset by signup2xx so never only applies to latest signup
 		verify(aopUnproxy(mailSender), never()).send(any());

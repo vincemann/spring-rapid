@@ -15,7 +15,7 @@ public class FetchUserByContactInformationTest extends RapidAuthIntegrationTest 
 
 	@Test
 	public void anonKnowsContactInformation_canFindMatchingId() throws Exception {
-		mvc.perform(testTemplate.fetchByContactInformation(USER_CONTACT_INFORMATION))
+		mvc.perform(userController.fetchByContactInformation(USER_CONTACT_INFORMATION))
 				.andExpect(status().is(200))
 				.andExpect(jsonPath("$.id").value(getUser().getId()))
 				.andExpect(jsonPath("$.password").doesNotExist())
@@ -26,11 +26,11 @@ public class FetchUserByContactInformationTest extends RapidAuthIntegrationTest 
 	public void anonKnowsInvalidContactInformation_cantFindMatchingId() throws Exception {
 		
 		// contactInformation does not exist
-		mvc.perform(testTemplate.fetchByContactInformation(UNKNOWN_CONTACT_INFORMATION))
+		mvc.perform(userController.fetchByContactInformation(UNKNOWN_CONTACT_INFORMATION))
                 .andExpect(status().isNotFound());
 
 		// Blank contactInformation
-		mvc.perform(testTemplate.fetchByContactInformation(""))
+		mvc.perform(userController.fetchByContactInformation(""))
 				.andExpect(status().isBadRequest());
 	}
 
