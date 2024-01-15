@@ -264,6 +264,7 @@ public class MyControllerIntegrationTest extends MvcIntegrationTest
                 .build();
     }
 
+
     protected void assertVetHasSpecialties(String vetName, String... descriptions) {
         transactionalTemplate.doInTransaction(() -> {
 

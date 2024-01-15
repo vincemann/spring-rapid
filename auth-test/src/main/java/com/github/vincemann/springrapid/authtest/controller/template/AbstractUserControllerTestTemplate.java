@@ -10,7 +10,7 @@ import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipa
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
-import com.github.vincemann.springrapid.coretest.controller.template.AbstractCrudControllerTestTemplate;
+import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * }
  */
 public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserController>
-        extends AbstractCrudControllerTestTemplate<C> {
+        extends CrudControllerTestTemplate<C> {
 
 
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;

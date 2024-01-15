@@ -1,45 +1,36 @@
 package com.github.vincemann.springrapid.coretest.controller.template;
 
-import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.filter.ArgAware;
-import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
-import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
-import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
-import com.github.vincemann.springrapid.core.util.Lists;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import lombok.Getter;
-import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.*;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Getter
-public abstract class AbstractCrudControllerTestTemplate
-        <C extends GenericCrudController>
-            extends AbstractControllerTestTemplate<C>
-{
+public abstract class CrudControllerTestTemplate<C extends GenericCrudController>
+        extends MvcControllerTestTemplate<C> {
 
     @Autowired
     private ApplicationContext applicationContext;
-
 
     public MockHttpServletRequestBuilder delete(Serializable id) throws Exception {
         return MockMvcRequestBuilders.delete(getDeleteUrl())
@@ -104,7 +95,30 @@ public abstract class AbstractCrudControllerTestTemplate
         return requestBuilder;
     }
 
+    public <E extends IdentifiableEntity<?>> E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {
+        return (E) getController().getDtoMapper().mapToEntity(dto, getController().getEntityClass());
+    }
 
+    public  <Dto> Dto deserialize(String s, Class<Dto> dtoClass) throws IOException {
+        return getController().getJsonMapper().readDto(s, dtoClass);
+    }
+
+    public  <Dto> Dto deserialize(String s, TypeReference<?> dtoClass) throws IOException {
+        return getController().getJsonMapper().readDto(s, dtoClass);
+    }
+
+    public  <Dto> Dto deserialize(String s, JavaType dtoClass) throws IOException {
+        return getController().getJsonMapper().readDto(s, dtoClass);
+    }
+
+    public  String serialize(Object o) throws JsonProcessingException {
+        return getController().getJsonMapper().writeDto(o);
+    }
+
+
+    public  <Dto> Dto readDto(MvcResult mvcResult, Class<Dto> dtoClass) throws Exception {
+        return deserialize(mvcResult.getResponse().getContentAsString(), dtoClass);
+    }
 
 
     public  String getCreateUrl() {
@@ -130,6 +144,4 @@ public abstract class AbstractCrudControllerTestTemplate
     public String getFindSomeUrl(){
         return getController().getFindSomeUrl();
     }
-
 }
-

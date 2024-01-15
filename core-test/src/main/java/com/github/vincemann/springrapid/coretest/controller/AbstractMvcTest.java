@@ -10,7 +10,8 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
 import com.github.vincemann.springrapid.coretest.controller.automock.AutoMockServiceBeansIntegrationTest;
 import com.github.vincemann.springrapid.coretest.controller.integration.MvcIntegrationTest;
-import com.github.vincemann.springrapid.coretest.controller.template.AbstractControllerTestTemplate;
+import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
+import com.github.vincemann.springrapid.coretest.controller.template.MvcControllerTestTemplate;
 import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.InitializingBean;
@@ -69,9 +70,9 @@ public abstract class AbstractMvcTest extends InitializingTest implements Initia
     protected void setTestTemplatesMvc(){
         ReflectionUtils.doWithFields(this.getClass(),field -> {
             Class<?> fieldType = field.getType();
-            if (AbstractControllerTestTemplate.class.isAssignableFrom(fieldType)){
+            if (MvcControllerTestTemplate.class.isAssignableFrom(fieldType)){
                 field.setAccessible(true);
-                AbstractControllerTestTemplate testTemplate = (AbstractControllerTestTemplate) field.get(this);
+                MvcControllerTestTemplate testTemplate = (MvcControllerTestTemplate) field.get(this);
                 testTemplate.setMvc(mvc);
             }
         });

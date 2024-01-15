@@ -5,14 +5,13 @@ import com.github.vincemann.springrapid.core.service.filter.ArgAware;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
+import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import lombok.Getter;
-import org.junit.jupiter.api.Assertions;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -20,7 +19,7 @@ import java.util.List;
  * Can be converted to String via {@link com.github.vincemann.springrapid.coretest.util.RapidTestUtil#createExtensionsString(List, ApplicationContext)}
  * which can be added as url param for some endpoints like {@link GenericCrudController#findAll(HttpServletRequest, HttpServletResponse)}.
  *
- * Use {@link com.github.vincemann.springrapid.coretest.controller.template.AbstractCrudControllerTestTemplate#findAll(UrlExtension...)} and similar helper methods
+ * Use {@link CrudControllerTestTemplate#findAll(UrlExtension...)} and similar helper methods
  * to add extensions while testing, whenever possible.
  *
  * If not possible call {@link com.github.vincemann.springrapid.coretest.util.RapidTestUtil#addUrlExtensionsToRequest(ApplicationContext, MockHttpServletRequestBuilder, UrlExtension...)} to add

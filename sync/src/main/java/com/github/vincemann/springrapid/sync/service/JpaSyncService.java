@@ -9,12 +9,14 @@ import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
 import com.github.vincemann.springrapid.sync.repo.CustomAuditingRepository;
 import com.github.vincemann.springrapid.sync.repo.RapidCustomAuditingRepository;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.*;
@@ -26,29 +28,14 @@ public class JpaSyncService
                 E extends AuditingEntity<Id>,
                 Id extends Serializable,
                 R extends JpaRepository<E, Id>>
-        implements SyncService<E, Id> {
+        implements SyncService<E, Id> , InitializingBean {
 
     private IdConverter<Id> idConverter;
     // could not merge my custom repo with jpa repo for some reason, so custom repos are seperated
     // and everything that can be auto impl via jpaRepoInterface is subTypeRequirement for Repo generic type
     private CustomAuditingRepository<E,Id> auditingRepository;
     private AbstractCrudService<E,Id,R> crudService;
-
-    @Lazy
-    @Autowired
-    public void injectCrudService(AbstractCrudService<E, Id,R> crudService) {
-        this.crudService = crudService;
-    }
-
-    @Autowired
-    public void initAuditingRepository(EntityManager entityManager) {
-        this.auditingRepository= new RapidCustomAuditingRepository<>(entityManager,crudService.getEntityClass());
-    }
-
-    @Autowired
-    public void setIdConverter(IdConverter<Id> idConverter) {
-        this.idConverter = idConverter;
-    }
+    private EntityManager entityManager;
 
 
     @Transactional
@@ -108,5 +95,26 @@ public class JpaSyncService
                 .map(this::findEntitySyncStatus)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
+    }
+
+    @Lazy
+    @Autowired
+    public void injectCrudService(AbstractCrudService<E, Id,R> crudService) {
+        this.crudService = crudService;
+    }
+
+    @Autowired
+    public void injectEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
+    @Autowired
+    public void injectIdConverter(IdConverter<Id> idConverter) {
+        this.idConverter = idConverter;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.auditingRepository= new RapidCustomAuditingRepository<>(entityManager,crudService.getEntityClass());
     }
 }
