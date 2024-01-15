@@ -8,7 +8,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
-public interface EntitySortingStrategy<E extends IdentifiableEntity<?>> extends UrlExtension
+public interface EntitySortingStrategy<E extends IdentifiableEntity<?>> extends UrlExtension<E>
 {
     List<Order> getOrders(Root<? extends E> root, CriteriaBuilder cb);
 

@@ -95,7 +95,7 @@ public abstract class AbstractEntityController<E extends IdentifiableEntity<ID>,
      *     setAllowedExtensions(new ModuleParentFilter());
      * }
      */
-    protected void addAllowedExtensions(UrlExtension... extensions){
+    protected void addAllowedExtensions(UrlExtension<? super E>... extensions){
         this.extensions.addAll(Lists.newArrayList(extensions));
     }
 
@@ -104,7 +104,7 @@ public abstract class AbstractEntityController<E extends IdentifiableEntity<ID>,
      * i.E.:
      *  REQUEST URL: /api/core/...?filter=filter1:arg1:arg2,filter2,filter3:myarg&sort=sortById
      */
-    protected  <Ext extends UrlExtension> List<Ext> extractExtensions(HttpServletRequest request, String urlParamKey) throws BadEntityException {
+    protected  <Ext extends UrlExtension<? super E>> List<Ext> extractExtensions(HttpServletRequest request, String urlParamKey) throws BadEntityException {
         String extensionParam = request.getParameter(urlParamKey);
         List<Ext> result = new ArrayList<>();
 
@@ -115,7 +115,7 @@ public abstract class AbstractEntityController<E extends IdentifiableEntity<ID>,
                 try {
                     String[] extensionElements = extensionString.split(":");
                     String extensionName = extensionElements[0];
-                    List<Ext> matching = (List<Ext>) extensions.stream()
+                    List<Ext> matching = (List<Ext>) (Object) extensions.stream()
                             .filter(e -> e.getName().equals(extensionName))
                             .collect(Collectors.toList());
                     if (matching.isEmpty())

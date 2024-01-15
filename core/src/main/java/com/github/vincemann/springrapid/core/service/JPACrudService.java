@@ -162,8 +162,9 @@ public abstract class JPACrudService
             return result;
         Set<E> filtered = new HashSet<>();
         for (E entity : result) {
-            if (!isFilteredOut(filters,entity))
+            if (!isFilteredOut(filters,entity)){
                 filtered.add(entity);
+            }
         }
         return filtered;
     }
@@ -177,8 +178,6 @@ public abstract class JPACrudService
             if (log.isDebugEnabled())
                 log.debug("applying memory filter: " + filter.getClass().getSimpleName());
             if (!filter.match(entity)) {
-                if (log.isTraceEnabled())
-                    log.trace("entity: " + entity + " did not match filter: " + filter);
                 return true;
             }
         }
