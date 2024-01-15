@@ -24,7 +24,7 @@ public abstract class AclMvcIntegrationTest extends MvcIntegrationTest {
 
     /**
      * Call this before removing entities, so all references from acl cache to entities are gone
-     * otherwise you will get db-fk-contraint exceptions
+     * otherwise you will get db-fk-constraint exceptions
      */
     @AfterEach
     public void clearAclCache() {

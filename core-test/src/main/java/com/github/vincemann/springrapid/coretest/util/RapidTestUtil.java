@@ -1,13 +1,12 @@
 package com.github.vincemann.springrapid.coretest.util;
 
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
-import com.github.vincemann.springrapid.core.service.filter.ArgAware;
+import com.github.vincemann.springrapid.core.service.filter.UrlExtension;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
-import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
 import com.google.common.collect.Sets;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.context.ApplicationContext;
@@ -61,13 +60,15 @@ public class RapidTestUtil {
         return sb.toString();
     }
 
-    public static String createExtensionsString(List<UrlExtension> extensions, ApplicationContext applicationContext){
+    public static String createExtensionsString(List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> extensions, ApplicationContext applicationContext){
         StringBuilder sb = new StringBuilder();
         int filterCount = 0;
-        for (UrlExtension extension : extensions) {
+        for (com.github.vincemann.springrapid.coretest.controller.UrlExtension extension : extensions) {
             String[] beanNamesForType = applicationContext.getBeanNamesForType(extension.getExtensionType());
             Assertions.assertEquals(1,beanNamesForType.length,"no single bean found with type: " + extension.getExtensionType().getSimpleName() + ". Found beanNames: " + Arrays.toString(beanNamesForType));
-            sb.append(beanNamesForType[0]);
+            UrlExtension bean = (UrlExtension) applicationContext.getBean(beanNamesForType[0]);
+            Assertions.assertNotNull(bean);
+            sb.append(bean.getName());
             int count = 0;
             String[] args = extension.getArgs();
             for (String arg : args) {
@@ -82,10 +83,10 @@ public class RapidTestUtil {
         return sb.toString();
     }
 
-    public static void addUrlExtensionsToRequest(ApplicationContext applicationContext, MockHttpServletRequestBuilder requestBuilder, UrlExtension... extensions){
-        List<UrlExtension> queryFilters = findExtensionsOfSubType(Lists.newArrayList(extensions), QueryFilter.class);
-        List<UrlExtension> entityFilters = findExtensionsOfSubType(Lists.newArrayList(extensions), EntityFilter.class);
-        List<UrlExtension> sortingStrategies = findExtensionsOfSubType(Lists.newArrayList(extensions), EntitySortingStrategy.class);
+    public static void addUrlExtensionsToRequest(ApplicationContext applicationContext, MockHttpServletRequestBuilder requestBuilder, com.github.vincemann.springrapid.coretest.controller.UrlExtension... extensions){
+        List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> queryFilters = findExtensionsOfSubType(Lists.newArrayList(extensions), QueryFilter.class);
+        List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> entityFilters = findExtensionsOfSubType(Lists.newArrayList(extensions), EntityFilter.class);
+        List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> sortingStrategies = findExtensionsOfSubType(Lists.newArrayList(extensions), EntitySortingStrategy.class);
 
         Assertions.assertEquals(extensions.length,queryFilters.size()+entityFilters.size()+sortingStrategies.size());
 
@@ -101,7 +102,7 @@ public class RapidTestUtil {
     }
 
 
-    protected static List<UrlExtension> findExtensionsOfSubType(List<UrlExtension> extensions, Class<? extends ArgAware> type){
+    protected static List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> findExtensionsOfSubType(List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> extensions, Class<? extends UrlExtension> type){
         return extensions.stream().filter(e -> type.isAssignableFrom(e.getExtensionType())).collect(Collectors.toList());
     }
 

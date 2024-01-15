@@ -9,6 +9,8 @@ import com.github.vincemann.springrapid.coredemo.dto.owner.UpdateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.core.slicing.WebController;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
+import com.github.vincemann.springrapid.coredemo.service.filter.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @WebController
 public class OwnerController extends CrudController<Owner, Long, OwnerService> {
@@ -35,6 +37,12 @@ public class OwnerController extends CrudController<Owner, Long, OwnerService> {
                 .forEndpoint(getUpdateUrl(),Direction.RESPONSE,ReadOwnOwnerDto.class)
 
                 .build();
+    }
+
+
+    @Autowired
+    public void configureAllowedExtensions(CityPrefixFilter cityPrefixFilter, HasPetsFilter hasPetsFilter, OwnerTelNumberFilter ownerTelNumberFilter, PetNameEndsWithFilter parentFilter) {
+        addAllowedExtensions(cityPrefixFilter,hasPetsFilter,ownerTelNumberFilter,parentFilter);
     }
 
 }

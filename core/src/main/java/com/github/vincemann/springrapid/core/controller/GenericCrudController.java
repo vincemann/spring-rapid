@@ -12,23 +12,20 @@ import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLoc
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.filter.ArgAware;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
+import com.github.vincemann.springrapid.core.service.filter.UrlExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
+import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.http.HttpStatus;
@@ -83,19 +80,19 @@ public abstract class GenericCrudController
 
     public ResponseEntity<String> findAll(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, BadEntityException {
 
-        List<QueryFilter<E>> queryFilters = extractArgAwareExtension(request,QUERY_FILTER_URL_KEY);
-        List<EntityFilter<E>> filters = extractArgAwareExtension(request,ENTITY_FILTER_URL_KEY);
-        List<EntitySortingStrategy<E>> sortingStrategies = extractArgAwareExtension(request,ENTITY_SORTING_STRATEGY_URL_KEY);
+        List<QueryFilter<E>> queryFilters = extractExtensions(request,QUERY_FILTER_URL_KEY);
+        List<EntityFilter<E>> entityFilters = extractExtensions(request,ENTITY_FILTER_URL_KEY);
+        List<EntitySortingStrategy<E>> sortingStrategies = extractExtensions(request,ENTITY_SORTING_STRATEGY_URL_KEY);
 
-        beforeFindAll(request, response,filters,queryFilters);
+        beforeFindAll(request, response,entityFilters,queryFilters);
         logSecurityContext();
-        Set<E> foundEntities = serviceFindAll(queryFilters, filters,sortingStrategies);
+        Set<E> foundEntities = serviceFindAll(queryFilters, entityFilters,sortingStrategies);
         Collection<Object> dtos = new HashSet<>();
         for (E e : foundEntities) {
             dtos.add(dtoMapper.mapToDto(e,
                     createDtoClass(getFindAllUrl(), Direction.RESPONSE, e)));
         }
-        afterFindAll(dtos, foundEntities, request, response,filters, queryFilters);
+        afterFindAll(dtos, foundEntities, request, response,entityFilters, queryFilters);
         String json = jsonMapper.writeDto(dtos);
         return ok(json);
 
@@ -214,7 +211,6 @@ public abstract class GenericCrudController
         afterDelete(id, request, response);
         return okNoContent();
     }
-
 
     //              HELPERS
 

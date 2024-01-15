@@ -139,7 +139,7 @@ public class SyncEntityController<
         // what about default filters? rather integrate as ServiceExtensions?
         // what about JPQL where clause filters for performance or smth like that
         long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
-        List<QueryFilter<E>> filters = extractArgAwareExtension(request,QUERY_FILTER_URL_KEY);
+        List<QueryFilter<E>> filters = extractExtensions(request,QUERY_FILTER_URL_KEY);
         Set<EntitySyncStatus> syncStatuses = serviceFindUpdatesSinceTimestamp(new Timestamp(lastUpdateTimestamp),filters);
         if (syncStatuses.isEmpty())
             return ResponseEntity.noContent().build();

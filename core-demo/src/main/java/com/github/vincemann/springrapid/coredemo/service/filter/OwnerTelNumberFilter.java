@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.coredemo.service.filter;
 
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import org.springframework.stereotype.Component;
 
@@ -9,11 +10,16 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-@Component("telprefix")
+@ServiceComponent
 public class OwnerTelNumberFilter implements QueryFilter<Owner> {
 
 
     private String telNrPrefix;
+
+    @Override
+    public String getName() {
+        return "telprefix";
+    }
 
     @Override
     public void setArgs(String... args) throws BadEntityException {

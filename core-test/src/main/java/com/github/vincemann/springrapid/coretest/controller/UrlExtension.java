@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.coretest.controller;
 
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
-import com.github.vincemann.springrapid.core.service.filter.ArgAware;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
@@ -15,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * Represents either an {@link EntityFilter}, {@link QueryFilter} or {@link EntitySortingStrategy}.
+ * Represents either a container for {@link EntityFilter}, {@link QueryFilter} or {@link EntitySortingStrategy}.
  * Can be converted to String via {@link com.github.vincemann.springrapid.coretest.util.RapidTestUtil#createExtensionsString(List, ApplicationContext)}
  * which can be added as url param for some endpoints like {@link GenericCrudController#findAll(HttpServletRequest, HttpServletResponse)}.
  *
@@ -28,10 +27,10 @@ import java.util.List;
 @Getter
 public class UrlExtension {
 
-    Class<? extends ArgAware> extensionType;
+    Class<? extends com.github.vincemann.springrapid.core.service.filter.UrlExtension> extensionType;
     String[] args;
 
-    public UrlExtension(Class<? extends ArgAware> extensionType, String... args) {
+    public UrlExtension(Class<? extends com.github.vincemann.springrapid.core.service.filter.UrlExtension> extensionType, String... args) {
         this.extensionType = extensionType;
         this.args = args;
     }

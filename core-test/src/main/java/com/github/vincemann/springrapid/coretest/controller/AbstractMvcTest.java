@@ -36,15 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-/**
- * Base class for tests of {@link GenericCrudController}.
- * Use either implementations of
- *  {@link AutoMockServiceBeansIntegrationTest}
- * or
- *  {@link MvcIntegrationTest}
- * to test your {@link GenericCrudController}s.
- *
- */
 @Getter
 @AutoConfigureMockMvc
 @SpringBootTest

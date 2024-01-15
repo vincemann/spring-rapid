@@ -20,6 +20,11 @@ public abstract class ParentFilter implements QueryFilter<IdentifiableEntity<?>>
         this.parentName = parentName;
     }
 
+    @Override
+    public String getName() {
+        return "parent";
+    }
+
     @Autowired
     public void setIdConverter(IdConverter idConverter) {
         this.idConverter = idConverter;
