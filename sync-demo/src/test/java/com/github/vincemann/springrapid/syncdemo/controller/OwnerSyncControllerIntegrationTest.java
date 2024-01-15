@@ -32,7 +32,7 @@ import java.util.Set;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegrationTest{
+public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationTest {
 
 
     @Autowired

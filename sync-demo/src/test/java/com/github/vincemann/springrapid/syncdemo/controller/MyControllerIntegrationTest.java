@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class AbstractControllerIntegrationTest extends MvcIntegrationTest
+public class MyControllerIntegrationTest extends MvcIntegrationTest
 {
 
     //Types

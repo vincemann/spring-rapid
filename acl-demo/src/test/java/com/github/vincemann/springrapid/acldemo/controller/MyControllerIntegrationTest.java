@@ -21,8 +21,6 @@ import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.authtest.controller.template.UserControllerTestTemplate;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
-import com.github.vincemann.springrapid.coretest.controller.integration.MvcIntegrationTest;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +41,7 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.creat
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 // add admin before each test
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class MyAbstractIntegrationTest extends AclMvcIntegrationTest
+public class MyControllerIntegrationTest extends AclMvcIntegrationTest
 {
 
     //Types
