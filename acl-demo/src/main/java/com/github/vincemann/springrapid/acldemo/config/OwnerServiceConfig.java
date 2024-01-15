@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.acldemo.service.Root;
-import com.github.vincemann.springrapid.acldemo.service.extensions.UserGainsAdminPermissionAboutSavedContainedUserAclExtension;
+import com.github.vincemann.springrapid.acldemo.service.ext.UserGainsAdminPermissionAboutSavedContainedUserAclExtension;
 import com.github.vincemann.springrapid.auth.service.extension.UserGainsAdminPermissionAboutSelfAclExtension;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;

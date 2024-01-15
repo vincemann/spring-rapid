@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acldemo.service.extensions;
+package com.github.vincemann.springrapid.acldemo.service.ext;
 
 import com.github.vincemann.springrapid.acl.service.extensions.acl.AbstractAclExtension;
 import com.github.vincemann.springrapid.acldemo.model.User;

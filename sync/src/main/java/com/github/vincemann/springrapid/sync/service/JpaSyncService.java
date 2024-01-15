@@ -21,20 +21,17 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
+// todo could create JpaSyncCrudService - but I prefer composition over inheritance
+// maybe remove id param?
 
-public class JpaSyncService
-    // todo remove generic params that are not needed
-        <
-                E extends AuditingEntity<Id>,
-                Id extends Serializable,
-                R extends JpaRepository<E, Id>>
+public class JpaSyncService<E extends AuditingEntity<Id>, Id extends Serializable>
         implements SyncService<E, Id> , InitializingBean {
 
     private IdConverter<Id> idConverter;
     // could not merge my custom repo with jpa repo for some reason, so custom repos are seperated
     // and everything that can be auto impl via jpaRepoInterface is subTypeRequirement for Repo generic type
     private CustomAuditingRepository<E,Id> auditingRepository;
-    private AbstractCrudService<E,Id,R> crudService;
+    private AbstractCrudService<E,Id,?> crudService;
     private EntityManager entityManager;
 
 
@@ -89,7 +86,6 @@ public class JpaSyncService
     @Transactional
     @Override
     public Set<EntitySyncStatus> findEntitySyncStatuses(Collection<EntityLastUpdateInfo> lastUpdateInfos) {
-        // todo speed this up maybe
         // maybe add parallel flag ?
         return lastUpdateInfos.stream()
                 .map(this::findEntitySyncStatus)
@@ -99,7 +95,7 @@ public class JpaSyncService
 
     @Lazy
     @Autowired
-    public void injectCrudService(AbstractCrudService<E, Id,R> crudService) {
+    public void injectCrudService(AbstractCrudService<E, Id,?> crudService) {
         this.crudService = crudService;
     }
 

@@ -86,7 +86,7 @@ public abstract class AbstractMvcTest extends InitializingTest implements Initia
 
 
     /**
-     * perform and deserialize result to dtoClass
+     * perform, expect 2xx and deserialize result to dtoClass
      */
     public <Dto> Dto performDs2xx(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
        return performDsWithStatus(requestBuilder,status().is2xxSuccessful(),dtoClass);
@@ -97,9 +97,6 @@ public abstract class AbstractMvcTest extends InitializingTest implements Initia
                 .andExpect(status)
                 .andReturn().getResponse().getContentAsString(),dtoClass);
     }
-
-
-
 
 
     public  <Dto> Dto deserialize(String s, Class<Dto> dtoClass) throws IOException {

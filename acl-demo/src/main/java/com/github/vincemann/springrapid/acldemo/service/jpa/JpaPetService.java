@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.repo.PetRepository;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
 import com.github.vincemann.springrapid.acldemo.service.Root;
-import com.github.vincemann.springrapid.acldemo.service.extensions.OwnerCanOnlySaveOwnPetsSecurityExtension;
+import com.github.vincemann.springrapid.acldemo.service.ext.OwnerCanOnlySaveOwnPetsSecurityExtension;
 import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
 import com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy;
 import com.github.vincemann.springrapid.core.service.JPACrudService;

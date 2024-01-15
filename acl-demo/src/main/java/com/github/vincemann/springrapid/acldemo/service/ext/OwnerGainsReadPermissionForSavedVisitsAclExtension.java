@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acldemo.service.extensions;
+package com.github.vincemann.springrapid.acldemo.service.ext;
 
 import com.github.vincemann.springrapid.acl.service.extensions.acl.AbstractAclExtension;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
@@ -9,8 +9,6 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.acls.domain.BasePermission;
 
 @ServiceComponent

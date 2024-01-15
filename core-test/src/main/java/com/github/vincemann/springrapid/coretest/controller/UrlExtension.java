@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * Represents either a container for {@link EntityFilter}, {@link QueryFilter} or {@link EntitySortingStrategy}.
+ * Represents a container for either {@link EntityFilter}, {@link QueryFilter} or {@link EntitySortingStrategy}.
  * Can be converted to String via {@link com.github.vincemann.springrapid.coretest.util.RapidTestUtil#createExtensionsString(List, ApplicationContext)}
  * which can be added as url param for some endpoints like {@link GenericCrudController#findAll(HttpServletRequest, HttpServletResponse)}.
  *
