@@ -1,5 +1,5 @@
 # Overview  
-Helper library that aims to speed up development of relatively simple projects, by providing full solutions for  
+Helper library for spring boot projects, that aims to speed up development of relatively simple projects, by providing full solutions for  
 crud, acl, auth, sync, bidir relationship management.   
 It's easiest to take a quick look at the demo projects and their tests.  
   
