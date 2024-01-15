@@ -75,10 +75,9 @@ public class CrudAclChecksSecurityExtension
 
     @Override
     public Set findAll() {
-        // todo maybe replace with access denied exception if no read permission for at least one
-        // also add filter that filters out the ones I have read permission for?
         Set<IdentifiableEntity> entities = getNext().findAll();
-        return getSecurityChecker().filter(entities,BasePermission.READ);
+        entities.stream().forEach(entity -> getSecurityChecker().checkPermission(entity,BasePermission.READ));
+        return entities;
     }
 
     @Override

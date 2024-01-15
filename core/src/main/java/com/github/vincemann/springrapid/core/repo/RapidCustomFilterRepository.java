@@ -17,8 +17,6 @@ public class RapidCustomFilterRepository<E extends IdentifiableEntity<?>>
         extends AbstractRapidCustomRepository<E>
         implements CustomFilterRepository<E> {
 
-
-
     private Class<E> entityClass;
     private EntityManager entityManager;
 
@@ -29,7 +27,7 @@ public class RapidCustomFilterRepository<E extends IdentifiableEntity<?>>
     }
 
     @Override
-    public List<E> findAll(List<QueryFilter<E>> filters, List<EntitySortingStrategy<E>> sortingStrategies) {
+    public List<E> findAll(List<QueryFilter<? super E>> filters, List<EntitySortingStrategy<? super E>> sortingStrategies) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<E> cq = cb.createQuery(entityClass);
         Root<E> root = cq.from(entityClass);

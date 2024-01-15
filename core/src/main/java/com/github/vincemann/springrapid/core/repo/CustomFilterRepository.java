@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface CustomFilterRepository<E extends IdentifiableEntity<?>> {
 
-    List<E> findAll(List<QueryFilter<E>> filters, List<EntitySortingStrategy<E>> sortingStrategies);
+    List<E> findAll(List<QueryFilter<? super E>> filters, List<EntitySortingStrategy<? super E>> sortingStrategies);
 }

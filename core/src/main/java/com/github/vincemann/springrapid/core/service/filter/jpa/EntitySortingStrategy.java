@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface EntitySortingStrategy<E extends IdentifiableEntity<?>> extends UrlExtension
 {
-    List<Order> getOrders(Root<E> root, CriteriaBuilder cb);
+    List<Order> getOrders(Root<? extends E> root, CriteriaBuilder cb);
 
 
 }

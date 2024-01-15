@@ -12,5 +12,5 @@ import javax.persistence.criteria.*;
 // would need abstraction like QueryContext with default impl JpaQueryContext and this class must not depend on CriteriaBuilder
 public interface QueryFilter<E extends IdentifiableEntity<?>> extends UrlExtension {
 
-    public Predicate getPredicate(CriteriaBuilder cb, Root<E> root);
+    public Predicate getPredicate(CriteriaBuilder cb, Root<? extends E> root);
 }

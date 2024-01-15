@@ -12,18 +12,29 @@ import javax.persistence.criteria.Root;
 // alternative to ParentAwareController
 public abstract class ParentFilter implements QueryFilter<IdentifiableEntity<?>> {
 
-    private String parentName;
-    private String parentId;
+    protected String parentName;
+//    protected Class<? extends IdentifiableEntity<?>> parentClass;
+    protected String parentId;
     private IdConverter idConverter;
 
-    public ParentFilter(String parentName) {
+    public ParentFilter(String parentName/*, Class<? extends IdentifiableEntity<?>> parentClass*/) {
         this.parentName = parentName;
+        // only needed when checking acl stuff on parent and I just check the result set for read permission
+//        this.parentClass = parentClass;
     }
 
     @Override
     public String getName() {
         return "parent";
     }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+//    public Class<? extends IdentifiableEntity<?>> getParentClass() {
+//        return parentClass;
+//    }
 
     @Autowired
     public void setIdConverter(IdConverter idConverter) {
@@ -42,7 +53,7 @@ public abstract class ParentFilter implements QueryFilter<IdentifiableEntity<?>>
     }
 
     @Override
-    public Predicate getPredicate(CriteriaBuilder cb, Root<IdentifiableEntity<?>> root) {
+    public Predicate getPredicate(CriteriaBuilder cb, Root<? extends IdentifiableEntity<?>> root) {
         return cb.equal(root.join(parentName).get("id"), idConverter.toId(parentId));
     }
 }

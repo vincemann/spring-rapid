@@ -151,12 +151,13 @@ public abstract class JPACrudService
      */
     @Transactional
     @Override
-    public Set<E> findAll(List<QueryFilter<E>> jpqlFilters, List<EntityFilter<E>> filters, List<EntitySortingStrategy<E>> sortingStrategies) {
+    public Set<E> findAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> filters, List<EntitySortingStrategy<? super E>> sortingStrategies) {
         return applyMemoryFilters(new HashSet<>(getFilterRepository().findAll(jpqlFilters,sortingStrategies)), filters);
     }
 
-
-    protected Set<E> applyMemoryFilters(Set<E> result, List<EntityFilter<E>> filters) {
+    protected Set<E> applyMemoryFilters(Set<E> result, List<EntityFilter<? super E>> filters) {
+        if (filters == null)
+            return result;
         if (filters.isEmpty())
             return result;
         Set<E> filtered = new HashSet<>();
@@ -171,8 +172,8 @@ public abstract class JPACrudService
      * @return true if entity is filtered out -> not part of result set
      *         false if entity matches all filters -> is part of result set
      */
-    protected boolean isFilteredOut(List<EntityFilter<E>> filters, E entity){
-        for (EntityFilter<E> filter : filters) {
+    protected boolean isFilteredOut(List<EntityFilter<? super E>> filters, E entity){
+        for (EntityFilter<? super E> filter : filters) {
             if (log.isDebugEnabled())
                 log.debug("applying memory filter: " + filter.getClass().getSimpleName());
             if (!filter.match(entity)) {

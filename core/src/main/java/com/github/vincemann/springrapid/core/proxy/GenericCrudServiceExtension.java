@@ -37,7 +37,7 @@ public interface GenericCrudServiceExtension
     }
 
     @Override
-    default Set<E> findAll(List<QueryFilter<E>> jpqlFilters, List<EntityFilter<E>> entityFilters, List<EntitySortingStrategy<E>> sortingStrategies){
+    default Set<E> findAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> entityFilters, List<EntitySortingStrategy<? super E>> sortingStrategies){
         return getNext().findAll(jpqlFilters,entityFilters,sortingStrategies);
     }
 

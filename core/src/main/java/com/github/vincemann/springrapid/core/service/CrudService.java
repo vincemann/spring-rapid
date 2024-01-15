@@ -11,9 +11,11 @@ import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import com.github.vincemann.springrapid.core.util.Lists;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -66,17 +68,39 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
         E save(E entity) throws BadEntityException;
 
         @Transactional
-        Set<E> findAll();
+        Set<E> findSome(Set<Id> ids);
 
         @Transactional
-        Set<E> findSome(Set<Id> ids);
+        Set<E> findAll();
 
         // can always add own find methods using jpql or native sql to fetch entities instead of using this
         @Transactional
-        Set<E> findAll(List<QueryFilter<E>> jpqlFilters, List<EntityFilter<E>> filters, List<EntitySortingStrategy<E>> sortingStrategies);
+        Set<E> findAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> filters, List<EntitySortingStrategy<? super E>> sortingStrategies);
 
+        @Transactional
+        default Set<E> findAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> filters){
+                return findAll(jpqlFilters,filters,new ArrayList<>());
+        }
 
+        @Transactional
+        default Set<E> findAll(List<QueryFilter<? super E>> jpqlFilters){
+                return findAll(jpqlFilters,new ArrayList<>(),new ArrayList<>());
+        }
 
+        @Transactional
+        default Set<E> findAll(QueryFilter<? super E>... jpqlFilters){
+                return findAll(Lists.newArrayList(jpqlFilters),new ArrayList<>(),new ArrayList<>());
+        }
+
+        @Transactional
+        default Set<E> findAll(EntitySortingStrategy<? super E>... sortingStrategies){
+                return findAll(new ArrayList<>(),new ArrayList<>(),Lists.newArrayList(sortingStrategies));
+        }
+
+        @Transactional
+        default Set<E> findAll(EntityFilter<? super E>... entityFilters){
+                return findAll(new ArrayList<>(),Lists.newArrayList(entityFilters),new ArrayList<>());
+        }
 
 
         @Transactional
