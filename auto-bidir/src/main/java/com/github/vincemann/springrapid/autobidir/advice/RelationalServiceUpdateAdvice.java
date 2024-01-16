@@ -142,6 +142,9 @@ public class RelationalServiceUpdateAdvice {
         IdentifiableEntity detachedOldEntity = ReflectionUtils.createInstance(ProxyUtils.getTargetClass(updateEntity));
         Set<String> whiteList = new HashSet<>(collectionsToUpdate);
         whiteList.addAll(Arrays.asList(fieldsToRemove));
+        if (whiteList.isEmpty()){
+            whiteList = ReflectionUtils.findAllNonNullFieldNames(updateEntity);
+        }
         // expects all collections to be initialized and not of Persistent Type
         NullAwareBeanUtils.copyProperties(detachedOldEntity,old,whiteList);
 
