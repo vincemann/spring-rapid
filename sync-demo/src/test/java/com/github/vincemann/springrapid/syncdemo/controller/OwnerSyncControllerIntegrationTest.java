@@ -496,7 +496,7 @@ public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationT
         Assertions.assertEquals(1,updatedPets.size());
         unlinkBello.setPets(updatedPets);
 
-        Owner updatedOwner = ownerService.partialUpdate(unlinkBello,Sets.newHashSet("pets"));
+        Owner updatedOwner = ownerService.partialUpdate(unlinkBello,"pets");
 
         assertOwnerHasPets(KAHN,KITTY);
         assertPetHasOwner(BELLO,null);
@@ -555,7 +555,7 @@ public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationT
         Owner unlinkPets = Entity.createUpdate(owner);
         unlinkPets.setPets(new HashSet<>());
 
-        Owner updatedOwner = ownerService.partialUpdate(unlinkPets,Sets.newHashSet("pets"));
+        Owner updatedOwner = ownerService.partialUpdate(unlinkPets,"pets");
 
         assertOwnerHasPets(KAHN);
         assertPetHasOwner(BELLO,null);
@@ -601,7 +601,7 @@ public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationT
         updatedHobbies.remove(bodybuilding);
         removeHobby.setHobbies(updatedHobbies);
 
-        Owner updatedOwner = ownerService.partialUpdate(removeHobby,Sets.newHashSet("hobbies"));
+        Owner updatedOwner = ownerService.partialUpdate(removeHobby,"hobbies");
 
 
         // has changed
@@ -649,7 +649,7 @@ public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationT
         updatedHobbies.remove(bodybuilding);
         removeHobby.setHobbies(updatedHobbies);
 
-        Owner updatedOwner = ownerService.partialUpdate(removeHobby,Sets.newHashSet("hobbies"));
+        Owner updatedOwner = ownerService.partialUpdate(removeHobby,"hobbies");
 
 
         // has changed

@@ -55,7 +55,7 @@ public class MyControllerIntegrationTest extends AclMvcIntegrationTest
 
     protected static final String CONTACT_INFORMATION_SUFFIX = "@guerilla-mail.com";
 
-    // admin created via AdminInitializer, see config
+    // admin created via AdminInitializer before each test, see config
     protected static final String ADMIN = "admin";
     protected static final String ADMIN_PASSWORD = "AdminPassword123!";
     protected static final String ADMIN_CONTACT_INFORMATION = "admin@example.com";
