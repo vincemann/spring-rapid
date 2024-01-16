@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -24,6 +25,7 @@ import java.util.Date;
   */
 @MappedSuperclass
 @Getter @Setter
+@NoArgsConstructor
 @JsonIgnoreProperties({ "createdById", "lastModifiedById", "createdDate", "lastModifiedDate", "new" })
 @EntityListeners(AuditingEntityListener.class)
 public class AuditingEntity<ID extends Serializable>

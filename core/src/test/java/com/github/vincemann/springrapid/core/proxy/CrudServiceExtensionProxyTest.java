@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.core.proxy;
 
-import com.github.vincemann.springrapid.core.repo.RapidJpaRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
@@ -37,7 +36,7 @@ class CrudServiceExtensionProxyTest {
         public void noExtensionKnowsMe();
     }
 
-    class ServiceImpl extends JPACrudService<Entity, Long, RapidJpaRepository<Entity, Long>>
+    class ServiceImpl extends JPACrudService<Entity, Long, JpaRepository<Entity, Long>>
             implements Service, TargetClassAware {
 
         @Override

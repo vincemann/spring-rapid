@@ -11,6 +11,7 @@ import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
 import com.github.vincemann.springrapid.sync.repo.AuditingRepository;
 import com.github.vincemann.springrapid.sync.repo.RapidAuditingRepository;
+import lombok.Getter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -24,16 +25,20 @@ import java.util.stream.Collectors;
 // todo could create JpaSyncCrudService - but I prefer composition over inheritance
 // maybe remove id param?
 
-public class JpaSyncService<E extends AuditingEntity<Id>, Id extends Serializable>
+
+public abstract class JpaSyncService<E extends AuditingEntity<Id>, Id extends Serializable>
         implements SyncService<E, Id> , InitializingBean {
 
-    private IdConverter<Id> idConverter;
+    protected IdConverter<Id> idConverter;
     // could not merge my custom repo with jpa repo for some reason, so custom repos are seperated
     // and everything that can be auto impl via jpaRepoInterface is subTypeRequirement for Repo generic type
-    private AuditingRepository<E,Id> auditingRepository;
-    private AbstractCrudService<E,Id,?> crudService;
-    private EntityManager entityManager;
+    protected AuditingRepository<E,Id> auditingRepository;
+    protected AbstractCrudService<E,Id,?> crudService;
+    protected EntityManager entityManager;
 
+    public JpaSyncService() {
+
+    }
 
     @Transactional
     @Override

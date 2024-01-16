@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.criteria.internal.path.RootImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -72,7 +73,7 @@ public class FilterUtils {
 //            cq.where(filters.stream().map(f -> f.getPredicate(cb,root)).toArray(Predicate[]::new));
 //    }
 //
-//    default void applySortingStrategies(CriteriaQuery<E> cq, Root<E> root, CriteriaBuilder cb, List<EntitySortingStrategy<? super E>> sortingStrategies){
+//    default void applySortingStrategies(CriteriaQuery<E> cq, Root<E> root, CriteriaBuilder cb, List<EntitySortingStrategy> sortingStrategies){
 //        if (sortingStrategies == null)
 //            return;
 //        if (!sortingStrategies.isEmpty()){
@@ -109,10 +110,10 @@ public class FilterUtils {
 
 
     public static <E> Specification<E> toSpecification(List<QueryFilter<? super E>> filters) {
-        return (Root<? super E> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
+        return (Root<E> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
             Predicate combinedPredicate = null;
 
-            for (QueryFilter<? super E> filter : filters) {
+            for (QueryFilter filter : filters) {
                 if (filter != null) {
                     Predicate predicate = filter.toPredicate(root, query, builder);
                     combinedPredicate = combinedPredicate == null ? predicate : builder.and(combinedPredicate, predicate);

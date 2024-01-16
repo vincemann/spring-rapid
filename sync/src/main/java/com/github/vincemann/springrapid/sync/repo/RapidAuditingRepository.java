@@ -23,18 +23,19 @@ import java.util.List;
 import static com.github.vincemann.springrapid.core.util.FilterUtils.*;
 
 public class RapidAuditingRepository<E extends AuditingEntity<Id>,Id extends Serializable>
+    extends SimpleJpaRepository<E,Id>
         implements AuditingRepository<E,Id> {
 
     protected EntityManager entityManager;
     protected Class<E> entityClass;
 
-    protected SimpleJpaRepository<E,Id> repo;
+//    protected SimpleJpaRepository<E,Id> repo;
 
-    public RapidAuditingRepository(EntityManager entityManager, Class<E> entityClass, SimpleJpaRepository<E,Id> repo) {
-//        super(entityClass,entityManager);
+    public RapidAuditingRepository(EntityManager entityManager, Class<E> entityClass/*, SimpleJpaRepository<E,Id> repo*/) {
+        super(entityClass,entityManager);
         this.entityManager = entityManager;
         this.entityClass = entityClass;
-        this.repo = repo;
+//        this.repo = repo;
     }
 
     @Override
@@ -79,7 +80,7 @@ public class RapidAuditingRepository<E extends AuditingEntity<Id>,Id extends Ser
         Specification<E> spec = toSpecification(filters);
         spec.and(new UpdatedSince<>(since));
 
-        return repo.findAll(spec);
+        return super.findAll(spec);
 
 //        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 //        CriteriaQuery<E> cq = cb.createQuery(entityClass);
@@ -171,6 +172,7 @@ public class RapidAuditingRepository<E extends AuditingEntity<Id>,Id extends Ser
 
 
 
+    // add spec in where clause
     protected  <S, U extends E> Root<U> applySpecificationToCriteria(@Nullable Specification<U> spec, Class<U> domainClass,
                                                                   CriteriaQuery<S> query) {
 

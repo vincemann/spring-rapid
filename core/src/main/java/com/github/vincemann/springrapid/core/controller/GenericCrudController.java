@@ -82,7 +82,7 @@ public abstract class GenericCrudController
 
         List<QueryFilter<? super E>> queryFilters = extractExtensions(request,QUERY_FILTER_URL_KEY);
         List<EntityFilter<? super E>> entityFilters = extractExtensions(request,ENTITY_FILTER_URL_KEY);
-        List<EntitySortingStrategy<? super E>> sortingStrategies = extractExtensions(request,ENTITY_SORTING_STRATEGY_URL_KEY);
+        List<EntitySortingStrategy> sortingStrategies = extractExtensions(request,ENTITY_SORTING_STRATEGY_URL_KEY);
 
         beforeFindAll(request, response,entityFilters,queryFilters,sortingStrategies);
         logSecurityContext();
@@ -489,7 +489,7 @@ public abstract class GenericCrudController
         return service.findAll();
     }
 
-    protected Set<E> serviceFindAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> filters, List<EntitySortingStrategy<? super E>> sortingStrategies) {
+    protected Set<E> serviceFindAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> filters, List<EntitySortingStrategy> sortingStrategies) {
         if (filters.isEmpty() && jpqlFilters.isEmpty() && sortingStrategies.isEmpty())
             return service.findAll();
         else
@@ -524,7 +524,7 @@ public abstract class GenericCrudController
     public void beforeFind(ID id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void beforeFindAll(HttpServletRequest httpServletRequest, HttpServletResponse response, List<EntityFilter<? super E>> filters, List<QueryFilter<? super E>> jpqlFilters, List<EntitySortingStrategy<? super E>> sortingStrategies) {
+    public void beforeFindAll(HttpServletRequest httpServletRequest, HttpServletResponse response, List<EntityFilter<? super E>> filters, List<QueryFilter<? super E>> jpqlFilters, List<EntitySortingStrategy> sortingStrategies) {
     }
 
     public void beforeFindSome(Set<ID> ids, HttpServletRequest httpServletRequest, HttpServletResponse response) {
@@ -543,7 +543,7 @@ public abstract class GenericCrudController
     public void afterFind(ID id, Object dto, Optional<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void afterFindAll(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response, List<EntityFilter<? super E>> filters, List<QueryFilter<? super E>> jpqlFilters, List<EntitySortingStrategy<? super E>> sortingStrategies) {
+    public void afterFindAll(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response, List<EntityFilter<? super E>> filters, List<QueryFilter<? super E>> jpqlFilters, List<EntitySortingStrategy> sortingStrategies) {
     }
 
     public void afterFindSome(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
