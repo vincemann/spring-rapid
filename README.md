@@ -1,7 +1,7 @@
 # Overview  
-Some abstractions I use for spring developement for stuff like crud,auth,acl - structured into maven modules.    
-Adds a common layer on top of spring that match most simple project requirements to allow for faster development.  
-It's easiest to take a quick look at the demo projects.  
+Helper library for spring boot projects, that aims to speed up development of relatively simple projects, by providing full solutions for  
+crud, acl, auth, sync, bidir relationship management.   
+It's easiest to take a quick look at the demo projects and their tests.  
   
 Note:  
 Inspired by [**spring-lemon**](https://github.com/naturalprogrammer/spring-lemon) which offer many good modules.  
@@ -11,8 +11,10 @@ Most of them were copied, modified and integrated into this project.
 * crud  
 * bidirectional relationship management                                                                                                                          
 * dto mapping with id resolving                                                                         
-* acl             
+* acl
 * authentication (jwt)
+* filter & sorting API
+* sync  
   
 # Requirements  
 jdk: version 11.0.18 (default version for java 11)   
