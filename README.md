@@ -47,7 +47,7 @@ you can also run auth-demo's tests seperate via:
 </dependency>  
 ```  
   
-# crud example  
+# Crud Example  
 ## Controller    
   
 ```java  
