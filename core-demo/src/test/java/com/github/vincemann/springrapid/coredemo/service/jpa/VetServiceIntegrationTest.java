@@ -160,7 +160,7 @@ public class VetServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
                 .specialtys(new HashSet<>(Lists.newArrayList(savedGastro, savedHeart)))
                 .build();
         kahnUpdate.setId(savedKahn.getId());
-        test(partialUpdate(kahnUpdate, Sets.newHashSet("specialtys")));
+        test(partialUpdate(kahnUpdate, "specialtys"));
 
         assertVetHasSpecialties(MEIER, GASTRO, DENTISM);
         assertVetHasSpecialties(KAHN, GASTRO, HEART);

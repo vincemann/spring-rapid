@@ -37,20 +37,13 @@ public class CrudServiceRequestBuilders {
 
 
 
-    public static ServiceRequestBuilder partialUpdate(IdentifiableEntity updateEntity,Boolean exceptionWanted,String... fieldsToRemove) {
-        return createBuilder("partialUpdate", Lists.newArrayList(updateEntity,fieldsToRemove),exceptionWanted, IdentifiableEntity.class, String[].class);
+    public static ServiceRequestBuilder partialUpdate(IdentifiableEntity updateEntity,Boolean exceptionWanted,String... fieldsToUpdate) {
+        return createBuilder("partialUpdate", Lists.newArrayList(updateEntity,fieldsToUpdate),exceptionWanted, IdentifiableEntity.class, String[].class);
     }
 
-    public static ServiceRequestBuilder partialUpdate(IdentifiableEntity updateEntity,Set<String> collectionsToUpdate, Boolean exceptionWanted,String... fieldsToRemove) {
-        return createBuilder("partialUpdate", Lists.newArrayList(updateEntity,collectionsToUpdate,fieldsToRemove),exceptionWanted, IdentifiableEntity.class, Set.class, String[].class);
-    }
 
-    public static ServiceRequestBuilder partialUpdate(IdentifiableEntity updateEntity,String... fieldsToRemove) {
-        return partialUpdate(updateEntity,false,fieldsToRemove);
-    }
-
-    public static ServiceRequestBuilder partialUpdate(IdentifiableEntity updateEntity, Set<String> collectionsToUpdate, String... fieldsToRemove) {
-        return partialUpdate(updateEntity,collectionsToUpdate,false,fieldsToRemove);
+    public static ServiceRequestBuilder partialUpdate(IdentifiableEntity updateEntity, String... fieldsToUpdate) {
+        return partialUpdate(updateEntity,false,fieldsToUpdate);
     }
 
 
