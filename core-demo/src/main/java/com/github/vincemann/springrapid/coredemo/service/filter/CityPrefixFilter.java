@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -31,7 +32,8 @@ public class CityPrefixFilter implements QueryFilter<Owner> {
     }
 
     @Override
-    public Predicate getPredicate(CriteriaBuilder cb, Root<? extends Owner> root) {
+    public Predicate toPredicate(Root<Owner> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         return cb.like(root.get("city"), cityPrefix + "%");
     }
+
 }

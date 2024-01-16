@@ -26,7 +26,7 @@ public class PetController extends CrudController<Pet, Long, PetService> {
 
 
     @Autowired
-    public void configureAllowedExtensions(PetsOfOwnerFilter petsOfOwnerFilter) {
+    public void configureAllowedExtensions(PetsParentFilter petsOfOwnerFilter) {
         addAllowedExtensions(petsOfOwnerFilter);
     }
 }

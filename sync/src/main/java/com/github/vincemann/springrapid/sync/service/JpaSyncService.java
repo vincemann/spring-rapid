@@ -9,8 +9,8 @@ import com.github.vincemann.springrapid.core.util.FilterUtils;
 import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
-import com.github.vincemann.springrapid.sync.repo.CustomAuditingRepository;
-import com.github.vincemann.springrapid.sync.repo.RapidCustomAuditingRepository;
+import com.github.vincemann.springrapid.sync.repo.AuditingRepository;
+import com.github.vincemann.springrapid.sync.repo.RapidAuditingRepository;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -30,7 +30,7 @@ public class JpaSyncService<E extends AuditingEntity<Id>, Id extends Serializabl
     private IdConverter<Id> idConverter;
     // could not merge my custom repo with jpa repo for some reason, so custom repos are seperated
     // and everything that can be auto impl via jpaRepoInterface is subTypeRequirement for Repo generic type
-    private CustomAuditingRepository<E,Id> auditingRepository;
+    private AuditingRepository<E,Id> auditingRepository;
     private AbstractCrudService<E,Id,?> crudService;
     private EntityManager entityManager;
 
@@ -132,6 +132,6 @@ public class JpaSyncService<E extends AuditingEntity<Id>, Id extends Serializabl
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        this.auditingRepository= new RapidCustomAuditingRepository<>(entityManager,crudService.getEntityClass());
+        this.auditingRepository= new RapidAuditingRepository<>(entityManager,crudService.getEntityClass());
     }
 }

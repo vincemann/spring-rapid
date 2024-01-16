@@ -2,8 +2,16 @@ package com.github.vincemann.springrapid.core.util;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
+import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -55,4 +63,89 @@ public class FilterUtils {
         }
         return false;
     }
+
+
+//    default void applyFilters(CriteriaQuery<E> cq, Root<E> root, CriteriaBuilder cb, List<QueryFilter<? super E>> filters) {
+//        if (filters == null)
+//            return;
+//        if (!filters.isEmpty())
+//            cq.where(filters.stream().map(f -> f.getPredicate(cb,root)).toArray(Predicate[]::new));
+//    }
+//
+//    default void applySortingStrategies(CriteriaQuery<E> cq, Root<E> root, CriteriaBuilder cb, List<EntitySortingStrategy<? super E>> sortingStrategies){
+//        if (sortingStrategies == null)
+//            return;
+//        if (!sortingStrategies.isEmpty()){
+//            for (EntitySortingStrategy sortingStrategy : sortingStrategies) {
+//                cq.orderBy(sortingStrategy.getSort);
+//            }
+//        }
+////            cq.orderBy(sortingStrategies.stream().map(f -> f.getOrders(root,cb)).collect(Collectors.toList()));
+//    }
+
+//    static final class FilterSpecification<T> implements Specification<T> {
+//
+//        private QueryFilter<? super T> filter;
+//
+//        public FilterSpecification(QueryFilter<? super T> filter) {
+//            this.filter = filter;
+//        }
+//
+//        @Override
+//        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+//            return filter.getPredicate(cb,root);
+//        }
+//    }
+
+    public static Sort sorted(List<EntitySortingStrategy> sortingStrategies){
+        if (sortingStrategies.isEmpty())
+            return null;
+        Sort sort = sortingStrategies.get(0).getSort();
+        for (EntitySortingStrategy sortingStrategy : sortingStrategies) {
+            sort = sort.and(sortingStrategy.getSort());
+        }
+        return sort;
+    }
+
+
+    public static <E> Specification<E> toSpecification(List<QueryFilter<? super E>> filters) {
+        return (Root<? super E> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
+            Predicate combinedPredicate = null;
+
+            for (QueryFilter<? super E> filter : filters) {
+                if (filter != null) {
+                    Predicate predicate = filter.toPredicate(root, query, builder);
+                    combinedPredicate = combinedPredicate == null ? predicate : builder.and(combinedPredicate, predicate);
+                }
+            }
+
+            return combinedPredicate;
+        };
+    }
+
+    public static <T> Specification<T> mergeSpecifications(List<? extends Specification<T>> specs) {
+        return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
+            Predicate combinedPredicate = null;
+
+            for (Specification<T> spec : specs) {
+                if (spec != null) {
+                    Predicate predicate = spec.toPredicate(root, query, builder);
+                    combinedPredicate = combinedPredicate == null ? predicate : builder.and(combinedPredicate, predicate);
+                }
+            }
+
+            return combinedPredicate;
+        };
+    }
+
+//    // returns specification with all filters
+//    public static <T> Specification<T> filtered(List<QueryFilter<? super T>> filters) {
+//        if (filters.isEmpty())
+//            return null;
+//        Specification<T> specification = Specification.where(new FilterSpecification<T>(filters.get(0)));
+//        for (QueryFilter<? super T> filter : filters) {
+//            specification = specification.and(new FilterSpecification<>(filter));
+//        }
+//        return specification;
+//    }
 }

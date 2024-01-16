@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -53,7 +54,8 @@ public abstract class ParentFilter implements QueryFilter<IdentifiableEntity<?>>
     }
 
     @Override
-    public Predicate getPredicate(CriteriaBuilder cb, Root<? extends IdentifiableEntity<?>> root) {
+    public Predicate toPredicate(Root<IdentifiableEntity<?>> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         return cb.equal(root.join(parentName).get("id"), idConverter.toId(parentId));
     }
+
 }

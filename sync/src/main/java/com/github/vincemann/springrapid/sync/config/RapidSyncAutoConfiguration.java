@@ -1,16 +1,11 @@
 package com.github.vincemann.springrapid.sync.config;
 
-import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import com.github.vincemann.springrapid.sync.controller.EntitySyncStatusSerializer;
 import com.github.vincemann.springrapid.sync.controller.EntitySyncStatusSerializerImpl;
-import com.github.vincemann.springrapid.sync.repo.CustomAuditingRepository;
-import com.github.vincemann.springrapid.sync.repo.RapidCustomAuditingRepository;
 import com.github.vincemann.springrapid.sync.service.AuditCollectionsExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-
-import javax.persistence.EntityManager;
 
 @ServiceConfig
 public class RapidSyncAutoConfiguration {

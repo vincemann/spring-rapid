@@ -12,10 +12,16 @@ import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static com.github.vincemann.springrapid.core.util.FilterUtils.*;
 
 
 /**
@@ -33,7 +39,8 @@ public abstract class JPACrudService
                 Id extends Serializable,
                 R extends JpaRepository<E, Id>
                 >
-        extends AbstractCrudService<E, Id, R> {
+        extends AbstractCrudService<E, Id, R>
+{
 
 
     public JPACrudService() {
@@ -148,10 +155,14 @@ public abstract class JPACrudService
      */
     @Transactional
     @Override
-    public Set<E> findAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> filters, List<EntitySortingStrategy<? super E>> sortingStrategies) {
-        return FilterUtils.applyMemoryFilters(
-                new HashSet<>(getFilterRepository().findAll(jpqlFilters,sortingStrategies)),
-                filters);
+    public Set<E> findAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> filters, List<EntitySortingStrategy> sortingStrategies) {
+        Set<E> result;
+        if (sortingStrategies.isEmpty())
+             result = new HashSet<>(((SimpleJpaRepository<E,Id>) getRepository()).findAll(toSpecification(jpqlFilters)));
+        else
+            result = new HashSet<>(((SimpleJpaRepository<E,Id>) getRepository()).findAll(toSpecification(jpqlFilters),sorted(sortingStrategies)));
+
+        return FilterUtils.applyMemoryFilters(result, filters);
     }
 
 

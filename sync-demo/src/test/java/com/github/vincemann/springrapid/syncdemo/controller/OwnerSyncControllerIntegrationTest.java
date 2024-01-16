@@ -17,7 +17,7 @@ import com.github.vincemann.springrapid.syncdemo.model.ClinicCard;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
 import com.github.vincemann.springrapid.syncdemo.service.filter.OwnerTelNumberFilter;
-import com.github.vincemann.springrapid.syncdemo.service.filter.PetsOfOwnerFilter;
+import com.github.vincemann.springrapid.syncdemo.service.filter.PetParentFilter;
 import com.google.common.collect.Sets;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -439,7 +439,7 @@ public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationT
         Assertions.assertTrue(updatedBella.getLastModifiedDate().after(lastServerUpdate));
 
         // now should ask for update infos for all pets with owner=kahn since clientUpdate ts
-        UrlExtension parentFilter = new UrlExtension(PetsOfOwnerFilter.class,owner.getId().toString());
+        UrlExtension parentFilter = new UrlExtension(PetParentFilter.class,owner.getId().toString());
         Set<EntitySyncStatus> statuses = petSyncController.fetchSyncStatusesSinceTs_assertUpdates(clientUpdate,parentFilter);
 
         Assertions.assertEquals(1,statuses.size());
