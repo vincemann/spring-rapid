@@ -66,8 +66,8 @@ public class RelationalServiceUpdateAdvice {
                     "com.github.vincemann.springrapid.core.SystemArchitecture.partialUpdateOperation() && " +
                     "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
                     "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreJdkProxies() && " +
-                    "args(updateEntity,fieldsToRemove)")
-    public void prePartialUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, String... fieldsToRemove) throws EntityNotFoundException {
+                    "args(updateEntity,fieldsToUpdate)")
+    public void prePartialUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, String... fieldsToUpdate) throws EntityNotFoundException {
 //        System.err.println("partial update without propertiesToUpdate matches " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
         if (!ProxyUtils.isRootService(joinPoint.getTarget()))
@@ -75,23 +75,7 @@ public class RelationalServiceUpdateAdvice {
         if (AutoBiDirUtils.isDisabled(joinPoint)) {
             return;
         }
-        prePartialUpdate(joinPoint,updateEntity,Sets.newHashSet(),fieldsToRemove);
-    }
-
-    @Before(value =
-            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
-                    "com.github.vincemann.springrapid.core.SystemArchitecture.partialUpdateOperation() &&" +
-                    "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
-                    "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreJdkProxies() && " +
-                    "args(updateEntity,collectionsToUpdate, fieldsToRemove)")
-    public void prePartialUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, Set<String> collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException {
-//        System.err.println("partial update with collectionsToUpdate matches " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
-        if (!ProxyUtils.isRootService(joinPoint.getTarget()))
-            return;
-        if (AutoBiDirUtils.isDisabled(joinPoint)) {
-            return;
-        }
-        prePartialUpdate(joinPoint,updateEntity,collectionsToUpdate,fieldsToRemove);
+        prePartialUpdate(joinPoint,updateEntity,fieldsToUpdate);
     }
 
     @Before(value =
@@ -133,19 +117,20 @@ public class RelationalServiceUpdateAdvice {
         ServiceCallContextHolder.getSubContext().setValue(RELATIONAL_UPDATE_CONTEXT_KEY, updateContext);
     }
 
-    public void prePartialUpdate(JoinPoint joinPoint, IdentifiableEntity updateEntity, Set<String> collectionsToUpdate, String... fieldsToRemove){
+    public void prePartialUpdate(JoinPoint joinPoint, IdentifiableEntity updateEntity, String... fieldsToUpdate){
 
         if (log.isDebugEnabled())
             log.debug("setting relational context: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
         IdentifiableEntity old = entityLocator.findEntity(updateEntity).get();
 
-        IdentifiableEntity detachedOldEntity = ReflectionUtils.createInstance(ProxyUtils.getTargetClass(updateEntity));
-        Set<String> whiteList = new HashSet<>(collectionsToUpdate);
-        whiteList.addAll(Arrays.asList(fieldsToRemove));
-        if (whiteList.isEmpty()){
-            whiteList = ReflectionUtils.findAllNonNullFieldNames(updateEntity);
-        }
+        Set<String> whiteList;
+        if (fieldsToUpdate.length == 0)
+            whiteList =  ReflectionUtils.findAllNonNullFieldNames(updateEntity);
+        else
+            whiteList = Sets.newHashSet(fieldsToUpdate);
+
         // expects all collections to be initialized and not of Persistent Type
+        IdentifiableEntity detachedOldEntity = ReflectionUtils.createInstance(ProxyUtils.getTargetClass(updateEntity));
         NullAwareBeanUtils.copyProperties(detachedOldEntity,old,whiteList);
 
         RelationalAdviceContext updateContext = RelationalAdviceContext.builder()

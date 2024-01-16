@@ -63,8 +63,8 @@ public class IdPropertyNameUtils {
                 .collect(Collectors.toSet());
     }
 
-    public static String[] transformIdFieldNames(Set<String> propertyNames) {
-        return propertyNames.stream().map(IdPropertyNameUtils::transformIdFieldName).toArray(String[]::new);
+    public static Set<String> transformIdFieldNames(Set<String> propertyNames) {
+        return propertyNames.stream().map(IdPropertyNameUtils::transformIdFieldName).collect(Collectors.toSet());
     }
 
 

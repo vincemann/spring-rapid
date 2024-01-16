@@ -56,36 +56,19 @@ public class AuditCollectionsExtension
 
     @Transactional
     @Override
-    public AuditingEntity<Long> partialUpdate(AuditingEntity<Long> entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+    public AuditingEntity<Long> partialUpdate(AuditingEntity<Long> entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
         // all collection fields must be marked in fieldsRemoved or propertiesToUpdate ( see next method)
         // only check those if present in collectionFieldNames
-        List<String> fieldNamesToRemove = Lists.newArrayList(fieldsToRemove);
+        List<String> fieldNamesToRemove = Lists.newArrayList(fieldsToUpdate);
         List<Field> auditFields = findAuditCollectionFields().stream()
                 .filter(f -> fieldNamesToRemove.contains(f.getName()))
                 .collect(Collectors.toList());
         List<Collection<?>> audited = recordOldCollections(entity.getId(), auditFields);
-        AuditingEntity<Long> result = getNext().partialUpdate(entity,fieldsToRemove);
+        AuditingEntity<Long> result = getNext().partialUpdate(entity, fieldsToUpdate);
         detectChanges(result,audited,auditFields);
         return result;
     }
 
-
-
-    @Transactional
-    @Override
-    public AuditingEntity<Long> partialUpdate(AuditingEntity<Long> update, Set<String> propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-        // all collection fields must be marked in fieldsRemoved or propertiesToUpdate ( see next method)
-        // only check those if present in collectionFieldNames
-        List<String> relevantFieldNames = Lists.newArrayList(fieldsToRemove);
-        relevantFieldNames.addAll(propertiesToUpdate);
-        List<Field> auditFields = findAuditCollectionFields().stream()
-                .filter(f -> relevantFieldNames.contains(f.getName()))
-                .collect(Collectors.toList());
-        List<Collection<?>> audited = recordOldCollections(update.getId(), auditFields);
-        AuditingEntity<Long> result = getNext().partialUpdate(update,propertiesToUpdate,fieldsToRemove);
-        detectChanges(result,audited,auditFields);
-        return result;
-    }
 
     @Transactional
     @Override

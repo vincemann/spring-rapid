@@ -28,8 +28,8 @@ public interface CrudServiceExtension<S extends CrudService>
     }
 
     @Override
-    default IdentifiableEntity partialUpdate(IdentifiableEntity entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-        return getNext().partialUpdate(entity,fieldsToRemove);
+    default IdentifiableEntity partialUpdate(IdentifiableEntity entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
+        return getNext().partialUpdate(entity, fieldsToUpdate);
     }
 
 //    @Override
@@ -46,11 +46,6 @@ public interface CrudServiceExtension<S extends CrudService>
         return getNext().findSome(ids);
     }
 
-    // i dont know why i have to use raw Set Type
-    @Override
-    default IdentifiableEntity partialUpdate(IdentifiableEntity update, Set propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-        return getNext().partialUpdate(update, propertiesToUpdate,fieldsToRemove);
-    }
 
     @Override
     default IdentifiableEntity fullUpdate(IdentifiableEntity entity) throws BadEntityException, EntityNotFoundException {

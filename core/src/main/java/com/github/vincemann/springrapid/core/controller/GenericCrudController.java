@@ -177,15 +177,14 @@ public abstract class GenericCrudController
 //        allUpdatedFields.add("id");
         allUpdatedFields.add(IdPropertyNameUtils.findIdFieldName(patchEntity.getClass()));
         EntityReflectionUtils.setNonMatchingFieldsNull(patchEntity, allUpdatedFields);
+        Set<String> relevantFields = new HashSet<>(allUpdatedFields);
+        relevantFields.addAll(IdPropertyNameUtils.transformIdFieldNames(patchInfo.getRemoveSingleMembersFields()));
 
-        Set<String> updatedCollectionFields = EntityReflectionUtils.findCollectionFields(allUpdatedFields, getEntityClass());
+//        Set<String> updatedCollectionFields = EntityReflectionUtils.findCollectionFields(allUpdatedFields, getEntityClass());
 
 
         logSecurityContext();
-        E updated = servicePartialUpdate(patchEntity,
-                updatedCollectionFields,
-                IdPropertyNameUtils.transformIdFieldNames(patchInfo.getRemoveSingleMembersFields())
-        );
+        E updated = servicePartialUpdate(patchEntity, relevantFields.toArray(new String[0]));
         Class<?> resultDtoClass = createDtoClass(getUpdateUrl(), Direction.RESPONSE, updated);
         // no third arg, bc mapping all possible fields
         Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
@@ -474,8 +473,8 @@ public abstract class GenericCrudController
     //              SERVICE CALLBACKS
 
 
-    protected E servicePartialUpdate(E update, Set<String> collectionsToUpdate, String... propertiesToDelete) throws BadEntityException, EntityNotFoundException {
-        return service.partialUpdate(update, collectionsToUpdate, propertiesToDelete);
+    protected E servicePartialUpdate(E update, String... propertiesToDelete) throws BadEntityException, EntityNotFoundException {
+        return service.partialUpdate(update, propertiesToDelete);
     }
 
     protected E serviceCreate(E entity) throws BadEntityException {

@@ -79,21 +79,13 @@ public class UserServiceSecurityExtension
 
     @LogInteraction
     @Override
-    public AbstractUser partialUpdate(AbstractUser entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+    public AbstractUser partialUpdate(AbstractUser entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
         checkUpdatePermissions(entity);
-        // todo why getLast
-//        return getLast().partialUpdate(entity,fieldsToRemove);
-        return getNext().partialUpdate(entity,fieldsToRemove);
+        return getNext().partialUpdate(entity, fieldsToUpdate);
     }
 
-    @Override
-    public AbstractUser partialUpdate(AbstractUser entity, Set collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-        checkUpdatePermissions(entity);
-//        return getLast().partialUpdate(entity,collectionsToUpdate,fieldsToRemove);
-        return getNext().partialUpdate(entity,collectionsToUpdate,fieldsToRemove);
-    }
 
-    protected void checkUpdatePermissions(AbstractUser update) throws EntityNotFoundException, BadEntityException {
+    protected void checkUpdatePermissions(AbstractUser update) throws EntityNotFoundException {
         getSecurityChecker().checkPermission(update, BasePermission.WRITE);
         Optional<AbstractUser<Serializable>> oldUserOp = userService.findById(update.getId());
         VerifyEntity.isPresent(oldUserOp, update.getId(), update.getClass());

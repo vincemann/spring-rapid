@@ -46,19 +46,15 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
          */
         E softUpdate(E entity) throws EntityNotFoundException, BadEntityException;
         /**
-         * only non null members of
-         * @param entity will be taken into consideration for updating the database entity, except you want to remove
-         *               certain solo fields (no collections), then use
-         * @param fieldsToRemove for it.
+         * Only fieldsToUpdate are updated. When not supplied, all non null fields of entity are updated.
+         * Collections need to always be explicitly listed in fieldsToUpdate.
+         * Same for fields that are null in entity and should be null in target.
          *
          *  Note: make sure to not accidentally have emtpy collections, that you dont want to update.
          *        Set the ignored collections to null or name fields to update explicitly
          */
         @Transactional
-        E partialUpdate(E entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException;
-
-        @Transactional
-        E partialUpdate(E update, Set<String> propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException;
+        E partialUpdate(E entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException;
 
         // the @Transactional's ara actually needed!
         @Transactional

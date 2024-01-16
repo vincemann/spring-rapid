@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStr
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.util.*;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,7 +21,7 @@ import java.util.*;
 /**
  * Implementation of {@link AbstractCrudService} that utilizes Jpa's {@link JpaRepository}.
  *
- * @param <E>  Type of Entity which's crud operations are exposed by this Service
+ * @param <E>  Type of Entity whos crud operations are exposed by this Service
  * @param <Id> Id type of E
  * @param <R>  {@link JpaRepository} Type
  */
@@ -72,7 +73,7 @@ public abstract class JPACrudService
 
     @Transactional
     @Override
-    public E partialUpdate(E update, Set<String> collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+    public E partialUpdate(E update, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
         try {
 //            E managedEntity = getRepository().findById(update.getId()).orElseThrow(() -> new EntityNotFoundException(update.getId(),getEntityClass()));
             E managedEntity = findOldEntity(update.getId());
@@ -91,8 +92,13 @@ public abstract class JPACrudService
             // also copy null values from explicitly given fieldsToRemove
             // updates are applied on the go by hibernate bc entityToUpdate is managed in current session
 //            System.err.println("start with copy properties");
-            Set<String> whiteList = new HashSet<>(collectionsToUpdate);
-            whiteList.addAll(Arrays.asList(fieldsToRemove));
+            Set<String> whiteList;
+            if (fieldsToUpdate.length == 0)
+                whiteList =  ReflectionUtils.findAllNonNullFieldNames(update);
+            else
+                whiteList = Sets.newHashSet(fieldsToUpdate);
+
+//            whiteList.addAll(Arrays.asList(fieldsToUpdate));
             NullAwareBeanUtils.copyProperties(managedEntity, detachedUpdateEntity, whiteList);
 //            System.err.println("start with repo call");
             return getRepository().save(managedEntity);
@@ -104,15 +110,6 @@ public abstract class JPACrudService
         }
     }
 
-    @Transactional
-    @Override
-    public E partialUpdate(E update, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-        return partialUpdate(update, findNonRemovedUpdatedProperties(update), fieldsToRemove);
-    }
-
-    private Set<String> findNonRemovedUpdatedProperties(E partialUpdate) {
-        return ReflectionUtils.findAllNonNullFieldNames(partialUpdate);
-    }
 
 
     @Transactional

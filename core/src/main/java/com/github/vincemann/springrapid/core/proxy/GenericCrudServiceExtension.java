@@ -32,8 +32,8 @@ public interface GenericCrudServiceExtension
     }
 
     @Override
-    default E partialUpdate(E entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-        return getNext().partialUpdate(entity,fieldsToRemove);
+    default E partialUpdate(E entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
+        return getNext().partialUpdate(entity, fieldsToUpdate);
     }
 
     @Override
@@ -45,11 +45,6 @@ public interface GenericCrudServiceExtension
     @Override
     default Set<E> findSome(Set<Id> ids) {
         return getNext().findSome(ids);
-    }
-
-    @Override
-    default E partialUpdate(E update, Set<String> propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-        return getNext().partialUpdate(update, propertiesToUpdate,fieldsToRemove);
     }
 
     @Override

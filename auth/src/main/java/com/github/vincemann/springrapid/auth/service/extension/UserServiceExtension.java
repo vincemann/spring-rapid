@@ -107,15 +107,9 @@ public interface UserServiceExtension<S extends UserService>
 
 
     @Override
-    default AbstractUser partialUpdate(AbstractUser entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-        return getNext().partialUpdate(entity,fieldsToRemove);
+    default AbstractUser partialUpdate(AbstractUser entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
+        return getNext().partialUpdate(entity,fieldsToUpdate);
     }
-
-    @Override
-    default AbstractUser partialUpdate(AbstractUser update, Set collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-        return getNext().partialUpdate(update,collectionsToUpdate,fieldsToRemove);
-    }
-
 
     @Override
     default AbstractUser fullUpdate(AbstractUser entity) throws BadEntityException, EntityNotFoundException {

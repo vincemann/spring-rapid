@@ -326,16 +326,9 @@ public abstract class AbstractUserService
 
     @Transactional
     @Override
-    public U partialUpdate(U update, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+    public U partialUpdate(U update, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
         updateSpecialUserFields(update);
-        return super.partialUpdate(update, fieldsToRemove);
-    }
-
-    @Transactional
-    @Override
-    public U partialUpdate(U entity, Set<String> collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException{
-        updateSpecialUserFields(entity);
-        return super.partialUpdate(entity, collectionsToUpdate, fieldsToRemove);
+        return super.partialUpdate(update, fieldsToUpdate);
     }
 
     @Transactional
