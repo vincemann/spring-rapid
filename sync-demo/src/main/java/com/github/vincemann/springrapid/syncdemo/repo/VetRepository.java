@@ -10,6 +10,6 @@ import java.util.Optional;
 
 @Repository
 @ServiceComponent
-public interface VetRepository extends JpaRepository<Vet,Long> {
+public interface VetRepository extends Vet,Long> {
     Optional<Vet> findByLastName(String lastName);
 }

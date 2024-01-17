@@ -10,6 +10,6 @@ import java.util.Optional;
 
 @Repository
 @ServiceComponent
-public interface PetRepository extends JpaRepository<Pet,Long> {
+public interface PetRepository extends RapidJpaRepository<Pet,Long> {
     public Optional<Pet> findByName(String name);
 }

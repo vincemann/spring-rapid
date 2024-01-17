@@ -10,6 +10,6 @@ import java.util.Optional;
 
 @Repository
 @ServiceComponent
-public interface SpecialtyRepository extends JpaRepository<Specialty,Long> {
+public interface SpecialtyRepository extends RapidJpaRepository<Specialty,Long> {
     Optional<Specialty> findByDescription(String description);
 }

@@ -12,6 +12,8 @@ import com.github.vincemann.springrapid.coredemo.service.filter.CityPrefixFilter
 import com.github.vincemann.springrapid.coredemo.service.filter.HasPetsFilter;
 import com.github.vincemann.springrapid.coredemo.service.filter.OwnerTelNumberFilter;
 import com.github.vincemann.springrapid.coredemo.service.filter.PetNameEndsWithFilter;
+import com.github.vincemann.springrapid.coredemo.service.sort.NameAscSorting;
+import com.github.vincemann.springrapid.coredemo.service.sort.NameDescSorting;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
 import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
 import org.junit.jupiter.api.Assertions;
@@ -20,6 +22,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
@@ -384,6 +387,69 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         ReadOwnOwnerDto kahnDto = findInCollection(responseDtos, savedKahn);
         Assertions.assertEquals(Owner.DIRTY_SECRET,kahnDto.getDirtySecret());
         ReadOwnOwnerDto meierDto = findInCollection(responseDtos, savedMeier);
+        Assertions.assertNull(meierDto.getDirtySecret());
+    }
+
+    @Test
+    public void canFindAllOwnersWithPetsFilter_sortedByName() throws Exception {
+
+        // save kahn -> bello
+        // meier -> kitty
+        // gil -> []
+        // find all owners with hasPets filter (in memory filter), authenticated as kahn
+        // should find kahn and meier - sorted by name desc -> meier, kahn
+        // kahn should be FindOwnOwnerDto and meier FindForeignOwnerDto
+        // find again with asc name sorting -> [kahn, meier]
+
+        Pet savedBello = petRepository.save(bello);
+        Pet savedKitty = petRepository.save(kitty);
+
+        ReadOwnOwnerDto savedKahn = saveOwnerLinkedToPets(kahn,savedBello.getId());
+        ReadOwnOwnerDto savedMeier = saveOwnerLinkedToPets(meier, savedKitty.getId());
+        ReadOwnOwnerDto savedGil = saveOwnerLinkedToPets(gil);
+
+        Assertions.assertEquals(3,ownerRepository.findAll().size());
+
+
+        securityContext.login(TestPrincipal.withName(KAHN));
+        // memory filter
+        UrlExtension hasPetsFilter = new UrlExtension(HasPetsFilter.class);
+        UrlExtension sortByNameDesc = new UrlExtension(NameDescSorting.class);
+        List<ReadOwnOwnerDto> responseDtos = deserializeToList(
+                perform(ownerController.findAll(hasPetsFilter,sortByNameDesc))
+                        .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
+        RapidSecurityContext.logout();
+
+        // one dto findOwnDto and one findForeign
+        Assertions.assertEquals(2,responseDtos.size());
+        // order
+        Assertions.assertEquals(savedMeier.getId(),responseDtos.get(0).getId());
+        Assertions.assertEquals(savedKahn.getId(),responseDtos.get(1).getId());
+
+        // content
+        ReadOwnOwnerDto kahnDto = findInCollection(responseDtos, savedKahn);
+        Assertions.assertEquals(Owner.DIRTY_SECRET,kahnDto.getDirtySecret());
+        ReadOwnOwnerDto meierDto = findInCollection(responseDtos, savedMeier);
+        Assertions.assertNull(meierDto.getDirtySecret());
+
+
+        // diff sorting
+        UrlExtension sortByNameAsc = new UrlExtension(NameAscSorting.class);
+        responseDtos = deserializeToList(
+                perform(ownerController.findAll(hasPetsFilter,sortByNameAsc))
+                        .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
+        RapidSecurityContext.logout();
+
+        // one dto findOwnDto and one findForeign
+        Assertions.assertEquals(2,responseDtos.size());
+        // order
+        Assertions.assertEquals(savedKahn.getId(),responseDtos.get(0).getId());
+        Assertions.assertEquals(savedMeier.getId(),responseDtos.get(1).getId());
+
+        // content
+        kahnDto = findInCollection(responseDtos, savedKahn);
+        Assertions.assertEquals(Owner.DIRTY_SECRET,kahnDto.getDirtySecret());
+        meierDto = findInCollection(responseDtos, savedMeier);
         Assertions.assertNull(meierDto.getDirtySecret());
     }
 

@@ -1,6 +1,9 @@
 package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.repo.FilterRepository;
+import com.github.vincemann.springrapid.core.repo.RapidFilterRepository;
+import com.github.vincemann.springrapid.core.repo.RapidJpaRepository;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
@@ -10,11 +13,15 @@ import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.util.*;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.test.util.AopTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
@@ -37,11 +44,13 @@ public abstract class JPACrudService
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
-                R extends JpaRepository<E, Id>
+                R extends RapidJpaRepository<E, Id>
                 >
-        extends AbstractCrudService<E, Id, R>
+        extends AbstractCrudService<E, Id, R> implements InitializingBean
 {
 
+    private FilterRepository<E,Id> filterRepository;
+    private EntityManager entityManager;
 
     public JPACrudService() {
     }
@@ -158,10 +167,9 @@ public abstract class JPACrudService
     public Set<E> findAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> filters, List<EntitySortingStrategy> sortingStrategies) {
         Set<E> result;
         if (sortingStrategies.isEmpty())
-             result = new HashSet<>(((SimpleJpaRepository<E,Id>) getRepository()).findAll(toSpecification(jpqlFilters)));
+             result = new HashSet<>(filterRepository.findAll(toSpec(jpqlFilters)));
         else
-            result = new HashSet<>(((SimpleJpaRepository<E,Id>) getRepository()).findAll(toSpecification(jpqlFilters),sorted(sortingStrategies)));
-
+            result = new HashSet<>(filterRepository.findAll(toSpec(jpqlFilters),toSort(sortingStrategies)));
         return FilterUtils.applyMemoryFilters(result, filters);
     }
 
@@ -180,5 +188,15 @@ public abstract class JPACrudService
         if (id == null)
             throw new IllegalArgumentException("Id cannot be null");
         return findById(id).orElseThrow(() -> new EntityNotFoundException(id, getEntityClass()));
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.filterRepository = new RapidFilterRepository<>(getEntityClass(),entityManager);
+    }
+
+    @Autowired
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 }

@@ -6,6 +6,4 @@ import org.springframework.data.domain.Sort;
 public interface EntitySortingStrategy extends UrlExtension
 {
     Sort getSort();
-
-
 }

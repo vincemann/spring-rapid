@@ -13,7 +13,6 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 import static com.github.vincemann.springrapid.core.util.FilterUtils.*;
@@ -25,13 +24,11 @@ public class RapidAuditingRepository<E extends AuditingEntity<Id>,Id extends Ser
     protected EntityManager entityManager;
     protected Class<E> entityClass;
 
-//    protected SimpleJpaRepository<E,Id> repo;
 
-    public RapidAuditingRepository(EntityManager entityManager, Class<E> entityClass/*, SimpleJpaRepository<E,Id> repo*/) {
+    public RapidAuditingRepository(EntityManager entityManager, Class<E> entityClass) {
         super(entityClass,entityManager);
         this.entityManager = entityManager;
         this.entityClass = entityClass;
-//        this.repo = repo;
     }
 
     @Override
@@ -49,7 +46,7 @@ public class RapidAuditingRepository<E extends AuditingEntity<Id>,Id extends Ser
     }
     @Override
     public List<E> findEntitiesUpdatedSince(Timestamp since, List<QueryFilter<? super E>> filters) {
-        Specification<E> spec = toSpecification(filters);
+        Specification<E> spec = toSpec(filters);
         spec = spec.and(new UpdatedSince<>(since));
 
         return super.findAll(spec);
@@ -64,7 +61,7 @@ public class RapidAuditingRepository<E extends AuditingEntity<Id>,Id extends Ser
         Root<E> root = cq.from(entityClass);
 
         Specification<E> spec = Specification.where(new UpdatedSince<>(since));
-        spec = spec.and(toSpecification(filters));
+        spec = spec.and(toSpec(filters));
 
         // Construct the EntityLastUpdateInfo with the required fields
         cq.select(cb.construct(EntityUpdateInfo.class,

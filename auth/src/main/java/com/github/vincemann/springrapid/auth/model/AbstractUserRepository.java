@@ -17,7 +17,7 @@ import java.util.Optional;
 @NoRepositoryBean
 @ServiceComponent
 public interface AbstractUserRepository<U extends AbstractUser<ID>, ID extends Serializable>
-		extends JpaRepository<U, ID> {
+		extends RapidJpaRepository<U, ID> {
 
 	Optional<U> findByContactInformation(String contactInformation);
 }

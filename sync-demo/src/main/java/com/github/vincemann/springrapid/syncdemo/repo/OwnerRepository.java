@@ -10,6 +10,6 @@ import java.util.Optional;
 
 @Repository
 @ServiceComponent
-public interface OwnerRepository extends JpaRepository<Owner,Long> {
+public interface OwnerRepository extends Owner,Long> {
     Optional<Owner> findByLastName(String lastName);
 }

@@ -5,7 +5,6 @@ import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.query.criteria.internal.path.RootImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -98,7 +97,7 @@ public class FilterUtils {
 //        }
 //    }
 
-    public static Sort sorted(List<EntitySortingStrategy> sortingStrategies){
+    public static Sort toSort(List<EntitySortingStrategy> sortingStrategies){
         if (sortingStrategies.isEmpty())
             return null;
         Sort sort = sortingStrategies.get(0).getSort();
@@ -109,7 +108,7 @@ public class FilterUtils {
     }
 
 
-    public static <E> Specification<E> toSpecification(List<QueryFilter<? super E>> filters) {
+    public static <E> Specification<E> toSpec(List<QueryFilter<? super E>> filters) {
         return (Root<E> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
             Predicate combinedPredicate = null;
 

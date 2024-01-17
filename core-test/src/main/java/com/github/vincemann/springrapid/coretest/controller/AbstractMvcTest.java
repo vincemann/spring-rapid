@@ -26,6 +26,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -106,6 +107,12 @@ public abstract class AbstractMvcTest extends InitializingTest implements Initia
     public  <Dto> Set<Dto> deserializeToSet(String s, Class<Dto> dtoClass) throws IOException {
         CollectionType setType = jsonMapper.getObjectMapper()
                 .getTypeFactory().constructCollectionType(Set.class, dtoClass);
+        return deserialize(s, setType);
+    }
+
+    public  <Dto> List<Dto> deserializeToList(String s, Class<Dto> dtoClass) throws IOException {
+        CollectionType setType = jsonMapper.getObjectMapper()
+                .getTypeFactory().constructCollectionType(List.class, dtoClass);
         return deserialize(s, setType);
     }
 

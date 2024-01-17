@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface IllnessRepository extends JpaRepository<Illness,Long> {
+public interface IllnessRepository extends RapidJpaRepository<Illness,Long> {
     Optional<Illness> findByName(String name);
 }

@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @ServiceComponent
-public interface PetTypeRepository extends JpaRepository<PetType,Long> {
+public interface PetTypeRepository extends PetType,Long> {
 }

@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Repository
 @ServiceComponent
-public interface PetRepository extends JpaRepository<Pet,Long> {
+public interface PetRepository extends Pet,Long> {
     public Optional<Pet> findByName(String name);
     public Set<Pet> findAllByOwnerId(Long ownerId);
 }

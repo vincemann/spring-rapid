@@ -10,6 +10,8 @@ import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.core.slicing.WebController;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.filter.*;
+import com.github.vincemann.springrapid.coredemo.service.sort.NameAscSorting;
+import com.github.vincemann.springrapid.coredemo.service.sort.NameDescSorting;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @WebController
@@ -41,8 +43,13 @@ public class OwnerController extends CrudController<Owner, Long, OwnerService> {
 
 
     @Autowired
-    public void configureAllowedExtensions(CityPrefixFilter cityPrefixFilter, HasPetsFilter hasPetsFilter, OwnerTelNumberFilter ownerTelNumberFilter, PetNameEndsWithFilter parentFilter) {
+    public void configureAllowedFilters(CityPrefixFilter cityPrefixFilter, HasPetsFilter hasPetsFilter, OwnerTelNumberFilter ownerTelNumberFilter, PetNameEndsWithFilter parentFilter) {
         addAllowedExtensions(cityPrefixFilter,hasPetsFilter,ownerTelNumberFilter,parentFilter);
+    }
+
+    @Autowired
+    public void configureAllowedSorting(NameAscSorting nameAscSorting, NameDescSorting nameDescSorting) {
+        addAllowedExtensions(nameAscSorting,nameDescSorting);
     }
 
 }
