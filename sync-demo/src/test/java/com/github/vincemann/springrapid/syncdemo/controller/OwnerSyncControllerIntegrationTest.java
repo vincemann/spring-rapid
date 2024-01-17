@@ -299,7 +299,7 @@ public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationT
         Assertions.assertEquals(kahnDto.getCity(),updateKahn.getCity());
     }
 
-    
+
 
 
     @Test

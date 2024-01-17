@@ -22,6 +22,8 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.github.vincemann.springrapid.core.util.FilterUtils.toSpec;
 // todo could create JpaSyncCrudService - but I prefer composition over inheritance
 // maybe remove id param?
 
@@ -75,7 +77,7 @@ public abstract class JpaSyncService<E extends AuditingEntity<Id>, Id extends Se
         Set<EntitySyncStatus> result = new HashSet<>();
         // cant find out about removed entities - what has been removed must be evaluated by client by comparing own set
         // + its often not relevant that something was removed, for example if client didnt know about the entity in the first place
-        List<EntityUpdateInfo> updateInfosSince = auditingRepository.findUpdateInfosSince(lastClientFetch, jpqlFilters);
+        List<EntityUpdateInfo> updateInfosSince = auditingRepository.findUpdateInfosSince(lastClientFetch, toSpec(jpqlFilters));
         for (EntityUpdateInfo lastUpdateInfo : updateInfosSince) {
             result.add(
                     EntitySyncStatus.builder()
@@ -95,7 +97,7 @@ public abstract class JpaSyncService<E extends AuditingEntity<Id>, Id extends Se
         Set<EntitySyncStatus> result = new HashSet<>();
         // cant find out about removed entities - what has been removed must be evaluated by client by comparing own set
         // + its often not relevant that something was removed, for example if client didnt know about the entity in the first place
-        List<E> updatedEntities = auditingRepository.findEntitiesUpdatedSince(lastClientFetch, jpqlFilters);
+        List<E> updatedEntities = auditingRepository.findEntitiesUpdatedSince(lastClientFetch, toSpec(jpqlFilters));
         List<E> filtered = FilterUtils.applyMemoryFilters(updatedEntities, entityFilters);
         for (E entity : filtered) {
             result.add(

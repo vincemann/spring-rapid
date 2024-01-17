@@ -25,7 +25,7 @@ public class RepositoryUtil {
 //        }
 //    }
 
-    public static Class<?> getRepoType(JpaRepository<?, ?> simpleJpaRepository) {
+    public static <E> Class<E> getRepoType(JpaRepository<E, ?> simpleJpaRepository) {
         try {
             if (simpleJpaRepository instanceof SimpleJpaRepository) {
                 SimpleJpaRepository<?, ?> repo = (SimpleJpaRepository<?, ?>) simpleJpaRepository;
@@ -34,7 +34,7 @@ public class RepositoryUtil {
                 Object entityInformationObject = AopTestUtils.getUltimateTargetObject(entityInformationField.get(repo));
 
                 if (entityInformationObject instanceof JpaEntityInformation) {
-                    JpaEntityInformation<?, ?> entityInformation = (JpaEntityInformation<?, ?>) entityInformationObject;
+                    JpaEntityInformation<E, ?> entityInformation = (JpaEntityInformation<E, ?>) entityInformationObject;
                     return entityInformation.getJavaType();
                 }
             }

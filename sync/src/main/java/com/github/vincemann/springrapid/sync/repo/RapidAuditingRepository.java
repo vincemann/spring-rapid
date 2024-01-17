@@ -58,25 +58,25 @@ public class RapidAuditingRepository<E extends AuditingEntity<Id>,Id extends Ser
         return entityManager.createQuery(query).getSingleResult();
     }
     @Override
-    public List<E> findEntitiesUpdatedSince(Timestamp since, List<QueryFilter<? super E>> filters) {
-        Specification<E> spec = Specification.where(toSpec(filters))
+    public List<E> findEntitiesUpdatedSince(Timestamp since, Specification<E> spec) {
+        Specification<E> specs = Specification.where(spec)
                 .and(updatedSince(since));
 
-        return super.findAll(spec);
+        return super.findAll(specs);
     }
 
    // faster then the other method
     @Override
-    public List<EntityUpdateInfo> findUpdateInfosSince(Timestamp since, List<QueryFilter<? super E>> filters) {
+    public List<EntityUpdateInfo> findUpdateInfosSince(Timestamp since, Specification<E> spec) {
 
 
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<EntityUpdateInfo> cq = cb.createQuery(EntityUpdateInfo.class);
-        Specification<E> spec = Specification.where(toSpec(filters))
+        Specification<E> specs = Specification.where(spec)
                 .and(updatedSince(since));
 
-        Root<E> root = applySpecificationToCriteria(spec,entityClass,cq);
+        Root<E> root = applySpecificationToCriteria(specs,entityClass,cq);
 
         // Construct the EntityLastUpdateInfo with the required fields
         cq.select(cb.construct(EntityUpdateInfo.class,

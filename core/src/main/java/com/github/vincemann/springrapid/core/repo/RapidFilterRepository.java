@@ -17,6 +17,7 @@ public class RapidFilterRepository<T extends IdentifiableEntity<Id>, Id extends 
         super(domainClass, em);
     }
 
+
     @Override
     public List<T> findAll(Specification<T> spec) {
         return super.findAll(spec);

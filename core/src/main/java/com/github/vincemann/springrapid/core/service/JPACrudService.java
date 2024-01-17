@@ -155,17 +155,17 @@ public abstract class JPACrudService
     }
 
     /**
-     * first jqpl filters applied (where clauses), then in memory filtering.
+     * first query filters applied (where clauses), then in memory filtering.
      * Can be combined as needed.
      */
     @Transactional
     @Override
-    public Set<E> findAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> filters, List<SortingExtension> sortingStrategies) {
+    public Set<E> findAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> filters, List<SortingExtension> sortingExtensions) {
         Set<E> result;
-        if (sortingStrategies.isEmpty())
+        if (sortingExtensions.isEmpty())
              result = new HashSet<>(filterRepository.findAll(Specification.where(toSpec(jpqlFilters))));
         else
-            result = new LinkedHashSet<>(filterRepository.findAll(Specification.where(toSpec(jpqlFilters)),toSort(sortingStrategies)));
+            result = new LinkedHashSet<>(filterRepository.findAll(Specification.where(toSpec(jpqlFilters)),toSort(sortingExtensions)));
         return FilterUtils.applyMemoryFilters(result, filters);
     }
 
@@ -186,10 +186,19 @@ public abstract class JPACrudService
         return findById(id).orElseThrow(() -> new EntityNotFoundException(id, getEntityClass()));
     }
 
+    // todo need better bean based solution
+    // create own default jpaRepository containing methods (put into JpaRapidRepo)
+    // in sync or softdelete create own Default Repos
     @Override
     public void afterPropertiesSet() throws Exception {
         this.filterRepository = new RapidFilterRepository<>(getEntityClass(),entityManager);
     }
+
+
+//    @Autowired
+//    public void injectFilterRepository(FilterRepository<E, Id> filterRepository) {
+//        this.filterRepository = filterRepository;
+//    }
 
     @Autowired
     public void setEntityManager(EntityManager entityManager) {
