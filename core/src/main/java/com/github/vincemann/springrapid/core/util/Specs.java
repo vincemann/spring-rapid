@@ -50,5 +50,9 @@ public class Specs {
             parameter = cb.parameter(Iterable.class);
             return path.in(parameter);
         }
+
+        public ParameterExpression<Iterable> getParameter() {
+            return parameter;
+        }
     }
 }
