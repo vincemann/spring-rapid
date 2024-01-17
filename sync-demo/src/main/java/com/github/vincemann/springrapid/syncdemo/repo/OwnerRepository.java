@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.syncdemo.repo;
 
 
+import com.github.vincemann.springrapid.core.repo.RapidJpaRepository;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,6 @@ import java.util.Optional;
 
 @Repository
 @ServiceComponent
-public interface OwnerRepository extends Owner,Long> {
+public interface OwnerRepository extends RapidJpaRepository<Owner,Long> {
     Optional<Owner> findByLastName(String lastName);
 }

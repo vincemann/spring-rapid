@@ -35,7 +35,7 @@ public class CityPrefixFilter implements QueryFilter<Owner> {
 
     @Override
     public Predicate toPredicate(Root<Owner> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        return cb.like(root.get(propertyNameOf(new Owner()::getCity)), cityPrefix + "%");
+        return cb.like(root.get("city"), cityPrefix + "%");
     }
 
 }

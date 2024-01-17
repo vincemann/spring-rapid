@@ -111,6 +111,7 @@ public class FilterUtils {
 
 
     public static <E> Specification<E> toSpec(List<QueryFilter<? super E>> filters) {
+
         return (Root<E> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
             Predicate combinedPredicate = null;
 

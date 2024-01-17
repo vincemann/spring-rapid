@@ -23,6 +23,6 @@ public class LastNameAscSorting implements EntitySortingStrategy {
 
     @Override
     public Sort getSort() {
-        return Sort.by(propertyNameOf(new Owner()::getLastName)).ascending();
+        return Sort.by("last_name").ascending();
     }
 }

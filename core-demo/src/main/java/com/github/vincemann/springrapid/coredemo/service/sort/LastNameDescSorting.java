@@ -24,6 +24,6 @@ public class LastNameDescSorting implements EntitySortingStrategy {
 
     @Override
     public Sort getSort() {
-        return Sort.by(propertyNameOf(new Owner()::getLastName)).descending();
+        return Sort.by("last_name").descending();
     }
 }

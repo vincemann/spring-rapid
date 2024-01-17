@@ -12,10 +12,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.io.Serializable;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 
 import static com.github.vincemann.springrapid.core.util.FilterUtils.*;
+import static org.springframework.data.jpa.repository.query.QueryUtils.toOrders;
 
 public class RapidAuditingRepository<E extends AuditingEntity<Id>,Id extends Serializable>
     extends SimpleJpaRepository<E,Id>
@@ -46,8 +48,8 @@ public class RapidAuditingRepository<E extends AuditingEntity<Id>,Id extends Ser
     }
     @Override
     public List<E> findEntitiesUpdatedSince(Timestamp since, List<QueryFilter<? super E>> filters) {
-        Specification<E> spec = toSpec(filters);
-        spec = spec.and(new UpdatedSince<>(since));
+        Specification<E> spec = Specification.where(toSpec(filters))
+                .and(updatedSince(since));
 
         return super.findAll(spec);
     }
@@ -56,19 +58,20 @@ public class RapidAuditingRepository<E extends AuditingEntity<Id>,Id extends Ser
     @Override
     public List<EntityUpdateInfo> findUpdateInfosSince(Timestamp since, List<QueryFilter<? super E>> filters) {
 
+
+
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<EntityUpdateInfo> cq = cb.createQuery(EntityUpdateInfo.class);
-        Root<E> root = cq.from(entityClass);
+        Specification<E> spec = Specification.where(toSpec(filters))
+                .and(updatedSince(since));
 
-        Specification<E> spec = Specification.where(new UpdatedSince<>(since));
-        spec = spec.and(toSpec(filters));
+        Root<E> root = applySpecificationToCriteria(spec,entityClass,cq);
 
         // Construct the EntityLastUpdateInfo with the required fields
         cq.select(cb.construct(EntityUpdateInfo.class,
                 root.get("id"),
                 root.get(AuditingEntity.LAST_MOD_FIELD)));
 
-        applySpecificationToCriteria(spec,entityClass,cq);
         TypedQuery<EntityUpdateInfo> query = entityManager.createQuery(cq);
         return query.getResultList();
     }
@@ -115,6 +118,10 @@ public class RapidAuditingRepository<E extends AuditingEntity<Id>,Id extends Ser
         }
     }
 
+
+    private Specification<E> updatedSince(Timestamp since){
+        return new UpdatedSince<>(since);
+    }
 
 
 }

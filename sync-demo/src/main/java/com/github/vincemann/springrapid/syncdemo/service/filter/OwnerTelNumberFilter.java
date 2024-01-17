@@ -36,7 +36,7 @@ public class OwnerTelNumberFilter implements QueryFilter<Owner> {
 
     @Override
     public Predicate toPredicate(Root<Owner> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        return cb.like(root.get(propertyNameOf(new Owner()::getTelephone)), telNrPrefix + "%");
+        return cb.like(root.get("telephone"), telNrPrefix + "%");
     }
 
 }

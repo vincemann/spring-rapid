@@ -390,7 +390,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
     }
 
     @Test
-    public void canFindAllOwnersWithPetsFilter_sortedByName() throws Exception {
+    public void canFindAllOwnersWithPetsFilter_sortedByLastName() throws Exception {
 
         // save kahn -> bello
         // meier -> kitty

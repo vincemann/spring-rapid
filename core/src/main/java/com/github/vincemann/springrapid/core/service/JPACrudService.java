@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.NonTransientDataAccessException;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.test.util.AopTestUtils;
@@ -164,9 +165,9 @@ public abstract class JPACrudService
     public Set<E> findAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> filters, List<EntitySortingStrategy> sortingStrategies) {
         Set<E> result;
         if (sortingStrategies.isEmpty())
-             result = new HashSet<>(filterRepository.findAll(toSpec(jpqlFilters)));
+             result = new HashSet<>(filterRepository.findAll(Specification.where(toSpec(jpqlFilters))));
         else
-            result = new LinkedHashSet<>(filterRepository.findAll(toSpec(jpqlFilters),toSort(sortingStrategies)));
+            result = new LinkedHashSet<>(filterRepository.findAll(Specification.where(toSpec(jpqlFilters)),toSort(sortingStrategies)));
         return FilterUtils.applyMemoryFilters(result, filters);
     }
 
