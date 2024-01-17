@@ -2,9 +2,13 @@ package com.github.vincemann.springrapid.sync.repo;
 
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
+import com.github.vincemann.springrapid.core.util.Specs;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.support.JpaEntityInformation;
+import org.springframework.data.jpa.repository.support.JpaEntityInformationSupport;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
@@ -25,19 +29,26 @@ public class RapidAuditingRepository<E extends AuditingEntity<Id>,Id extends Ser
 
     protected EntityManager entityManager;
     protected Class<E> entityClass;
+    protected JpaEntityInformation<E,?> entityInformation;
 
 
     public RapidAuditingRepository(EntityManager entityManager, Class<E> entityClass) {
         super(entityClass,entityManager);
         this.entityManager = entityManager;
         this.entityClass = entityClass;
+        this.entityInformation = JpaEntityInformationSupport.getEntityInformation(entityClass,entityManager);
     }
 
     @Override
     public EntityUpdateInfo findUpdateInfo(Id id) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<EntityUpdateInfo> query = cb.createQuery(EntityUpdateInfo.class);
-        Root<E> root = query.from(entityClass);
+
+
+        Specification<E> spec = Specification.where(new Specs.ByIdSpecification<>(entityInformation, id));
+
+
+        Root<E> root = applySpecificationToCriteria(spec,entityClass,query);
 
         // Construct the EntityLastUpdateInfo with the required fields
         query.select(cb.construct(EntityUpdateInfo.class,
