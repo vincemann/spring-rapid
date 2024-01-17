@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.coretest.util;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.service.filter.UrlExtension;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
-import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
+import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
@@ -86,7 +86,7 @@ public class RapidTestUtil {
     public static void addUrlExtensionsToRequest(ApplicationContext applicationContext, MockHttpServletRequestBuilder requestBuilder, com.github.vincemann.springrapid.coretest.controller.UrlExtension... extensions){
         List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> queryFilters = findExtensionsOfSubType(Lists.newArrayList(extensions), QueryFilter.class);
         List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> entityFilters = findExtensionsOfSubType(Lists.newArrayList(extensions), EntityFilter.class);
-        List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> sortingStrategies = findExtensionsOfSubType(Lists.newArrayList(extensions), EntitySortingStrategy.class);
+        List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> sortingStrategies = findExtensionsOfSubType(Lists.newArrayList(extensions), SortingExtension.class);
 
         Assertions.assertEquals(extensions.length,queryFilters.size()+entityFilters.size()+sortingStrategies.size());
 

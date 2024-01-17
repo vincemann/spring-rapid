@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.coretest.controller;
 
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
-import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
+import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * Represents a container for either {@link EntityFilter}, {@link QueryFilter} or {@link EntitySortingStrategy}.
+ * Represents a container for either {@link EntityFilter}, {@link QueryFilter} or {@link SortingExtension}.
  * Can be converted to String via {@link com.github.vincemann.springrapid.coretest.util.RapidTestUtil#createExtensionsString(List, ApplicationContext)}
  * which can be added as url param for some endpoints like {@link GenericCrudController#findAll(HttpServletRequest, HttpServletResponse)}.
  *

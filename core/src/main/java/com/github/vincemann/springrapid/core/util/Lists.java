@@ -22,7 +22,7 @@ public class Lists {
     )
     public static <E> ArrayList<E> newArrayList(E... elements) {
         int capacity = elements==null ? computeArrayListCapacity(1) : computeArrayListCapacity(elements.length);
-        ArrayList<E> list = new ArrayList(capacity);
+        ArrayList<E> list = new ArrayList<>(capacity);
         if(elements==null){
             list.add(null);
         }else {
@@ -34,7 +34,7 @@ public class Lists {
             serializable = true
     )
     public static <E> ArrayList<E> newArrayList(Collection<? extends E> elements) {
-        return new ArrayList(elements);
+        return new ArrayList<>(elements);
     }
 
 

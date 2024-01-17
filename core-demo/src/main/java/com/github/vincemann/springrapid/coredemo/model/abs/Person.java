@@ -18,12 +18,12 @@ import javax.validation.constraints.NotBlank;
 @MappedSuperclass
 @AllArgsConstructor
 public abstract class Person extends IdentifiableEntityImpl<Long> {
-    @Column(name = "first_name")
+    @Column(name = "fistName")
     @NotBlank
     private String firstName;
 
     @Unique
     @NotBlank
-    @Column(name = "last_name")
+    @Column(name = "lastName")
     private String lastName;
 }

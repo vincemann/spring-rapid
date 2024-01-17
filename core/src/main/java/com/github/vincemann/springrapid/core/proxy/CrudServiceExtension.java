@@ -3,12 +3,8 @@ package com.github.vincemann.springrapid.core.proxy;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
-import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
-import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 
 import java.io.Serializable;
 import java.util.List;

@@ -13,14 +13,12 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
-import com.github.vincemann.springrapid.core.service.filter.UrlExtension;
-import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
+import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
-import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -82,7 +80,7 @@ public abstract class GenericCrudController
 
         List<QueryFilter<? super E>> queryFilters = extractExtensions(request,QUERY_FILTER_URL_KEY);
         List<EntityFilter<? super E>> entityFilters = extractExtensions(request,ENTITY_FILTER_URL_KEY);
-        List<EntitySortingStrategy> sortingStrategies = extractExtensions(request,ENTITY_SORTING_STRATEGY_URL_KEY);
+        List<SortingExtension> sortingStrategies = extractExtensions(request,ENTITY_SORTING_STRATEGY_URL_KEY);
 
         beforeFindAll(request, response,entityFilters,queryFilters,sortingStrategies);
         logSecurityContext();
@@ -489,7 +487,7 @@ public abstract class GenericCrudController
         return service.findAll();
     }
 
-    protected Set<E> serviceFindAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> filters, List<EntitySortingStrategy> sortingStrategies) {
+    protected Set<E> serviceFindAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> filters, List<SortingExtension> sortingStrategies) {
         if (filters.isEmpty() && jpqlFilters.isEmpty() && sortingStrategies.isEmpty())
             return service.findAll();
         else
@@ -524,7 +522,7 @@ public abstract class GenericCrudController
     public void beforeFind(ID id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void beforeFindAll(HttpServletRequest httpServletRequest, HttpServletResponse response, List<EntityFilter<? super E>> filters, List<QueryFilter<? super E>> jpqlFilters, List<EntitySortingStrategy> sortingStrategies) {
+    public void beforeFindAll(HttpServletRequest httpServletRequest, HttpServletResponse response, List<EntityFilter<? super E>> filters, List<QueryFilter<? super E>> jpqlFilters, List<SortingExtension> sortingStrategies) {
     }
 
     public void beforeFindSome(Set<ID> ids, HttpServletRequest httpServletRequest, HttpServletResponse response) {
@@ -543,7 +541,7 @@ public abstract class GenericCrudController
     public void afterFind(ID id, Object dto, Optional<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void afterFindAll(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response, List<EntityFilter<? super E>> filters, List<QueryFilter<? super E>> jpqlFilters, List<EntitySortingStrategy> sortingStrategies) {
+    public void afterFindAll(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response, List<EntityFilter<? super E>> filters, List<QueryFilter<? super E>> jpqlFilters, List<SortingExtension> sortingStrategies) {
     }
 
     public void afterFindSome(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {

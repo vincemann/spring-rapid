@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.core.util;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
-import com.github.vincemann.springrapid.core.service.filter.jpa.EntitySortingStrategy;
+import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -99,11 +99,11 @@ public class FilterUtils {
 //        }
 //    }
 
-    public static Sort toSort(List<EntitySortingStrategy> sortingStrategies){
+    public static Sort toSort(List<SortingExtension> sortingStrategies){
         if (sortingStrategies.isEmpty())
             return null;
         Sort sort = sortingStrategies.get(0).getSort();
-        for (EntitySortingStrategy sortingStrategy : sortingStrategies) {
+        for (SortingExtension sortingStrategy : sortingStrategies) {
             sort = sort.and(sortingStrategy.getSort());
         }
         return sort;
