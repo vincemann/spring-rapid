@@ -10,8 +10,9 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
+import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
+import com.github.vincemann.springrapid.sync.service.LastFetchInfo;
 import com.github.vincemann.springrapid.sync.service.SyncService;
 import lombok.Getter;
 import lombok.Setter;
@@ -79,7 +80,7 @@ public class SyncEntityController<
             //            Date lastUpdateDate = DATE_FORMAT.parse(lastUpdateTimestampString);
             Timestamp lastUpdate = new Timestamp(lastUpdateTimestamp);
             VerifyEntity.isPresent(lastUpdateTimestamp, "need timestamp parameter 'ts'");
-            EntitySyncStatus syncStatus = serviceFindEntitySyncStatus(new EntityLastUpdateInfo(id.toString(), lastUpdate));
+            EntitySyncStatus syncStatus = serviceFindEntitySyncStatus(new LastFetchInfo(id.toString(), lastUpdate));
             boolean updated = syncStatus != null;
             if (updated)
                 return ResponseEntity.ok()
@@ -93,7 +94,7 @@ public class SyncEntityController<
     }
 
     /**
-     * receives Set of {@link EntityLastUpdateInfo} of client in body and looks these through.
+     * receives Set of {@link EntityUpdateInfo} of client in body and looks these through.
      * Returns client Set of {@link EntitySyncStatus} for those that need update with respective {@link EntitySyncStatus#getStatus()}.
      * <p>
      * If no updated required at all, returns 204 without body.
@@ -102,16 +103,16 @@ public class SyncEntityController<
      *
      *
      */
-    public ResponseEntity<String> fetchEntitySyncStatuses(HttpServletRequest request, HttpServletResponse response) throws BadEntityException {
+    public ResponseEntity<String> fetchEntitySyncStatuses(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
         try {
             String json = readBody(request);
             CollectionType idSetType = getJsonMapper().getObjectMapper()
-                    .getTypeFactory().constructCollectionType(Set.class, EntityLastUpdateInfo.class);
-            Set<EntityLastUpdateInfo> lastUpdateInfos = getJsonMapper().readDto(json, idSetType);
+                    .getTypeFactory().constructCollectionType(Set.class, LastFetchInfo.class);
+            Set<LastFetchInfo> lastClientFetchInfos = getJsonMapper().readDto(json, idSetType);
 //            List<JPQLEntityFilter<E>> filters = HttpServletRequestUtils.extractFilters(request,applicationContext,"jpql-filter");
 
 
-            Set<EntitySyncStatus> syncStatuses = serviceFindEntitySyncStatuses(lastUpdateInfos);
+            Set<EntitySyncStatus> syncStatuses = serviceFindEntitySyncStatuses(lastClientFetchInfos);
             if (syncStatuses.isEmpty())
                 return ResponseEntity.noContent().build();
             else
@@ -156,11 +157,11 @@ public class SyncEntityController<
     }
 
 
-    protected EntitySyncStatus serviceFindEntitySyncStatus(EntityLastUpdateInfo lastUpdateInfo) {
-        return service.findEntitySyncStatus(lastUpdateInfo);
+    protected EntitySyncStatus serviceFindEntitySyncStatus(LastFetchInfo clientLastFetch) throws EntityNotFoundException {
+        return service.findEntitySyncStatus(clientLastFetch);
     }
 
-    protected Set<EntitySyncStatus> serviceFindEntitySyncStatuses(Set<EntityLastUpdateInfo> lastUpdateInfos) {
+    protected Set<EntitySyncStatus> serviceFindEntitySyncStatuses(Set<LastFetchInfo> lastUpdateInfos) throws EntityNotFoundException {
         return service.findEntitySyncStatuses(lastUpdateInfos);
     }
 

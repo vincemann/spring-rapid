@@ -33,20 +33,20 @@ public abstract class CrudControllerTestTemplate<C extends GenericCrudController
     private ApplicationContext applicationContext;
 
     public MockHttpServletRequestBuilder delete(Serializable id) throws Exception {
-        return MockMvcRequestBuilders.delete(getDeleteUrl())
+        return MockMvcRequestBuilders.delete(controller.getDeleteUrl())
                 /*.contentType(getContentType())*/
                 .param("id",id.toString());
     }
 
     public MockHttpServletRequestBuilder find(Serializable id) throws Exception {
-        return get(getFindUrl())
+        return get(controller.getFindUrl())
                 /*.contentType(getContentType())*/
                 .param("id",id.toString());
     }
 
     public MockHttpServletRequestBuilder update(String patchString,Serializable id) throws Exception {
 //        String fullUpdateQueryParam = getController().getFullUpdateQueryParam();
-        return put(getUpdateUrl())
+        return put(controller.getUpdateUrl())
                 .param("id",id.toString())
                 .content(patchString)
                 .contentType(getController().getCoreProperties().getController().getMediaType());
@@ -54,7 +54,7 @@ public abstract class CrudControllerTestTemplate<C extends GenericCrudController
 
 
     public  MockHttpServletRequestBuilder create(Object dto) throws Exception {
-        return post(getCreateUrl())
+        return post(controller.getCreateUrl())
                 .content(serialize(dto))
                 .contentType(getController().getCoreProperties().getController().getMediaType());
     }
@@ -90,13 +90,13 @@ public abstract class CrudControllerTestTemplate<C extends GenericCrudController
 
 
     public  MockHttpServletRequestBuilder findAll(UrlExtension... extensions) throws Exception {
-        MockHttpServletRequestBuilder requestBuilder = get(getController().getFindAllUrl());
+        MockHttpServletRequestBuilder requestBuilder = get(controller.getFindAllUrl());
         RapidTestUtil.addUrlExtensionsToRequest(applicationContext,requestBuilder,extensions);
         return requestBuilder;
     }
 
     public <E extends IdentifiableEntity<?>> E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {
-        return (E) getController().getDtoMapper().mapToEntity(dto, getController().getEntityClass());
+        return (E) getController().getDtoMapper().mapToEntity(dto, controller.getEntityClass());
     }
 
     public  <Dto> Dto deserialize(String s, Class<Dto> dtoClass) throws IOException {
@@ -118,30 +118,5 @@ public abstract class CrudControllerTestTemplate<C extends GenericCrudController
 
     public  <Dto> Dto readDto(MvcResult mvcResult, Class<Dto> dtoClass) throws Exception {
         return deserialize(mvcResult.getResponse().getContentAsString(), dtoClass);
-    }
-
-
-    public  String getCreateUrl() {
-        return getController().getCreateUrl();
-    }
-
-    public  String getFindUrl() {
-        return getController().getFindUrl();
-    }
-
-    public  String getDeleteUrl() {
-        return getController().getDeleteUrl();
-    }
-
-    public  String getUpdateUrl() {
-        return getController().getUpdateUrl();
-    }
-
-    public  String getFindAllUrl() {
-        return getController().getFindAllUrl();
-    }
-
-    public String getFindSomeUrl(){
-        return getController().getFindSomeUrl();
     }
 }

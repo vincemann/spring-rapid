@@ -1,10 +1,8 @@
 package com.github.vincemann.springrapid.sync.repo;
 
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
-import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
+import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.lang.Nullable;
@@ -15,8 +13,6 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -39,134 +35,44 @@ public class RapidAuditingRepository<E extends AuditingEntity<Id>,Id extends Ser
     }
 
     @Override
-    public Date findLastModifiedDateById(Id id) {
+    public EntityUpdateInfo findUpdateInfo(Id id) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Date> query = cb.createQuery(Date.class);
+        CriteriaQuery<EntityUpdateInfo> query = cb.createQuery(EntityUpdateInfo.class);
         Root<E> root = query.from(entityClass);
 
-        query.select(root.get("lastModifiedDate"))
-                .where(cb.equal(root.get("id"), id));
+        // Construct the EntityLastUpdateInfo with the required fields
+        query.select(cb.construct(EntityUpdateInfo.class,
+                root.get("id"),
+                root.get(AuditingEntity.LAST_MOD_FIELD)));
 
         return entityManager.createQuery(query).getSingleResult();
     }
-
-//    static class UpdatedSinceFiler implements QueryFilter<IdentifiableEntity<?>>{
-//
-//        private Timestamp since;
-//
-//        @Override
-//        public String getName() {
-//            return "updatedSince";
-//        }
-//
-//        public UpdatedSinceFiler(Timestamp since) {
-//            this.since = since;
-//        }
-//
-//        @Override
-//        public void setArgs(String... args) throws BadEntityException {
-//            if (args.length != 1)
-//                throw new BadEntityException("Need one arg: since-timestamp");
-//        }
-//
-//        @Override
-//        public Predicate getPredicate(CriteriaBuilder cb, Root<? extends IdentifiableEntity<?>> root) {
-//            return cb.greaterThan(root.get("lastModifiedDate"), since);
-//        }
-//    }
-
     @Override
-    public List<E> findEntitiesLastUpdatedSince(Timestamp since, List<QueryFilter<? super E>> filters) {
+    public List<E> findEntitiesUpdatedSince(Timestamp since, List<QueryFilter<? super E>> filters) {
         Specification<E> spec = toSpecification(filters);
-        spec.and(new UpdatedSince<>(since));
+        spec = spec.and(new UpdatedSince<>(since));
 
         return super.findAll(spec);
-
-//        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-//        CriteriaQuery<E> cq = cb.createQuery(entityClass);
-//        Root<E> root = cq.from(entityClass);
-
-//        // Create the predicate for filtering
-//        Predicate datePredicate = cb.greaterThan(root.get("lastModifiedDate"), since);
-//
-//        // Construct the EntityLastUpdateInfo with the required fields
-//        cq.select(root);
-//
-//        // Combine the date predicate with custom filters
-//        List<Predicate> allPredicates = new ArrayList<>();
-//        allPredicates.add(datePredicate);
-//        for (QueryFilter<? super E> filter : filters) {
-//            Predicate filterPredicate = filter.getPredicate(cb,root);
-//            allPredicates.add(filterPredicate);
-//        }
-//
-//        // Apply all predicates to the query
-//        cq.where(cb.and(allPredicates.toArray(new Predicate[0])));
-//
-//        // not needed
-////        // Order by lastModifiedDate
-////        cq.orderBy(cb.desc(root.get("lastModifiedDate")));
-//
-//        TypedQuery<E> query = entityManager.createQuery(cq);
-//        return query.getResultList();
     }
 
    // faster then the other method
     @Override
-    public List<EntityLastUpdateInfo> findLastUpdateInfosSince(Timestamp since, List<QueryFilter<? super E>> filters) {
-
-
-        // wont work bc EntityLastUpdateInfo is no SubType of E
-//        List<QueryFilter<? super E>> updatedFilters = new ArrayList<>(filters);
-//        updatedFilters.add(new UpdatedSinceFiler(since));
-//
-//        // Create a specification that only fetches id and lastUpdate
-//        Specification<E> spec = (root, query, criteriaBuilder) -> {
-//            CompoundSelection<EntityLastUpdateInfo> construct = criteriaBuilder.construct(
-//                    EntityLastUpdateInfo.class,
-//                    root.get("id"),
-//                    root.get("lastUpdate"));
-//            query.select(construct);
-//            return filtered(updatedFilters).toPredicate(root, query, criteriaBuilder);
-//        };
-//
-//        // Assuming that the repo supports custom Specification with projections
-//        return repo.findAll(spec);
-
+    public List<EntityUpdateInfo> findUpdateInfosSince(Timestamp since, List<QueryFilter<? super E>> filters) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<EntityLastUpdateInfo> cq = cb.createQuery(EntityLastUpdateInfo.class);
+        CriteriaQuery<EntityUpdateInfo> cq = cb.createQuery(EntityUpdateInfo.class);
         Root<E> root = cq.from(entityClass);
 
         Specification<E> spec = Specification.where(new UpdatedSince<>(since));
-        spec.and(toSpecification(filters));
-
-        // Create the predicate for filtering
-//        Predicate datePredicate = cb.greaterThan(root.get("lastModifiedDate"), since);
+        spec = spec.and(toSpecification(filters));
 
         // Construct the EntityLastUpdateInfo with the required fields
-        cq.select(cb.construct(EntityLastUpdateInfo.class,
+        cq.select(cb.construct(EntityUpdateInfo.class,
                 root.get("id"),
-                root.get("lastModifiedDate")));
+                root.get(AuditingEntity.LAST_MOD_FIELD)));
 
-        // Combine the date predicate with custom filters
-//        List<Predicate> allPredicates = new ArrayList<>();
-//        allPredicates.add(datePredicate);
-//        for (QueryFilter<? super E> filter : filters) {
-//            Predicate filterPredicate = filter.getPredicate(cb,root);
-//            allPredicates.add(filterPredicate);
-//        }
-
-        // Apply all predicates to the query
-//        cq.where(cb.and(allPredicates.toArray(new Predicate[0])));
         applySpecificationToCriteria(spec,entityClass,cq);
-
-
-        // not needed
-//        // Order by lastModifiedDate
-//        cq.orderBy(cb.desc(root.get("lastModifiedDate")));
-
-        TypedQuery<EntityLastUpdateInfo> query = entityManager.createQuery(cq);
+        TypedQuery<EntityUpdateInfo> query = entityManager.createQuery(cq);
         return query.getResultList();
     }
 
@@ -208,7 +114,7 @@ public class RapidAuditingRepository<E extends AuditingEntity<Id>,Id extends Ser
 
         @Override
         public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-            return cb.greaterThan(root.get("lastModifiedDate"), since);
+            return cb.greaterThan(root.get(AuditingEntity.LAST_MOD_FIELD), since);
         }
     }
 

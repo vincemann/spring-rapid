@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.coretest.controller.template.MvcControll
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import com.github.vincemann.springrapid.sync.controller.EntitySyncStatusSerializer;
 import com.github.vincemann.springrapid.sync.controller.SyncEntityController;
-import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
+import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
 import lombok.Getter;
@@ -60,7 +60,7 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
     }
 
 
-    public MockHttpServletRequestBuilder fetchSyncStatuses(Set<EntityLastUpdateInfo> updateInfos) throws Exception {
+    public MockHttpServletRequestBuilder fetchSyncStatuses(Set<EntityUpdateInfo> updateInfos) throws Exception {
         String jsonUpdateInfos = getController().getJsonMapper().writeDto(updateInfos);
         return MockMvcRequestBuilders.post(controller.getFetchEntitySyncStatusesUrl())
                 .content(jsonUpdateInfos).contentType(MediaType.APPLICATION_JSON);
@@ -103,7 +103,7 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
         return syncStatusSerializer.deserializeToSet(responseString);
     }
 
-    public Set<EntitySyncStatus> fetchSyncStatuses_assertUpdates(Set<EntityLastUpdateInfo> updateInfos) throws Exception {
+    public Set<EntitySyncStatus> fetchSyncStatuses_assertUpdates(Set<EntityUpdateInfo> updateInfos) throws Exception {
         String jsonUpdateInfos = getController().getJsonMapper().writeDto(updateInfos);
         String responseString = mvc.perform(fetchSyncStatuses(updateInfos))
                 .andExpect(MockMvcResultMatchers.status().is(200))
@@ -112,7 +112,7 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
         return syncStatusSerializer.deserializeToSet(responseString);
     }
 
-    public void fetchSyncStatuses_assertNoUpdates(Set<EntityLastUpdateInfo> updateInfos) throws Exception {
+    public void fetchSyncStatuses_assertNoUpdates(Set<EntityUpdateInfo> updateInfos) throws Exception {
         mvc.perform(fetchSyncStatuses(updateInfos))
                 .andExpect(MockMvcResultMatchers.status().is(204))
                 .andExpect(MockMvcResultMatchers.content().string(""));

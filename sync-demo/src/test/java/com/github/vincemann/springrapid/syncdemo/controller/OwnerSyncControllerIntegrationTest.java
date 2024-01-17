@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
 import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
 import com.github.vincemann.springrapid.sync.controller.EntitySyncStatusSerializer;
-import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
+import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
 import com.github.vincemann.springrapid.syncdemo.controller.template.OwnerSyncControllerTestTemplate;
@@ -250,9 +250,9 @@ public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationT
         Assertions.assertTrue(updatedOwner3.getLastModifiedDate().after(lastServerUpdate));
 
         // now should ask for update info for owner2 and owner3
-        Set<EntityLastUpdateInfo> lastUpdateInfos = new HashSet<>();
-        lastUpdateInfos.add(new EntityLastUpdateInfo(owner.getId(),clientUpdate));
-        lastUpdateInfos.add(new EntityLastUpdateInfo(owner2.getId(),clientUpdate));
+        Set<EntityUpdateInfo> lastUpdateInfos = new HashSet<>();
+        lastUpdateInfos.add(new EntityUpdateInfo(owner.getId(),clientUpdate));
+        lastUpdateInfos.add(new EntityUpdateInfo(owner2.getId(),clientUpdate));
         Set<EntitySyncStatus> statuses = ownerSyncController.fetchSyncStatuses_assertUpdates(lastUpdateInfos);
         Assertions.assertEquals(1,statuses.size());
         EntitySyncStatus owner2SyncStatus = statuses.stream().filter(s -> s.getId().equals(updatedOwner2.getId().toString())).findFirst().get();
@@ -316,9 +316,9 @@ public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationT
         Assertions.assertTrue(updatedOwner3.getLastModifiedDate().before(clientUpdate2));
 
         // now should ask for update info for owner2 and owner3
-        Set<EntityLastUpdateInfo> lastUpdateInfos = new HashSet<>();
-        lastUpdateInfos.add(new EntityLastUpdateInfo(owner2.getId(),clientUpdate1));
-        lastUpdateInfos.add(new EntityLastUpdateInfo(owner3.getId(),clientUpdate2));
+        Set<EntityUpdateInfo> lastUpdateInfos = new HashSet<>();
+        lastUpdateInfos.add(new EntityUpdateInfo(owner2.getId(),clientUpdate1));
+        lastUpdateInfos.add(new EntityUpdateInfo(owner3.getId(),clientUpdate2));
         Set<EntitySyncStatus> statuses = ownerSyncController.fetchSyncStatuses_assertUpdates(lastUpdateInfos);
         Assertions.assertEquals(1,statuses.size());
         EntitySyncStatus owner2SyncStatus = statuses.stream().filter(s -> s.getId().equals(updatedOwner2.getId().toString())).findFirst().get();

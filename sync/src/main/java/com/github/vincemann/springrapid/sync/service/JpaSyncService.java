@@ -6,15 +6,15 @@ import com.github.vincemann.springrapid.core.service.AbstractCrudService;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.util.FilterUtils;
-import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
+import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
 import com.github.vincemann.springrapid.sync.repo.AuditingRepository;
 import com.github.vincemann.springrapid.sync.repo.RapidAuditingRepository;
-import lombok.Getter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -27,13 +27,13 @@ import java.util.stream.Collectors;
 
 
 public abstract class JpaSyncService<E extends AuditingEntity<Id>, Id extends Serializable>
-        implements SyncService<E, Id> , InitializingBean {
+        implements SyncService<E, Id>, InitializingBean {
 
     protected IdConverter<Id> idConverter;
     // could not merge my custom repo with jpa repo for some reason, so custom repos are seperated
     // and everything that can be auto impl via jpaRepoInterface is subTypeRequirement for Repo generic type
-    protected AuditingRepository<E,Id> auditingRepository;
-    protected AbstractCrudService<E,Id,?> crudService;
+    protected AuditingRepository<E, Id> auditingRepository;
+    protected AbstractCrudService<E, Id,?> crudService;
     protected EntityManager entityManager;
 
     public JpaSyncService() {
@@ -42,26 +42,28 @@ public abstract class JpaSyncService<E extends AuditingEntity<Id>, Id extends Se
 
     @Transactional
     @Override
-    public EntitySyncStatus findEntitySyncStatus(EntityLastUpdateInfo lastUpdateInfo) {
-        String id = lastUpdateInfo.getId();
+    public EntitySyncStatus findEntitySyncStatus(LastFetchInfo clientLastUpdate) {
+        String id = clientLastUpdate.getId();
         Id convertedId = idConverter.toId(id);
-        Date lastModified = auditingRepository.findLastModifiedDateById(convertedId);
-        SyncStatus status;
-        boolean updated;
-        if (lastModified == null) {
-            assert crudService.findById(convertedId).isEmpty();
-            updated = true;
-            status = SyncStatus.REMOVED;
-        } else {
-            updated = lastUpdateInfo.getLastUpdate().before(lastModified);
-            status = SyncStatus.UPDATED;
-        }
-        if (updated) {
+        // cant distinguish between removed and has never existed, so just say removed bc I guess the client knows
+        // what he is doing
+        boolean exists = crudService.getRepository().existsById(convertedId);
+        if (!exists) {
             return EntitySyncStatus.builder()
                     .id(id)
-                    .status(status)
+                    .status(SyncStatus.REMOVED)
+                    .build();
+        }
+        EntityUpdateInfo lastServerUpdate = auditingRepository.findUpdateInfo(convertedId);
+        if (lastServerUpdate == null)
+            throw new IllegalArgumentException("Could not find EntityUpdateInfo for existing entity: " + id);
+        if (lastServerUpdate.getLastUpdate().after(clientLastUpdate.getLastUpdate())) {
+            return EntitySyncStatus.builder()
+                    .id(id)
+                    .status(SyncStatus.UPDATED)
                     .build();
         } else {
+            // no update required
             return null;
         }
     }
@@ -71,16 +73,16 @@ public abstract class JpaSyncService<E extends AuditingEntity<Id>, Id extends Se
     public Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch, List<QueryFilter<? super E>> jpqlFilters) {
         // server side update info
         Set<EntitySyncStatus> result = new HashSet<>();
-        // todo overwrite and check soft delete timestamp
-        List<EntityLastUpdateInfo> updateInfosSince = auditingRepository.findLastUpdateInfosSince(lastClientFetch, jpqlFilters);
-        for (EntityLastUpdateInfo lastUpdateInfo : updateInfosSince) {
-            if (lastUpdateInfo.getLastUpdate().after(lastClientFetch)) {
-                result.add(
-                        EntitySyncStatus.builder()
-                                .id(lastUpdateInfo.getId())
-                                .status(SyncStatus.UPDATED)
-                                .build());
-            }
+        // cant find out about removed entities - what has been removed must be evaluated by client by comparing own set
+        // + its often not relevant that something was removed, for example if client didnt know about the entity in the first place
+        List<EntityUpdateInfo> updateInfosSince = auditingRepository.findUpdateInfosSince(lastClientFetch, jpqlFilters);
+        for (EntityUpdateInfo lastUpdateInfo : updateInfosSince) {
+            result.add(
+                    EntitySyncStatus.builder()
+                            .id(lastUpdateInfo.getId())
+                            .status(SyncStatus.UPDATED)
+                            .build());
+
         }
         return result;
     }
@@ -91,17 +93,17 @@ public abstract class JpaSyncService<E extends AuditingEntity<Id>, Id extends Se
     public Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch, List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> entityFilters) {
         // server side update info
         Set<EntitySyncStatus> result = new HashSet<>();
-        // todo overwrite and check soft delete timestamp
-        List<E> updatedEntities = auditingRepository.findEntitiesLastUpdatedSince(lastClientFetch, jpqlFilters);
+        // cant find out about removed entities - what has been removed must be evaluated by client by comparing own set
+        // + its often not relevant that something was removed, for example if client didnt know about the entity in the first place
+        List<E> updatedEntities = auditingRepository.findEntitiesUpdatedSince(lastClientFetch, jpqlFilters);
         List<E> filtered = FilterUtils.applyMemoryFilters(updatedEntities, entityFilters);
         for (E entity : filtered) {
-            if (entity.getLastModifiedDate().after(lastClientFetch)) {
-                result.add(
-                        EntitySyncStatus.builder()
-                                .id(entity.getId().toString())
-                                .status(SyncStatus.UPDATED)
-                                .build());
-            }
+            result.add(
+                    EntitySyncStatus.builder()
+                            .id(entity.getId().toString())
+                            .status(SyncStatus.UPDATED)
+                            .build());
+
         }
         return result;
     }
@@ -111,9 +113,9 @@ public abstract class JpaSyncService<E extends AuditingEntity<Id>, Id extends Se
      */
     @Transactional
     @Override
-    public Set<EntitySyncStatus> findEntitySyncStatuses(Collection<EntityLastUpdateInfo> lastUpdateInfos) {
+    public Set<EntitySyncStatus> findEntitySyncStatuses(Collection<LastFetchInfo> lastFetchInfo) {
         // maybe add parallel flag ?
-        return lastUpdateInfos.stream()
+        return lastFetchInfo.stream()
                 .map(this::findEntitySyncStatus)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
@@ -121,7 +123,7 @@ public abstract class JpaSyncService<E extends AuditingEntity<Id>, Id extends Se
 
     @Lazy
     @Autowired
-    public void injectCrudService(AbstractCrudService<E, Id,?> crudService) {
+    public void injectRepo(AbstractCrudService<E, Id, ?> crudService) {
         this.crudService = crudService;
     }
 
@@ -137,6 +139,6 @@ public abstract class JpaSyncService<E extends AuditingEntity<Id>, Id extends Se
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        this.auditingRepository= new RapidAuditingRepository<>(entityManager,crudService.getEntityClass());
+        this.auditingRepository = new RapidAuditingRepository<>(entityManager, crudService.getEntityClass());
     }
 }
