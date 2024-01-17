@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.sync.service;
 
 import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
+import com.github.vincemann.springrapid.core.model.IAuditingEntity;
 import com.github.vincemann.springrapid.core.service.AbstractCrudService;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
@@ -28,7 +29,7 @@ import static com.github.vincemann.springrapid.core.util.FilterUtils.toSpec;
 // maybe remove id param?
 
 
-public abstract class JpaSyncService<E extends AuditingEntity<Id>, Id extends Serializable>
+public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends Serializable>
         implements SyncService<E, Id>, InitializingBean {
 
     protected IdConverter<Id> idConverter;
@@ -141,6 +142,6 @@ public abstract class JpaSyncService<E extends AuditingEntity<Id>, Id extends Se
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        this.auditingRepository = new RapidAuditingRepository<>(entityManager, crudService.getEntityClass());
+        this.auditingRepository = new RapidAuditingRepository(entityManager, crudService.getEntityClass());
     }
 }

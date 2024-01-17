@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.sync.service;
 
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
+import com.github.vincemann.springrapid.core.model.IAuditingEntity;
 import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -32,8 +33,8 @@ import static com.github.vincemann.springrapid.sync.util.ReflectionUtils.createA
 // but i dont want anyone to have to cast in order to add this extension
 // if string type is used for id, then a copy of this with String type for id is required
 public class AuditCollectionsExtension
-        extends BasicServiceExtension<CrudService<AuditingEntity<Long>, Long>>
-        implements GenericCrudServiceExtension<CrudService<AuditingEntity<Long>, Long>, AuditingEntity<Long>, Long> {
+        extends BasicServiceExtension<CrudService<IAuditingEntity<Long>, Long>>
+        implements GenericCrudServiceExtension<CrudService<IAuditingEntity<Long>, Long>, IAuditingEntity<Long>, Long> {
 
 
 
@@ -48,7 +49,7 @@ public class AuditCollectionsExtension
 
 
 
-    protected void setUpdated(AuditingEntity<?> entity){
+    protected void setUpdated(IAuditingEntity<?> entity){
         // updates detected, should also trigger dirty checking so AuditingEntityHandler also sets lastModifiedById
         // https://stackoverflow.com/a/63777063/9027032
         entity.setLastModifiedDate(new Date());
@@ -56,7 +57,7 @@ public class AuditCollectionsExtension
 
     @Transactional
     @Override
-    public AuditingEntity<Long> partialUpdate(AuditingEntity<Long> entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
+    public IAuditingEntity<Long> partialUpdate(IAuditingEntity<Long> entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
         // all collection fields must be marked in fieldsRemoved or propertiesToUpdate ( see next method)
         // only check those if present in collectionFieldNames
         List<String> fieldNamesToRemove = Lists.newArrayList(fieldsToUpdate);
@@ -64,7 +65,7 @@ public class AuditCollectionsExtension
                 .filter(f -> fieldNamesToRemove.contains(f.getName()))
                 .collect(Collectors.toList());
         List<Collection<?>> audited = recordOldCollections(entity.getId(), auditFields);
-        AuditingEntity<Long> result = getNext().partialUpdate(entity, fieldsToUpdate);
+        IAuditingEntity<Long> result = getNext().partialUpdate(entity, fieldsToUpdate);
         detectChanges(result,audited,auditFields);
         return result;
     }
@@ -72,18 +73,18 @@ public class AuditCollectionsExtension
 
     @Transactional
     @Override
-    public AuditingEntity<Long> fullUpdate(AuditingEntity<Long> entity) throws BadEntityException, EntityNotFoundException {
+    public IAuditingEntity<Long> fullUpdate(IAuditingEntity<Long> entity) throws BadEntityException, EntityNotFoundException {
         List<Field> auditFields = findAuditCollectionFields();
         List<Collection<?>> audited = recordOldCollections(entity.getId(),auditFields);
-        AuditingEntity<Long> result = getNext().softUpdate(entity);
+        IAuditingEntity<Long> result = getNext().softUpdate(entity);
         detectChanges(result,audited,auditFields);
         return result;
     }
 
     protected List<Collection<?>> recordOldCollections(Long id, List<Field> collectionFieldNames) throws EntityNotFoundException {
-        Optional<AuditingEntity<Long>> byId = getLast().findById(id);
+        Optional<IAuditingEntity<Long>> byId = getLast().findById(id);
         List<Collection<?>> auditedCollections = new ArrayList<>();
-        AuditingEntity<Long> before = VerifyEntity.isPresent(byId, id, getLast().getEntityClass());
+        IAuditingEntity<Long> before = VerifyEntity.isPresent(byId, id, getLast().getEntityClass());
         for (Field collectionField : collectionFieldNames) {
             // needs to be detached via new Set
             Collection<?> collection = accessCollectionField(before, collectionField);
@@ -95,7 +96,7 @@ public class AuditCollectionsExtension
         return auditedCollections;
     }
 
-    protected void detectChanges(AuditingEntity<Long> result, List<Collection<?>> audited, List<Field> auditFields) {
+    protected void detectChanges(IAuditingEntity<Long> result, List<Collection<?>> audited, List<Field> auditFields) {
         int count = 0;
         for (Collection<?> oldCollection : audited) {
             // old collection is detached
@@ -118,7 +119,7 @@ public class AuditCollectionsExtension
     protected static final ConcurrentMap<Class<?>,List<Field>> cache = new ConcurrentHashMap<>();
     // looks for AuditCollection annotation
     protected List<Field> findAuditCollectionFields(){
-        Class<AuditingEntity<Long>> entityClass = getLast().getEntityClass();
+        Class<IAuditingEntity<Long>> entityClass = getLast().getEntityClass();
         List<Field> cached = cache.get(entityClass);
         if (cached != null)
             return cached;

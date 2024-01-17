@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.sync.repo;
 
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
+import com.github.vincemann.springrapid.core.model.IAuditingEntity;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.util.Specs;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
@@ -23,7 +24,7 @@ import java.util.List;
 import static com.github.vincemann.springrapid.core.util.FilterUtils.*;
 import static org.springframework.data.jpa.repository.query.QueryUtils.toOrders;
 
-public class RapidAuditingRepository<E extends AuditingEntity<Id>,Id extends Serializable>
+public class RapidAuditingRepository<E extends IAuditingEntity<Id>,Id extends Serializable>
     extends SimpleJpaRepository<E,Id>
         implements AuditingRepository<E,Id> {
 

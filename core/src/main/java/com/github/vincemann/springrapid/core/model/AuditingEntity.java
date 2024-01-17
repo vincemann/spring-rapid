@@ -30,6 +30,7 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 public class AuditingEntity<ID extends Serializable>
 			extends IdentifiableEntityImpl<ID>
+				implements IAuditingEntity<ID>
 {
 
 	private static final long serialVersionUID = -8151190931948396443L;

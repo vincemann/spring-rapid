@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.coretest.service;
 
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.filter.UrlExtension;
 import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -87,6 +89,12 @@ public abstract class CrudServiceIntegrationTest
     @Autowired
     public void injectCrudServiceLocator(CrudServiceLocator crudServiceLocator) {
         this.crudServiceLocator = crudServiceLocator;
+    }
+
+    public <Ex extends UrlExtension<?>> Ex createExtension(Class<Ex> extensionClass, String... args) throws BadEntityException {
+        Ex bean = applicationContext.getBean(extensionClass);
+        bean.setArgs(args);
+        return bean;
     }
 
     public ServiceResultActions test(ServiceRequestBuilder serviceRequestBuilder) throws Exception {

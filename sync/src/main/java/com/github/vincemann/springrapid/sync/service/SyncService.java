@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.sync.service;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
+import com.github.vincemann.springrapid.core.model.IAuditingEntity;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
@@ -16,7 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-public interface SyncService<E extends AuditingEntity<Id>,Id extends Serializable> extends AopLoggable {
+public interface SyncService<E extends IAuditingEntity<Id>,Id extends Serializable> extends AopLoggable {
 
 
     @LogInteraction

@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.core.controller.AbstractEntityController
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingException;
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
+import com.github.vincemann.springrapid.core.model.IAuditingEntity;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -43,7 +44,7 @@ import java.util.Set;
 @Slf4j
 @Getter
 public class SyncEntityController<
-        E extends AuditingEntity<ID>,
+        E extends IAuditingEntity<ID>,
         ID extends Serializable,
         S extends SyncService<E, ID>>
         extends AbstractEntityController<E, ID>
