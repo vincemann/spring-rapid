@@ -47,12 +47,6 @@
             <version>2.6.11</version>
         </dependency>
 
-<!--        util-->
-        <dependency>
-            <groupId>com.github.Hervian</groupId>
-            <artifactId>safety-mirror</artifactId>
-            <version>1.0.0</version>
-        </dependency>
 
 <!--        test-->
         <dependency>

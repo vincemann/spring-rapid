@@ -12,10 +12,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 public class FilterUtils {
@@ -25,7 +22,12 @@ public class FilterUtils {
             return result;
         if (filters.isEmpty())
             return result;
-        Set<E> filtered = new HashSet<>();
+        Set<E> filtered;
+        if (result instanceof LinkedHashSet)
+             filtered = new LinkedHashSet<>();
+        else
+            filtered = new HashSet<>();
+
         for (E entity : result) {
             if (!isFilteredOut(filters,entity)){
                 filtered.add(entity);

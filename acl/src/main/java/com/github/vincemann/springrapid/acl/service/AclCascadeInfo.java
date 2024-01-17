@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.acl.service;
 
 import com.github.hervian.reflection.Types;
-import com.github.vincemann.springrapid.acl.util.MethodNameUtil;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
-import com.github.vincemann.springrapid.coredemo.controller.template.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.coredemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadForeignOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
@@ -12,8 +11,8 @@ import com.github.vincemann.springrapid.coredemo.service.filter.CityPrefixFilter
 import com.github.vincemann.springrapid.coredemo.service.filter.HasPetsFilter;
 import com.github.vincemann.springrapid.coredemo.service.filter.OwnerTelNumberFilter;
 import com.github.vincemann.springrapid.coredemo.service.filter.PetNameEndsWithFilter;
-import com.github.vincemann.springrapid.coredemo.service.sort.NameAscSorting;
-import com.github.vincemann.springrapid.coredemo.service.sort.NameDescSorting;
+import com.github.vincemann.springrapid.coredemo.service.sort.LastNameAscSorting;
+import com.github.vincemann.springrapid.coredemo.service.sort.LastNameDescSorting;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
 import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
 import org.junit.jupiter.api.Assertions;
@@ -414,7 +413,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         securityContext.login(TestPrincipal.withName(KAHN));
         // memory filter
         UrlExtension hasPetsFilter = new UrlExtension(HasPetsFilter.class);
-        UrlExtension sortByNameDesc = new UrlExtension(NameDescSorting.class);
+        UrlExtension sortByNameDesc = new UrlExtension(LastNameDescSorting.class);
         List<ReadOwnOwnerDto> responseDtos = deserializeToList(
                 perform(ownerController.findAll(hasPetsFilter,sortByNameDesc))
                         .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
@@ -434,7 +433,8 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
 
         // diff sorting
-        UrlExtension sortByNameAsc = new UrlExtension(NameAscSorting.class);
+        UrlExtension sortByNameAsc = new UrlExtension(LastNameAscSorting.class);
+        securityContext.login(TestPrincipal.withName(KAHN));
         responseDtos = deserializeToList(
                 perform(ownerController.findAll(hasPetsFilter,sortByNameAsc))
                         .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);

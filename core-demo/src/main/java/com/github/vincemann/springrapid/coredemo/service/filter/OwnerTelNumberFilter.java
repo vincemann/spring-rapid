@@ -13,6 +13,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import static com.github.vincemann.springrapid.core.util.MethodNameUtil.propertyNameOf;
+
 @ServiceComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class OwnerTelNumberFilter implements QueryFilter<Owner> {
@@ -34,7 +36,7 @@ public class OwnerTelNumberFilter implements QueryFilter<Owner> {
 
     @Override
     public Predicate toPredicate(Root<Owner> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        return cb.like(root.get("telephone"), telNrPrefix + "%");
+        return cb.like(root.get(propertyNameOf(new Owner()::getTelephone)), telNrPrefix + "%");
     }
 
 }

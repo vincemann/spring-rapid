@@ -23,10 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static com.github.vincemann.springrapid.core.util.FilterUtils.*;
 
@@ -169,7 +166,7 @@ public abstract class JPACrudService
         if (sortingStrategies.isEmpty())
              result = new HashSet<>(filterRepository.findAll(toSpec(jpqlFilters)));
         else
-            result = new HashSet<>(filterRepository.findAll(toSpec(jpqlFilters),toSort(sortingStrategies)));
+            result = new LinkedHashSet<>(filterRepository.findAll(toSpec(jpqlFilters),toSort(sortingStrategies)));
         return FilterUtils.applyMemoryFilters(result, filters);
     }
 

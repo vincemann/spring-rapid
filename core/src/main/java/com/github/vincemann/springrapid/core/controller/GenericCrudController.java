@@ -87,7 +87,7 @@ public abstract class GenericCrudController
         beforeFindAll(request, response,entityFilters,queryFilters,sortingStrategies);
         logSecurityContext();
         Set<E> foundEntities = serviceFindAll(queryFilters, entityFilters,sortingStrategies);
-        Collection<Object> dtos = new HashSet<>();
+        List<Object> dtos = new ArrayList<>();
         for (E e : foundEntities) {
             dtos.add(dtoMapper.mapToDto(e,
                     createDtoClass(getFindAllUrl(), Direction.RESPONSE, e)));
@@ -108,7 +108,7 @@ public abstract class GenericCrudController
         beforeFindSome(ids, request, response);
 
         Set<E> foundEntities = serviceFindSome(ids);
-        Collection<Object> dtos = new HashSet<>();
+        List<Object> dtos = new ArrayList<>();
         for (E e : foundEntities) {
             dtos.add(dtoMapper.mapToDto(e,
                     createDtoClass(getFindSomeUrl(), Direction.RESPONSE, e)));

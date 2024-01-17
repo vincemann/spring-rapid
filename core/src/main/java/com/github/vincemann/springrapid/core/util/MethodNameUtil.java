@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acl.util;
+package com.github.vincemann.springrapid.core.util;
 
 import com.github.hervian.reflection.Types;
 
