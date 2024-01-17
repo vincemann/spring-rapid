@@ -240,6 +240,7 @@ public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationT
         Assertions.assertEquals(owner3Dto.getCity(),updateOwner3.getCity());
     }
 
+    // cant find removed entities
     @Test
     public void checkSyncStatusForAllOwners_sinceTimestamp_findOnlyUpdates() throws Exception {
         // create 3 owners kahn, meier & gil
@@ -274,7 +275,6 @@ public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationT
         Assertions.assertFalse(savedMeier.getLastModifiedDate().after(meierServerUpdate));
         Assertions.assertFalse(ownerService.findById(savedGil.getId()).isPresent());
 
-        // todo fix
         // now should need update for owner2 and owner3
         Set<EntitySyncStatus> statuses = ownerSyncController.fetchSyncStatusesSinceTs_assertUpdates(clientUpdate);
         Assertions.assertEquals(1,statuses.size());
@@ -298,6 +298,9 @@ public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationT
 
         Assertions.assertEquals(kahnDto.getCity(),updateKahn.getCity());
     }
+
+    
+
 
     @Test
     public void checkSyncStatusForSomeOwners_withGivenEntityUpdateInfos() throws Exception {
@@ -358,6 +361,50 @@ public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationT
         ReadOwnOwnerDto owner2Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner2.getId())).findFirst().get();
 
         Assertions.assertEquals(owner2Dto.getCity(),updateOwner2.getCity());
+    }
+
+    @Test
+    public void checkSyncStatusForSomeOwners_withGivenEntityUpdateInfos_someRemoved() throws Exception {
+        // create 3 owners kahn, meier & gil
+        // record client ts
+        // modify kahn & remove gil
+        // ask server for sync info of kahn,gil,meier
+        // server should tell client about update of kahn and removal of gil
+
+        Owner kahn = saveOwnerLinkedToPets(this.kahn);
+        Owner meier = saveOwnerLinkedToPets(this.meier);
+        Owner gil = saveOwnerLinkedToPets(this.gil);
+
+        // now
+        Timestamp clientUpdate = new Timestamp(new Date().getTime());
+
+        ownerSyncController.fetchSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
+
+        // update kahn
+        Owner updateKahn = Entity.createUpdate(kahn);
+        updateKahn.setCity(kahn.getCity() + "updated");
+
+        Owner updatedKahn = ownerService.partialUpdate(updateKahn);
+
+        ownerService.deleteById(gil.getId());
+
+        Assertions.assertTrue(updatedKahn.getLastModifiedDate().after(clientUpdate));
+        Assertions.assertTrue(ownerService.findById(gil.getId()).isEmpty());
+
+
+        // now should ask for update info for all owners
+        Set<EntityUpdateInfo> lastUpdateInfos = new HashSet<>();
+        lastUpdateInfos.add(new EntityUpdateInfo(kahn.getId(),clientUpdate));
+        lastUpdateInfos.add(new EntityUpdateInfo(meier.getId(),clientUpdate));
+        lastUpdateInfos.add(new EntityUpdateInfo(gil.getId(),clientUpdate));
+        Set<EntitySyncStatus> statuses = ownerSyncController.fetchSyncStatuses_assertUpdates(lastUpdateInfos);
+
+        Assertions.assertEquals(2,statuses.size());
+        EntitySyncStatus kahnSyncStatus = statuses.stream().filter(s -> s.getId().equals(updatedKahn.getId().toString())).findFirst().get();
+        EntitySyncStatus gilSyncStatus = statuses.stream().filter(s -> s.getId().equals(gil.getId().toString())).findFirst().get();
+
+        Assertions.assertEquals(kahnSyncStatus.getStatus(), SyncStatus.UPDATED);
+        Assertions.assertEquals(gilSyncStatus.getStatus(), SyncStatus.REMOVED);
     }
 
     @Test
@@ -483,6 +530,66 @@ public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationT
         ReadOwnOwnerDto owner3Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner3.getId())).findFirst().get();
         Assertions.assertEquals(owner3Dto.getCity(),updateOwner3.getCity());
     }
+
+
+    @Test
+    public void checkSyncStatusForFilteredOwners_sinceTimestamp_someRemoved() throws Exception {
+        // create 3 owners kahn, meier & gil
+        // record client ts
+        // modify meier and kahn & remove gil
+        // ask server for sync infos of all owners, that match filter OwnerTelNumberFilter - that have telnr that starts with 0176 -> gil and kahn
+        // server should tell client about update of kahn but cant present info for deleted gil
+
+        Owner kahn = saveOwnerLinkedToPets(this.kahn);
+        Owner meier = saveOwnerLinkedToPets(this.meier);
+        Owner gil = saveOwnerLinkedToPets(this.gil);
+
+        // now
+        Timestamp clientUpdate = new Timestamp(new Date().getTime());
+
+        ownerSyncController.fetchSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
+
+        // update meier and kahn
+        Owner updateMeier = Entity.createUpdate(meier);
+        updateMeier.setCity(meier.getCity() + "updated");
+
+
+        Owner updateKahn = Entity.createUpdate(kahn);
+        updateKahn.setCity(kahn.getCity() + "updated");
+
+        Owner updatedMeier = ownerService.partialUpdate(updateMeier);
+        Owner updatedKahn = ownerService.partialUpdate(updateKahn);
+        ownerService.deleteById(gil.getId());
+
+        Assertions.assertTrue(updatedMeier.getLastModifiedDate().after(clientUpdate));
+        Assertions.assertTrue(updatedKahn.getLastModifiedDate().after(clientUpdate));
+
+        // now should ask for update info for owners with tel nr filter
+        UrlExtension telPrefixFilter0176 = new UrlExtension(OwnerTelNumberFilter.class,"0176");
+        Set<EntitySyncStatus> statuses = ownerSyncController.fetchSyncStatusesSinceTs_assertUpdates(clientUpdate,telPrefixFilter0176);
+
+        Assertions.assertEquals(1,statuses.size());
+        EntitySyncStatus kahnSyncStatus = statuses.stream().filter(s -> s.getId().equals(updatedKahn.getId().toString())).findFirst().get();
+
+        Assertions.assertEquals(kahnSyncStatus.getStatus(), SyncStatus.UPDATED);
+
+        Set<String> idsToSync = Sets.newHashSet(kahnSyncStatus.getId());
+
+        securityContext.login(TestPrincipal.withName(KAHN));
+        String json = perform(ownerController.findSome(idsToSync))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn().getResponse().getContentAsString();
+        RapidSecurityContext.logout();
+
+        Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json,ReadOwnOwnerDto.class);
+
+        Assertions.assertEquals(1,updatedOwners.size());
+
+        ReadOwnOwnerDto kahnDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedKahn.getId())).findFirst().get();
+        Assertions.assertEquals(kahnDto.getCity(),updateKahn.getCity());
+    }
+
+
 
     @Test
     public void checkSyncStatusForAllPetsOfOwner_sinceTimestamp() throws Exception {
