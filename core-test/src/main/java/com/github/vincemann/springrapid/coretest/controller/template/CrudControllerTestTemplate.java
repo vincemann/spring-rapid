@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.coretest.controller.template;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -105,6 +107,12 @@ public abstract class CrudControllerTestTemplate<C extends GenericCrudController
 
     public  <Dto> Dto deserialize(String s, TypeReference<?> dtoClass) throws IOException {
         return getController().getJsonMapper().readDto(s, dtoClass);
+    }
+
+    public  <Dto> List<Dto> deserializeToList(String s, Class<Dto> dtoClass) throws IOException {
+        CollectionType setType = getController().getJsonMapper().getObjectMapper()
+                .getTypeFactory().constructCollectionType(List.class, dtoClass);
+        return deserialize(s, setType);
     }
 
     public  <Dto> Dto deserialize(String s, JavaType dtoClass) throws IOException {

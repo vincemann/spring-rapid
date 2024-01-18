@@ -10,13 +10,13 @@ import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.coredemo.repo.*;
 import com.github.vincemann.springrapid.coredemo.service.*;
 import com.github.vincemann.springrapid.coredemo.service.ext.OwnerOfTheYearExtension;
-import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import com.github.vincemann.springrapid.coretest.controller.integration.MvcIntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -140,7 +140,7 @@ public class MyControllerIntegrationTest extends MvcIntegrationTest
     protected RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
 
     @Autowired
-    protected TransactionalTemplate transactionalTemplate;
+    protected TransactionTemplate transactionTemplate;
 
 
     @Autowired
@@ -265,8 +265,7 @@ public class MyControllerIntegrationTest extends MvcIntegrationTest
     }
 
     protected void assertVetHasSpecialties(String vetName, String... descriptions) {
-        transactionalTemplate.doInTransaction(() -> {
-
+        transactionTemplate.executeWithoutResult(transactionStatus -> {
             Optional<Vet> vetOptional = vetRepository.findByLastName(vetName);
             Assertions.assertTrue(vetOptional.isPresent());
             Vet vet = vetOptional.get();
@@ -280,11 +279,11 @@ public class MyControllerIntegrationTest extends MvcIntegrationTest
             System.err.println("Checking vet: " + vetName);
             Assertions.assertEquals(specialtys, vet.getSpecialtys());
         });
+
     }
 
     protected void assertSpecialtyHasVets(String description, String... vetNames) {
-        transactionalTemplate.doInTransaction(() -> {
-
+        transactionTemplate.executeWithoutResult(transactionStatus -> {
             Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
             Assertions.assertTrue(optionalSpecialty.isPresent());
             Specialty specialty = optionalSpecialty.get();
@@ -298,11 +297,12 @@ public class MyControllerIntegrationTest extends MvcIntegrationTest
             System.err.println("Checking Specialty: " + description);
             Assertions.assertEquals(vets, specialty.getVets());
         });
+
     }
 
-//    @Transactional
+    //    @Transactional
     public void assertPetHasToys(String petName, String... toyNames) {
-        transactionalTemplate.doInTransaction(() -> {
+        transactionTemplate.executeWithoutResult(transactionStatus -> {
             Optional<Pet> petOptional = petRepository.findByName(petName);
             Assertions.assertTrue(petOptional.isPresent());
             Pet pet = petOptional.get();
@@ -314,13 +314,12 @@ public class MyControllerIntegrationTest extends MvcIntegrationTest
                 toys.add(optionalToy.get());
             }
             System.err.println("Checking pet: " + petName);
-            // todo lazy init exception, merge into transactional context before asserting, os he can load everything he needs
             Assertions.assertEquals(toys, pet.getToys());
         });
     }
 
     protected void assertOwnerHasPets(String ownerName, String... petNames) {
-        transactionalTemplate.doInTransaction(() -> {
+        transactionTemplate.executeWithoutResult(transactionStatus -> {
             Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
             Assertions.assertTrue(ownerOptional.isPresent());
             Owner owner = ownerOptional.get();
@@ -337,7 +336,7 @@ public class MyControllerIntegrationTest extends MvcIntegrationTest
     }
 
     protected void assertOwnerHasClinicCard(String ownerName, Long clinicCardId) {
-        transactionalTemplate.doInTransaction(() -> {
+        transactionTemplate.executeWithoutResult(transactionStatus -> {
             Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
             Assertions.assertTrue(ownerOptional.isPresent());
             Owner owner = ownerOptional.get();
@@ -352,8 +351,7 @@ public class MyControllerIntegrationTest extends MvcIntegrationTest
     }
 
     protected void assertClinicCardHasOwner(Long clinicCardId, String ownerName) {
-        transactionalTemplate.doInTransaction(() -> {
-
+        transactionTemplate.executeWithoutResult(transactionStatus -> {
             if (ownerName == null) {
                 ClinicCard clinicCard = clinicCardRepository.findById(clinicCardId).get();
                 Assertions.assertNull(clinicCard.getOwner());
@@ -366,10 +364,11 @@ public class MyControllerIntegrationTest extends MvcIntegrationTest
                 Assertions.assertEquals(owner, clinicCard.getOwner());
             }
         });
+
     }
 
     protected void assertToyHasPet(String toyName, String petName) {
-        transactionalTemplate.doInTransaction(() -> {
+        transactionTemplate.executeWithoutResult(transactionStatus -> {
             Pet pet = null;
             if (petName != null) {
                 Optional<Pet> petOptional = petRepository.findByName(petName);
@@ -385,7 +384,7 @@ public class MyControllerIntegrationTest extends MvcIntegrationTest
     }
 
     protected void assertPetHasOwner(String petName, String ownerName) {
-        transactionalTemplate.doInTransaction(() -> {
+        transactionTemplate.executeWithoutResult(transactionStatus -> {
             Owner owner = null;
             if (ownerName != null) {
                 Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);

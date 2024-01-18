@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.coretest.config;
 
 
 import com.github.vincemann.springrapid.core.config.RapidServiceAutoConfiguration;
-import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholderResolver;
 import com.github.vincemann.springrapid.coretest.service.resolve.RapidEntityPlaceholderResolver;
 import com.github.vincemann.springrapid.coretest.slicing.ServiceTestConfig;
@@ -11,21 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @ServiceTestConfig
 @Import(RapidServiceAutoConfiguration.class)
 public class RapidServiceTestAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean(TransactionalTemplate.class)
-    public TransactionalTemplate transactionalTemplate(){
-        return new TransactionalTemplate();
-    }
-
-    @Autowired
-    public void configureRapidTestUtil(TransactionalTemplate transactionalTemplate){
-        TransactionalRapidTestUtil.setTransactionalTestTemplate(transactionalTemplate);
-    }
 
     @Bean
     @ConditionalOnMissingBean(EntityPlaceholderResolver.class)

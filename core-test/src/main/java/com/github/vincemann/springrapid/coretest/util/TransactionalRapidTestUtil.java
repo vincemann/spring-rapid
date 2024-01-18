@@ -2,47 +2,38 @@ package com.github.vincemann.springrapid.coretest.util;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
-import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
-import com.google.common.collect.Sets;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Optional;
 
 public class TransactionalRapidTestUtil {
 
-    private static TransactionalTemplate transactionalTemplate;
-
-    public static void setTransactionalTestTemplate(TransactionalTemplate transactionalTemplate) {
-        TransactionalRapidTestUtil.transactionalTemplate = transactionalTemplate;
-    }
 
 
-    public static <E extends IdentifiableEntity> E mustBePresentIn(CrudRepository repo, Serializable id){
+    public static <E extends IdentifiableEntity> E mustBePresentIn(CrudRepository repo, Serializable id) {
         Optional byId = repo.findById(id);
-        if (byId.isEmpty()){
+        if (byId.isEmpty()) {
             throw new IllegalArgumentException("No Entity found with id: " + id);
         }
         return (E) byId.get();
     }
 
 
-
-    public static <E extends IdentifiableEntity> E mustBePresentIn(CrudService service, Serializable id){
+    public static <E extends IdentifiableEntity> E mustBePresentIn(CrudService service, Serializable id) {
         Optional byId;
         byId = service.findById(id);
-        if (byId.isEmpty()){
+        if (byId.isEmpty()) {
             throw new IllegalArgumentException("No Entity found with id: " + id);
         }
         return (E) byId.get();
     }
 
-    public static void clear(CrudService crudService){
-        transactionalTemplate.doInTransaction(() -> {
+    public static void clear(CrudService crudService, TransactionTemplate transactionTemplate) {
+        transactionTemplate.execute(status -> {
             for (IdentifiableEntity entity : (Collection<IdentifiableEntity>) crudService.findAll()) {
                 System.err.println("removing entity: " + entity);
                 try {
@@ -51,11 +42,12 @@ public class TransactionalRapidTestUtil {
                     throw new RuntimeException(e);
                 }
             }
+            return null;
         });
     }
 
-    public static void clear(JpaRepository jpaRepository){
-        transactionalTemplate.doInTransaction(() -> {
+    public static void clear(JpaRepository jpaRepository, TransactionTemplate transactionTemplate) {
+        transactionTemplate.execute(status -> {
             for (IdentifiableEntity entity : (Collection<IdentifiableEntity>) jpaRepository.findAll()) {
                 System.err.println("removing entity: " + entity);
                 try {
@@ -64,9 +56,9 @@ public class TransactionalRapidTestUtil {
                     throw new RuntimeException(e);
                 }
             }
+            return null;
         });
     }
-
 
 
 }

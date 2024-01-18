@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
 import java.io.Serializable;
@@ -112,6 +113,9 @@ public abstract class RapidAuthIntegrationTest extends AclMvcIntegrationTest {
 
     @Autowired
     protected UserControllerTestTemplate userController;
+
+    @Autowired
+    protected TransactionTemplate transactionTemplate;
 
     @BeforeEach
     protected void setup() throws Exception {
@@ -216,7 +220,7 @@ public abstract class RapidAuthIntegrationTest extends AclMvcIntegrationTest {
         System.err.println("deleting users");
         clearAclCache();
         // done via sql script
-        TransactionalRapidTestUtil.clear(aclUserService);
+        TransactionalRapidTestUtil.clear(aclUserService,transactionTemplate);
         System.err.println("deleted users");
         System.err.println("test data cleared");
 

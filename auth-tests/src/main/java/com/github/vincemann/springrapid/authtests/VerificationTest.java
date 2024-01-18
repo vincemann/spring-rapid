@@ -4,11 +4,13 @@ import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.mail.MailData;
-import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.Serializable;
 
@@ -20,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class VerificationTest extends RapidAuthIntegrationTest {
 
 	@Autowired
-    TransactionalTemplate transactionalTemplate;
+	TransactionTemplate transactionTemplate;
 	
 	@Test
 	public void canVerifyContactInformation() throws Exception {
@@ -119,15 +121,17 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 	public void usersCredentialsUpdatedAfterSignup_cantUseObsoleteVerificationCode() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		MailData mailData = userController.signup2xx(signupDto);
-		transactionalTemplate.doInTransaction(new Runnable() {
+
+		transactionTemplate.execute(new TransactionCallback<Object>() {
 			@SneakyThrows
 			@Override
-			public void run() {
+			public Object doInTransaction(TransactionStatus status) {
 				AbstractUser<Serializable> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
 
 				// Credentials updated after the verification token is issued
 				savedUser.setCredentialsUpdatedMillis(System.currentTimeMillis());
 				getUserService().fullUpdate(savedUser);
+				return null;
 			}
 		});
 

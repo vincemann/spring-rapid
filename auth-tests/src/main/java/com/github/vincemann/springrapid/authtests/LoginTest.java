@@ -1,11 +1,13 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.Serializable;
 
@@ -19,7 +21,7 @@ import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter
 public class LoginTest extends RapidAuthIntegrationTest {
 
 	@Autowired
-    TransactionalTemplate transactionalTemplate;
+	TransactionTemplate transactionTemplate;
 
 	@Test
 	public void canLogin() throws Exception {
@@ -62,13 +64,14 @@ public class LoginTest extends RapidAuthIntegrationTest {
 		// Thread.sleep(1001L);
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
-		transactionalTemplate.doInTransaction(new Runnable() {
+		transactionTemplate.execute(new TransactionCallback<Object>() {
 			@SneakyThrows
 			@Override
-			public void run() {
+			public Object doInTransaction(TransactionStatus status) {
 				AbstractUser<Serializable> user = getUserService().findById(getUser().getId()).get();
 				user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 				getUserService().softUpdate(user);
+				return null;
 			}
 		});
 
