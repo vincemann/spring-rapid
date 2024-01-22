@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -23,16 +24,33 @@ public abstract class AbstractCrudService
         implements CrudService<E, Id>, TargetClassAware, ApplicationContextAware {
     private String beanName;
     private R repository;
+    // root version of service
     protected CrudService<E, Id> service;
 
-
+    // todo for some reason this only works in the setter, not in afterPropertiesSet, fix
+    // usually the proxy versions are not available yet, only the root version
+    // if a proxy should be injected instead
+    // implement InitializingBean::afterPropertiesSet and set the service to new instance
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        // this works - gives me proxied instance with aop working
-        this.service = applicationContext.getBean(this.getClass());
+        this.service = provideRootService(applicationContext);
     }
 
+//    @Override
+//    public void afterPropertiesSet() throws Exception {
+//        // inject root version (primary) of service
+//        this.service = provideRootService(context);
+//    }
 
+    /**
+     * Overwrite this to inject different root version
+     */
+    protected CrudService<E,Id> provideRootService(ApplicationContext applicationContext){
+        // this works - gives me proxied instance with aop working
+        return applicationContext.getBean(this.getClass());
+    }
+
+    // todo probably a good idea to get this via constructor
     @SuppressWarnings("unchecked")
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
@@ -44,10 +62,6 @@ public abstract class AbstractCrudService
     public void injectRepository(R repository) {
         this.repository = repository;
     }
-
-
-    // will not be wrapped with right proxy -> no aop possible
-
 
     @Override
     public Class<E> getEntityClass() {

@@ -69,6 +69,7 @@ public class AuditCollectionsExtension
     public IAuditingEntity<Long> partialUpdate(IAuditingEntity<Long> entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
         // all collection fields must be marked in fieldsRemoved or propertiesToUpdate ( see next method)
         // only check those if present in collectionFieldNames
+        System.err.println("partial update audit collections extension");
         List<String> fieldNamesToRemove = Lists.newArrayList(fieldsToUpdate);
         List<Field> auditFields = findAuditCollectionFields().stream()
                 .filter(f -> fieldNamesToRemove.contains(f.getName()))

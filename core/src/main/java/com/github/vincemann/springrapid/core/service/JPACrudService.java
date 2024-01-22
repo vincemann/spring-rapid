@@ -45,8 +45,8 @@ public abstract class JPACrudService
         extends AbstractCrudService<E, Id, R> implements InitializingBean
 {
 
-    private FilterRepository<E,Id> filterRepository;
-    private EntityManager entityManager;
+    protected FilterRepository<E,Id> filterRepository;
+    protected EntityManager entityManager;
 
     public JPACrudService() {
     }
