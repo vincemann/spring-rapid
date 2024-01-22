@@ -85,7 +85,7 @@ public class AuditCollectionsExtension
     public IAuditingEntity<Long> fullUpdate(IAuditingEntity<Long> entity) throws BadEntityException, EntityNotFoundException {
         List<Field> auditFields = findAuditCollectionFields();
         List<Collection<IAuditingEntity<Long>>> audited = recordOldCollections(entity.getId(),auditFields);
-        IAuditingEntity<Long> result = getNext().softUpdate(entity);
+        IAuditingEntity<Long> result = getNext().fullUpdate(entity);
         detectChanges(result,audited,auditFields);
         return result;
     }
