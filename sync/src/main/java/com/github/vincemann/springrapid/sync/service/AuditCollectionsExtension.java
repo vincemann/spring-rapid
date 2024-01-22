@@ -30,8 +30,8 @@ import static com.github.vincemann.springrapid.sync.util.ReflectionUtils.createA
  * Only works for direct updates!
  */
 // todo somehow this is only typesafe with Long and not with Serializable? fix this
-// the bounds say ? super Id and Id is inferred as Long. Serializable is a superclass of Long - very weird
-// but i dont want anyone to have to cast in order to add this extension
+// the bounds say ? super Id and Id is inferred as Long. Serializable is a superclass of Long
+// but i dont want to have to cast in order to add this extension
 // if string type is used for id, then a copy of this with String type for id is required
 public class AuditCollectionsExtension
         extends BasicServiceExtension<CrudService<IAuditingEntity<Long>, Long>>
@@ -58,7 +58,7 @@ public class AuditCollectionsExtension
         this.equalsMethod = new LastModifiedEqualsMethod();
     }
 
-    protected void setUpdated(IAuditingEntity<?> entity){
+    protected void setUpdated(IAuditingEntity<Long> entity){
         // updates detected, should also trigger dirty checking so AuditingEntityHandler also sets lastModifiedById
         // https://stackoverflow.com/a/63777063/9027032
         entity.setLastModifiedDate(new Date());
@@ -96,7 +96,7 @@ public class AuditCollectionsExtension
         IAuditingEntity<Long> before = VerifyEntity.isPresent(byId, id, getLast().getEntityClass());
         for (Field collectionField : collectionFieldNames) {
             // needs to be detached via new Set
-            Collection<?> collection = accessCollectionField(before, collectionField);
+            Collection<IAuditingEntity<Long>> collection = accessCollectionField(before, collectionField);
             if (collection == null)
                 auditedCollections.add(null);
             else

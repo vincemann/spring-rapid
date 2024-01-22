@@ -5,15 +5,15 @@ import java.util.*;
 
 public class ReflectionUtils {
 
-    public static <T> Collection<T> createAndAddAll(Collection<?> inputCollection) {
+    public static <T> Collection<T> createAndAddAll(Collection<T> inputCollection) {
         if (inputCollection instanceof Set<?>) {
             // If the input collection is a Set, create a new HashSet and add all elements
-            Set<Object> newSet = new HashSet<>(inputCollection);
-            return (Collection<T>) newSet;
+            Set<T> newSet = new HashSet<>(inputCollection);
+            return newSet;
         } else if (inputCollection instanceof List<?>) {
             // If the input collection is a List, create a new ArrayList and add all elements
-            List<Object> newList = new ArrayList<>(inputCollection);
-            return (Collection<T>) newList;
+            List<T> newList = new ArrayList<>(inputCollection);
+            return newList;
         } else {
             // If it's neither a Set nor a List, throw an exception
             throw new IllegalArgumentException("Unsupported collection type: " + inputCollection.getClass().getName());
