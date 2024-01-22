@@ -9,13 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-// dont log extensions methods -> otherwise you will have log for i.E. save 3 times for 2 extensions..
-// explicitly log methods you want to log
-//// todo this is not applied bc crudservice is closer in hierarchy so its config is used instead of this one
-//@LogInteraction(disabled = true)
-//@LogConfig(logAllChildrenMethods = true,ignoreGetters = true,ignoreSetters = true)
-//dependencys will be injected by aspectj, you should create the extensions with new
-//this is done, so the extensions are not in the container as duplicate beans for service interfaces
 public abstract class AbstractServiceExtension<T,P extends ProxyController>
         implements NextLinkAware<T>,AopLoggable, IBeanNameAware {
 

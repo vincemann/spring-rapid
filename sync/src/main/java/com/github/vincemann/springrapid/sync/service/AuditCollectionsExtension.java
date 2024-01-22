@@ -11,6 +11,7 @@ import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.github.vincemann.springrapid.sync.AuditCollection;
+import com.github.vincemann.springrapid.sync.util.CollectionUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ReflectionUtils;
 
@@ -47,7 +48,15 @@ public class AuditCollectionsExtension
 //        return result;
 //    }
 
+    private EqualsMethod<IAuditingEntity<Long>> equalsMethod;
 
+    public AuditCollectionsExtension(EqualsMethod<IAuditingEntity<Long>> equalsMethod) {
+        this.equalsMethod = equalsMethod;
+    }
+
+    public AuditCollectionsExtension() {
+        this.equalsMethod = new LastModifiedEqualsMethod();
+    }
 
     protected void setUpdated(IAuditingEntity<?> entity){
         // updates detected, should also trigger dirty checking so AuditingEntityHandler also sets lastModifiedById
@@ -64,7 +73,7 @@ public class AuditCollectionsExtension
         List<Field> auditFields = findAuditCollectionFields().stream()
                 .filter(f -> fieldNamesToRemove.contains(f.getName()))
                 .collect(Collectors.toList());
-        List<Collection<?>> audited = recordOldCollections(entity.getId(), auditFields);
+        List<Collection<IAuditingEntity<Long>>> audited = recordOldCollections(entity.getId(), auditFields);
         IAuditingEntity<Long> result = getNext().partialUpdate(entity, fieldsToUpdate);
         detectChanges(result,audited,auditFields);
         return result;
@@ -75,15 +84,15 @@ public class AuditCollectionsExtension
     @Override
     public IAuditingEntity<Long> fullUpdate(IAuditingEntity<Long> entity) throws BadEntityException, EntityNotFoundException {
         List<Field> auditFields = findAuditCollectionFields();
-        List<Collection<?>> audited = recordOldCollections(entity.getId(),auditFields);
+        List<Collection<IAuditingEntity<Long>>> audited = recordOldCollections(entity.getId(),auditFields);
         IAuditingEntity<Long> result = getNext().softUpdate(entity);
         detectChanges(result,audited,auditFields);
         return result;
     }
 
-    protected List<Collection<?>> recordOldCollections(Long id, List<Field> collectionFieldNames) throws EntityNotFoundException {
+    protected List<Collection<IAuditingEntity<Long>>> recordOldCollections(Long id, List<Field> collectionFieldNames) throws EntityNotFoundException {
         Optional<IAuditingEntity<Long>> byId = getLast().findById(id);
-        List<Collection<?>> auditedCollections = new ArrayList<>();
+        List<Collection<IAuditingEntity<Long>>> auditedCollections = new ArrayList<>();
         IAuditingEntity<Long> before = VerifyEntity.isPresent(byId, id, getLast().getEntityClass());
         for (Field collectionField : collectionFieldNames) {
             // needs to be detached via new Set
@@ -96,11 +105,11 @@ public class AuditCollectionsExtension
         return auditedCollections;
     }
 
-    protected void detectChanges(IAuditingEntity<Long> result, List<Collection<?>> audited, List<Field> auditFields) {
+    protected void detectChanges(IAuditingEntity<Long> result, List<Collection<IAuditingEntity<Long>>> audited, List<Field> auditFields) {
         int count = 0;
-        for (Collection<?> oldCollection : audited) {
+        for (Collection<IAuditingEntity<Long>> oldCollection : audited) {
             // old collection is detached
-            Collection<?> updatedCollection = accessCollectionField(result, auditFields.get(count));
+            Collection<IAuditingEntity<Long>> updatedCollection = accessCollectionField(result, auditFields.get(count));
             if (oldCollection == null && updatedCollection == null)
                 continue; // no update
             else if (oldCollection == null && updatedCollection != null)
@@ -108,9 +117,7 @@ public class AuditCollectionsExtension
             else if (oldCollection != null && updatedCollection == null)
                 setUpdated(result);
             else{
-                if(!oldCollection.equals(updatedCollection)){
-                    setUpdated(result);
-                }
+                CollectionUtils.customEquals(oldCollection,updatedCollection,equalsMethod);
             }
             count++;
         }

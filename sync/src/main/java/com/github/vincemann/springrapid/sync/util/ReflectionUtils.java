@@ -5,22 +5,22 @@ import java.util.*;
 
 public class ReflectionUtils {
 
-    public static Collection<?> createAndAddAll(Collection<?> inputCollection) {
+    public static <T> Collection<T> createAndAddAll(Collection<?> inputCollection) {
         if (inputCollection instanceof Set<?>) {
             // If the input collection is a Set, create a new HashSet and add all elements
             Set<Object> newSet = new HashSet<>(inputCollection);
-            return newSet;
+            return (Collection<T>) newSet;
         } else if (inputCollection instanceof List<?>) {
             // If the input collection is a List, create a new ArrayList and add all elements
             List<Object> newList = new ArrayList<>(inputCollection);
-            return newList;
+            return (Collection<T>) newList;
         } else {
             // If it's neither a Set nor a List, throw an exception
             throw new IllegalArgumentException("Unsupported collection type: " + inputCollection.getClass().getName());
         }
     }
 
-    public static Collection<?> accessCollectionField(Object entity, Field field) {
+    public static <T> Collection<T> accessCollectionField(Object entity, Field field) {
 //        Field collectionField = ReflectionUtils.findField(entity.getClass(), collectionFieldName);
 //
 //        if (collectionField == null) {
@@ -38,7 +38,7 @@ public class ReflectionUtils {
         // Check if the field is a Collection (or a subtype of Collection)
         if (collectionValue instanceof Collection<?>) {
             // Cast the collection value to Collection<?> and return it
-            return (Collection<?>) collectionValue;
+            return (Collection<T>) collectionValue;
         } else {
             // If the field is not a collection, you can handle the error accordingly
             throw new IllegalArgumentException("The specified field is not a collection.");

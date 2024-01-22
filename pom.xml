@@ -48,6 +48,7 @@
         <module>acl-demo</module>
         <module>acl-test</module>
         <module>sync-demo</module>
+        <module>sync-test</module>
     </modules>
 
     <dependencies>

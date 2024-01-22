@@ -300,7 +300,6 @@ public class MyControllerIntegrationTest extends MvcIntegrationTest
 
     }
 
-    //    @Transactional
     public void assertPetHasToys(String petName, String... toyNames) {
         transactionTemplate.executeWithoutResult(transactionStatus -> {
             Optional<Pet> petOptional = petRepository.findByName(petName);
