@@ -118,7 +118,8 @@ public class AuditCollectionsExtension
             else if (oldCollection != null && updatedCollection == null)
                 setUpdated(result);
             else{
-                CollectionUtils.customEquals(oldCollection,updatedCollection,equalsMethod);
+                if (!CollectionUtils.customEquals(oldCollection,updatedCollection,equalsMethod))
+                    setUpdated(result);
             }
             count++;
         }
