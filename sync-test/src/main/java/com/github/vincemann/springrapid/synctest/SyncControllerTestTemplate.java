@@ -1,11 +1,12 @@
 package com.github.vincemann.springrapid.synctest;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
 import com.github.vincemann.springrapid.coretest.controller.template.MvcControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
-import com.github.vincemann.springrapid.sync.controller.EntitySyncStatusSerializer;
 import com.github.vincemann.springrapid.sync.controller.SyncEntityController;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
@@ -19,25 +20,21 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Getter
 public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
         extends MvcControllerTestTemplate<C> {
-    
-    protected EntitySyncStatusSerializer syncStatusSerializer;
+
     protected ApplicationContext applicationContext;
 
     @Autowired
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-    }
-
-    @Autowired
-    public void setSyncStatusSerializer(EntitySyncStatusSerializer syncStatusSerializer) {
-        this.syncStatusSerializer = syncStatusSerializer;
     }
 
 
@@ -69,14 +66,14 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
 
     public EntitySyncStatus fetchSyncStatus_assertUpdate(Long entityId, Date lastClientUpdate, SyncStatus expectedStatus) throws Exception {
 
-        String responseString = mvc.perform(MockMvcRequestBuilders.get(controller.getFetchEntitySyncStatusUrl())
+        String json = mvc.perform(MockMvcRequestBuilders.get(controller.getFetchEntitySyncStatusUrl())
                         .param("id", entityId.toString())
                         .param("ts", String.valueOf(lastClientUpdate.getTime())))
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andReturn().getResponse().getContentAsString();
 
 
-        EntitySyncStatus status = syncStatusSerializer.deserialize(responseString);
+        EntitySyncStatus status = getController().getJsonMapper().readDto(json,EntitySyncStatus.class);
         assert status.getStatus().equals(expectedStatus);
         assert status.getId().equals(entityId.toString());
         return status;
@@ -96,20 +93,20 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
 
 
     public Set<EntitySyncStatus> fetchSyncStatusesSinceTs_assertUpdates(Timestamp clientUpdate, UrlExtension... jpqlFilters) throws Exception {
-        String responseString = mvc.perform(fetchSyncStatusesSinceTs(clientUpdate,jpqlFilters))
+        String json = mvc.perform(fetchSyncStatusesSinceTs(clientUpdate,jpqlFilters))
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andReturn().getResponse().getContentAsString();
 
-        return syncStatusSerializer.deserializeToSet(responseString);
+
+        return deserializeToSet(json,EntitySyncStatus.class);
     }
 
     public Set<EntitySyncStatus> fetchSyncStatuses_assertUpdates(Set<EntityUpdateInfo> updateInfos) throws Exception {
-        String jsonUpdateInfos = getController().getJsonMapper().writeDto(updateInfos);
-        String responseString = mvc.perform(fetchSyncStatuses(updateInfos))
+        String json = mvc.perform(fetchSyncStatuses(updateInfos))
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andReturn().getResponse().getContentAsString();
 
-        return syncStatusSerializer.deserializeToSet(responseString);
+        return deserializeToSet(json,EntitySyncStatus.class);
     }
 
     public void fetchSyncStatuses_assertNoUpdates(Set<EntityUpdateInfo> updateInfos) throws Exception {
@@ -117,4 +114,21 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
                 .andExpect(MockMvcResultMatchers.status().is(204))
                 .andExpect(MockMvcResultMatchers.content().string(""));
     }
+
+    private <Dto> List<Dto> deserializeToList(String s, Class<Dto> dtoClass) throws IOException {
+        CollectionType setType = getController().getJsonMapper().getObjectMapper()
+                .getTypeFactory().constructCollectionType(List.class, dtoClass);
+        return deserialize(s, setType);
+    }
+
+    public  <Dto> Set<Dto> deserializeToSet(String s, Class<Dto> dtoClass) throws IOException {
+        CollectionType setType = getController().getJsonMapper().getObjectMapper()
+                .getTypeFactory().constructCollectionType(Set.class, dtoClass);
+        return deserialize(s, setType);
+    }
+
+    public  <Dto> Dto deserialize(String s, JavaType dtoClass) throws IOException {
+        return (Dto) getController().getJsonMapper().readDto(s,dtoClass);
+    }
+
 }

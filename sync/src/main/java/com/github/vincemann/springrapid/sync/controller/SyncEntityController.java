@@ -1,18 +1,19 @@
 package com.github.vincemann.springrapid.sync.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.controller.AbstractEntityController;
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingException;
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.IAuditingEntity;
-import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
+import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import com.github.vincemann.springrapid.sync.service.LastFetchInfo;
 import com.github.vincemann.springrapid.sync.service.SyncService;
 import lombok.Getter;
@@ -59,8 +60,6 @@ public class SyncEntityController<
     @Setter
     private String fetchEntitySyncStatusesSinceTsUrl;
 
-    private EntitySyncStatusSerializer entitySyncStatusSerializer;
-
     @SuppressWarnings("unchecked")
     public SyncEntityController() {
         super();
@@ -70,10 +69,10 @@ public class SyncEntityController<
     /**
      * used for single entity sync.
      * GET /api/core/entity/fetch-entity-sync-status?id=42,ts=...
-     * returns 200 if updated needed with body {@link EntitySyncStatusSerializer#serialize(EntitySyncStatus)}
+     * returns 200 if updated needed with json body of {@link EntitySyncStatus}.
      * or 204 if no update is needed
      */
-    public ResponseEntity<String> fetchEntitySyncStatus(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
+    public ResponseEntity<String> fetchEntitySyncStatus(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, JsonProcessingException {
         try {
             ID id = fetchId(request);
             long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
@@ -85,8 +84,8 @@ public class SyncEntityController<
             boolean updated = syncStatus != null;
             if (updated)
                 return ResponseEntity.ok()
-                        .contentType(MediaType.TEXT_PLAIN)
-                        .body(entitySyncStatusSerializer.serialize(syncStatus));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(jsonMapper.writeDto(syncStatus));
             else
                 return ResponseEntity.noContent().build();
         } catch (NumberFormatException e) {
@@ -118,8 +117,8 @@ public class SyncEntityController<
                 return ResponseEntity.noContent().build();
             else
                 return ResponseEntity.ok()
-                        .contentType(MediaType.TEXT_PLAIN)
-                        .body(entitySyncStatusSerializer.serialize(syncStatuses));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(jsonMapper.writeDto(syncStatuses));
         } catch (IOException e) {
             throw new BadEntityException("invalid format for EntityLastUpdateInfo. Use json list.");
         }
@@ -136,7 +135,7 @@ public class SyncEntityController<
      *
      * Filters are optional and only {@link QueryFilter} is supported.
      */
-    public ResponseEntity<String> fetchEntitySyncStatusesSinceTimestamp(HttpServletRequest request, HttpServletResponse response) throws BadEntityException {
+    public ResponseEntity<String> fetchEntitySyncStatusesSinceTimestamp(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, JsonProcessingException {
         long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
         List<QueryFilter<? super E>> filters = extractExtensions(request,QUERY_FILTER_URL_KEY);
         List<EntityFilter<? super E>> ramFilters = extractExtensions(request,ENTITY_FILTER_URL_KEY);
@@ -145,8 +144,8 @@ public class SyncEntityController<
             return ResponseEntity.noContent().build();
         else
             return ResponseEntity.ok()
-                    .contentType(MediaType.TEXT_PLAIN)
-                    .body(entitySyncStatusSerializer.serialize(syncStatuses));
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(jsonMapper.writeDto(syncStatuses));
     }
 
 
@@ -219,10 +218,5 @@ public class SyncEntityController<
     @Lazy
     public void injectService(S service) {
         this.service = service;
-    }
-
-    @Autowired
-    public void injectEntitySyncStatusSerializer(EntitySyncStatusSerializer entitySyncStatusSerializer) {
-        this.entitySyncStatusSerializer = entitySyncStatusSerializer;
     }
 }

@@ -4,7 +4,6 @@ import com.github.vincemann.springrapid.core.Entity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
 import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
-import com.github.vincemann.springrapid.sync.controller.EntitySyncStatusSerializer;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
@@ -44,8 +43,6 @@ public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationT
     @Autowired
     PetSyncControllerTestTemplate petSyncController;
 
-    @Autowired
-    EntitySyncStatusSerializer syncStatusSerializer;
 
     @Autowired
     ApplicationContext applicationContext;

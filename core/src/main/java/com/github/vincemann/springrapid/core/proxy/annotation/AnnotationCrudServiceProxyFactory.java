@@ -14,6 +14,8 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.Ordered;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 
@@ -21,7 +23,7 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 
 @Slf4j
-public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, ApplicationContextAware {
+public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, ApplicationContextAware, Ordered {
 
     private DefaultListableBeanFactory beanFactory;
 
@@ -31,6 +33,10 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
         this.beanFactory = ((DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory());
     }
 
+    @Override
+    public int getOrder() {
+        return Ordered.HIGHEST_PRECEDENCE;
+    }
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
