@@ -44,10 +44,12 @@ import java.util.Set;
  */
 @Slf4j
 @Getter
-public class SyncEntityController<
-        E extends IAuditingEntity<ID>,
-        ID extends Serializable,
-        S extends SyncService<E, ID>>
+public class SyncEntityController
+        <
+                E extends IAuditingEntity<ID>,
+                ID extends Serializable,
+                S extends SyncService<E, ID>
+        >
         extends AbstractEntityController<E, ID>
         implements ApplicationContextAware {
 

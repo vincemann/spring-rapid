@@ -33,7 +33,11 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Getter
-public abstract class AbstractEntityController<E extends IdentifiableEntity<ID>, ID extends Serializable>
+public abstract class AbstractEntityController
+        <
+                E extends IdentifiableEntity<ID>,
+                ID extends Serializable
+        >
         implements ApplicationListener<ContextRefreshedEvent>, InitializingBean, ApplicationContextAware
 {
 
