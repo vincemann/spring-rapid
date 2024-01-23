@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.core.service;
 
+import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.aop.TargetClassAware;

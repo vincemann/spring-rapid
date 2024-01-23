@@ -176,7 +176,7 @@ public class SyncEntityController<
         return RequestMappingInfo
                 .paths(fetchEntitySyncStatusUrl)
                 .methods(RequestMethod.GET)
-                .produces(MediaType.TEXT_PLAIN_VALUE)
+                .produces(MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
 
@@ -184,7 +184,7 @@ public class SyncEntityController<
         return RequestMappingInfo
                 .paths(fetchEntitySyncStatusesSinceTsUrl)
                 .methods(RequestMethod.GET)
-                .produces(MediaType.TEXT_PLAIN_VALUE)
+                .produces(MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
 
@@ -193,7 +193,7 @@ public class SyncEntityController<
                 .paths(fetchEntitySyncStatusesUrl)
                 .methods(RequestMethod.POST)
                 .consumes(MediaType.APPLICATION_JSON_VALUE)
-                .produces(MediaType.TEXT_PLAIN_VALUE)
+                .produces(MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
 
