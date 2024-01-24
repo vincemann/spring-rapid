@@ -35,6 +35,7 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     @LogInteraction(Severity.TRACE)
     public Optional<U> findByContactInformation( @NotBlank String contactInformation);
 
+
     // get user from contactInformation from code
     public U verifyUser(/*U user,*/@NotBlank String verificationCode) throws EntityNotFoundException,  BadEntityException;
 

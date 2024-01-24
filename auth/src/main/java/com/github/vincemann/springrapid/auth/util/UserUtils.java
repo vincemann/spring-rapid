@@ -31,6 +31,7 @@ public class UserUtils {
 //    }
 
 
+    // todo add to user service
 
     public <T extends AbstractUser> T findAuthenticatedUser(){
         if (!RapidSecurityContext.isAuthenticated()){
