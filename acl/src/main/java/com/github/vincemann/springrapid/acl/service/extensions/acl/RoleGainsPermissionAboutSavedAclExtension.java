@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.springframework.security.acls.model.Permission;
+import org.springframework.transaction.annotation.Transactional;
 
 
 public class RoleGainsPermissionAboutSavedAclExtension extends AbstractAclExtension<CrudService>
@@ -20,6 +21,7 @@ public class RoleGainsPermissionAboutSavedAclExtension extends AbstractAclExtens
         this.permissions = permissions;
     }
 
+    @Transactional
     @LogInteraction
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {

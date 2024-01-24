@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Scope;
 
 @ServiceComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class PetsParentFilter extends ParentFilter {
+public class PetsParentFilter extends ParentFilter<Long> {
 
     public PetsParentFilter() {
         super("owner");

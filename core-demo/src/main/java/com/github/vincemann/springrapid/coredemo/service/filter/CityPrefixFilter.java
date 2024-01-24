@@ -28,8 +28,7 @@ public class CityPrefixFilter implements QueryFilter<Owner> {
 
     @Override
     public void setArgs(String... args) throws BadEntityException {
-        if (args.length != 1)
-            throw new BadEntityException("invalid amount args for filter, need 1");
+        assertAmountArgs(1,args);
         this.cityPrefix = args[0];
     }
 

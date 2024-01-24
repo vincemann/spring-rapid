@@ -56,15 +56,15 @@ public class RapidAclExtensionsAutoConfiguration {
         return new AuthenticatedGainsAdminPermissionAboutSavedAclExtension();
     }
 
-    @ConditionalOnMissingBean(name = "adminGainsAdminPermissionAboutSavedAclExtension")
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    @DefaultAclExtension
-    @Bean
-//    @ConditionalOnProperty(name = "rapid-acl.adminFullAccess", havingValue = "true", matchIfMissing = true)
-    @ConditionalOnCustomProperties(properties = {"rapid-acl.defaultAclExtensions", "rapid-acl.adminFullAccess"})
-    public AdminGainsAdminPermissionAboutSavedAclExtension adminGainsAdminPermissionAboutSavedAclExtension(){
-        return new AdminGainsAdminPermissionAboutSavedAclExtension();
-    }
+//    @ConditionalOnMissingBean(name = "adminGainsAdminPermissionAboutSavedAclExtension")
+//    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+//    @DefaultAclExtension
+//    @Bean
+////    @ConditionalOnProperty(name = "rapid-acl.adminFullAccess", havingValue = "true", matchIfMissing = true)
+//    @ConditionalOnCustomProperties(properties = {"rapid-acl.defaultAclExtensions", "rapid-acl.adminFullAccess"})
+//    public AdminGainsAdminPermissionAboutSavedAclExtension adminGainsAdminPermissionAboutSavedAclExtension(){
+//        return new AdminGainsAdminPermissionAboutSavedAclExtension();
+//    }
 
     @Bean
     @ConditionalOnMissingBean(name = "savedInheritsParentsPermissionsAclExtension")

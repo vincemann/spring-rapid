@@ -9,14 +9,14 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.io.Serializable;
 
-// alternative to ParentAwareController
-public abstract class ParentFilter implements QueryFilter<IdentifiableEntity<?>> {
+public abstract class ParentFilter<Id extends Serializable> implements QueryFilter<IdentifiableEntity<?>> {
 
     protected String parentName;
 //    protected Class<? extends IdentifiableEntity<?>> parentClass;
-    protected String parentId;
-    private IdConverter idConverter;
+    protected Id parentId;
+    private IdConverter<Id> idConverter;
 
     public ParentFilter(String parentName/*, Class<? extends IdentifiableEntity<?>> parentClass*/) {
         this.parentName = parentName;
@@ -24,12 +24,13 @@ public abstract class ParentFilter implements QueryFilter<IdentifiableEntity<?>>
 //        this.parentClass = parentClass;
     }
 
+
     @Override
     public String getName() {
         return "parent";
     }
 
-    public String getParentId() {
+    public Serializable getParentId() {
         return parentId;
     }
 
@@ -38,24 +39,19 @@ public abstract class ParentFilter implements QueryFilter<IdentifiableEntity<?>>
 //    }
 
     @Autowired
-    public void setIdConverter(IdConverter idConverter) {
+    public void setIdConverter(IdConverter<Id> idConverter) {
         this.idConverter = idConverter;
     }
 
     @Override
     public void setArgs(String... args) throws BadEntityException {
-        if (args.length != 1)
-            throw new BadEntityException("invalid amount args for filter, need 1: parentId");
-        try {
-            this.parentId = idConverter.toId(args[0]).toString();
-        }catch (ClassCastException e){
-            throw new BadEntityException("Invalid id type: ", e);
-        }
+        assertAmountArgs(1,args);
+        this.parentId = parseId(args[0],idConverter);
     }
 
     @Override
     public Predicate toPredicate(Root<IdentifiableEntity<?>> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        return cb.equal(root.join(parentName).get("id"), idConverter.toId(parentId));
+        return cb.equal(root.join(parentName).get("id"), parentId);
     }
 
 }
