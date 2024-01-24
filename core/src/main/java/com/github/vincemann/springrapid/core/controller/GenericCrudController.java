@@ -40,6 +40,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
+import static com.github.vincemann.springrapid.core.util.HttpServletRequestUtils.getRequestParameterKeysWithoutValue;
+
 
 @Slf4j
 @Getter
@@ -78,6 +80,8 @@ public abstract class GenericCrudController
 
     public ResponseEntity<String> findAll(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, BadEntityException {
 
+        List<String> noValParams = getRequestParameterKeysWithoutValue(request);
+
         List<QueryFilter<? super E>> queryFilters = extractExtensions(request,QUERY_FILTER_URL_KEY);
         List<EntityFilter<? super E>> entityFilters = extractExtensions(request,ENTITY_FILTER_URL_KEY);
         List<SortingExtension> sortingStrategies = extractExtensions(request,ENTITY_SORTING_STRATEGY_URL_KEY);
@@ -88,7 +92,7 @@ public abstract class GenericCrudController
         List<Object> dtos = new ArrayList<>();
         for (E e : foundEntities) {
             dtos.add(dtoMapper.mapToDto(e,
-                    createDtoClass(getFindAllUrl(), Direction.RESPONSE, e)));
+                    createDtoClass(getFindAllUrl(), Direction.RESPONSE,noValParams, e)));
         }
         afterFindAll(dtos, foundEntities, request, response,entityFilters, queryFilters, sortingStrategies);
         String json = jsonMapper.writeDto(dtos);
@@ -98,10 +102,15 @@ public abstract class GenericCrudController
 
     public ResponseEntity<String> findSome(HttpServletRequest request, HttpServletResponse response) throws IOException, BadEntityException {
         logSecurityContext();
+
+        List<String> noValParams = getRequestParameterKeysWithoutValue(request);
+
         String json = readBody(request);
         CollectionType idSetType = getJsonMapper().getObjectMapper()
                 .getTypeFactory().constructCollectionType(Set.class, getIdClass());
         Set<ID> ids = getJsonMapper().readDto(json,idSetType);
+
+
 
         beforeFindSome(ids, request, response);
 
@@ -109,7 +118,7 @@ public abstract class GenericCrudController
         List<Object> dtos = new ArrayList<>();
         for (E e : foundEntities) {
             dtos.add(dtoMapper.mapToDto(e,
-                    createDtoClass(getFindSomeUrl(), Direction.RESPONSE, e)));
+                    createDtoClass(getFindSomeUrl(), Direction.RESPONSE,noValParams, e)));
         }
         afterFindSome(dtos, foundEntities, request, response);
         String responseJson = jsonMapper.writeDto(dtos);
@@ -118,6 +127,9 @@ public abstract class GenericCrudController
 
 
     public ResponseEntity<String> find(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, JsonProcessingException {
+
+        List<String> noValParams = getRequestParameterKeysWithoutValue(request);
+
         ID id = fetchId(request);
         beforeFind(id, request, response);
         logSecurityContext();
@@ -125,7 +137,7 @@ public abstract class GenericCrudController
         E found = VerifyEntity.isPresent(optionalEntity, id, getEntityClass());
         Object dto = dtoMapper.mapToDto(
                 found,
-                createDtoClass(getFindUrl(), Direction.RESPONSE, found)
+                createDtoClass(getFindUrl(), Direction.RESPONSE,noValParams, found)
         );
         afterFind(id, dto, optionalEntity, request, response);
         return ok(jsonMapper.writeDto(dto));
@@ -133,8 +145,11 @@ public abstract class GenericCrudController
     }
 
     public ResponseEntity<String> create(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
+
+        List<String> noValParams = getRequestParameterKeysWithoutValue(request);
+
         String json = readBody(request);
-        Class<?> dtoClass = createDtoClass(getCreateUrl(), Direction.REQUEST, null);
+        Class<?> dtoClass = createDtoClass(getCreateUrl(), Direction.REQUEST, noValParams,null);
         jsonDtoPropertyValidator.validateDto(json, dtoClass);
         Object dto = getJsonMapper().readDto(json, dtoClass);
         beforeCreate(dto, request, response);
@@ -144,12 +159,15 @@ public abstract class GenericCrudController
         logSecurityContext();
         E savedEntity = serviceCreate(entity);
         Object resultDto = dtoMapper.mapToDto(savedEntity,
-                createDtoClass(getCreateUrl(), Direction.RESPONSE, savedEntity));
+                createDtoClass(getCreateUrl(), Direction.RESPONSE,noValParams, savedEntity));
         afterCreate(resultDto, entity, request, response);
         return ok(jsonMapper.writeDto(resultDto));
     }
 
-    public ResponseEntity<String> update(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, IdFetchingException, JsonPatchException, IOException {
+    public ResponseEntity<String> update(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, JsonPatchException, IOException {
+
+        List<String> noValParams = getRequestParameterKeysWithoutValue(request);
+
         String patchString = readBody(request);
         log.debug("patchString: " + patchString);
         ID id = fetchId(request);
@@ -157,7 +175,7 @@ public abstract class GenericCrudController
         // i indirectly check if by using secured service.findById
         Optional<E> savedOptional = getService().findById(id);
         E saved = VerifyEntity.isPresent(savedOptional, id, getEntityClass());
-        Class<?> dtoClass = createDtoClass(getUpdateUrl(), Direction.REQUEST, saved);
+        Class<?> dtoClass = createDtoClass(getUpdateUrl(), Direction.REQUEST,noValParams, saved);
         beforeUpdate(dtoClass, id, patchString, request, response);
         jsonDtoPropertyValidator.validatePatch(patchString, dtoClass);
 
@@ -183,7 +201,7 @@ public abstract class GenericCrudController
 
         logSecurityContext();
         E updated = servicePartialUpdate(patchEntity, relevantFields.toArray(new String[0]));
-        Class<?> resultDtoClass = createDtoClass(getUpdateUrl(), Direction.RESPONSE, updated);
+        Class<?> resultDtoClass = createDtoClass(getUpdateUrl(), Direction.RESPONSE,noValParams, updated);
         // no third arg, bc mapping all possible fields
         Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
         afterUpdate(resultDto, updated, request, response);
@@ -212,8 +230,8 @@ public abstract class GenericCrudController
     //              HELPERS
 
 
-    public Class<?> createDtoClass(String endpoint, Direction direction, E entity) throws BadEntityException {
-        DtoRequestInfo dtoRequestInfo = createDtoRequestInfo(endpoint, direction, entity);
+    public Class<?> createDtoClass(String endpoint, Direction direction, List<String> urlParams, E entity) throws BadEntityException {
+        DtoRequestInfo dtoRequestInfo = createDtoRequestInfo(endpoint, direction,urlParams, entity);
         Class<?> dtoClass = dtoClassLocator.find(dtoRequestInfo);
         if (dtoClass == null) {
             throw new BadEntityException("No DtoClass mapped for info: " + dtoRequestInfo);
@@ -221,11 +239,12 @@ public abstract class GenericCrudController
         return dtoClass;
     }
 
-    protected DtoRequestInfo createDtoRequestInfo(String endpoint, Direction direction, E entity) {
+    protected DtoRequestInfo createDtoRequestInfo(String endpoint, Direction direction,List<String> urlParams, E entity) {
         DtoRequestInfo.Principal principal = currentPrincipal(entity);
         return DtoRequestInfo.builder()
                 .authorities(RapidSecurityContext.getRoles())
                 .direction(direction)
+                .urlParams(urlParams)
                 .principal(principal)
                 .endpoint(endpoint)
                 .build();

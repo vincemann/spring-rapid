@@ -8,7 +8,6 @@ import com.github.vincemann.springrapid.core.controller.fetchid.LongUrlParamIdFe
 //import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.UrlParamIdFetchingStrategyImpl;
 import com.github.vincemann.springrapid.core.controller.MergeUpdateStrategy;
 import com.github.vincemann.springrapid.core.controller.MergeUpdateStrategyImpl;
-import com.github.vincemann.springrapid.core.controller.parent.ParentAwareEndpointInfo;
 import com.github.vincemann.springrapid.core.controller.JavaXDtoValidationStrategy;
 import com.github.vincemann.springrapid.core.controller.DtoValidationStrategy;
 import com.github.vincemann.springrapid.core.service.EndpointService;
@@ -73,12 +72,6 @@ public class RapidCrudControllerAutoConfiguration {
         return new CrudEndpointInfo();
     }
 
-    @Bean
-    @ConditionalOnMissingBean(name = "parentAwareEndpointInfo")
-    @Scope(scopeName = SCOPE_PROTOTYPE)
-    public ParentAwareEndpointInfo parentAwareEndpointInfo(){
-        return new ParentAwareEndpointInfo();
-    }
 
     @ConditionalOnMissingBean(DtoValidationStrategy.class)
     @Bean

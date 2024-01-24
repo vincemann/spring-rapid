@@ -11,9 +11,11 @@ import java.util.List;
 @Slf4j
 //needs to use full urls for endpoint matching
 public abstract class AbstractDtoMappingContextBuilder<C extends GenericCrudController, B extends AbstractDtoMappingContextBuilder> {
-    private List<String> currentRoles = new ArrayList<>();
+
     private DtoMappingContext mc;
+    private List<String> currentRoles = new ArrayList<>();
     private DtoRequestInfo.Principal currPrincipal = DtoRequestInfo.Principal.ALL;
+    private List<String> currUrlParams;
 
 
     private C controller;
@@ -41,6 +43,17 @@ public abstract class AbstractDtoMappingContextBuilder<C extends GenericCrudCont
     public B withPrincipal(DtoRequestInfo.Principal principal){
         Assert.notNull(principal);
         this.currPrincipal=principal;
+        return (B) this;
+    }
+
+    public B withUrlParams(String... urlParams){
+        this.currUrlParams = Lists.newArrayList(urlParams);
+        return (B) this;
+    }
+
+
+    public B withoutUrlParams(){
+        this.currUrlParams = new ArrayList<>();
         return (B) this;
     }
 
@@ -78,7 +91,7 @@ public abstract class AbstractDtoMappingContextBuilder<C extends GenericCrudCont
      */
     public B forAll(Class<?> defaultDtoClass){
         Assert.notNull(defaultDtoClass);
-        List<DtoRequestInfo> infoList = createInfos(getAllEndpoints());
+        List<DtoRequestInfo> infoList = create(getAllEndpoints());
         for (DtoRequestInfo info : infoList) {
             addEntry(info,defaultDtoClass);
         }
@@ -101,7 +114,7 @@ public abstract class AbstractDtoMappingContextBuilder<C extends GenericCrudCont
         List<String> allEndpoints = getAllEndpoints();
         List<DtoRequestInfo> infoList = new ArrayList<>();
         for (String endpoint : allEndpoints) {
-            infoList.add(createInfo(endpoint,direction));
+            infoList.add(create(endpoint,direction));
         }
         for (DtoRequestInfo info : infoList) {
             addEntry(info,responseDtoClass);
@@ -111,7 +124,7 @@ public abstract class AbstractDtoMappingContextBuilder<C extends GenericCrudCont
 
     public B forFind(Class<?> readDtoClass){
         Assert.notNull(readDtoClass);
-        List<DtoRequestInfo> infoList = createInfos(getFindEndpoints());
+        List<DtoRequestInfo> infoList = create(getFindEndpoints());
         for (DtoRequestInfo info : infoList) {
             addEntry(info,readDtoClass);
         }
@@ -120,7 +133,7 @@ public abstract class AbstractDtoMappingContextBuilder<C extends GenericCrudCont
 
     public B forWrite(Class<?> writeDtoClass){
         Assert.notNull(writeDtoClass);
-        List<DtoRequestInfo> infoList = createInfos(getWriteEndpoints());
+        List<DtoRequestInfo> infoList = create(getWriteEndpoints());
         for (DtoRequestInfo info : infoList) {
             addEntry(info,writeDtoClass);
         }
@@ -132,7 +145,7 @@ public abstract class AbstractDtoMappingContextBuilder<C extends GenericCrudCont
         Assert.notNull(direction);
         List<String> updateEndpoints = getUpdateEndpoints();
         for (String updateEndpoint : updateEndpoints) {
-            addEntry(createInfo(updateEndpoint,direction),updateDtoClass);
+            addEntry(create(updateEndpoint,direction),updateDtoClass);
         }
         return (B) this;
     }
@@ -141,8 +154,8 @@ public abstract class AbstractDtoMappingContextBuilder<C extends GenericCrudCont
         Assert.notNull(updateDtoClass);
         List<String> updateEndpoints = getUpdateEndpoints();
         for (String updateEndpoint : updateEndpoints) {
-            addEntry(createInfo(updateEndpoint,Direction.REQUEST),updateDtoClass);
-            addEntry(createInfo(updateEndpoint,Direction.RESPONSE),updateDtoClass);
+            addEntry(create(updateEndpoint,Direction.REQUEST),updateDtoClass);
+            addEntry(create(updateEndpoint,Direction.RESPONSE),updateDtoClass);
         }
         return (B) this;
     }
@@ -150,8 +163,8 @@ public abstract class AbstractDtoMappingContextBuilder<C extends GenericCrudCont
     public B forEndpoint(String endpoint, Class<?> dtoClass){
         Assert.notNull(endpoint);
         Assert.notNull(dtoClass);
-        addEntry(createInfo(endpoint,Direction.REQUEST),dtoClass);
-        addEntry(createInfo(endpoint,Direction.RESPONSE),dtoClass);
+        addEntry(create(endpoint,Direction.REQUEST),dtoClass);
+        addEntry(create(endpoint,Direction.RESPONSE),dtoClass);
         return (B) this;
     }
 
@@ -160,18 +173,28 @@ public abstract class AbstractDtoMappingContextBuilder<C extends GenericCrudCont
         Assert.notNull(endpoint);
         Assert.notNull(dtoClass);
         Assert.notNull(direction);
-        addEntry(createInfo(endpoint,direction),dtoClass);
+        addEntry(create(endpoint,direction),dtoClass);
         return (B) this;
     }
 
-    public B forEndpointAndRoles(String endpoint, Direction direction, List<String> authorities, Class<?> dtoClass){
+    public B forEndpoint(String endpoint, Direction direction,List<String> urlParams, Class<?> dtoClass){
         Assert.notNull(endpoint);
         Assert.notNull(dtoClass);
         Assert.notNull(direction);
-        Assert.notNull(authorities);
+        Assert.notNull(urlParams);
+        Assert.notEmpty(urlParams);
+        addEntry(create(endpoint,direction,urlParams),dtoClass);
+        return (B) this;
+    }
+
+    public B forEndpoint(String endpoint, Direction direction,List<String> urlParams, List<String> roles, Class<?> dtoClass){
+        Assert.notNull(endpoint);
         Assert.notNull(dtoClass);
-        DtoRequestInfo info = createInfo(endpoint, direction);
-        info.setAuthorities(authorities);
+        Assert.notNull(direction);
+        Assert.notNull(roles);
+        Assert.notNull(dtoClass);
+        DtoRequestInfo info = create(endpoint, direction,urlParams,roles);
+        info.setAuthorities(roles);
         addEntry(info,dtoClass);
         return (B) this;
     }
@@ -211,21 +234,42 @@ public abstract class AbstractDtoMappingContextBuilder<C extends GenericCrudCont
      * @param endpoints
      * @return
      */
-    private List<DtoRequestInfo> createInfos(List<String> endpoints) {
+    private List<DtoRequestInfo> create(List<String> endpoints) {
         List<DtoRequestInfo> infoList = new ArrayList<>();
         for (String endpoint : endpoints) {
-            infoList.add(createInfo(endpoint,Direction.REQUEST));
-            infoList.add(createInfo(endpoint,Direction.RESPONSE));
+            infoList.add(create(endpoint,Direction.REQUEST));
+            infoList.add(create(endpoint,Direction.RESPONSE));
         }
         return infoList;
     }
 
-    private DtoRequestInfo createInfo(String endpoint, Direction direction){
+    private DtoRequestInfo create(String endpoint, Direction direction){
+        return DtoRequestInfo.builder()
+                .authorities(currentRoles)
+                .endpoint(endpoint)
+                .principal(currPrincipal)
+                .urlParams(currUrlParams)
+                .direction(direction)
+                .build();
+    }
+
+    private DtoRequestInfo create(String endpoint, Direction direction, List<String> urlParams){
         return DtoRequestInfo.builder()
                 .authorities(currentRoles)
                 .endpoint(endpoint)
                 .principal(currPrincipal)
                 .direction(direction)
+                .urlParams(urlParams)
+                .build();
+    }
+
+    private DtoRequestInfo create(String endpoint, Direction direction, List<String> urlParams, List<String> roles){
+        return DtoRequestInfo.builder()
+                .authorities(roles)
+                .endpoint(endpoint)
+                .principal(currPrincipal)
+                .direction(direction)
+                .urlParams(urlParams)
                 .build();
     }
 

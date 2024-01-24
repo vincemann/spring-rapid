@@ -64,10 +64,10 @@ public class RoleFallbackDtoClassLocator implements DtoClassLocator {
     }
 
 
-    private Set<DtoRequestInfo> findEndpointMatches(DtoRequestInfo userMappingInfo, DtoMappingContext context) {
+    private Set<DtoRequestInfo> findEndpointMatches(DtoRequestInfo dtoRequestInfo, DtoMappingContext context) {
         return context.getMappingEntries().keySet().stream()
-                .filter(info -> info.getDirection().equals(userMappingInfo.getDirection())
-                        && info.getEndpoint().equals(userMappingInfo.getEndpoint()))
+                .filter(info -> info.getDirection().equals(dtoRequestInfo.getDirection())
+                        && info.getEndpoint().equals(dtoRequestInfo.getEndpoint()))
                 .collect(Collectors.toSet());
     }
 

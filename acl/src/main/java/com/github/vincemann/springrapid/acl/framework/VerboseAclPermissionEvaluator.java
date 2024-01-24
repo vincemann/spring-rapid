@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.AclPermissionEvaluator;
@@ -36,12 +37,19 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
     private ObjectIdentityRetrievalStrategy objectIdentityRetrievalStrategy = new ObjectIdentityRetrievalStrategyImpl();
     private ObjectIdentityGenerator objectIdentityGenerator = new ObjectIdentityRetrievalStrategyImpl();
     private SidRetrievalStrategy sidRetrievalStrategy = new SidRetrievalStrategyImpl();
+
     private PermissionFactory permissionFactory = new DefaultPermissionFactory();
     private ObjectIdentityResolver objectIdentityResolver;
     private PermissionStringConverter permissionStringConverter;
 
     public VerboseAclPermissionEvaluator(AclService aclService) {
         super(aclService);
+        this.aclService = aclService;
+    }
+
+    public VerboseAclPermissionEvaluator(AclService aclService, Class<? extends Permission> permissionClass) {
+        super(aclService);
+        this.permissionFactory = new DefaultPermissionFactory(permissionClass);
         this.aclService = aclService;
     }
 

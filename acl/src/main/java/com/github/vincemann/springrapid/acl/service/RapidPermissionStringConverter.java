@@ -20,7 +20,8 @@ public class RapidPermissionStringConverter implements PermissionStringConverter
             return "READ";
         }else if(pattern.contains(".w")){
             return "WRITE";
-        }else {
+        }
+        else {
             throw new IllegalArgumentException("Unknown pattern: " + pattern);
         }
     }
