@@ -22,8 +22,4 @@ public class JpaPetService extends JPACrudService<Pet, Long, PetRepository> impl
         return JpaPetService.class;
     }
 
-    @Override
-    public Set<Pet> findAllOfParent(Long parentId) {
-        return getRepository().findAllByOwnerId(parentId);
-    }
 }
