@@ -35,7 +35,7 @@ public class RoleFallbackDtoClassLocator implements DtoClassLocator {
         Set<DtoRequestInfo> matches = principalMatchSet.matches;
         Set<DtoRequestInfo> inDifferentPrincipalMatches = principalMatchSet.criteriaIndifferent;
         if (!matches.isEmpty()) {
-            Assert.isTrue(matches.size() == 1, "Ambigious Mapping, found multiple Dto Matches: " + matches);
+            Assert.isTrue(matches.size() == 1, "Ambiguous Mapping, found multiple Dto Matches: " + matches);
             DtoRequestInfo match = matches.stream().findFirst().get();
             log.debug("Matching DtoMappingEntry: " + match);
             return mappingEntries.get(match);
@@ -44,7 +44,7 @@ public class RoleFallbackDtoClassLocator implements DtoClassLocator {
 //                throw new IllegalArgumentException("No DtoClass mapped for info: " + info);
                 return null;
             }
-            Assert.isTrue(inDifferentPrincipalMatches.size() == 1, "Ambigious Mapping, found multiple Dto Matches: " + inDifferentPrincipalMatches);
+            Assert.isTrue(inDifferentPrincipalMatches.size() == 1, "Ambiguous Mapping, found multiple Dto Matches: " + inDifferentPrincipalMatches);
             DtoRequestInfo match = inDifferentPrincipalMatches.stream().findFirst().get();
             log.debug("Matching DtoMappingEntry: " + match);
             return mappingEntries.get(match);
