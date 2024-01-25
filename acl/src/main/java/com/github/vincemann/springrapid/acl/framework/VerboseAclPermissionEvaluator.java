@@ -47,12 +47,6 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
         this.aclService = aclService;
     }
 
-    public VerboseAclPermissionEvaluator(AclService aclService, Class<? extends Permission> permissionClass) {
-        super(aclService);
-        this.permissionFactory = new DefaultPermissionFactory(permissionClass);
-        this.aclService = aclService;
-    }
-
     /**
      * Called by Spring Security to evaluate the permission
      *
@@ -212,8 +206,12 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
         return sidRetrievalStrategy;
     }
 
-    protected PermissionFactory getPermissionFactory() {
-        return permissionFactory;
+
+    // will not work in a cleaner way
+    @Override
+    public void setPermissionFactory(PermissionFactory permissionFactory) {
+        super.setPermissionFactory(permissionFactory);
+        this.permissionFactory = permissionFactory;
     }
 
     @Autowired

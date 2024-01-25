@@ -24,6 +24,9 @@ public abstract class ParentFilter<Id extends Serializable> implements QueryFilt
 //        this.parentClass = parentClass;
     }
 
+    public ParentFilter(Id parentId) {
+        this.parentId = parentId;
+    }
 
     @Override
     public String getName() {
