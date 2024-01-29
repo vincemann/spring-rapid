@@ -21,6 +21,7 @@ import com.github.vincemann.springrapid.core.controller.CrudEntityController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.*;
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingException;
 import com.github.vincemann.springrapid.core.security.Roles;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
@@ -683,7 +684,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@Autowired
 	@Secured
 	@Override
-	public void injectCrudService(UserService<U,ID> crudService) {
+	public void injectCrudService(CrudService<U,ID> crudService) {
 		super.injectCrudService(crudService);
 	}
 
