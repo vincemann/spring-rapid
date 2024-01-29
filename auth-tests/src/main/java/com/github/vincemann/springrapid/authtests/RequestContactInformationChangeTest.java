@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.authtests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
+import com.github.vincemann.springrapid.auth.controller.dto.RequestContactInformationChangeDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

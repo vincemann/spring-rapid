@@ -3,10 +3,11 @@ package com.github.vincemann.springrapid.auth.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
+import com.github.vincemann.springrapid.auth.controller.dto.*;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.dto.*;
-import com.github.vincemann.springrapid.auth.dto.user.FindOwnUserDto;
-import com.github.vincemann.springrapid.auth.dto.user.FullUserDto;
+import com.github.vincemann.springrapid.auth.controller.dto.user.FindOwnUserDto;
+import com.github.vincemann.springrapid.auth.controller.dto.user.FullUserDto;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;

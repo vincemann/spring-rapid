@@ -2,13 +2,13 @@ package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.acl.config.RapidAclExtensionsAutoConfiguration;
 import com.github.vincemann.springrapid.acl.service.AclPermissionService;
-import com.github.vincemann.springrapid.acl.service.extensions.security.CrudAclChecksSecurityExtension;
+import com.github.vincemann.springrapid.acl.service.ext.sec.CrudAclChecksSecurityExtension;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.extension.AclUserExtension;
 import com.github.vincemann.springrapid.auth.service.extension.UserServiceSecurityExtension;
 import com.github.vincemann.springrapid.acl.config.RapidAclAutoConfiguration;
 import com.github.vincemann.springrapid.acl.proxy.*;
-import com.github.vincemann.springrapid.acl.service.extensions.acl.CleanUpAclExtension;
+import com.github.vincemann.springrapid.acl.service.ext.acl.CleanUpAclExtension;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
 import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;

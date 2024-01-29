@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.acl.framework.oidresolve.RapidObjectIden
 import com.github.vincemann.springrapid.acl.service.AclPermissionService;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.acl.service.RapidPermissionService;
-import com.github.vincemann.springrapid.acl.service.RapidPermissionStringConverter;
+import com.github.vincemann.springrapid.acl.service.PermissionStringConverterImpl;
 import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.sec.Roles;
 import com.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
@@ -116,7 +116,7 @@ public class RapidAclAutoConfiguration {
     @ConditionalOnMissingBean(PermissionStringConverter.class)
     @Bean
     public PermissionStringConverter permissionStringConverter(){
-        return new RapidPermissionStringConverter();
+        return new PermissionStringConverterImpl();
     }
 
     @ConditionalOnMissingBean(AclAuthorizationStrategy.class)

@@ -1,9 +1,9 @@
 package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipalImpl;
-import com.github.vincemann.springrapid.auth.security.*;
+import com.github.vincemann.springrapid.auth.sec.*;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
-import com.github.vincemann.springrapid.auth.service.token.RapidJwtAuthorizationTokenService;
+import com.github.vincemann.springrapid.auth.service.token.JwtAuthorizationTokenServiceImpl;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -18,7 +18,7 @@ public class RapidAuthSecurityAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(AuthorizationTokenService.class)
     public AuthorizationTokenService<AuthAuthenticatedPrincipalImpl> authorizationTokenService(){
-        return new RapidJwtAuthorizationTokenService();
+        return new JwtAuthorizationTokenServiceImpl();
     }
 
     @Bean

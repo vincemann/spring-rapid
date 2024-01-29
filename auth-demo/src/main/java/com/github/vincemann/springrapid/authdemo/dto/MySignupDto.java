@@ -1,16 +1,12 @@
 package com.github.vincemann.springrapid.authdemo.dto;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.github.vincemann.springrapid.auth.dto.SignupDto;
+import com.github.vincemann.springrapid.auth.controller.dto.SignupDto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor

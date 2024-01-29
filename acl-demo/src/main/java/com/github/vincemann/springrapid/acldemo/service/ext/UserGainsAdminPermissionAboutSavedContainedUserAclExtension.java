@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.service.ext;
 
-import com.github.vincemann.springrapid.acl.service.extensions.acl.AbstractAclExtension;
+import com.github.vincemann.springrapid.acl.service.ext.acl.AbstractAclExtension;
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.model.abs.UserAwareEntity;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;

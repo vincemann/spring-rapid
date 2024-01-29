@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.acldemo.model;
 
 import com.github.vincemann.springrapid.acldemo.model.abs.Person;
 import com.github.vincemann.springrapid.acldemo.model.abs.UserAwareEntity;
+import com.github.vincemann.springrapid.auth.model.AuthenticatingEntity;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
 

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authtests.adapter;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.dto.SignupDto;
+import com.github.vincemann.springrapid.auth.controller.dto.SignupDto;
 import com.github.vincemann.springrapid.core.sec.Roles;
 import com.google.common.collect.Sets;
 

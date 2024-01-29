@@ -1,9 +1,9 @@
 package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.acl.RapidAclSecurityContext;
-import com.github.vincemann.springrapid.auth.security.GlobalRuleEnforcingAclPermissionEvaluator;
+import com.github.vincemann.springrapid.auth.sec.GlobalRuleEnforcingAclPermissionEvaluator;
 import com.github.vincemann.springrapid.acl.config.RapidAclAutoConfiguration;
-import com.github.vincemann.springrapid.auth.security.GlobalSecurityRule;
+import com.github.vincemann.springrapid.auth.sec.GlobalSecurityRule;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;

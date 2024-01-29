@@ -4,14 +4,13 @@ import com.github.vincemann.springrapid.acl.AclProperties;
 import com.github.vincemann.springrapid.acl.DefaultSecurityExtension;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
-import com.github.vincemann.springrapid.core.proxy.ProxyController;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import org.springframework.context.annotation.Configuration;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.util.AopTestUtils;
 
 import java.util.ArrayList;
@@ -42,24 +41,6 @@ public class RapidDefaultSecurityExtensionAutoConfiguration {
     @Autowired
     public void addDefaultSecurityExtension(AclProperties aclProperties, @Secured List<CrudService> securityProxies, @Autowired(required = false) @DefaultSecurityExtension Optional<List<AbstractServiceExtension>> defaultSecurityExtensionsOptional){
 
-//        AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
-//        Qualifier qualifier = AnnotationUtils.findAnnotation(Secured.class, Qualifier.class);
-//        Collection<CrudService> securityProxies = BeanFactoryAnnotationUtils.qualifiedBeansOfType((ListableBeanFactory) beanFactory, CrudService.class, qualifier.value()).values();
-
-
-//        List<AbstractServiceExtension> defaultSecurityExtensions = new ArrayList<>(defaultSecurityExtensionsOptional.orElse(Collections.emptyList()));
-//
-//        if (aclProperties.isDefaultAclChecks()){
-////            AbstractServiceExtension crudChecksExtension = defaultSecurityExtensions.stream().filter(e -> e.getClass().equals(CrudAclChecksSecurityExtension.class)).findFirst().get();
-////            AbstractServiceExtension crudCreatePermOnParentExtension = defaultSecurityExtensions.stream().filter(e -> e.getClass().equals(NeedCreatePermissionOnParentForSaveExtension.class)).findFirst().get();
-////            defaultSecurityExtensions.remove(crudChecksExtension);
-////            defaultSecurityExtensions.remove(crudCreatePermOnParentExtension);
-//            AbstractServiceExtension<?, ? super ProxyController> crudAclChecksExtension = (AbstractServiceExtension<?, ? super ProxyController>) context.getBean("crudAclChecksSecurityExtension");
-////            AbstractServiceExtension<?, ? super ProxyController> parentCreatePermissionCheckExtension = (AbstractServiceExtension<?, ? super ProxyController>) context.getBean("needCreatePermissionOnParentForSaveExtension");
-//            defaultSecurityExtensions.add(crudAclChecksExtension);
-////            defaultSecurityExtensions.add(parentCreatePermissionCheckExtension);
-//        }
-
         for (CrudService securityProxy : securityProxies) {
             ExtensionProxy proxy = ProxyUtils.getExtensionProxy(securityProxy);
             if (!proxy.getDefaultExtensionsEnabled()){
@@ -70,7 +51,7 @@ public class RapidDefaultSecurityExtensionAutoConfiguration {
             List<AbstractServiceExtension> defaultSecurityExtensions = createDefaultSecurityExtensions(defaultSecurityExtensionsOptional);
             log.debug("Adding Default security extensions for proxy: " + proxy);
             for (AbstractServiceExtension extension : defaultSecurityExtensions) {
-                if (proxy.isIgnored(AopTestUtils.getUltimateTargetObject(extension).getClass())){
+                if (proxy.isIgnored((Class<? extends AbstractServiceExtension>) AopTestUtils.getUltimateTargetObject(extension).getClass())){
                     log.info("ignoring default extension: " + extension.getClass().getSimpleName());
                     continue;
                 }

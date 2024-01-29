@@ -4,7 +4,7 @@ package com.github.vincemann.springrapid.auth.service;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.MessageSender;
 import com.github.vincemann.springrapid.auth.model.*;
-import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
+import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;

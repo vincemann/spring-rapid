@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.auth.config;
 
 
-import com.github.vincemann.springrapid.auth.security.AdminGlobalSecurityRule;
-import com.github.vincemann.springrapid.auth.security.DenyBlockedGlobalSecurityRule;
+import com.github.vincemann.springrapid.auth.sec.AdminGlobalSecurityRule;
+import com.github.vincemann.springrapid.auth.sec.DenyBlockedGlobalSecurityRule;
 import org.springframework.context.annotation.Configuration;
 import com.github.vincemann.springrapid.core.util.ConditionalOnCustomProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acl.config;
 
 import com.github.vincemann.springrapid.acl.AclSecurityChecker;
-import com.github.vincemann.springrapid.acl.RapidAclSecurityChecker;
+import com.github.vincemann.springrapid.acl.AclSecurityCheckerImpl;
 import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -18,7 +18,7 @@ public class RapidSecurityProxyAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(AclSecurityChecker.class)
     public AclSecurityChecker aclSecurityChecker(){
-        return new RapidAclSecurityChecker();
+        return new AclSecurityCheckerImpl();
     }
 
 }

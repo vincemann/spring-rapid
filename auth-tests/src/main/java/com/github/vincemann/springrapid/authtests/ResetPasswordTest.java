@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.vincemann.springrapid.auth.dto.ResetPasswordView;
+import com.github.vincemann.springrapid.auth.controller.dto.ResetPasswordView;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

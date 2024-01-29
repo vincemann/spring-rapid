@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
+import com.github.vincemann.springrapid.auth.controller.dto.ChangePasswordDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 

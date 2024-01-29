@@ -28,7 +28,7 @@ public class RapidTokenServiceAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(JwsTokenService.class)
 	public JwsTokenService jwsTokenService(AuthProperties properties) throws JOSEException {
-		return new RapidJwsService(properties.getJwt().getSecret());
+		return new JwsServiceImpl(properties.getJwt().getSecret());
 	}
 
 
@@ -38,7 +38,7 @@ public class RapidTokenServiceAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(JweTokenService.class)
 	public JweTokenService jweTokenService(AuthProperties properties) throws KeyLengthException {
-		return new RapidJweService(properties.getJwt().getSecret());
+		return new JweServiceImpl(properties.getJwt().getSecret());
 	}
 
 

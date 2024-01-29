@@ -1,11 +1,8 @@
 package com.github.vincemann.springrapid.acl.framework;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.springrapid.acl.framework.oidresolve.ObjectIdentityResolver;
-import com.github.vincemann.springrapid.acl.framework.oidresolve.UnresolvableOidException;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.acl.util.AclUtils;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +32,6 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
     private SidRetrievalStrategy sidRetrievalStrategy = new SidRetrievalStrategyImpl();
 
     private PermissionFactory permissionFactory = new DefaultPermissionFactory();
-    private ObjectIdentityResolver objectIdentityResolver;
     private PermissionStringConverter permissionStringConverter;
 
     public VerboseAclPermissionEvaluator(AclService aclService) {
@@ -78,39 +74,14 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
 
 
     protected boolean checkPermission(Authentication authentication, ObjectIdentity oid,
-                                    Object permission) {
+                                      Object permission) {
         // Obtain the SIDs applicable to the principal
         List<Sid> sids = sidRetrievalStrategy.getSids(authentication);
         List<Permission> requiredPermissions = resolvePermission(permission);
 
 
-
-
         //expensive trace logging
-        if (log.isTraceEnabled()) {
-            List<String> stringPermissions = requiredPermissions.stream()
-                    .map(p -> permissionStringConverter.convert(p))
-                    .collect(Collectors.toList());
-
-            String name = RapidSecurityContext.getName();
-            IdentifiableEntity resolvedEntity = null;
-
-            try {
-                resolvedEntity = objectIdentityResolver.resolve(oid);
-            } catch (UnresolvableOidException e) {
-                log.warn("Could not resolve Oid for trace logging: " + e.getMessage());
-            }
-
-            if (resolvedEntity!=null) {
-                log.trace("Checking if User: " + name + " has permissions: " + stringPermissions + "\n" +
-                        "that are required for an operation over: " +resolvedEntity +" ?"
-                );
-            }else {
-                log.trace("Checking if User: " + name + " has permissions: " + stringPermissions + "\n" +
-                        "that are required for an operation over: " + oid + " ?"
-                );
-            }
-        } else if (log.isDebugEnabled()){
+       if (log.isDebugEnabled()) {
             String name = RapidSecurityContext.getName();
             List<String> stringPermissions = requiredPermissions.stream()
                     .map(p -> permissionStringConverter.convert(p))
@@ -126,10 +97,10 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
         try {
             // Lookup only ACL for SIDs we're interested in
             Acl acl = aclService.readAclById(oid, sids);
-            if (log.isDebugEnabled()){
+            if (log.isDebugEnabled()) {
                 log.debug("acl of oid:");
 //                log.debug(AclUtils.aclToString(acl));
-                AclUtils.logAcl(acl,log);
+                AclUtils.logAcl(acl, log);
             }
 
             if (acl.isGranted(requiredPermissions, sids, false)) {
@@ -138,13 +109,13 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
                 return true;
             }
 
-            if (log.isDebugEnabled()){
+            if (log.isDebugEnabled()) {
                 log.debug("No Sid has sufficient permissions for operation");
                 log.debug("Access not granted");
             }
 
         } catch (NotFoundException nfe) {
-            if (log.isDebugEnabled()){
+            if (log.isDebugEnabled()) {
                 log.debug("No ACL found for oid: " + AclUtils.objectIdentityToString(oid));
                 log.debug("Access not granted");
             }
@@ -208,11 +179,6 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
     public void setPermissionFactory(PermissionFactory permissionFactory) {
         super.setPermissionFactory(permissionFactory);
         this.permissionFactory = permissionFactory;
-    }
-
-    @Autowired
-    public void injectObjectIdentityResolver(ObjectIdentityResolver objectIdentityResolver) {
-        this.objectIdentityResolver = objectIdentityResolver;
     }
 
     @Autowired

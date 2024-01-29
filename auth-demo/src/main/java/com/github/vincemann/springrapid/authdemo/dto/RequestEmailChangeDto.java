@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.authdemo.dto;
 
-import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
+import com.github.vincemann.springrapid.auth.controller.dto.RequestContactInformationChangeDto;
 
 import javax.validation.constraints.Email;
 

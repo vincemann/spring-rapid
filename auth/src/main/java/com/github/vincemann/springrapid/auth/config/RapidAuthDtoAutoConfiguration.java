@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.config;
 
-import com.github.vincemann.springrapid.auth.controller.dto.UserDtoPostProcessor;
+import com.github.vincemann.springrapid.auth.controller.UserDtoPostProcessor;
 import com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;

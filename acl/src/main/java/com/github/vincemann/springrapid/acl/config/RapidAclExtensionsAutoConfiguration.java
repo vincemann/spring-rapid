@@ -2,9 +2,9 @@ package com.github.vincemann.springrapid.acl.config;
 
 import com.github.vincemann.springrapid.acl.DefaultAclExtension;
 import com.github.vincemann.springrapid.acl.DefaultSecurityExtension;
-import com.github.vincemann.springrapid.acl.service.extensions.security.CrudAclChecksSecurityExtension;
-import com.github.vincemann.springrapid.acl.service.extensions.acl.*;
-import com.github.vincemann.springrapid.acl.service.extensions.security.NeedCreatePermissionOnParentForSaveExtension;
+import com.github.vincemann.springrapid.acl.service.ext.sec.CrudAclChecksSecurityExtension;
+import com.github.vincemann.springrapid.acl.service.ext.acl.*;
+import com.github.vincemann.springrapid.acl.service.ext.sec.NeedCreatePermissionOnParentForSaveExtension;
 import com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import com.github.vincemann.springrapid.core.util.ConditionalOnCustomProperties;

@@ -1,10 +1,10 @@
 package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.auth.handler.RapidAuthenticationSuccessHandler;
-import com.github.vincemann.springrapid.auth.security.bruteforce.BruteForceAuthenticationFailureListener;
-import com.github.vincemann.springrapid.auth.security.bruteforce.BruteForceAuthenticationSuccessEventListener;
-import com.github.vincemann.springrapid.auth.security.bruteforce.LoginAttemptService;
-import com.github.vincemann.springrapid.auth.security.bruteforce.LoginAttemptServiceImpl;
+import com.github.vincemann.springrapid.auth.sec.bruteforce.BruteForceAuthenticationFailureListener;
+import com.github.vincemann.springrapid.auth.sec.bruteforce.BruteForceAuthenticationSuccessEventListener;
+import com.github.vincemann.springrapid.auth.sec.bruteforce.LoginAttemptService;
+import com.github.vincemann.springrapid.auth.sec.bruteforce.LoginAttemptServiceImpl;
 import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;

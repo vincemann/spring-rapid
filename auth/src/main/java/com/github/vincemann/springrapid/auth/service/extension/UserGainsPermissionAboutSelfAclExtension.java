@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.service.extension;
 
-import com.github.vincemann.springrapid.acl.service.extensions.acl.AbstractAclExtension;
+import com.github.vincemann.springrapid.acl.service.ext.acl.AbstractAclExtension;
 import com.github.vincemann.springrapid.auth.model.AuthenticatingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;

@@ -1,13 +1,11 @@
 package com.github.vincemann.springrapid.acldemo.service.ext;
 
-import com.github.vincemann.springrapid.acl.service.extensions.security.AbstractSecurityExtension;
-import com.github.vincemann.springrapid.acldemo.model.Owner;
+import com.github.vincemann.springrapid.acl.service.ext.sec.AbstractSecurityExtension;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.security.acls.domain.BasePermission;
 
