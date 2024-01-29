@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 
 @ExtendWith(MockitoExtension.class)
-class CrudExtensionProxyTest {
+class ExtensionProxyTest {
 
 
     @AllArgsConstructor

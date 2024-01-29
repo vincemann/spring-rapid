@@ -18,7 +18,7 @@ public class DatabaseInitializerTestExecutionListener extends AbstractTestExecut
     private List<DatabaseInitializer> beforeEachTest;
 
     @Autowired(required = false)
-    @BeforeEachTestMethodInitializable
+    @BeforeEachMethodInitializable
     private List<DatabaseInitializer> beforeEachTestMethod;
 
     @Override

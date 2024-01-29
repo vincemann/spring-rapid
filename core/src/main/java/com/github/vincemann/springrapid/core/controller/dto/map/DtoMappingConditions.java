@@ -56,6 +56,15 @@ public class DtoMappingConditions {
         };
     }
 
+    public static Predicate<DtoRequestInfo> any(){
+        return new DescribablePredicate<>("any") {
+            @Override
+            public boolean test(DtoRequestInfo dtoRequestInfo) {
+                return true;
+            }
+        };
+    }
+
     public static Predicate<DtoRequestInfo> urlParam(String... urlParams){
         return new DescribablePredicate<>("url-params: " + Arrays.toString(urlParams)) {
             @Override

@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.coredemo.model.Owner;
 import java.util.Optional;
 
 @WebComponent
-public class OwnerOwnerLocator implements OwnerLocator<Owner> {
+public class OwnersOwnerLocator implements OwnerLocator<Owner> {
 
     @Override
     public boolean supports(Class clazz) {

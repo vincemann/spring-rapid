@@ -8,5 +8,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Qualifier("beforeEachMethodInit")
 @Inherited
-public @interface BeforeEachTestMethodInitializable {
+public @interface BeforeEachMethodInitializable {
 }

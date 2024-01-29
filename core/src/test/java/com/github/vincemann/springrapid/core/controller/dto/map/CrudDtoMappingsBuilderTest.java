@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.dto.map.context;
+package com.github.vincemann.springrapid.core.controller.dto.map;
 
 import com.github.vincemann.springrapid.core.controller.dto.DtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.dto.RoleFallbackDtoClassLocator;

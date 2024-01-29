@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.dtoMapper;
+package com.github.vincemann.springrapid.core.controller.dto.map;
 
 import com.github.vincemann.springrapid.core.controller.dto.map.DelegatingDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMapper;
