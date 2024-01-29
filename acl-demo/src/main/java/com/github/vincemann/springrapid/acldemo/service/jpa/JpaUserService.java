@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.repo.UserRepository;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 
-@ServiceComponent
+@Component
 @Service
 //@Primary
 @Transactional

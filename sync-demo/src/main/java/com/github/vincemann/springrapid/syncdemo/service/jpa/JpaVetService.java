@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.syncdemo.service.jpa;
 
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.syncdemo.model.Vet;
 import com.github.vincemann.springrapid.syncdemo.repo.VetRepository;
 import com.github.vincemann.springrapid.syncdemo.service.VetService;
@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Primary
 @Service
-@ServiceComponent
+@Component
 public class JpaVetService
         extends JPACrudService<Vet,Long, VetRepository>
         implements VetService, TargetClassAware {

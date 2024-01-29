@@ -6,14 +6,14 @@ import com.github.vincemann.springrapid.acldemo.service.jpa.JpaUserService;
 import com.github.vincemann.springrapid.core.controller.dto.EntityPostProcessor;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-@ServiceComponent
+@Component
 public class MapUserUuidDtoPostProcessor implements EntityPostProcessor<CreateUserDto, UserAwareEntity> {
 
     private JpaUserService userService;

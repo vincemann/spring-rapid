@@ -12,7 +12,7 @@ import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
 import com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.repo.VetRepository;
 import com.github.vincemann.springrapid.acldemo.service.VetService;
@@ -36,7 +36,7 @@ import java.util.Optional;
 @CreateProxy(qualifiers = Secured.class,proxies = {"acl","secured"})
 @Primary
 @Service
-@ServiceComponent
+@Component
 public class JpaVetService
         extends JPACrudService<Vet,Long, VetRepository>
         implements VetService, TargetClassAware {

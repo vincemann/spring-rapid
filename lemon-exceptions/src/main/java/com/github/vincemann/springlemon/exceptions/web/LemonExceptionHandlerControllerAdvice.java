@@ -2,8 +2,6 @@ package com.github.vincemann.springlemon.exceptions.web;
 
 import com.github.vincemann.springlemon.exceptions.ErrorResponse;
 import com.github.vincemann.springlemon.exceptions.ErrorResponseFactory;
-import com.github.vincemann.springlemon.exceptions.LemonErrorResponseFactory;
-import com.github.vincemann.springrapid.core.slicing.WebComponent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * Handles exceptions thrown from in controllers or inner routines
  */
 @RestControllerAdvice
-@WebComponent
 @Slf4j
 public class LemonExceptionHandlerControllerAdvice<T extends Throwable>
 {

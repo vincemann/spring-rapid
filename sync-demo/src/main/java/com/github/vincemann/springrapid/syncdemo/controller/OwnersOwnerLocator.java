@@ -1,13 +1,13 @@
 package com.github.vincemann.springrapid.syncdemo.controller;
 
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
-import com.github.vincemann.springrapid.core.slicing.WebComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
 
 import java.util.Optional;
 
-@WebComponent
-public class OwnerOwnerLocator implements OwnerLocator<Owner> {
+@Component
+public class OwnersOwnerLocator implements OwnerLocator<Owner> {
 
     @Override
     public boolean supports(Class clazz) {

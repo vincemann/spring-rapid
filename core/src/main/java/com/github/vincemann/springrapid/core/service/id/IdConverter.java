@@ -1,10 +1,10 @@
 package com.github.vincemann.springrapid.core.service.id;
 
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
-@ServiceComponent
+@Component
 public interface IdConverter<ID extends Serializable> {
 
 	ID toId(String id);

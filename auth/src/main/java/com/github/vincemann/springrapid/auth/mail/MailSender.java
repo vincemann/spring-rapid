@@ -2,12 +2,12 @@ package com.github.vincemann.springrapid.auth.mail;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 
 /**
  * The mail sender interface for sending mail
  */
-@ServiceComponent
+@Component
 @LogInteraction
 public interface MailSender<MailData> extends AopLoggable {
 

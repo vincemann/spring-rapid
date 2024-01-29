@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.autobidir.RelationalDtoManager;
 import com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration;
 import com.github.vincemann.springrapid.core.config.RapidServiceAutoConfiguration;
 import com.github.vincemann.springrapid.core.controller.dto.MergeUpdateStrategy;
-import com.github.vincemann.springrapid.core.slicing.WebConfig;
+import org.springframework.context.annotation.Configuration;
 import com.github.vincemann.springrapid.autobidir.controller.IdAwareMergeUpdateStrategy;
 import com.github.vincemann.springrapid.autobidir.controller.dtomapper.EntityIdResolver;
 import com.github.vincemann.springrapid.autobidir.controller.dtomapper.IdResolvingDtoPostProcessor;
@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Bean;
 
 import java.util.List;
 
-@WebConfig
+@Configuration
 @Slf4j
 //overrides mergeUpdateStrategy
 @AutoConfigureBefore(RapidDtoMapperAutoConfiguration.class)

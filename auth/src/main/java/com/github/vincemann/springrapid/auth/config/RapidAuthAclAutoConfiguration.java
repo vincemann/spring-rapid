@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.acl.RapidAclSecurityContext;
 import com.github.vincemann.springrapid.auth.security.GlobalRuleEnforcingAclPermissionEvaluator;
 import com.github.vincemann.springrapid.acl.config.RapidAclAutoConfiguration;
 import com.github.vincemann.springrapid.auth.security.GlobalSecurityRule;
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -16,7 +16,7 @@ import java.util.List;
 
 // permission evaluator is overridden this way
 @AutoConfigureBefore({RapidAclAutoConfiguration.class})
-@ServiceConfig
+@Configuration
 public class RapidAuthAclAutoConfiguration {
 
 //	@Primary

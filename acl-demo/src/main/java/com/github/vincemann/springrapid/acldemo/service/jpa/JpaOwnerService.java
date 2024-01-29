@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @Root
 @Primary
-@ServiceComponent
+@Component
 public class JpaOwnerService
         extends JPACrudService<Owner,Long, OwnerRepository>
                 implements OwnerService, AopLoggable, TargetClassAware {

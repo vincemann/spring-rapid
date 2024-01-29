@@ -7,14 +7,14 @@ import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtil;
 import com.github.vincemann.springrapid.autobidir.advice.RelationalEntityAdvice;
 import com.github.vincemann.springrapid.autobidir.advice.RelationalServiceUpdateAdvice;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
+import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
-@ServiceConfig
+@Configuration
 @Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @Slf4j

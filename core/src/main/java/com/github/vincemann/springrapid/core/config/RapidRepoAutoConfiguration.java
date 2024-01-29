@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.core.config;
 
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
+import org.springframework.context.annotation.Configuration;
 
-@ServiceConfig
+@Configuration
 public class RapidRepoAutoConfiguration {
 
 //    @ConditionalOnMissingBean(FilterRepository.class)

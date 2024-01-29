@@ -2,13 +2,13 @@ package com.github.vincemann.springrapid.coredemo.controller;
 
 import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
-import com.github.vincemann.springrapid.core.slicing.WebController;
+import org.springframework.stereotype.Controller;
 import com.github.vincemann.springrapid.coredemo.dto.SpecialtyDto;
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.any;
 
-@WebController
+@Controller
 public class SpecialtyController extends CrudController<Specialty,Long> {
 
     @Override

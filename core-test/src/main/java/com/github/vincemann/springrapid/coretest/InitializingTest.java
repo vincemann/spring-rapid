@@ -12,11 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * BaseClass for Tests that wish to initialize members that implement {@link TestMethodInitializable}s and/or {@link TestContextAware} and/or
+ * BaseClass for Tests that wish to initialize members that implement {@link TestMethodInitializable}s and/or
  * {@link TestInitializable}.
  */
 @Slf4j
-@TestExecutionListeners(value = DatabaseInitializerTestExecutionListener.class, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public abstract class InitializingTest {
 
     private List<TestMethodInitializable> beforeEachMethodInitializables = new ArrayList<>();
@@ -38,9 +37,6 @@ public abstract class InitializingTest {
                 if (member instanceof TestMethodInitializable) {
                     beforeEachMethodInitializables.add((TestMethodInitializable) member);
                     ((TestMethodInitializable) member).before();
-                }
-                if (member instanceof TestContextAware) {
-                    ((TestContextAware) member).setTestContext(this);
                 }
             });
         } else {

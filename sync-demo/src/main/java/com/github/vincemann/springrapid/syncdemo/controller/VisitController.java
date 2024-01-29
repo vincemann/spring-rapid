@@ -1,19 +1,21 @@
 package com.github.vincemann.springrapid.syncdemo.controller;
 
 import com.github.vincemann.springrapid.core.controller.CrudController;
-import com.github.vincemann.springrapid.core.controller.dto.map.context.CrudDtoMappingContextBuilder;
-import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappings;
-import com.github.vincemann.springrapid.core.slicing.WebController;
+import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
 import com.github.vincemann.springrapid.syncdemo.dto.VisitDto;
 import com.github.vincemann.springrapid.syncdemo.model.Visit;
-import com.github.vincemann.springrapid.syncdemo.service.VisitService;
+import org.springframework.stereotype.Controller;
 
-@WebController
+import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.any;
+
+@Controller
 public class VisitController
-        extends CrudController<Visit, Long, VisitService>
+        extends CrudController<Visit, Long>
 {
+
     @Override
-    protected DtoMappings provideDtoMappingContext(CrudDtoMappingContextBuilder builder) {
-        return builder.forAll(VisitDto.class).build();
+    protected void configureDtoMappings(DtoMappingsBuilder builder) {
+        builder.when(any()).thenReturn(VisitDto.class);
     }
+
 }

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.config;
 
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
+import org.springframework.context.annotation.Configuration;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import com.github.vincemann.springrapid.coredemo.service.Root;
@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Primary;
  * @Root
  * private IService service;
  */
-@ServiceConfig
+@Configuration
 public class MyServiceConfig {
 
     @Primary

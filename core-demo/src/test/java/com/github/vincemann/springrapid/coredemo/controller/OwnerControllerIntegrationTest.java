@@ -13,7 +13,7 @@ import com.github.vincemann.springrapid.coredemo.service.filter.OwnerTelNumberFi
 import com.github.vincemann.springrapid.coredemo.service.filter.PetNameEndsWithFilter;
 import com.github.vincemann.springrapid.coredemo.service.sort.LastNameAscSorting;
 import com.github.vincemann.springrapid.coredemo.service.sort.LastNameDescSorting;
-import com.github.vincemann.springrapid.coretest.TestPrincipal;
+import com.github.vincemann.springrapid.coretest.util.TestPrincipal;
 import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

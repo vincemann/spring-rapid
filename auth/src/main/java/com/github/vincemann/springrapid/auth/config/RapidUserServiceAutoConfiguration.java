@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.auth.service.RapidUserDetailsService;
 
 import com.github.vincemann.springrapid.core.service.pass.BcryptRapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.service.pass.RapidPasswordEncoder;
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
+import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@ServiceConfig
+@Configuration
 @Slf4j
 @EnableTransactionManagement
 //@AutoConfigureBefore({AclAutoConfiguration.class})

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.sync.util;
 
 import com.github.vincemann.springrapid.core.model.audit.IAuditingEntity;
-import com.github.vincemann.springrapid.sync.service.EqualsMethod;
+import com.github.vincemann.springrapid.sync.service.ext.EqualsMethod;
 
 import java.util.Collection;
 import java.util.Optional;

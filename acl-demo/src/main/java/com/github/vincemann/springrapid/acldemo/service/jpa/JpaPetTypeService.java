@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.service.jpa;
 
 import com.github.vincemann.springrapid.core.service.JPACrudService;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.acldemo.model.PetType;
 import com.github.vincemann.springrapid.acldemo.repo.PetTypeRepository;
 import com.github.vincemann.springrapid.acldemo.service.PetTypeService;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Primary
 @Service
-@ServiceComponent
+@Component
 public class JpaPetTypeService extends JPACrudService<PetType,Long, PetTypeRepository> implements PetTypeService, TargetClassAware {
 
     @Override

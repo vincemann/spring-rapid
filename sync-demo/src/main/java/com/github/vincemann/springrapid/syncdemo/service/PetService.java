@@ -1,11 +1,11 @@
 package com.github.vincemann.springrapid.syncdemo.service;
 
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
 
 
-@ServiceComponent
+@Component
 public interface PetService extends CrudService<Pet,Long> {
 
 }

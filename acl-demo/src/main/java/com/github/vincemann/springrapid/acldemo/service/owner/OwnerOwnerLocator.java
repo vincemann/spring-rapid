@@ -2,11 +2,11 @@ package com.github.vincemann.springrapid.acldemo.service.owner;
 
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
-import com.github.vincemann.springrapid.core.slicing.WebComponent;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@WebComponent
+@Component
 public class OwnerOwnerLocator implements OwnerLocator<Owner> {
 
     @Override

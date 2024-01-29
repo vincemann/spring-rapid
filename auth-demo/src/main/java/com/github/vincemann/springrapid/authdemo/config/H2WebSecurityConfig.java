@@ -1,13 +1,13 @@
 package com.github.vincemann.springrapid.authdemo.config;
 
 import com.github.vincemann.springrapid.auth.config.RapidWebSecurityConfig;
-import com.github.vincemann.springrapid.core.slicing.WebConfig;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
-@WebConfig
+@Configuration
 @EnableWebSecurity
 // only run it like this in dev or test env!
 public class H2WebSecurityConfig extends RapidWebSecurityConfig {

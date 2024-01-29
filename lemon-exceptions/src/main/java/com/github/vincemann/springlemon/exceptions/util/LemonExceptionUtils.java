@@ -10,6 +10,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  * Useful helper methods
  * 
  * @author Sanjay Patel
+ * @modifiedBy vincemann
  */
 @Slf4j
 public class LemonExceptionUtils {

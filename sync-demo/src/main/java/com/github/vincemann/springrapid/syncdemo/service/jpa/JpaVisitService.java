@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.syncdemo.service.jpa;
 
 import com.github.vincemann.springrapid.core.service.JPACrudService;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.syncdemo.model.Visit;
 import com.github.vincemann.springrapid.syncdemo.repo.VisitRepository;
 import com.github.vincemann.springrapid.syncdemo.service.VisitService;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Primary
 @Service
-@ServiceComponent
+@Component
 public class JpaVisitService extends JPACrudService<Visit,Long, VisitRepository> implements VisitService, TargetClassAware {
     @Override
     public Class<?> getTargetClass() {

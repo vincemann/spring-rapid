@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.coredemo.service.filter;
 
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -15,7 +15,7 @@ import javax.persistence.criteria.Root;
 
 import static com.github.vincemann.springrapid.core.util.MethodNameUtil.propertyNameOf;
 
-@ServiceComponent
+@Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class OwnerTelNumberFilter implements QueryFilter<Owner> {
 

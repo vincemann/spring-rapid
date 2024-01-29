@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.acl.service.extensions.security.CrudAclC
 import com.github.vincemann.springrapid.acl.service.extensions.acl.*;
 import com.github.vincemann.springrapid.acl.service.extensions.security.NeedCreatePermissionOnParentForSaveExtension;
 import com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration;
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
+import org.springframework.context.annotation.Configuration;
 import com.github.vincemann.springrapid.core.util.ConditionalOnCustomProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -15,7 +15,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 
-@ServiceConfig
+@Configuration
 @Slf4j
 @AutoConfigureAfter(RapidJsonAutoConfiguration.class)
 public class RapidAclExtensionsAutoConfiguration {

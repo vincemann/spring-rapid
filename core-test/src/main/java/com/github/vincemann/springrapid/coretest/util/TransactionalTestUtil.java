@@ -3,34 +3,12 @@ package com.github.vincemann.springrapid.coretest.util;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.io.Serializable;
 import java.util.Collection;
-import java.util.Optional;
 
-public class TransactionalRapidTestUtil {
+public class TransactionalTestUtil {
 
-
-
-    public static <E extends IdentifiableEntity> E mustBePresentIn(CrudRepository repo, Serializable id) {
-        Optional byId = repo.findById(id);
-        if (byId.isEmpty()) {
-            throw new IllegalArgumentException("No Entity found with id: " + id);
-        }
-        return (E) byId.get();
-    }
-
-
-    public static <E extends IdentifiableEntity> E mustBePresentIn(CrudService service, Serializable id) {
-        Optional byId;
-        byId = service.findById(id);
-        if (byId.isEmpty()) {
-            throw new IllegalArgumentException("No Entity found with id: " + id);
-        }
-        return (E) byId.get();
-    }
 
     public static void clear(CrudService crudService, TransactionTemplate transactionTemplate) {
         transactionTemplate.execute(status -> {

@@ -5,14 +5,14 @@ import com.github.vincemann.springrapid.acl.service.extensions.acl.RoleGainsPerm
 import com.github.vincemann.springrapid.acl.service.extensions.security.NeedCreatePermissionOnParentForSaveExtension;
 import com.github.vincemann.springrapid.acldemo.service.ext.NeedRoleForSaveExtension;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.acls.domain.BasePermission;
 
-@ServiceConfig
+@Configuration
 public class ServiceExtensionsConfig {
 
     @Bean

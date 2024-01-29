@@ -1,16 +1,16 @@
-package com.github.vincemann.springrapid.auth.bootstrap;
+package com.github.vincemann.springrapid.auth.boot;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.acl.proxy.Acl;
-import com.github.vincemann.springrapid.core.boot.DatabaseInitializer;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
@@ -22,16 +22,16 @@ import java.util.Optional;
  * Adds admins from property file, if not already present in database.
  * @see AuthProperties#getAdmins()
  */
-public class AdminInitializer extends DatabaseInitializer {
+public class AdminInitializer implements CommandLineRunner {
 
     private UserService<AbstractUser<Serializable>, Serializable> userService;
     private AuthProperties authProperties;
     private RapidSecurityContext<?> securityContext;
 
 
-    @Override
     @Transactional
-    public void init() {
+    @Override
+    public void run(String... args) throws Exception {
         securityContext.runAsAdmin(
                 () -> {
                     try {
@@ -41,6 +41,7 @@ public class AdminInitializer extends DatabaseInitializer {
                     }
                 });
     }
+
 
     protected void addAdmins() throws BadEntityException, AlreadyRegisteredException, EntityNotFoundException {
         List<AuthProperties.Admin> admins = authProperties.getAdmins();

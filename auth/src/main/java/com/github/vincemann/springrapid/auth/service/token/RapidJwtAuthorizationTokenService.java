@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.slicing.WebComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-@WebComponent
+@Component
 @Slf4j
 public class RapidJwtAuthorizationTokenService extends AbstractJwtAuthorizationTokenService<AuthAuthenticatedPrincipalImpl> {
 

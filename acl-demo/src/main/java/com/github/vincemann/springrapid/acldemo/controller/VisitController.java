@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.core.controller.dto.map.context.CrudDtoM
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappings;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.slicing.WebController;
+import org.springframework.stereotype.Controller;
 import com.github.vincemann.springrapid.acldemo.dto.VisitDto;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
 
-@WebController
+@Controller
 public class VisitController
         extends SecuredCrudController<Visit, Long, VisitService>
 {

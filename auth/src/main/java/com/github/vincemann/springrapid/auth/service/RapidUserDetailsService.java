@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFact
 
 import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.core.util.Message;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import java.util.Optional;
  * UserDetailsService, as required by Spring Security.
  * 
  */
-@ServiceComponent
+@Component
 @Slf4j
 public class RapidUserDetailsService
 		implements UserDetailsService, AopLoggable {

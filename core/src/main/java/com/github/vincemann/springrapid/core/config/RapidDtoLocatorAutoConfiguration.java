@@ -4,14 +4,14 @@ import com.github.vincemann.springrapid.core.controller.dto.DtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.dto.DtoClassLocatorImpl;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
-import com.github.vincemann.springrapid.core.slicing.WebConfig;
+import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
 
-@WebConfig
+@Configuration
 @Slf4j
 public class RapidDtoLocatorAutoConfiguration {
 

@@ -1,9 +1,9 @@
 package com.github.vincemann.springrapid.acl.service.extensions.acl;
 
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import org.springframework.security.acls.domain.BasePermission;
 
-@ServiceComponent
+@Component
 public class AuthenticatedGainsAdminPermissionAboutSavedAclExtension extends AuthenticatedGainsPermissionAboutSavedAclExtension {
 
     public AuthenticatedGainsAdminPermissionAboutSavedAclExtension() {

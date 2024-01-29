@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.auth.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration;
-import com.github.vincemann.springrapid.core.slicing.WebConfig;
+import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -18,7 +18,7 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-@WebConfig
+@Configuration
 @EnableSpringDataWebSupport
 //@EnableGlobalMethodSecurity(prePostEnabled = true)
 @AutoConfigureAfter(RapidJsonAutoConfiguration.class)

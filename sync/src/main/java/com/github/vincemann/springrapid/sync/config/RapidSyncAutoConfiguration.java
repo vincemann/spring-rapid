@@ -1,13 +1,13 @@
 package com.github.vincemann.springrapid.sync.config;
 
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
-import com.github.vincemann.springrapid.sync.service.AuditCollectionsExtension;
+import org.springframework.context.annotation.Configuration;
+import com.github.vincemann.springrapid.sync.service.ext.AuditCollectionsExtension;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 
-@ServiceConfig
+@Configuration
 public class RapidSyncAutoConfiguration {
 
 

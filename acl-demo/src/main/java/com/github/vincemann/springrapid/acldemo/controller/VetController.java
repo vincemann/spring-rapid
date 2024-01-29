@@ -9,12 +9,12 @@ import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappings;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoRequestInfo;
 import com.github.vincemann.springrapid.core.security.Roles;
-import com.github.vincemann.springrapid.core.slicing.WebController;
+import org.springframework.stereotype.Controller;
 import com.github.vincemann.springrapid.acldemo.dto.vet.FullVetDto;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.service.VetService;
 
-@WebController
+@Controller
 public class VetController
         extends SecuredCrudController<Vet, Long, VetService> {
 

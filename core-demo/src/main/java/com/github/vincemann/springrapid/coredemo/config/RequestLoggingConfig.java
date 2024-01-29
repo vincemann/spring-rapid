@@ -1,10 +1,10 @@
 package com.github.vincemann.springrapid.coredemo.config;
 
-import com.github.vincemann.springrapid.core.slicing.WebConfig;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
-@WebConfig
+@Configuration
 public class RequestLoggingConfig {
 
     @Bean

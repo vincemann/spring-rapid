@@ -11,7 +11,7 @@ import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
 import com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import org.springframework.aop.TargetClassAware;
@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service;
 @CreateProxy(qualifiers = Secured.class,proxies = {"acl","secured"})
 @Primary
 @Service
-@ServiceComponent
+@Component
 public class JpaVisitService extends JPACrudService<Visit,Long, VisitRepository>
         implements VisitService, TargetClassAware {
 

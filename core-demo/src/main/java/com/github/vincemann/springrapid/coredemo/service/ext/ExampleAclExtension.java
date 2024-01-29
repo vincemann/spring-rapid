@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -17,7 +17,7 @@ import java.io.Serializable;
  * Example Demo Extension that can be plugged in to all {@link CrudService}s.
  */
 @Slf4j
-@ServiceComponent
+@Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ExampleAclExtension
         extends BasicServiceExtension<CrudService>

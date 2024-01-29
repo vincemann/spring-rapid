@@ -1,9 +1,7 @@
 package com.github.vincemann.springrapid.syncdemo.config;
 
-import com.github.vincemann.springrapid.core.proxy.ProxyController;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
-import com.github.vincemann.springrapid.sync.service.AuditCollectionsExtension;
+import com.github.vincemann.springrapid.sync.service.ext.AuditCollectionsExtension;
 import com.github.vincemann.springrapid.syncdemo.service.OwnerService;
 import com.github.vincemann.springrapid.syncdemo.service.PetService;
 import com.github.vincemann.springrapid.syncdemo.service.Root;
@@ -11,6 +9,7 @@ import com.github.vincemann.springrapid.syncdemo.service.ext.ExampleAclExtension
 import com.github.vincemann.springrapid.syncdemo.service.ext.OwnerOfTheYearExtension;
 import com.github.vincemann.springrapid.syncdemo.service.ext.SaveNameToWordPressDbExtension;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 /**
@@ -31,7 +30,7 @@ import org.springframework.context.annotation.Primary;
  * @Root
  * private IService service;
  */
-@ServiceConfig
+@Configuration
 public class MyServiceConfig {
 
     @Primary

@@ -4,12 +4,12 @@ import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.authdemo.model.User;
 import com.github.vincemann.springrapid.authdemo.repository.UserRepository;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@ServiceComponent
+@Component
 @Service
 // dont mark with primary, is done internally
 //@Primary

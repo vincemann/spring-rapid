@@ -2,10 +2,10 @@ package com.github.vincemann.springrapid.coredemo.service.sort;
 
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import org.springframework.data.domain.Sort;
 
-@ServiceComponent
+@Component
 public class LastNameDescSorting implements SortingExtension {
 
     @Override

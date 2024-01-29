@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.sync.service;
+package com.github.vincemann.springrapid.sync.service.ext;
 
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.audit.IAuditingEntity;
@@ -10,7 +10,6 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import com.github.vincemann.springrapid.sync.AuditCollection;
 import com.github.vincemann.springrapid.sync.util.CollectionUtils;
 import org.springframework.transaction.annotation.Transactional;
 

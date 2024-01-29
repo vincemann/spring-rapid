@@ -8,11 +8,11 @@ import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.security.access.AccessDeniedException;
 
-@ServiceComponent
+@Component
 public class VetCanOnlySaveOwnVisitsSecurityExtension extends AbstractSecurityExtension<VisitService>
         implements GenericCrudServiceExtension<VisitService, Visit,Long>
 {

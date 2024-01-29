@@ -5,10 +5,10 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import org.springframework.security.acls.model.Permission;
 
-@ServiceComponent
+@Component
 public class AuthenticatedGainsPermissionAboutSavedAclExtension extends AbstractAclExtension<CrudService>
         implements CrudServiceExtension<CrudService> {
 

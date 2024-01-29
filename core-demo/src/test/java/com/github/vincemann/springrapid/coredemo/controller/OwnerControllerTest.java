@@ -14,7 +14,7 @@ import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
-import com.github.vincemann.springrapid.coretest.TestPrincipal;
+import com.github.vincemann.springrapid.coretest.util.TestPrincipal;
 import com.github.vincemann.springrapid.coretest.controller.automock.AutoMockServiceBeansIntegrationTest;
 import com.google.common.collect.Sets;
 import org.junit.jupiter.api.BeforeEach;

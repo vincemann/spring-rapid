@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
+import com.github.vincemann.springrapid.sync.model.LastFetchInfo;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;

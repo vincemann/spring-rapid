@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.core.config;
 import com.github.vincemann.springrapid.core.service.context.*;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocatorImpl;
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
+import org.springframework.context.annotation.Configuration;
 import com.github.vincemann.springrapid.core.util.EntityLocator;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Scope;
 import javax.persistence.EntityManager;
 
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@ServiceConfig
+@Configuration
 public class RapidServiceAutoConfiguration {
 
     @Autowired(required = false)

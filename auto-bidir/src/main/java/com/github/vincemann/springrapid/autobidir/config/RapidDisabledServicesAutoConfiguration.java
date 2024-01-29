@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.autobidir.config;
 import com.github.vincemann.springrapid.autobidir.AutoBiDirUtils;
 import com.github.vincemann.springrapid.autobidir.DisableAutoBiDir;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
+import org.springframework.context.annotation.Configuration;
 import com.github.vincemann.springrapid.core.util.RepositoryUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -15,7 +15,7 @@ import org.springframework.test.util.AopTestUtils;
 
 import java.util.Map;
 
-@ServiceConfig
+@Configuration
 public class RapidDisabledServicesAutoConfiguration implements ApplicationListener<ApplicationReadyEvent>, ApplicationContextAware {
 
     ApplicationContext applicationContext;

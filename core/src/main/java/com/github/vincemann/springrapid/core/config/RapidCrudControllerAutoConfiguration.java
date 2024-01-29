@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.core.controller.id.LongUrlParamIdFetchin
 import com.github.vincemann.springrapid.core.controller.json.patch.ExtendedRemoveJsonPatchStrategy;
 import com.github.vincemann.springrapid.core.controller.json.patch.JsonPatchStrategy;
 import com.github.vincemann.springrapid.core.service.EndpointService;
-import com.github.vincemann.springrapid.core.slicing.WebConfig;
+import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 @SuppressWarnings("rawtypes")
 @AutoConfigureAfter({RapidDtoMapperAutoConfiguration.class, RapidDtoLocatorAutoConfiguration.class})
-@WebConfig
+@Configuration
 @Slf4j
 public class RapidCrudControllerAutoConfiguration {
 

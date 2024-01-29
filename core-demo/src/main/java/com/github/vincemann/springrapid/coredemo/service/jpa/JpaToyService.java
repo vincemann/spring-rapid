@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.service.jpa;
 
 import com.github.vincemann.springrapid.core.service.JPACrudService;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.coredemo.model.Toy;
 import com.github.vincemann.springrapid.coredemo.repo.ToyRepository;
 import com.github.vincemann.springrapid.coredemo.service.ToyService;
@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Primary
 @Service
-@ServiceComponent
+@Component
 public class JpaToyService extends JPACrudService<Toy,Long, ToyRepository> implements ToyService {
 
     @Override

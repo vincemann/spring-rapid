@@ -18,7 +18,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 
-public class RapidAuditingRepository<E extends IAuditingEntity<Id>,Id extends Serializable>
+public class AuditingRepositoryImpl<E extends IAuditingEntity<Id>,Id extends Serializable>
     extends SimpleJpaRepository<E,Id>
         implements AuditingRepository<E,Id> {
 
@@ -27,7 +27,7 @@ public class RapidAuditingRepository<E extends IAuditingEntity<Id>,Id extends Se
     protected JpaEntityInformation<E,?> entityInformation;
 
 
-    public RapidAuditingRepository(EntityManager entityManager, Class<E> entityClass) {
+    public AuditingRepositoryImpl(EntityManager entityManager, Class<E> entityClass) {
         super(entityClass,entityManager);
         this.entityManager = entityManager;
         this.entityClass = entityClass;

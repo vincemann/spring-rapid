@@ -8,14 +8,14 @@ import com.github.vincemann.springrapid.acldemo.service.Root;
 import com.github.vincemann.springrapid.acldemo.service.ext.UserGainsAdminPermissionAboutSavedContainedUserAclExtension;
 import com.github.vincemann.springrapid.auth.service.extension.UserGainsAdminPermissionAboutSelfAclExtension;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
 
 /**
  * Demonstrates First style for adding extensions and creating multiple service versions/proxies.
  * For Annotation-based approach see i.E. {@link com.github.vincemann.springrapid.acldemo.service.jpa.JpaVetService}.
  */
-@ServiceConfig
+@Configuration
 public class OwnerServiceConfig {
 
 

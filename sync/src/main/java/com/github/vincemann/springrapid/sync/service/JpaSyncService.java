@@ -8,9 +8,10 @@ import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.util.FilterUtils;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
+import com.github.vincemann.springrapid.sync.model.LastFetchInfo;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
 import com.github.vincemann.springrapid.sync.repo.AuditingRepository;
-import com.github.vincemann.springrapid.sync.repo.RapidAuditingRepository;
+import com.github.vincemann.springrapid.sync.repo.AuditingRepositoryImpl;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -140,6 +141,6 @@ public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends S
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        this.auditingRepository = new RapidAuditingRepository(entityManager, crudService.getEntityClass());
+        this.auditingRepository = new AuditingRepositoryImpl(entityManager, crudService.getEntityClass());
     }
 }

@@ -5,13 +5,13 @@ import com.github.vincemann.springrapid.auth.MessageSender;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.mail.MockMailSender;
 import com.github.vincemann.springrapid.auth.mail.SmtpMailSender;
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.mail.javamail.JavaMailSender;
 
-@ServiceConfig
+@Configuration
 public class RapidMailAutoConfiguration {
 
 

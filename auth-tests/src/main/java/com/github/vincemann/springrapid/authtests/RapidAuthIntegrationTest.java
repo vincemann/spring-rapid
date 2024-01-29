@@ -15,7 +15,7 @@ import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.authtest.controller.template.UserControllerTestTemplate;
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
+import com.github.vincemann.springrapid.coretest.util.TransactionalTestUtil;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -220,7 +220,7 @@ public abstract class RapidAuthIntegrationTest extends AclMvcIntegrationTest {
         System.err.println("deleting users");
         clearAclCache();
         // done via sql script
-        TransactionalRapidTestUtil.clear(aclUserService,transactionTemplate);
+        TransactionalTestUtil.clear(aclUserService,transactionTemplate);
         System.err.println("deleted users");
         System.err.println("test data cleared");
 

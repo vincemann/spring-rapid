@@ -10,7 +10,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.core.util.*;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ import static com.github.vincemann.springrapid.core.util.FilterUtils.*;
  * @param <Id> Id type of E
  * @param <R>  {@link JpaRepository} Type
  */
-@ServiceComponent
+@Component
 @Slf4j
 public abstract class JPACrudService
         <

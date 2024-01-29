@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappings;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoRequestInfo;
 import com.github.vincemann.springrapid.core.security.Roles;
-import com.github.vincemann.springrapid.core.slicing.WebController;
+import org.springframework.stereotype.Controller;
 import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.VetReadsOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.FullOwnerDto;
@@ -15,7 +15,7 @@ import com.github.vincemann.springrapid.acldemo.dto.owner.UpdateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 
-@WebController
+@Controller
 public class OwnerController extends SecuredCrudController<Owner, Long, OwnerService> {
 
 

@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.limitsaves.LimitActionsExtension;
  *
  * ExampleConfig for activating this Extension:
  *
-     @ServiceConfig
+     @Configuration
      @Profile(Profiles.PROD)
      public class LimitSignupConfiguration extends UserServiceProxyConfigurer {
 

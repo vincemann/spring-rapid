@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.sync.service;
+package com.github.vincemann.springrapid.sync.service.ext;
 
 import com.github.vincemann.springrapid.core.model.audit.IAuditingEntity;
 

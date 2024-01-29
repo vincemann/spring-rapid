@@ -13,7 +13,7 @@ import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
 import com.github.vincemann.springrapid.acl.framework.VerboseAclPermissionEvaluator;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
+import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.ehcache.CacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ import javax.sql.DataSource;
 /**
  * Auto-configures AclBeans and Acl-Caching.
  */
-@ServiceConfig
+@Configuration
 @Slf4j
 //@ConditionalOnClass(DataSource.class)
 @AutoConfigureBefore({RapidAclExtensionsAutoConfiguration.class})

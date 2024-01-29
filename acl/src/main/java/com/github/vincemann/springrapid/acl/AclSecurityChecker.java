@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acl;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.model.Permission;
 
@@ -15,7 +15,7 @@ import java.util.Collection;
  * Always use this API to check acl permissions
  * All methods, except {@link this#checkExpression(String)} will create {@link AclEvaluationContext} that can be used downstream.
  */
-@ServiceComponent
+@Component
 @LogInteraction
 public interface AclSecurityChecker extends AopLoggable {
 

@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.coredemo.service.jpa;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.repo.PetRepository;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.coredemo.service.Root;
 import org.springframework.aop.TargetClassAware;
@@ -14,7 +14,7 @@ import javax.transaction.Transactional;
 
 @Root
 @Service
-@ServiceComponent
+@Component
 public class JpaPetService extends JPACrudService<Pet, Long, PetRepository> implements PetService, TargetClassAware {
 
     @Override

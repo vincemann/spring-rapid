@@ -10,7 +10,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.core.util.Lists;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +26,7 @@ import java.util.Set;
  * @param <E>       Type of Entity whos crud operations are exposed by this Service
  * @param <Id>      Id Type of E
  */
-@ServiceComponent
+@Component
 @LogInteraction
 @LogConfig(logAllChildrenMethods = true)
 public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Serializable>

@@ -1,24 +1,26 @@
 package com.github.vincemann.springrapid.syncdemo.controller;
 
 import com.github.vincemann.springrapid.core.controller.CrudController;
-import com.github.vincemann.springrapid.core.controller.dto.map.context.CrudDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
-import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappings;
-import com.github.vincemann.springrapid.core.slicing.WebController;
+import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
 import com.github.vincemann.springrapid.syncdemo.dto.pet.PetDto;
 import com.github.vincemann.springrapid.syncdemo.dto.pet.UpdatePetDto;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
-import com.github.vincemann.springrapid.syncdemo.service.PetService;
+import org.springframework.stereotype.Controller;
+
+import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
 
 
-@WebController
-public class PetController extends CrudController<Pet, Long, PetService> {
+@Controller
+public class PetController extends CrudController<Pet, Long> {
+
 
     @Override
-    protected DtoMappings provideDtoMappingContext(CrudDtoMappingContextBuilder builder) {
-        return builder
-                .forAll(PetDto.class)
-                .forEndpoint(getUpdateUrl(), Direction.REQUEST, UpdatePetDto.class)
-                .build();
+    protected void configureDtoMappings(DtoMappingsBuilder builder) {
+        builder.when(endpoint(getUpdateUrl()).and(direction(Direction.REQUEST)))
+                .thenReturn(UpdatePetDto.class);
+
+        builder.when(any()).thenReturn(PetDto.class);
     }
+
 }

@@ -6,13 +6,13 @@ import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuild
 import com.github.vincemann.springrapid.coredemo.dto.PetTypeDto;
 import com.github.vincemann.springrapid.coredemo.dto.VetDto;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
-import com.github.vincemann.springrapid.core.slicing.WebController;
+import org.springframework.stereotype.Controller;
 import com.github.vincemann.springrapid.core.controller.dto.map.context.CrudDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.coredemo.service.VetService;
 
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.any;
 
-@WebController
+@Controller
 public class VetController extends CrudController<Vet, Long> {
 
 

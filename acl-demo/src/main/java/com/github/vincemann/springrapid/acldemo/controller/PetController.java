@@ -11,10 +11,10 @@ import com.github.vincemann.springrapid.core.controller.dto.map.context.CrudDtoM
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappings;
 import com.github.vincemann.springrapid.core.security.Roles;
-import com.github.vincemann.springrapid.core.slicing.WebController;
+import org.springframework.stereotype.Controller;
 
 
-@WebController
+@Controller
 public class PetController extends SecuredCrudController<Pet, Long, PetService> {
 
     @Override

@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acl.config;
 
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
+import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 /**
  * Creates Acl-Schema in db on startup.
  */
-@ServiceConfig
+@Configuration
 @Slf4j
 public class RapidAclSchemaAutoConfiguration {
 

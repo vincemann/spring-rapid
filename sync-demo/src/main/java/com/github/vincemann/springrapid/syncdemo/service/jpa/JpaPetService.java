@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.syncdemo.service.jpa;
 
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
 import com.github.vincemann.springrapid.syncdemo.repo.PetRepository;
 import com.github.vincemann.springrapid.syncdemo.service.PetService;
@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Root
 @Service
-@ServiceComponent
+@Component
 public class JpaPetService extends JPACrudService<Pet, Long, PetRepository> implements PetService, TargetClassAware {
 
     @Override

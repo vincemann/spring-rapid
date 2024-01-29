@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -15,7 +15,7 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
 
-@ServiceComponent
+@Component
 public abstract class AbstractCrudService
         <
                 E extends IdentifiableEntity<Id>,

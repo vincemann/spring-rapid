@@ -2,12 +2,12 @@ package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.auth.handler.*;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
-import com.github.vincemann.springrapid.core.slicing.WebConfig;
+import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
-@WebConfig
+@Configuration
 @Slf4j
 public class RapidAuthExceptionHandlerAutoConfiguration {
 

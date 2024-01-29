@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.controller.config;
 
-import com.github.vincemann.springrapid.auth.bootstrap.AdminInitializer;
+import com.github.vincemann.springrapid.auth.boot.AdminInitializer;
 import com.github.vincemann.springrapid.core.boot.DatabaseInitializer;
 import com.github.vincemann.springrapid.coretest.boot.BeforeEachMethodInitializable;
 import com.github.vincemann.springrapid.coretest.slicing.TestConfig;

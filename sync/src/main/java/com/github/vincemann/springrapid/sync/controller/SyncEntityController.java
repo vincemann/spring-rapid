@@ -14,7 +14,7 @@ import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
-import com.github.vincemann.springrapid.sync.service.LastFetchInfo;
+import com.github.vincemann.springrapid.sync.model.LastFetchInfo;
 import com.github.vincemann.springrapid.sync.service.SyncService;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,17 +44,12 @@ import java.util.Set;
  */
 @Slf4j
 @Getter
-public class SyncEntityController
-        <
-                E extends IAuditingEntity<ID>,
-                ID extends Serializable,
-                S extends SyncService<E, ID>
-        >
-        extends AbstractEntityController<E, ID>
+public class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Serializable>
+        extends AbstractEntityController<E, Id>
         implements ApplicationContextAware {
 
-    private IdFetchingStrategy<ID> idFetchingStrategy;
-    private S service;
+    private IdFetchingStrategy<Id> idFetchingStrategy;
+    private SyncService<E, Id> service;
     @Setter
     private String fetchEntitySyncStatusUrl;
     @Setter
@@ -76,7 +71,7 @@ public class SyncEntityController
      */
     public ResponseEntity<String> fetchEntitySyncStatus(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, JsonProcessingException {
         try {
-            ID id = fetchId(request);
+            Id id = fetchId(request);
             long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
             // jpa uses this format
             //            Date lastUpdateDate = DATE_FORMAT.parse(lastUpdateTimestampString);
@@ -207,18 +202,18 @@ public class SyncEntityController
     }
 
 
-    protected ID fetchId(HttpServletRequest request) throws IdFetchingException {
+    protected Id fetchId(HttpServletRequest request) throws IdFetchingException {
         return this.getIdFetchingStrategy().fetchId(request);
     }
 
     @Autowired
-    public void injectIdFetchingStrategy(IdFetchingStrategy<ID> idFetchingStrategy) {
+    public void injectIdFetchingStrategy(IdFetchingStrategy<Id> idFetchingStrategy) {
         this.idFetchingStrategy = idFetchingStrategy;
     }
 
     @Autowired
     @Lazy
-    public void injectService(S service) {
+    public void injectService(SyncService<E,Id> service) {
         this.service = service;
     }
 }

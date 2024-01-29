@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.service.locator;
 
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.ServiceBeanType;
@@ -11,7 +11,7 @@ import java.util.Map;
  * API for finding specific {@link CrudService}s, that are in the current Spring Container.
  * @see ServiceBeanType in order to differntiate between seperate services of the same type
  */
-@ServiceComponent
+@Component
 public interface CrudServiceLocator {
 
     Map<Class<? extends IdentifiableEntity>, CrudService>  getEntityClassPrimaryServiceMap();

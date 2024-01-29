@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.acl.proxy.Acl;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
+import org.springframework.context.annotation.Configuration;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@ServiceConfig
+@Configuration
 public class RapidDefaultAclExtensionsAutoConfiguration {
 
     @Autowired

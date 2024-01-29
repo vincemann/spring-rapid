@@ -124,14 +124,14 @@ def gen_jpaservice_class(dir):
 package <insert package>.service.jpa;
 
 import com.github.vincemann.springrapid.core.service.JPACrudService;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import <insert package>.model.<insert entity>;
 import <insert package>.repo.<insert entity>Repository;
 import <insert package>.service.<insert entity>Service;
 
 
 @Service
-@ServiceComponent
+@Component
 public class Jpa<insert entity>Service extends JPACrudService<<insert entity>,<insert id>, <insert entity>Repository> implements <insert entity>Service {
 	
 }
@@ -146,11 +146,11 @@ package <insert package>.controller;
 import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
-import com.github.vincemann.springrapid.core.slicing.WebController;
+import org.springframework.stereotype.Controller;
 import <insert package>.model.<insert entity>;
 import <insert package>.service.<insert entity>Service;
 
-@WebController
+@Controller
 public class <insert entity>Controller extends CrudController<<insert entity>, <insert id>, <insert entity>Service> {
 
 	@Override

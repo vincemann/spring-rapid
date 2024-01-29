@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.syncdemo.service.jpa;
 
 import com.github.vincemann.springrapid.core.service.JPACrudService;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.syncdemo.model.Specialty;
 import com.github.vincemann.springrapid.syncdemo.repo.SpecialtyRepository;
 import com.github.vincemann.springrapid.syncdemo.service.SpecialtyService;
@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Primary
 @Service
-@ServiceComponent
+@Component
 public class JpaSpecialtyService extends JPACrudService<Specialty,Long, SpecialtyRepository> implements SpecialtyService, TargetClassAware {
 
     @Override

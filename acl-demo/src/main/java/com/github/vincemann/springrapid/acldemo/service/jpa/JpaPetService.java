@@ -10,7 +10,7 @@ import com.github.vincemann.springrapid.acldemo.service.ext.OwnerCanOnlySaveOwnP
 import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
 import com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 @Root
 @Primary
 @Service
-@ServiceComponent
+@Component
 public class JpaPetService extends JPACrudService<Pet, Long, PetRepository> implements PetService, TargetClassAware {
     @Override
     public Class<?> getTargetClass() {

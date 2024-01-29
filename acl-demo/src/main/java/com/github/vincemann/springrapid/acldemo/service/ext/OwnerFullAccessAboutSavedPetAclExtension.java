@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.service.ext;
 
-//@ServiceComponent
+//@Component
 //@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 //public class OwnerFullAccessAboutSavedPetAclExtension extends AbstractAclExtension<PetService>
 //        implements GenericCrudServiceExtension<PetService, Pet,Long> {

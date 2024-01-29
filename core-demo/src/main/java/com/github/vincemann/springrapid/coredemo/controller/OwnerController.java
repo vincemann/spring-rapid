@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.coredemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadForeignOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
-import com.github.vincemann.springrapid.core.slicing.WebController;
+import org.springframework.stereotype.Controller;
 import com.github.vincemann.springrapid.coredemo.service.filter.CityPrefixFilter;
 import com.github.vincemann.springrapid.coredemo.service.filter.HasPetsFilter;
 import com.github.vincemann.springrapid.coredemo.service.filter.OwnerTelNumberFilter;
@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
 
-@WebController
+@Controller
 public class OwnerController extends CrudController<Owner, Long> {
 
 

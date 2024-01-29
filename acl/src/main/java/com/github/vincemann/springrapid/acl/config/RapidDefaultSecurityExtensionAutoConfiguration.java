@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ProxyController;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
+import org.springframework.context.annotation.Configuration;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import java.util.Optional;
  * Adds default acl checks extension to all @{@link Secured} proxies.
  */
 @Slf4j
-@ServiceConfig
+@Configuration
 public class RapidDefaultSecurityExtensionAutoConfiguration {
 
     @Autowired

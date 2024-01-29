@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.core.controller.json.JsonDtoPropertyVali
 import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
 import com.github.vincemann.springrapid.core.controller.json.JsonDtoPropertyValidatorImpl;
 import com.github.vincemann.springrapid.core.controller.json.JsonMapperImpl;
-import com.github.vincemann.springrapid.core.slicing.WebConfig;
+import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -21,7 +21,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY;
 
-@WebConfig
+@Configuration
 @Slf4j
 @EnableWebMvc
 //string to json and vice versa

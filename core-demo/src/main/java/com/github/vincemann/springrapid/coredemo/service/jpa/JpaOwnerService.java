@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.coredemo.service.jpa;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Root
-@ServiceComponent
+@Component
 public class JpaOwnerService
         extends JPACrudService<Owner,Long, OwnerRepository>
                 implements OwnerService, AopLoggable, TargetClassAware {

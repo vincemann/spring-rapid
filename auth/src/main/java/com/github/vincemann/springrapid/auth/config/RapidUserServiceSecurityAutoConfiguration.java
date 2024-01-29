@@ -10,7 +10,7 @@ import com.github.vincemann.springrapid.acl.config.RapidAclAutoConfiguration;
 import com.github.vincemann.springrapid.acl.proxy.*;
 import com.github.vincemann.springrapid.acl.service.extensions.acl.CleanUpAclExtension;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
+import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -25,7 +25,7 @@ import org.springframework.security.acls.model.MutableAclService;
  * Adds acl security stack in form of configuring @{@link Acl} and @{@link Secured} versions (proxies) of {@link UserService}
  * with default Security- and AclExtensions.
  */
-@ServiceConfig
+@Configuration
 @Slf4j
 //we need the acl beans here
 @AutoConfigureAfter({RapidAclAutoConfiguration.class, RapidAclExtensionsAutoConfiguration.class})

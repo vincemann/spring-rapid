@@ -1,12 +1,12 @@
 package com.github.vincemann.springrapid.coredemo.service.jpa;
 
 import com.github.vincemann.springrapid.core.service.JPACrudService;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
 import com.github.vincemann.springrapid.coredemo.repo.ClinicCardRepository;
 import com.github.vincemann.springrapid.coredemo.service.ClinicCardService;
 
-@ServiceComponent
+@Component
 //@DisableAutoBiDir
 public class JpaClinicCardService
         extends JPACrudService<ClinicCard,Long, ClinicCardRepository>

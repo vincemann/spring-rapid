@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coretest;
+package com.github.vincemann.springrapid.coretest.util;
 
 import com.github.vincemann.springrapid.core.security.AbstractRapidSecurityContext;
 import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;

@@ -7,11 +7,11 @@ import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.security.acls.domain.BasePermission;
 
-@ServiceComponent
+@Component
 public class OwnerGainsReadPermissionForSavedVisitsAclExtension extends AbstractAclExtension<VisitService>
         implements GenericCrudServiceExtension<VisitService, Visit,Long>
 {

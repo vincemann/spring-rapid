@@ -2,14 +2,14 @@ package com.github.vincemann.springrapid.acldemo.service.owner;
 
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
-import com.github.vincemann.springrapid.core.slicing.WebComponent;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.Optional;
 
-@WebComponent
+@Component
 public class PetOwnerLocator implements OwnerLocator<Pet> {
 
     @PersistenceContext

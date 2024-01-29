@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.auth.security.bruteforce.BruteForceAuthe
 import com.github.vincemann.springrapid.auth.security.bruteforce.BruteForceAuthenticationSuccessEventListener;
 import com.github.vincemann.springrapid.auth.security.bruteforce.LoginAttemptService;
 import com.github.vincemann.springrapid.auth.security.bruteforce.LoginAttemptServiceImpl;
-import com.github.vincemann.springrapid.core.slicing.WebConfig;
+import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
-@WebConfig
+@Configuration
 @Slf4j
 //we need httpTokenService
 @AutoConfigureAfter(RapidAuthControllerAutoConfiguration.class)
