@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coretest.util;
 
-import com.github.vincemann.springrapid.core.controller.GenericCrudController;
+import com.github.vincemann.springrapid.core.controller.CrudEntityController;
 import com.github.vincemann.springrapid.core.service.filter.UrlExtension;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
@@ -91,13 +91,13 @@ public class RapidTestUtil {
         Assertions.assertEquals(extensions.length,queryFilters.size()+entityFilters.size()+sortingStrategies.size());
 
         if (!queryFilters.isEmpty()){
-            requestBuilder.param(GenericCrudController.QUERY_FILTER_URL_KEY,createExtensionsString(queryFilters,applicationContext));
+            requestBuilder.param(CrudEntityController.QUERY_FILTER_URL_KEY,createExtensionsString(queryFilters,applicationContext));
         }
         if (!entityFilters.isEmpty()){
-            requestBuilder.param(GenericCrudController.ENTITY_FILTER_URL_KEY,createExtensionsString(entityFilters,applicationContext));
+            requestBuilder.param(CrudEntityController.ENTITY_FILTER_URL_KEY,createExtensionsString(entityFilters,applicationContext));
         }
         if (!sortingStrategies.isEmpty()){
-            requestBuilder.param(GenericCrudController.ENTITY_SORTING_STRATEGY_URL_KEY,createExtensionsString(sortingStrategies,applicationContext));
+            requestBuilder.param(CrudEntityController.ENTITY_SORTING_STRATEGY_URL_KEY,createExtensionsString(sortingStrategies,applicationContext));
         }
     }
 

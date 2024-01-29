@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.acl.SecuredCrudController;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappings;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.WebController;
@@ -26,7 +26,7 @@ public class VisitController
         extends SecuredCrudController<Visit, Long, VisitService>
 {
     @Override
-    protected DtoMappingContext provideDtoMappingContext(CrudDtoMappingContextBuilder builder) {
+    protected DtoMappings provideDtoMappingContext(CrudDtoMappingContextBuilder builder) {
         return builder.forAll(VisitDto.class).build();
     }
 

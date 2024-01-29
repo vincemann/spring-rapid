@@ -1,7 +1,10 @@
 package com.github.vincemann.springrapid.core.controller.dto.mapper.context;
 
-import com.github.vincemann.springrapid.core.controller.DtoClassLocator;
-import com.github.vincemann.springrapid.core.controller.RoleFallbackDtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.dto.DtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.dto.RoleFallbackDtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.Direction;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappings;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoRequestInfo;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.util.Lists;
 import org.junit.jupiter.api.Assertions;
@@ -12,9 +15,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-class CrudDtoMappingContextBuilderTest {
+class CrudDtoMappingsBuilderTest {
 
-    DtoMappingContext context;
+    DtoMappings context;
     DtoRequestInfo findInfo;
     DtoRequestInfo createInfo;
     DtoRequestInfo findAllInfo;
@@ -60,7 +63,7 @@ class CrudDtoMappingContextBuilderTest {
         context = new CrudDtoMappingContextBuilder(null)
                 //user role and peek role
                 .withRoles(roles.toArray(new String[0]))
-                .forEndpoint(FIND_URL,Direction.RESPONSE, PrivilegedFindDto.class)
+                .forEndpoint(FIND_URL, Direction.RESPONSE, PrivilegedFindDto.class)
                 .forEndpoint(FIND_ALL_URL,Direction.RESPONSE,PrivilegedFindDto.class)
 
                 .withRoles(adminRole)

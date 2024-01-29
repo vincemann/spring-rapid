@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller;
+package com.github.vincemann.springrapid.core.controller.dto;
 
 import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;

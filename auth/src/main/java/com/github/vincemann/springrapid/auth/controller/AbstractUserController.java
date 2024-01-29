@@ -16,10 +16,10 @@ import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 
 import com.github.vincemann.springrapid.auth.util.UrlParamUtil;
-import com.github.vincemann.springrapid.core.controller.GenericCrudController;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRequestInfo;
+import com.github.vincemann.springrapid.core.controller.CrudEntityController;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.Direction;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappings;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoRequestInfo;
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingException;
 import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -28,7 +28,6 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -49,15 +48,15 @@ import static com.github.vincemann.springrapid.core.util.HttpServletRequestUtils
 
 @Slf4j
 @Getter
-public abstract class AbstractUserController<U extends AbstractUser<ID>, ID extends Serializable, S extends UserService<U,ID>>
-			extends GenericCrudController<U,ID, UserService<U,ID>,UserEndpointInfo,UserDtoMappingContextBuilder> {
+public abstract class AbstractUserController<U extends AbstractUser<ID>, ID extends Serializable>
+			extends CrudEntityController<U,ID> {
 
 
 	//              DEPENDENCIES
 
 
 	// dont change to S, autoconfig needs raw userService version, getUserService methods will cast to S
-	private S userService;
+	private UserService<U,ID> userService;
 	private HttpTokenService httpTokenService;
 	private AuthProperties authProperties;
 
@@ -404,7 +403,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 */
 	@Override
 	protected void preconfigureDtoMappingContextBuilder(UserDtoMappingContextBuilder builder) {
-		super.preconfigureDtoMappingContextBuilder(builder);
+		super.preconfigureDtoMappings(builder);
 		builder
 
 				.withAllPrincipals()
@@ -442,7 +441,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	}
 
 	@Override
-	protected DtoMappingContext provideDtoMappingContext(UserDtoMappingContextBuilder builder) {
+	protected DtoMappings provideDtoMappingContext(UserDtoMappingContextBuilder builder) {
 		return builder.build();
 	}
 
@@ -675,17 +674,14 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 //	@Root
 	@Lazy
 	@Autowired
-	public void injectUserService(S Service) {
+	public void injectUserService(UserService<U,ID> Service) {
 		this.userService = Service;
 	}
 
-	protected S getSecuredUserService(){
-		return (S) getService();
+	protected UserService<U,ID> getSecuredUserService(){
+		return (UserService<U, ID>) getService();
 	}
 
-	protected S getUserService(){
-		return this.userService;
-	}
 
 
 	@Autowired
@@ -693,13 +689,6 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		this.authProperties = authProperties;
 	}
 
-
-	@Autowired
-	@Qualifier("userEndpointInfo")
-	@Override
-	public void injectEndpointInfo(UserEndpointInfo endpointInfo) {
-		super.injectEndpointInfo(endpointInfo);
-	}
 
 	//	@Override
 //	public void afterUpdate(Object dto, U updated, HttpServletRequest httpServletRequest, HttpServletResponse response) {

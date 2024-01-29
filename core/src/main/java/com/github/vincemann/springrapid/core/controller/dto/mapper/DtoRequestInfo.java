@@ -1,13 +1,11 @@
-package com.github.vincemann.springrapid.core.controller.dto.mapper.context;
+package com.github.vincemann.springrapid.core.controller.dto.mapper;
 
 import com.github.vincemann.springrapid.core.util.Lists;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Represents information about current Request.
@@ -20,17 +18,12 @@ public class DtoRequestInfo {
     private String endpoint;
     private Direction direction;
     private List<String> authorities = new ArrayList<>();
-    private DtoRequestInfo.Principal principal = DtoRequestInfo.Principal.ALL;
+    private Principal principal;
     private List<String> urlParams = new ArrayList<>();
 
-    public enum Principal{
-        OWN,
-        FOREIGN,
-        ALL
-    }
 
     @Builder
-    public DtoRequestInfo(String endpoint, Direction direction, @Nullable List<String> authorities, DtoRequestInfo.Principal principal, List<String> urlParams) {
+    public DtoRequestInfo(String endpoint, Direction direction, @Nullable List<String> authorities, Principal principal, List<String> urlParams) {
         this.endpoint = endpoint;
         this.direction = direction;
         if (authorities!=null)
@@ -43,10 +36,11 @@ public class DtoRequestInfo {
     }
 
     public DtoRequestInfo(DtoRequestInfo info){
-        this.endpoint=info.endpoint;
-        this.direction=info.direction;
-        this.authorities = Lists.newArrayList(info.authorities);
-        this.urlParams = info.urlParams;
+        this.endpoint=info.getEndpoint();
+        this.direction=info.getDirection();
+        this.authorities = Lists.newArrayList(info.getAuthorities());
+        this.urlParams = Lists.newArrayList(info.getUrlParams());
+        this.principal = info.getPrincipal();
     }
 
     public DtoRequestInfo(String endpoint, Direction direction) {

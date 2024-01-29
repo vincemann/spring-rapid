@@ -8,8 +8,8 @@ import com.github.vincemann.springrapid.core.controller.fetchid.LongUrlParamIdFe
 //import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.UrlParamIdFetchingStrategyImpl;
 import com.github.vincemann.springrapid.core.controller.MergeUpdateStrategy;
 import com.github.vincemann.springrapid.core.controller.MergeUpdateStrategyImpl;
-import com.github.vincemann.springrapid.core.controller.JavaXDtoValidationStrategy;
-import com.github.vincemann.springrapid.core.controller.DtoValidationStrategy;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.JavaXDtoValidationStrategy;
+import com.github.vincemann.springrapid.core.controller.dto.DtoValidationStrategy;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import lombok.extern.slf4j.Slf4j;

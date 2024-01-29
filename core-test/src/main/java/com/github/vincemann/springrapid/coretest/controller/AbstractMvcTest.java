@@ -4,13 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 
 import com.fasterxml.jackson.databind.type.CollectionType;
-import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
-import com.github.vincemann.springrapid.coretest.controller.automock.AutoMockServiceBeansIntegrationTest;
-import com.github.vincemann.springrapid.coretest.controller.integration.MvcIntegrationTest;
-import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.controller.template.MvcControllerTestTemplate;
 import lombok.Getter;
 import org.junit.jupiter.api.Assertions;

@@ -1,5 +1,8 @@
 package com.github.vincemann.springrapid.core.config;
 
+import com.github.vincemann.springrapid.core.controller.dto.DtoPostProcessor;
+import com.github.vincemann.springrapid.core.controller.dto.EntityPostProcessor;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.BasicDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.*;
 import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import lombok.extern.slf4j.Slf4j;

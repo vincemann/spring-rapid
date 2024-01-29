@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.core.controller.dto.mapper;
 
+import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMapper;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;

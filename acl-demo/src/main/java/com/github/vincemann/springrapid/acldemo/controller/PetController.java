@@ -8,8 +8,8 @@ import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerUpdatesPetDto;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.Direction;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappings;
 import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.core.slicing.WebController;
 
@@ -18,7 +18,7 @@ import com.github.vincemann.springrapid.core.slicing.WebController;
 public class PetController extends SecuredCrudController<Pet, Long, PetService> {
 
     @Override
-    protected DtoMappingContext provideDtoMappingContext(CrudDtoMappingContextBuilder builder) {
+    protected DtoMappings provideDtoMappingContext(CrudDtoMappingContextBuilder builder) {
         return builder
 
                 .withRoles(MyRoles.OWNER)

@@ -1,4 +1,6 @@
-package com.github.vincemann.springrapid.core.controller;
+package com.github.vincemann.springrapid.core.controller.dto.mapper;
+
+import com.github.vincemann.springrapid.core.controller.dto.DtoValidationStrategy;
 
 import javax.validation.*;
 import java.util.Set;
@@ -6,7 +8,6 @@ import java.util.Set;
 /**
  * BaseImpl of {@link DtoValidationStrategy}, that utilizes the javax validation API.
  * See: {@link Validator}
- * @param <Id>
  */
 public class JavaXDtoValidationStrategy implements DtoValidationStrategy {
     private final Validator validator;

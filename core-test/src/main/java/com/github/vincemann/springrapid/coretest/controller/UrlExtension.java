@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coretest.controller;
 
-import com.github.vincemann.springrapid.core.controller.GenericCrudController;
+import com.github.vincemann.springrapid.core.controller.CrudEntityController;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Represents a container for either {@link EntityFilter}, {@link QueryFilter} or {@link SortingExtension}.
  * Can be converted to String via {@link com.github.vincemann.springrapid.coretest.util.RapidTestUtil#createExtensionsString(List, ApplicationContext)}
- * which can be added as url param for some endpoints like {@link GenericCrudController#findAll(HttpServletRequest, HttpServletResponse)}.
+ * which can be added as url param for some endpoints like {@link CrudEntityController#findAll(HttpServletRequest, HttpServletResponse)}.
  *
  * Use {@link CrudControllerTestTemplate#findAll(UrlExtension...)} and similar helper methods
  * to add extensions while testing, whenever possible.

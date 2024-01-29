@@ -3,8 +3,9 @@ package com.github.vincemann.springrapid.core.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDtoMapper;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.*;
+import com.github.vincemann.springrapid.core.controller.dto.DtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.dto.DtoValidationStrategy;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.*;
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingException;
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.json.JsonDtoPropertyValidator;
@@ -25,7 +26,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,16 +45,7 @@ import static com.github.vincemann.springrapid.core.util.HttpServletRequestUtils
 
 @Slf4j
 @Getter
-public abstract class GenericCrudController
-        <
-                E extends IdentifiableEntity<ID>,
-                ID extends Serializable,
-                S extends CrudService<E, ID>,
-
-                //internal generic params
-                EndpointInfo extends CrudEndpointInfo,
-                DTOMappingContextBuilder extends AbstractDtoMappingContextBuilder
-                >
+public abstract class CrudEntityController<E extends IdentifiableEntity<ID>, ID extends Serializable>
         extends AbstractEntityController<E,ID>
 {
 
@@ -63,17 +54,19 @@ public abstract class GenericCrudController
 
 
     private IdFetchingStrategy<ID> idFetchingStrategy;
-    private EndpointInfo endpointInfo;
-    private S service;
+    private CrudService<E, ID> service;
     private DelegatingDtoMapper dtoMapper;
     private DelegatingOwnerLocator ownerLocator;
-    private DelegatingDtoClassLocator dtoClassLocator;
-    private DtoMappingContext dtoMappingContext;
-    private DTOMappingContextBuilder dtoMappingContextBuilder;
+    private DtoClassLocator dtoClassLocator;
+    private DtoMappings dtoMappings;
     private DtoValidationStrategy dtoValidationStrategy;
     private MergeUpdateStrategy mergeUpdateStrategy;
     private JsonPatchStrategy jsonPatchStrategy;
     private JsonDtoPropertyValidator jsonDtoPropertyValidator;
+    private PrincipalFactory principalFactory;
+
+    private List<String> ignoredEndPoints = new ArrayList<>();
+
 
 
     //              CONTROLLER METHODS
@@ -218,6 +211,9 @@ public abstract class GenericCrudController
 //        E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);
     }
 
+
+    protected abstract void configureDtoMappings(DtoMappingsBuilder builder);
+
     public ResponseEntity<?> delete(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, ConstraintViolationException {
         ID id = fetchId(request);
         beforeDelete(id, request, response);
@@ -230,17 +226,13 @@ public abstract class GenericCrudController
     //              HELPERS
 
 
-    public Class<?> createDtoClass(String endpoint, Direction direction, List<String> urlParams, E entity) throws BadEntityException {
+    protected Class<?> createDtoClass(String endpoint, Direction direction, List<String> urlParams, E entity) throws BadEntityException {
         DtoRequestInfo dtoRequestInfo = createDtoRequestInfo(endpoint, direction,urlParams, entity);
-        Class<?> dtoClass = dtoClassLocator.find(dtoRequestInfo);
-        if (dtoClass == null) {
-            throw new BadEntityException("No DtoClass mapped for info: " + dtoRequestInfo);
-        }
-        return dtoClass;
+        return dtoClassLocator.find(dtoRequestInfo,dtoMappings);
     }
 
     protected DtoRequestInfo createDtoRequestInfo(String endpoint, Direction direction,List<String> urlParams, E entity) {
-        DtoRequestInfo.Principal principal = currentPrincipal(entity);
+        Principal principal = principalFactory.create(entity);
         return DtoRequestInfo.builder()
                 .authorities(RapidSecurityContext.getRoles())
                 .direction(direction)
@@ -248,20 +240,6 @@ public abstract class GenericCrudController
                 .principal(principal)
                 .endpoint(endpoint)
                 .build();
-    }
-
-    protected DtoRequestInfo.Principal currentPrincipal(E entity) {
-        DtoRequestInfo.Principal principal = DtoRequestInfo.Principal.ALL;
-        if (entity != null) {
-            String authenticated = RapidSecurityContext.getName();
-            Optional<String> queried = ownerLocator.find(entity);
-            if (queried.isPresent() && authenticated != null) {
-                principal = queried.get().equals(authenticated)
-                        ? DtoRequestInfo.Principal.OWN
-                        : DtoRequestInfo.Principal.FOREIGN;
-            }
-        }
-        return principal;
     }
 
 
@@ -299,6 +277,10 @@ public abstract class GenericCrudController
                 .body(jsonDto);
     }
 
+    protected List<String> ignoredEndpoints(){
+        return new ArrayList<>();
+    }
+
     protected ResponseEntity<?> okNoContent() {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -319,70 +301,31 @@ public abstract class GenericCrudController
         log.debug("SecurityContexts Authentication before service call: " + SecurityContextHolder.getContext().getAuthentication());
     }
 
-    protected void logDtoMappingContext() {
-        if (dtoMappingContext != null) {
-            log.debug("DtoMappingContext: " + dtoMappingContext.toPrettyString());
-        } else {
-            log.debug("DtoMappingContext: " + dtoMappingContext);
-        }
-    }
-
 
     //             INIT
 
 
     @SuppressWarnings("unchecked")
-    public GenericCrudController() {
+    public CrudEntityController() {
         super();
     }
 
-    /**
-     * Use one of the {@link CrudDtoMappingContextBuilder}s by autowiring them in.
-     */
-    protected abstract DtoMappingContext provideDtoMappingContext(DTOMappingContextBuilder builder);
-
-    protected abstract DTOMappingContextBuilder createDtoMappingContextBuilder();
-
-    protected void preconfigureDtoMappingContextBuilder(DTOMappingContextBuilder builder) {
-
-    }
 
     protected String getMediaType() {
         return coreProperties.getController().getMediaType();
     }
 
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        configureEndpointInfo(endpointInfo);
-        super.onApplicationEvent(event);
-    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
-        this.dtoMappingContextBuilder = createDtoMappingContextBuilder();
-        preconfigureDtoMappingContextBuilder(dtoMappingContextBuilder);
-        this.dtoMappingContext = provideDtoMappingContext(dtoMappingContextBuilder);
-        logDtoMappingContext();
-        dtoClassLocator.setContext(dtoMappingContext);
-        configureDtoClassLocator(dtoClassLocator);
+        DtoMappingsBuilder builder = new DtoMappingsBuilder();
+        configureDtoMappings(builder);
+        this.dtoMappings = builder.build();
+        // todo implement to string
+        log.debug("dto mappings: " + dtoMappings);
     }
-
-    /**
-     * Override this method if you want to register {@link LocalDtoClassLocator}s
-     */
-    protected void configureDtoClassLocator(DelegatingDtoClassLocator locator) {
-
-    }
-
-    /**
-     * Override this method to manage exposure of endpoints
-     *
-     * @param endpointInfo
-     */
-    protected void configureEndpointInfo(EndpointInfo endpointInfo) {
-
-    }
+    
 
     //              URLS
 
@@ -415,22 +358,22 @@ public abstract class GenericCrudController
 
     @Override
     protected void registerEndpoints() throws NoSuchMethodException {
-        if (endpointInfo.isExposeCreate()) {
+        if (ignoredEndPoints.contains(getCreateUrl())) {
             registerEndpoint(createCreateRequestMappingInfo(), "create");
         }
-        if (endpointInfo.isExposeFind()) {
+        if (ignoredEndPoints.contains(getFindUrl())) {
             registerEndpoint(createFindRequestMappingInfo(), "find");
         }
-        if (endpointInfo.isExposeUpdate()) {
+        if (ignoredEndPoints.contains(getUpdateUrl())) {
             registerEndpoint(createUpdateRequestMappingInfo(), "update");
         }
-        if (endpointInfo.isExposeDelete()) {
+        if (ignoredEndPoints.contains(getDeleteUrl())) {
             registerEndpoint(createDeleteRequestMappingInfo(), "delete");
         }
-        if (endpointInfo.isExposeFindAll()) {
+        if (ignoredEndPoints.contains(getFindAllUrl())) {
             registerEndpoint(createFindAllRequestMappingInfo(), "findAll");
         }
-        if (endpointInfo.isExposeFindSome()) {
+        if (ignoredEndPoints.contains(getFindSomeUrl())) {
             registerEndpoint(createFindSomeRequestMappingInfo(), "findSome");
         }
     }
@@ -513,10 +456,6 @@ public abstract class GenericCrudController
             return service.findAll(jpqlFilters,filters,sortingStrategies);
     }
 
-//    protected Set<E> serviceFindAll(EntityFilter<E> filter) {
-//        return service.findAll(filter);
-//    }
-
     protected Set<E> serviceFindSome(Set<ID> ids) {
         return service.findSome(ids);
     }
@@ -572,7 +511,7 @@ public abstract class GenericCrudController
 
     @Autowired
     @Lazy
-    public void injectCrudService(S crudService) {
+    public void injectCrudService(CrudService<E,ID> crudService) {
         this.service = crudService;
     }
 
@@ -597,7 +536,7 @@ public abstract class GenericCrudController
     }
 
     @Autowired
-    public void injectDtoClassLocator(DelegatingDtoClassLocator dtoClassLocator) {
+    public void injectDtoClassLocator(DtoClassLocator dtoClassLocator) {
         this.dtoClassLocator = dtoClassLocator;
     }
 
@@ -605,12 +544,6 @@ public abstract class GenericCrudController
     public void injectDtoMapper(DelegatingDtoMapper dtoMapper) {
         this.dtoMapper = dtoMapper;
     }
-
-    @Autowired
-    public void injectEndpointInfo(EndpointInfo endpointInfo) {
-        this.endpointInfo = endpointInfo;
-    }
-
 
     @Autowired
     public void injectIdIdFetchingStrategy(IdFetchingStrategy<ID> idFetchingStrategy) {
@@ -622,7 +555,8 @@ public abstract class GenericCrudController
         this.jsonDtoPropertyValidator = jsonDtoPropertyValidator;
     }
 
-    protected void setDtoMappingContext(DtoMappingContext dtoMappingContext) {
-        this.dtoMappingContext = dtoMappingContext;
+    @Autowired
+    public void injectPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
     }
 }

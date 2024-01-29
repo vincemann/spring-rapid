@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.autobidir.controller.dtomapper;
 
 import com.github.vincemann.springrapid.autobidir.RelationalDtoManager;
 import com.github.vincemann.springrapid.autobidir.dto.RelationalDtoType;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.EntityDtoPostProcessor;
+import com.github.vincemann.springrapid.core.controller.dto.EntityDtoPostProcessor;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;

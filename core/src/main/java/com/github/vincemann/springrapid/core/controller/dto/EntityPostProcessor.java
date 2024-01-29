@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.dto.mapper;
+package com.github.vincemann.springrapid.core.controller.dto;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;

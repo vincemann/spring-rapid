@@ -1,9 +1,10 @@
-package com.github.vincemann.springrapid.core.controller;
+package com.github.vincemann.springrapid.core.controller.dto;
 
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.aoplog.api.annotation.LogParam;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRequestInfo;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappings;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoRequestInfo;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.Principal;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
@@ -26,9 +27,9 @@ public class RoleFallbackDtoClassLocator implements DtoClassLocator {
      */
     @Override
     @LogInteraction
-    public Class<?> find(@LogParam DtoRequestInfo info, DtoMappingContext context) {
-        Map<DtoRequestInfo, Class<?>> mappingEntries = context.getMappingEntries();
-        Set<DtoRequestInfo> endpointMatches = findEndpointMatches(info,context);
+    public Class<?> find(@LogParam DtoRequestInfo info, DtoMappings mappings) {
+        Map<DtoRequestInfo, Class<?>> mappingEntries = mappings.getMappings();
+        Set<DtoRequestInfo> endpointMatches = findEndpointMatches(info,mappings);
         MatchSet roleMatchSet = findRoleMatchSet(info, endpointMatches);
         Set<DtoRequestInfo> roleFilteredEntries = roleMatchSet.matches.isEmpty() ? roleMatchSet.criteriaIndifferent : roleMatchSet.matches;
         MatchSet principalMatchSet = findPrincipalMatches(info, roleFilteredEntries);
@@ -54,7 +55,7 @@ public class RoleFallbackDtoClassLocator implements DtoClassLocator {
     private MatchSet findPrincipalMatches(DtoRequestInfo userMappingInfo, Set<DtoRequestInfo> entries) {
         MatchSet principalMatchSet = new MatchSet();
         entries.stream().forEach(info -> {
-            if (info.getPrincipal().equals(DtoRequestInfo.Principal.ALL)) {
+            if (info.getPrincipal().equals(Principal.ALL)) {
                 principalMatchSet.criteriaIndifferent.add(info);
             } else if (userMappingInfo.getPrincipal().equals(info.getPrincipal())) {
                 principalMatchSet.matches.add(info);
@@ -64,8 +65,8 @@ public class RoleFallbackDtoClassLocator implements DtoClassLocator {
     }
 
 
-    private Set<DtoRequestInfo> findEndpointMatches(DtoRequestInfo dtoRequestInfo, DtoMappingContext context) {
-        return context.getMappingEntries().keySet().stream()
+    private Set<DtoRequestInfo> findEndpointMatches(DtoRequestInfo dtoRequestInfo, DtoMappings context) {
+        return context.getMappings().keySet().stream()
                 .filter(info -> info.getDirection().equals(dtoRequestInfo.getDirection())
                         && info.getEndpoint().equals(dtoRequestInfo.getEndpoint()))
                 .collect(Collectors.toSet());

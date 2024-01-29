@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.core.config;
 
 import com.github.vincemann.springrapid.core.controller.DelegatingDtoClassLocator;
-import com.github.vincemann.springrapid.core.controller.DtoClassLocator;
-import com.github.vincemann.springrapid.core.controller.RoleFallbackDtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.dto.DtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.dto.RoleFallbackDtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.slicing.WebConfig;

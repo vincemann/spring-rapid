@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import com.github.vincemann.springrapid.core.controller.GenericCrudController;
+import com.github.vincemann.springrapid.core.controller.CrudEntityController;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Getter
-public abstract class CrudControllerTestTemplate<C extends GenericCrudController>
+public abstract class CrudControllerTestTemplate<C extends CrudEntityController>
         extends MvcControllerTestTemplate<C> {
 
     @Autowired
