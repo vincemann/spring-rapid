@@ -7,23 +7,33 @@ import com.github.vincemann.springrapid.acldemo.service.MyUserService;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.controller.UserDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
+import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappings;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappingsBuilder;
 import com.github.vincemann.springrapid.core.security.Roles;
 import org.springframework.stereotype.Controller;
 
+import static com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappingConditions.*;
+
 @Controller
-public class UserController extends AbstractUserController<User, Long, MyUserService>  {
+public class UserController extends AbstractUserController<User, Long>  {
+
 
     @Override
-    protected DtoMappings provideDtoMappingContext(UserDtoMappingContextBuilder builder) {
-        return builder
-                .forEndpoint(getSignupUrl(), Direction.REQUEST, SignupDto.class)
-                .forEndpoint(getSignupUrl(), Direction.RESPONSE, UUIDSignupResponseDto.class)
+    protected void configureDtoMappings(DtoMappingsBuilder builder) {
 
-                .withRoles(Roles.ADMIN)
-                .forAll(FullUserDto.class)
-                
-                .build();
+        builder.when(endpoint(getSignupUrl()).and(direction(Direction.REQUEST)))
+                .thenReturn(SignupDto.class);
+
+        builder.when(endpoint(getSignupUrl()).and(direction(Direction.RESPONSE)))
+                .thenReturn(UUIDSignupResponseDto.class);
+
+        builder.when(roles(AuthRoles.ADMIN))
+                .thenReturn(FullUserDto.class);
+
+        super.configureDtoMappings(builder);
+
+
     }
 }

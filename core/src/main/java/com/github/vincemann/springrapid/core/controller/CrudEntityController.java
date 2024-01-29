@@ -325,7 +325,7 @@ public abstract class CrudEntityController<E extends IdentifiableEntity<ID>, ID 
         // todo implement to string
         log.debug("dto mappings: " + dtoMappings);
     }
-    
+
 
     //              URLS
 

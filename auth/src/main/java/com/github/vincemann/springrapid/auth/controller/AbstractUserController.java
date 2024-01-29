@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.auth.dto.*;
 import com.github.vincemann.springrapid.auth.dto.user.RapidFindForeignUserDto;
 import com.github.vincemann.springrapid.auth.dto.user.RapidFindOwnUserDto;
 import com.github.vincemann.springrapid.auth.dto.user.RapidFullUserDto;
+import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
@@ -17,9 +18,7 @@ import com.github.vincemann.springrapid.acl.proxy.Secured;
 
 import com.github.vincemann.springrapid.auth.util.UrlParamUtil;
 import com.github.vincemann.springrapid.core.controller.CrudEntityController;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.Direction;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappings;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoRequestInfo;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.*;
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingException;
 import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -43,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappingConditions.*;
 import static com.github.vincemann.springrapid.core.util.HttpServletRequestUtils.getRequestParameterKeysWithoutValue;
 
 
@@ -392,58 +392,74 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 
 	@Override
-	protected UserDtoMappingContextBuilder createDtoMappingContextBuilder() {
-		return new UserDtoMappingContextBuilder(this);
+	protected void configureDtoMappings(DtoMappingsBuilder builder) {
+		builder.when(endpoint(getSignupUrl()).and(direction(Direction.REQUEST)))
+				.thenReturn(SignupDto.class);
+
+		builder.when(endpoint(getSignupUrl()).and(direction(Direction.RESPONSE)))
+				.thenReturn(RapidFindOwnUserDto.class);
+
+		builder.when(endpoint(getRequestContactInformationChangeUrl()).and(direction(Direction.REQUEST)))
+				.thenReturn(RequestContactInformationChangeDto.class);
+
+		builder.when(endpoint(getChangePasswordUrl()).and(direction(Direction.REQUEST)))
+				.thenReturn(ChangePasswordDto.class);
+
+		builder.when(endpoint(getVerifyUserUrl()).and(direction(Direction.RESPONSE)))
+				.thenReturn(RapidFindOwnUserDto.class);
+
+		builder.when(direction(Direction.RESPONSE).and(roles(AuthRoles.ADMIN)))
+				.thenReturn(RapidFullUserDto.class);
+
+
+		builder.when(direction(Direction.RESPONSE).and(principal(Principal.OWN)))
+				.thenReturn(RapidFindOwnUserDto.class);
 	}
 
-	/**
-	 * Preconfigured UserDtoMappingContextBuilder.
-	 * To extend configuration override {@link this#provideDtoMappingContext(UserDtoMappingContextBuilder)} and continue configuring.
-	 * To remove pre-configuration, override this method with empty impl and then override {@link this#provideDtoMappingContext(UserDtoMappingContextBuilder)}.
-	 */
-	@Override
-	protected void preconfigureDtoMappingContextBuilder(UserDtoMappingContextBuilder builder) {
-		super.preconfigureDtoMappings(builder);
-		builder
+//	/**
+//	 * Preconfigured UserDtoMappingContextBuilder.
+//	 * To extend configuration override {@link this#provideDtoMappingContext(UserDtoMappingContextBuilder)} and continue configuring.
+//	 * To remove pre-configuration, override this method with empty impl and then override {@link this#provideDtoMappingContext(UserDtoMappingContextBuilder)}.
+//	 */
+//	@Override
+//	protected void preconfigureDtoMappingContextBuilder(UserDtoMappingContextBuilder builder) {
+//		super.preconfigureDtoMappings(builder);
+//		builder
+//
+//				.withAllPrincipals()
+//				.withAllRoles()
+//				.forResponse(RapidFindForeignUserDto.class)
+//
+//				.withAllPrincipals()
+//				.withAllRoles()
+//				.forEndpoint(getSignupUrl(), Direction.REQUEST, SignupDto.class)
+//				.forEndpoint(getSignupUrl(), Direction.RESPONSE, RapidFindOwnUserDto.class)
+//
+//				.withAllPrincipals()
+//				.withAllRoles()
+//				.forEndpoint(getRequestContactInformationChangeUrl(), Direction.REQUEST, RequestContactInformationChangeDto.class)
+//
+//				.withAllPrincipals()
+//				.withAllRoles()
+//				.forEndpoint(getChangePasswordUrl(), Direction.REQUEST, ChangePasswordDto.class)
+//
+//
+//				.withAllPrincipals()
+//				.withAllRoles()
+//				.forEndpoint(getVerifyUserUrl(),Direction.RESPONSE, RapidFindOwnUserDto.class)
+//
+//				.withAllRoles()
+//				.withPrincipal(DtoRequestInfo.Principal.OWN)
+//				.forResponse(RapidFindOwnUserDto.class)
+//
+//				.withAllPrincipals()
+//				.withRoles(Roles.ADMIN)
+//				.forAll(RapidFullUserDto.class)
+//
+//				.withAllRoles()
+//				.withAllPrincipals();
+//	}
 
-				.withAllPrincipals()
-				.withAllRoles()
-				.forResponse(RapidFindForeignUserDto.class)
-
-				.withAllPrincipals()
-				.withAllRoles()
-				.forEndpoint(getSignupUrl(), Direction.REQUEST, SignupDto.class)
-				.forEndpoint(getSignupUrl(), Direction.RESPONSE, RapidFindOwnUserDto.class)
-
-				.withAllPrincipals()
-				.withAllRoles()
-				.forEndpoint(getRequestContactInformationChangeUrl(), Direction.REQUEST, RequestContactInformationChangeDto.class)
-
-				.withAllPrincipals()
-				.withAllRoles()
-				.forEndpoint(getChangePasswordUrl(), Direction.REQUEST, ChangePasswordDto.class)
-
-
-				.withAllPrincipals()
-				.withAllRoles()
-				.forEndpoint(getVerifyUserUrl(),Direction.RESPONSE, RapidFindOwnUserDto.class)
-
-				.withAllRoles()
-				.withPrincipal(DtoRequestInfo.Principal.OWN)
-				.forResponse(RapidFindOwnUserDto.class)
-
-				.withAllPrincipals()
-				.withRoles(Roles.ADMIN)
-				.forAll(RapidFullUserDto.class)
-
-				.withAllRoles()
-				.withAllPrincipals();
-	}
-
-	@Override
-	protected DtoMappings provideDtoMappingContext(UserDtoMappingContextBuilder builder) {
-		return builder.build();
-	}
 
 
 	//              REGISTER ENDPOINTS
@@ -452,47 +468,47 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	protected void registerEndpoints() throws NoSuchMethodException {
 		super.registerEndpoints();
 
-		if (getEndpointInfo().isExposeContext()){
+		if (getIgnoredEndPoints().contains(getContextUrl())){
 			registerEndpoint(createContextRequestMappingInfo(),"context");
 		}
-		if (getEndpointInfo().isExposeSignup()){
+		if (getIgnoredEndPoints().contains(getSignupUrl())){
 			registerEndpoint(createSignupRequestMappingInfo(),"signup");
 		}
-		if (getEndpointInfo().isExposeResendVerificationMail()){
+		if (getIgnoredEndPoints().contains(getResendVerificationContactInformationUrl())){
 			registerEndpoint(createResendVerificationContactInformationRequestMappingInfo(),"resendVerificationMail");
 		}
-		if (getEndpointInfo().isExposeVerifyUser()){
+		if (getIgnoredEndPoints().contains(getVerifyUserUrl())){
 			registerEndpoint(createVerifyUserRequestMappingInfo(),"verifyUser");
 		}
-		if (getEndpointInfo().isExposeForgotPassword()){
+		if (getIgnoredEndPoints().contains(getForgotPasswordUrl())){
 			registerEndpoint(createForgotPasswordRequestMappingInfo(),"forgotPassword");
 		}
-		if (getEndpointInfo().isExposeResetPasswordView()){
+		if (getIgnoredEndPoints().contains(getResetPasswordViewUrl())){
 			registerViewEndpoint(createResetPasswordViewRequestMappingInfo(),"showResetPassword");
 		}
-		if (getEndpointInfo().isExposeResetPassword()){
+		if (getIgnoredEndPoints().contains(getResetPasswordUrl())){
 			registerEndpoint(createResetPasswordRequestMappingInfo(),"resetPassword");
 		}
-		if (getEndpointInfo().isExposeFetchByContactInformation()){
+		if (getIgnoredEndPoints().contains(getFetchByContactInformationUrl())){
 			registerEndpoint(createFetchByContactInformationRequestMappingInfo(),"fetchByContactInformation");
 		}
-		if (getEndpointInfo().isExposeChangePassword()){
+		if (getIgnoredEndPoints().contains(getChangePasswordUrl())){
 			registerEndpoint(createChangePasswordRequestMappingInfo(),"changePassword");
 		}
-		if (getEndpointInfo().isExposeRequestContactInformationChange()){
+		if (getIgnoredEndPoints().contains(getRequestContactInformationChangeUrl())){
 			registerEndpoint(createRequestContactInformationChangeRequestMappingInfo(),"requestContactInformationChange");
 		}
-		if (getEndpointInfo().isExposeChangeContactInformation()){
+		if (getIgnoredEndPoints().contains(getChangeContactInformationUrl())){
 			registerEndpoint(createChangeContactInformationRequestMappingInfo(),"changeContactInformation");
 		}
 
 //		if (getEndpointInfo().isExposeChangeContactInformationView()){
 //			registerViewEndpoint(createChangeContactInformationRequestViewMappingInfo(),"showChangeContactInformation");
 //		}
-		if (getEndpointInfo().isExposeNewAuthToken()){
+		if (getIgnoredEndPoints().contains(getFetchNewAuthTokenUrl())){
 			registerEndpoint(createNewAuthTokenRequestMappingInfo(),"createNewAuthToken");
 		}
-		if (getEndpointInfo().isExposePing()){
+		if (getIgnoredEndPoints().contains(getPingUrl())){
 			registerEndpoint(createPingRequestMappingInfo(),"ping");
 		}
 	}

@@ -1,48 +1,45 @@
 package com.github.vincemann.springrapid.authdemo.controller;
 
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
-import com.github.vincemann.springrapid.auth.controller.UserDtoMappingContextBuilder;
+import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.authdemo.dto.*;
 import com.github.vincemann.springrapid.authdemo.model.User;
-import com.github.vincemann.springrapid.authdemo.service.JpaUserService;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.Direction;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappings;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoRequestInfo;
-import com.github.vincemann.springrapid.core.security.Roles;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappingsBuilder;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.Principal;
 import org.springframework.stereotype.Controller;
 
+import static com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappingConditions.*;
+
 @Controller
-public class UserController extends AbstractUserController<User, Long, JpaUserService>  {
+public class UserController extends AbstractUserController<User, Long>  {
 
     @Override
-    protected DtoMappings provideDtoMappingContext(UserDtoMappingContextBuilder builder) {
-        return builder
-                .withAllPrincipals()
-                .withAllRoles()
-                .forEndpoint(getUpdateUrl(), UserUpdatesOwnDto.class)
+    protected void configureDtoMappings(DtoMappingsBuilder builder) {
 
-                .withAllPrincipals()
-                .withAllRoles()
-                .forEndpoint(getRequestContactInformationChangeUrl(),Direction.REQUEST, RequestEmailChangeDto.class)
+        builder.when(endpoint(getUpdateUrl()).and(roles(AuthRoles.ADMIN)))
+                        .thenReturn(MyFullUserDto.class);
 
-                .withAllPrincipals()
-                .withAllRoles()
-                .forEndpoint(getSignupUrl(), Direction.REQUEST, MySignupDto.class)
-                .forEndpoint(getSignupUrl(), Direction.RESPONSE, MyFindOwnUserDto.class)
+        builder.when(endpoint(getUpdateUrl()))
+                .thenReturn(UserUpdatesOwnDto.class);
 
-                .withAllPrincipals()
-                .withAllRoles()
-                .forEndpoint(getVerifyUserUrl(),Direction.RESPONSE, MyFindOwnUserDto.class)
+        builder.when(endpoint(getRequestContactInformationChangeUrl()).and(direction(Direction.REQUEST)))
+                .thenReturn(RequestEmailChangeDto.class);
 
-                .withAllRoles()
-                .withPrincipal(DtoRequestInfo.Principal.OWN)
-                .forResponse(MyFindOwnUserDto.class)
+        builder.when(endpoint(getSignupUrl()).and(direction(Direction.REQUEST)))
+                .thenReturn(MySignupDto.class);
 
-                .withAllPrincipals()
-                .withRoles(Roles.ADMIN)
-                .forEndpoint(getUpdateUrl(), MyFullUserDto.class)
-                .build();
+        builder.when(endpoint(getSignupUrl()).and(direction(Direction.RESPONSE)))
+                .thenReturn(MyFindOwnUserDto.class);
+
+        builder.when(endpoint(getVerifyUserUrl()).and(direction(Direction.RESPONSE)))
+                .thenReturn(MyFindOwnUserDto.class);
+
+        builder.when(direction(Direction.RESPONSE).and(principal(Principal.OWN)))
+                .thenReturn(MyFindOwnUserDto.class);
+
+
+        super.configureDtoMappings(builder);
     }
-
 
 }
