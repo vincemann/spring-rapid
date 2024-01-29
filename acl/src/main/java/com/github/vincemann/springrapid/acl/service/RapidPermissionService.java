@@ -2,9 +2,9 @@ package com.github.vincemann.springrapid.acl.service;
 
 import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.security.Roles;
+import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.Roles;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;

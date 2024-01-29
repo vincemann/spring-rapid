@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.security;
+package com.github.vincemann.springrapid.core.sec;
 
 import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import org.springframework.security.access.AccessDeniedException;

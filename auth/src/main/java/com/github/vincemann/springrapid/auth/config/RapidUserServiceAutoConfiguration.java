@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.config;
 
-import com.github.vincemann.springrapid.auth.service.AbstractUserService;
+import com.github.vincemann.springrapid.auth.service.JpaUserService;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.validation.PasswordValidator;
 import com.github.vincemann.springrapid.auth.service.validation.RapidPasswordValidator;
@@ -53,7 +53,7 @@ public class RapidUserServiceAutoConfiguration {
     // user must not set its implementation to Primary tho
     @Bean
     @Primary
-    public UserService myUserService(AbstractUserService abstractUserService) {
+    public UserService myUserService(JpaUserService abstractUserService) {
 //        return createInstance();
         return abstractUserService;
     }

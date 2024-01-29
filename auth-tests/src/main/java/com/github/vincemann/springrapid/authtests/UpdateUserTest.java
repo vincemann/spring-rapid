@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.core.security.Roles;
+import com.github.vincemann.springrapid.core.sec.Roles;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;

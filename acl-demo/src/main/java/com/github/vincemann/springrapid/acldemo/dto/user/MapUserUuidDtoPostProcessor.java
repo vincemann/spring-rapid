@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.acldemo.dto.user;
 
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.model.abs.UserAwareEntity;
-import com.github.vincemann.springrapid.acldemo.service.jpa.JpaUserService;
+import com.github.vincemann.springrapid.acldemo.service.jpa.MyJpaUserService;
 import com.github.vincemann.springrapid.core.controller.dto.EntityPostProcessor;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -16,13 +16,13 @@ import java.util.Optional;
 @Component
 public class MapUserUuidDtoPostProcessor implements EntityPostProcessor<CreateUserDto, UserAwareEntity> {
 
-    private JpaUserService userService;
+    private MyJpaUserService userService;
 
 
     // need lazy injection here, otherwise not wrapped with aop proxies somehow
     @Lazy
     @Autowired
-    public void injectUserService(JpaUserService userService) {
+    public void injectUserService(MyJpaUserService userService) {
         this.userService = userService;
     }
 

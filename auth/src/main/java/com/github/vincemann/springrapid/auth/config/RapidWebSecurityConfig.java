@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.auth.security.bruteforce.LoginAttemptSer
 import com.github.vincemann.springrapid.auth.security.bruteforce.LoginBruteForceFilter;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -58,7 +58,6 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 		tokenAuthentication(http); // configure token authentication filter
 		bruteForceFilter(http);
 		csrf(http); // CSRF configuration
-		cors(http); // CORS configuration
 		authorizeRequests(http); // authorize requests
 		otherConfigurations(http); // override this to add more configurations
 		login(http); // authentication
@@ -173,15 +172,6 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.csrf().disable();
 	}
 
-	
-	/**
-	 * Configures CORS
-	 */
-	protected void cors(HttpSecurity http) throws Exception {
-		
-		http
-			.cors();
-	}
 
 	
 	/**

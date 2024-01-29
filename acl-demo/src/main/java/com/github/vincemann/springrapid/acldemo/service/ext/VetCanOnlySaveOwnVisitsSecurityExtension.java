@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;

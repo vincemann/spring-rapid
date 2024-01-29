@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;

@@ -6,11 +6,15 @@ import com.github.vincemann.springrapid.acl.service.AceNotFoundException;
 import com.github.vincemann.springrapid.acl.service.AclNotFoundException;
 import com.github.vincemann.springrapid.acl.service.AclPermissionService;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
+import com.github.vincemann.springrapid.acldemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.acldemo.repo.VisitRepository;
+import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
 import com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
@@ -20,6 +24,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 
 
 @DefineProxy(name = "acl", extensions = {
@@ -42,19 +47,38 @@ public class JpaVisitService extends JPACrudService<Visit,Long, VisitRepository>
 
 
     private AclPermissionService aclPermissionService;
+    private OwnerService ownerService;
+    private final OwnerRepository ownerRepository;
+
+    public JpaVisitService(OwnerRepository ownerRepository) {
+        this.ownerRepository = ownerRepository;
+    }
 
     @Override
-    public void subscribeOwner(Owner owner, Visit visit) {
+    public void subscribeOwner(Long ownerId, Long visitId) throws EntityNotFoundException {
+        Optional<Owner> ownerById = ownerService.findById(ownerId);
+        Owner owner = VerifyEntity.isPresent(ownerById, ownerId, Owner.class);
+        Visit visit = VerifyEntity.isPresent(service.findById(visitId), visitId, Visit.class);
+
         aclPermissionService.savePermissionForUserOverEntity(owner.getUser().getContactInformation(),visit, BasePermission.READ);
     }
 
     @Override
-    public void unsubscribeOwner(Owner owner, Visit visit) throws BadEntityException {
+    public void unsubscribeOwner(Long ownerId, Long visitId) throws BadEntityException, EntityNotFoundException {
         try {
+            Optional<Owner> ownerById = ownerService.findById(ownerId);
+            Owner owner = VerifyEntity.isPresent(ownerById, ownerId, Owner.class);
+            Visit visit = VerifyEntity.isPresent(service.findById(visitId), visitId, Visit.class);
+
             aclPermissionService.deletePermissionForUserOverEntity(owner.getUser().getContactInformation(),visit, BasePermission.READ);
         } catch (AclNotFoundException | AceNotFoundException e) {
             throw new BadEntityException(e);
         }
+    }
+
+    @Autowired
+    public void setOwnerService(OwnerService ownerService) {
+        this.ownerService = ownerService;
     }
 
     @Autowired

@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.core.model.audit;
 
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
-import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 

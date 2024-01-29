@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.security;
+package com.github.vincemann.springrapid.core.sec;
 
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;

@@ -4,7 +4,7 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.github.vincemann.springrapid.core.security.Roles;
+import com.github.vincemann.springrapid.core.sec.Roles;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

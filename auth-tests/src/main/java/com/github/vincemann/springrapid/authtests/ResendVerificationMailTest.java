@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.github.vincemann.springrapid.auth.mail.MailData;
-import com.github.vincemann.springrapid.auth.service.AbstractUserService;
+import com.github.vincemann.springrapid.auth.service.JpaUserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +23,7 @@ public class ResendVerificationMailTest extends RapidAuthIntegrationTest {
 
 		MailData mailData = userController.verifyMailWasSend();
 		Assertions.assertEquals(UNVERIFIED_USER_CONTACT_INFORMATION,mailData.getTo());
-		Assertions.assertEquals(AbstractUserService.VERIFY_CONTACT_INFORMATION_AUDIENCE,mailData.getTopic());
+		Assertions.assertEquals(JpaUserService.VERIFY_CONTACT_INFORMATION_AUDIENCE,mailData.getTopic());
 	}
 
 	@Test

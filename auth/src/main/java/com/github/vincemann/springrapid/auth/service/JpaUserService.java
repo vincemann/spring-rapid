@@ -13,7 +13,7 @@ import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -46,7 +46,7 @@ import java.util.*;
  */
 @Validated
 @Slf4j
-public abstract class AbstractUserService
+public abstract class JpaUserService
         <
                 U extends AbstractUser<ID>,
                 ID extends Serializable,
@@ -73,8 +73,8 @@ public abstract class AbstractUserService
     private EntityManager entityManager;
     private MessageSender messageSender;
 
-    public AbstractUserService<U,ID,R> getService(){
-        return (AbstractUserService<U, ID, R>) service;
+    public JpaUserService<U,ID,R> getService(){
+        return (JpaUserService<U, ID, R>) service;
     }
 
     /**

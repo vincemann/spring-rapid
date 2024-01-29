@@ -1,20 +1,19 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
-import com.github.vincemann.springrapid.core.controller.CrudController;
-import com.github.vincemann.springrapid.core.controller.dto.map.context.CrudDtoMappingContextBuilder;
-import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappings;
-import org.springframework.stereotype.Controller;
 import com.github.vincemann.springrapid.acldemo.dto.SpecialtyDto;
 import com.github.vincemann.springrapid.acldemo.model.Specialty;
-import com.github.vincemann.springrapid.acldemo.service.SpecialtyService;
+import com.github.vincemann.springrapid.core.controller.CrudController;
+import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
+import org.springframework.stereotype.Controller;
+
+import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.any;
 
 @Controller
-public class SpecialtyController extends CrudController<Specialty,Long, SpecialtyService> {
-
+public class SpecialtyController extends CrudController<Specialty,Long> {
 
     @Override
-    protected DtoMappings provideDtoMappingContext(CrudDtoMappingContextBuilder builder) {
-        return builder.forAll(SpecialtyDto.class)
-                .build();
+    protected void configureDtoMappings(DtoMappingsBuilder builder) {
+        builder.when(any()).thenReturn(SpecialtyDto.class);
     }
+
 }

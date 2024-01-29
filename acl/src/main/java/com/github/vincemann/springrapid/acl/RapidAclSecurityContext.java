@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acl;
 
-import com.github.vincemann.springrapid.core.security.AbstractRapidSecurityContext;
-import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.AbstractRapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
 import lombok.Getter;
 import lombok.Setter;
 

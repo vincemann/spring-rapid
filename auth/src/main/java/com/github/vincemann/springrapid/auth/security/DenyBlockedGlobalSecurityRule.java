@@ -2,12 +2,9 @@ package com.github.vincemann.springrapid.auth.security;
 
 import com.github.vincemann.springrapid.acl.AclEvaluationContext;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.acls.domain.BasePermission;
-import org.springframework.security.acls.model.Permission;
 
 @Slf4j
 public class DenyBlockedGlobalSecurityRule implements GlobalSecurityRule {

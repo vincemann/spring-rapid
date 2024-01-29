@@ -6,6 +6,8 @@ import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.security.acls.domain.BasePermission;
 
@@ -14,14 +16,14 @@ public class NeedCreatePermissionForSubscribingSecurityExtension extends Abstrac
         implements GenericCrudServiceExtension<VisitService, Visit,Long>, VisitService
 {
     @Override
-    public void subscribeOwner(Owner owner, Visit visit) {
-        getSecurityChecker().checkPermission(visit, BasePermission.CREATE);
-        getNext().subscribeOwner(owner,visit);
+    public void subscribeOwner(Long ownerId, Long visitId) throws EntityNotFoundException {
+        getSecurityChecker().checkPermission(visitId,Visit.class, BasePermission.CREATE);
+        getNext().subscribeOwner(ownerId,visitId);
     }
 
     @Override
-    public void unsubscribeOwner(Owner owner, Visit visit) throws BadEntityException {
-        getSecurityChecker().checkPermission(visit, BasePermission.CREATE);
-        getNext().unsubscribeOwner(owner,visit);
+    public void unsubscribeOwner(Long ownerId, Long visitId) throws BadEntityException, EntityNotFoundException {
+        getSecurityChecker().checkPermission(visitId,Visit.class, BasePermission.CREATE);
+        getNext().unsubscribeOwner(ownerId,visitId);
     }
 }

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.dto.user;
 
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
-import com.github.vincemann.springrapid.core.security.Roles;
+import com.github.vincemann.springrapid.core.sec.Roles;
 import lombok.*;
 
 import java.util.Set;

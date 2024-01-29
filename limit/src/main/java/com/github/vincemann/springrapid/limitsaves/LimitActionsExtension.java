@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.limitsaves;
 
 import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import lombok.extern.slf4j.Slf4j;
 

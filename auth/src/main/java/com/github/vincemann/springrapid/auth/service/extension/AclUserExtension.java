@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 
 import com.github.vincemann.springrapid.acl.service.extensions.acl.AbstractAclExtension;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.security.Roles;
+import com.github.vincemann.springrapid.core.sec.Roles;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.acls.domain.BasePermission;

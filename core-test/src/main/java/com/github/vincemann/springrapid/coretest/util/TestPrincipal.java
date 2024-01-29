@@ -1,14 +1,14 @@
 package com.github.vincemann.springrapid.coretest.util;
 
-import com.github.vincemann.springrapid.core.security.AbstractRapidSecurityContext;
-import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.AbstractRapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
 import org.assertj.core.util.Sets;
 
 import java.util.Arrays;
 import java.util.HashSet;
 
 /**
- * Convenience class for creating test principals that can be logged in with {@link com.github.vincemann.springrapid.core.security.RapidSecurityContext} for a test.
+ * Convenience class for creating test principals that can be logged in with {@link com.github.vincemann.springrapid.core.sec.RapidSecurityContext} for a test.
  *
  */
 public class TestPrincipal {

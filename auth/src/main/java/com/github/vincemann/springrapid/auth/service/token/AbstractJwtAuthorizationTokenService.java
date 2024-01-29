@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.security.JwtClaimsToPrincipalConverter;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
-import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

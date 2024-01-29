@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.syncdemo.controller;
 
-import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.coretest.controller.integration.MvcIntegrationTest;
 import com.github.vincemann.springrapid.syncdemo.controller.template.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.CreateOwnerDto;

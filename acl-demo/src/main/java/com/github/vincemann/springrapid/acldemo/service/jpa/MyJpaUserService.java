@@ -1,10 +1,10 @@
 package com.github.vincemann.springrapid.acldemo.service.jpa;
 
 import com.github.vincemann.springrapid.acldemo.service.MyUserService;
-import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.repo.UserRepository;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
+import com.github.vincemann.springrapid.auth.service.JpaUserService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @Service
 //@Primary
 @Transactional
-public class JpaUserService extends AbstractUserService<User, Long, UserRepository> implements MyUserService {
+public class MyJpaUserService extends JpaUserService<User, Long, UserRepository> implements MyUserService {
 
 	@Override
     public User newUser() {
@@ -39,7 +39,7 @@ public class JpaUserService extends AbstractUserService<User, Long, UserReposito
 
 	@Override
 	public Class<?> getTargetClass() {
-		return JpaUserService.class;
+		return MyJpaUserService.class;
 	}
 
 }

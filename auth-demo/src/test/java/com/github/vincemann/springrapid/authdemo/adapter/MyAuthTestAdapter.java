@@ -5,8 +5,7 @@ import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.authdemo.dto.MySignupDto;
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.authdemo.model.User;
-import com.github.vincemann.springrapid.core.security.Roles;
-import com.github.vincemann.springrapid.core.util.Lists;
+import com.github.vincemann.springrapid.core.sec.Roles;
 import com.google.common.collect.Sets;
 import org.springframework.boot.test.context.TestComponent;
 

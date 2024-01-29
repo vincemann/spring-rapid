@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipalImp
 import com.github.vincemann.springrapid.auth.security.*;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.RapidJwtAuthorizationTokenService;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;

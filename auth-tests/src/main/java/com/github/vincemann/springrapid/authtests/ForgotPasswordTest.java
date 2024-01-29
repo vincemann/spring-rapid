@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.authtests;
 
-import static com.github.vincemann.springrapid.auth.service.AbstractUserService.FORGOT_PASSWORD_AUDIENCE;
+import static com.github.vincemann.springrapid.auth.service.JpaUserService.FORGOT_PASSWORD_AUDIENCE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;

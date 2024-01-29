@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acl.service.extensions.acl;
 
-import com.github.vincemann.springrapid.core.security.Roles;
+import com.github.vincemann.springrapid.core.sec.Roles;
 import org.springframework.stereotype.Component;
 import org.springframework.security.acls.domain.BasePermission;
 

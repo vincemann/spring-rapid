@@ -2,8 +2,8 @@ package com.github.vincemann.springrapid.coredemo.controller;
 
 
 import com.github.vincemann.springrapid.core.util.Entity;
-import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
 import com.github.vincemann.springrapid.coredemo.controller.template.OwnerControllerTestTemplate;

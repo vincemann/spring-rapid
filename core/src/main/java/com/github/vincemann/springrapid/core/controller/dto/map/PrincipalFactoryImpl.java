@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.core.controller.dto.map;
 
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 
 import java.util.Optional;
 

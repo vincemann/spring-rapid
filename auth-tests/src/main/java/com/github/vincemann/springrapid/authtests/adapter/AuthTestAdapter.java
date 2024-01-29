@@ -2,11 +2,8 @@ package com.github.vincemann.springrapid.authtests.adapter;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
-import com.github.vincemann.springrapid.core.security.Roles;
-import com.github.vincemann.springrapid.core.util.Lists;
+import com.github.vincemann.springrapid.core.sec.Roles;
 import com.google.common.collect.Sets;
-
-import java.io.Serializable;
 
 public abstract class AuthTestAdapter {
 

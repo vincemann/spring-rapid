@@ -1,11 +1,10 @@
 package com.github.vincemann.springrapid.authdemo.service;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
+import com.github.vincemann.springrapid.auth.service.JpaUserService;
 import com.github.vincemann.springrapid.authdemo.model.User;
 import com.github.vincemann.springrapid.authdemo.repository.UserRepository;
-import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import org.springframework.stereotype.Component;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 // dont mark with primary, is done internally
 //@Primary
 @Transactional
-public class JpaUserService extends AbstractUserService<User, Long, UserRepository> {
+public class MyJpaUserService extends JpaUserService<User, Long, UserRepository> {
 
 	@Override
     public User newUser() {
@@ -24,7 +23,7 @@ public class JpaUserService extends AbstractUserService<User, Long, UserReposito
 
 	@Override
 	public Class<?> getTargetClass() {
-		return JpaUserService.class;
+		return MyJpaUserService.class;
 	}
 
 

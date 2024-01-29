@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.auth.security;
 
 import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipalImpl;
-import com.github.vincemann.springrapid.core.security.SecurityContextChecker;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.SecurityContextChecker;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,8 +2,8 @@ package com.github.vincemann.springrapid.acl;
 
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
-import com.github.vincemann.springrapid.core.security.SecurityContextChecker;
+import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.SecurityContextChecker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;

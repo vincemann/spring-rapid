@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFact
 
 
 
-import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.core.util.Message;

@@ -10,7 +10,7 @@ import com.github.vincemann.springrapid.acldemo.service.PetService;
 import com.github.vincemann.springrapid.core.controller.dto.map.context.CrudDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappings;
-import com.github.vincemann.springrapid.core.security.Roles;
+import com.github.vincemann.springrapid.core.sec.Roles;
 import org.springframework.stereotype.Controller;
 
 

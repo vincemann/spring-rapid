@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.coredemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadForeignOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;

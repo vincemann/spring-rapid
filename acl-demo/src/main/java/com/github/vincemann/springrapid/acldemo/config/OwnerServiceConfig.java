@@ -22,11 +22,11 @@ public class OwnerServiceConfig {
     @Acl
     @Bean
     public OwnerService aclOwnerService(@Root OwnerService ownerService,
-                                        UserGainsAdminPermissionAboutSavedContainedUserAclExtension userHasFullPermissionAboutSavedContainedUserAclExtension,
+                                        UserGainsAdminPermissionAboutSavedContainedUserAclExtension userGainsAdminPermissionAboutSavedContainedUserAclExtension,
                                         UserGainsAdminPermissionAboutSelfAclExtension<Owner,Long> userGainsAdminPermissionAboutSelfAclExtension
     ) {
         return new ExtensionProxyBuilder<>(ownerService)
-                .addGenericExtension(userHasFullPermissionAboutSavedContainedUserAclExtension)
+                .addGenericExtension(userGainsAdminPermissionAboutSavedContainedUserAclExtension)
                 .addGenericExtension(userGainsAdminPermissionAboutSelfAclExtension)
                 .build();
     }

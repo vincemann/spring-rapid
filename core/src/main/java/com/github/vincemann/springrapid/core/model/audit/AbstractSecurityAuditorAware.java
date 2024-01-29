@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.model.audit;
 
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
-import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

@@ -47,10 +47,6 @@ public class AbstractUser<ID extends Serializable>
 	@JsonIgnore
 	protected Long credentialsUpdatedMillis = System.currentTimeMillis();
 
-	// holds reCAPTCHA response while signing up
-	// todo put captcha response in signupDto and validate there
-	@Transient
-	private String captchaResponse;
 
 	public final boolean hasRole(String role) {
 		return roles.contains(role);

@@ -4,7 +4,6 @@ import com.github.vincemann.springrapid.acldemo.dto.user.FullUserDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
-import com.github.vincemann.springrapid.auth.controller.UserDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;

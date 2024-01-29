@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.model;
 
-import com.github.vincemann.springrapid.core.security.Roles;
+import com.github.vincemann.springrapid.core.sec.Roles;
 
 public interface AuthRoles extends Roles {
     String UNVERIFIED = "ROLE_UNVERIFIED";

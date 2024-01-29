@@ -6,8 +6,8 @@ import com.github.vincemann.springrapid.auth.dto.ResetPasswordView;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
-import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;

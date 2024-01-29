@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.core.controller.dto.map.context.CrudDtoM
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappings;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoRequestInfo;
-import com.github.vincemann.springrapid.core.security.Roles;
+import com.github.vincemann.springrapid.core.sec.Roles;
 import org.springframework.stereotype.Controller;
 import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.VetReadsOwnerDto;

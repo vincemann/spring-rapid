@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.model;
 
-import com.github.vincemann.springrapid.core.security.Roles;
-import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.Roles;
+import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
