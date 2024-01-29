@@ -17,7 +17,7 @@ import java.util.*;
  * @param <P> Principal Type
  */
 @LogInteraction(Severity.TRACE)
-public interface RapidSecurityContext<P extends RapidAuthenticatedPrincipal>
+public interface RapidSecurityContext<P extends AuthenticatedPrincipalImpl>
         extends AopLoggable {
 
     @LogInteraction(Severity.DEBUG)

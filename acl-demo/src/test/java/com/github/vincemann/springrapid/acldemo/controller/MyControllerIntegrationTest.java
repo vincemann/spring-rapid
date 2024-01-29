@@ -19,7 +19,7 @@ import com.github.vincemann.springrapid.acldemo.repo.*;
 import com.github.vincemann.springrapid.acldemo.service.*;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.authtest.controller.template.UserControllerTestTemplate;
-import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -184,7 +184,7 @@ public class MyControllerIntegrationTest extends AclMvcIntegrationTest
     protected VisitControllerTestTemplate visitController;
 
     @Autowired
-    protected RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
+    protected RapidSecurityContext<AuthenticatedPrincipalImpl> securityContext;
 
 
     @Override

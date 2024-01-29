@@ -1,9 +1,9 @@
 package com.github.vincemann.springrapid.auth.security;
 
 import com.github.vincemann.springrapid.acl.RapidAclSecurityContext;
-import com.github.vincemann.springrapid.auth.model.RapidAuthAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipalImpl;
 
-public class RapidAuthSecurityContext extends RapidAclSecurityContext<RapidAuthAuthenticatedPrincipal> {
+public class RapidAuthSecurityContext extends RapidAclSecurityContext<AuthAuthenticatedPrincipalImpl> {
 
 //    public static void isGoodAdmin(SecurityChecker securityChecker){
 //        securityChecker.checkHasRoles(RapidRoles.ADMIN);

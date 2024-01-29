@@ -9,7 +9,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @Setter
-public abstract class AbstractFindRapidUserDto extends AbstractRapidUserDto {
+public abstract class AbstractFindUserDto extends AbstractUserDto {
 
     private boolean verified = false;
     private boolean blocked = false;
@@ -17,7 +17,7 @@ public abstract class AbstractFindRapidUserDto extends AbstractRapidUserDto {
     private boolean goodUser = false;
 //    private boolean goodAdmin = false;
 
-    public AbstractFindRapidUserDto(String contactInformation, Set<String> roles, String id) {
+    public AbstractFindUserDto(String contactInformation, Set<String> roles, String id) {
         super(contactInformation,roles,id);
         initFlags();
     }

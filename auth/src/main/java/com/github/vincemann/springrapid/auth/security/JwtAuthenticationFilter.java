@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.security;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.model.RapidAuthAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipalImpl;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
@@ -28,8 +28,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
 	private HttpTokenService httpTokenService;
-    private AuthorizationTokenService<RapidAuthAuthenticatedPrincipal> authorizationTokenService;
-    private RapidSecurityContext<RapidAuthAuthenticatedPrincipal> securityContext;
+    private AuthorizationTokenService<AuthAuthenticatedPrincipalImpl> authorizationTokenService;
+    private RapidSecurityContext<AuthAuthenticatedPrincipalImpl> securityContext;
     private AuthProperties authProperties;
 
 
@@ -59,7 +59,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             try {
-                RapidAuthAuthenticatedPrincipal principal = authorizationTokenService.parseToken(token);
+                AuthAuthenticatedPrincipalImpl principal = authorizationTokenService.parseToken(token);
                 securityContext.login(principal);
                 log.debug("Token authentication successful");
                 log.debug("Principal: " + principal + " logged in");
@@ -83,7 +83,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     protected void loginAnon() {
-        RapidAuthAuthenticatedPrincipal anon = new RapidAuthAuthenticatedPrincipal("anonymousUser",null, Sets.newHashSet(AuthRoles.ANON),null);
+        AuthAuthenticatedPrincipalImpl anon = new AuthAuthenticatedPrincipalImpl("anonymousUser",null, Sets.newHashSet(AuthRoles.ANON),null);
         securityContext.login(anon);
     }
 

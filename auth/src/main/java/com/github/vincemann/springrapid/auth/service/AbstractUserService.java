@@ -60,8 +60,8 @@ public abstract class AbstractUserService
     public static final String VERIFY_CONTACT_INFORMATION_AUDIENCE = "verify";
     public static final String FORGOT_PASSWORD_AUDIENCE = "forgot-password";
 
-    private AuthorizationTokenService<RapidAuthAuthenticatedPrincipal> authorizationTokenService;
-    private RapidSecurityContext<RapidAuthAuthenticatedPrincipal> securityContext;
+    private AuthorizationTokenService<AuthAuthenticatedPrincipalImpl> authorizationTokenService;
+    private RapidSecurityContext<AuthAuthenticatedPrincipalImpl> securityContext;
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
     private RapidPasswordEncoder passwordEncoder;
     private AuthProperties properties;
@@ -95,10 +95,10 @@ public abstract class AbstractUserService
         Map<String, Object> context = new HashMap<String, Object>(3);
         context.put("reCaptchaSiteKey", properties.getRecaptcha().getSitekey());
         context.put("shared", properties.getShared());
-        RapidAuthAuthenticatedPrincipal principal = securityContext.currentPrincipal();
+        AuthAuthenticatedPrincipalImpl principal = securityContext.currentPrincipal();
         if (principal != null) {
             if (!principal.isAnon()) {
-                RapidAuthAuthenticatedPrincipal withoutPw = new RapidAuthAuthenticatedPrincipal(principal);
+                AuthAuthenticatedPrincipalImpl withoutPw = new AuthAuthenticatedPrincipalImpl(principal);
                 withoutPw.setPassword(null);
                 context.put("user", withoutPw);
             }
@@ -643,11 +643,11 @@ public abstract class AbstractUserService
 
 
 
-    protected AuthorizationTokenService<RapidAuthAuthenticatedPrincipal> getAuthorizationTokenService() {
+    protected AuthorizationTokenService<AuthAuthenticatedPrincipalImpl> getAuthorizationTokenService() {
         return authorizationTokenService;
     }
 
-    protected RapidSecurityContext<RapidAuthAuthenticatedPrincipal> getSecurityContext() {
+    protected RapidSecurityContext<AuthAuthenticatedPrincipalImpl> getSecurityContext() {
         return securityContext;
     }
 
@@ -676,12 +676,12 @@ public abstract class AbstractUserService
 //    }
 
     @Autowired
-    public void injectAuthorizationTokenService(AuthorizationTokenService<RapidAuthAuthenticatedPrincipal> authorizationTokenService) {
+    public void injectAuthorizationTokenService(AuthorizationTokenService<AuthAuthenticatedPrincipalImpl> authorizationTokenService) {
         this.authorizationTokenService = authorizationTokenService;
     }
 
     @Autowired
-    public void injectSecurityContext(RapidSecurityContext<RapidAuthAuthenticatedPrincipal> securityContext) {
+    public void injectSecurityContext(RapidSecurityContext<AuthAuthenticatedPrincipalImpl> securityContext) {
         this.securityContext = securityContext;
     }
 

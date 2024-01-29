@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * Since all info is encapsulated there, there is no gain in giving control about different Authentication impls (realized via AuthenticationFactories for example)
  **/
 @Slf4j
-public abstract class AbstractRapidSecurityContext<P extends RapidAuthenticatedPrincipal>
+public abstract class AbstractRapidSecurityContext<P extends AuthenticatedPrincipalImpl>
         implements RapidSecurityContext<P>
 {
 
@@ -55,7 +55,7 @@ public abstract class AbstractRapidSecurityContext<P extends RapidAuthenticatedP
     }
 
     protected Authentication createToken(String name, String password, Set<String> roles) {
-        RapidAuthenticatedPrincipal principal = new RapidAuthenticatedPrincipal(name, password, roles, TEMP_ID);
+        AuthenticatedPrincipalImpl principal = new AuthenticatedPrincipalImpl(name, password, roles, TEMP_ID);
         return new UsernamePasswordAuthenticationToken(
                 principal,
                 password,

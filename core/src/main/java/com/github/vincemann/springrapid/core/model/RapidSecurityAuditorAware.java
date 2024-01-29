@@ -1,14 +1,12 @@
 package com.github.vincemann.springrapid.core.model;
 
 import com.github.vincemann.springrapid.core.IdConverter;
-import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.Serializable;
-import java.util.Optional;
 
 public abstract class RapidSecurityAuditorAware<Id extends Serializable> extends AbstractAuditorAware<Id> {
 
@@ -22,7 +20,7 @@ public abstract class RapidSecurityAuditorAware<Id extends Serializable> extends
             return null;
         }
 
-        RapidAuthenticatedPrincipal principal = (RapidAuthenticatedPrincipal) authentication.getPrincipal();
+        AuthenticatedPrincipalImpl principal = (AuthenticatedPrincipalImpl) authentication.getPrincipal();
         if (principal == null){
             return null;
         }

@@ -6,9 +6,9 @@ import org.springframework.security.access.AccessDeniedException;
 /**
  * Convenience wrapper for accessing data from {@link RapidSecurityContext}.
  */
-public class RapidSecurityContextChecker {
+public class SecurityContextChecker {
 
-    private RapidSecurityContextChecker(){}
+    private SecurityContextChecker(){}
 
     public static void checkAuthenticated() throws AccessDeniedException {
         boolean authenticated = RapidSecurityContext.isAuthenticated();

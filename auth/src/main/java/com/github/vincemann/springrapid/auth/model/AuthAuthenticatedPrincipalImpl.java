@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.model;
 
 import com.github.vincemann.springrapid.core.security.Roles;
-import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +9,7 @@ import java.util.Set;
 
 
 @Getter @NoArgsConstructor
-public class RapidAuthAuthenticatedPrincipal extends RapidAuthenticatedPrincipal {
+public class AuthAuthenticatedPrincipalImpl extends AuthenticatedPrincipalImpl {
 
 	private static final long serialVersionUID = -7849730155307434535L;
 
@@ -19,15 +19,15 @@ public class RapidAuthAuthenticatedPrincipal extends RapidAuthenticatedPrincipal
 	private boolean verified = false;
 	private boolean anon = false;
 
-	public RapidAuthAuthenticatedPrincipal(String contactInformation, String password, Set<String> roles, String id) {
+	public AuthAuthenticatedPrincipalImpl(String contactInformation, String password, Set<String> roles, String id) {
 		super(contactInformation, password,roles, id);
 		initFlags();
 	}
 
-	public RapidAuthAuthenticatedPrincipal(AbstractUser<?> user) {
+	public AuthAuthenticatedPrincipalImpl(AbstractUser<?> user) {
 		this(user.getContactInformation(), user.getPassword(),user.getRoles(), user.getId() == null? null : user.getId().toString());
 	}
-	public RapidAuthAuthenticatedPrincipal(RapidAuthAuthenticatedPrincipal user) {
+	public AuthAuthenticatedPrincipalImpl(AuthAuthenticatedPrincipalImpl user) {
 		this(user.getContactInformation(), user.getPassword(),user.getRoles(), user.getId());
 	}
 

@@ -12,12 +12,12 @@ import java.util.concurrent.TimeUnit;
 /**
  * Keeps track of how many invalid login attempts each ip has.
  */
-public class RapidLoginAttemptService implements LoginAttemptService{
+public class LoginAttemptServiceImpl implements LoginAttemptService{
 
     private LoadingCache<String, Integer> attemptsCache;
     private AuthProperties authProperties;
 
-    public RapidLoginAttemptService() {
+    public LoginAttemptServiceImpl() {
         super();
         attemptsCache = CacheBuilder.newBuilder().
                 expireAfterWrite(1, TimeUnit.DAYS).build(new CacheLoader<String, Integer>() {

@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFact
 
 
 
-import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.util.Message;
@@ -37,7 +37,7 @@ public class RapidUserDetailsService
 	@Transactional
 	@LogInteraction
 	@Override
-	public RapidAuthenticatedPrincipal loadUserByUsername(String contactInformation) throws UsernameNotFoundException {
+	public AuthenticatedPrincipalImpl loadUserByUsername(String contactInformation) throws UsernameNotFoundException {
 		AbstractUser<?> user;
 		try {
 			Optional<AbstractUser<?>> byContactInformation = userService.findByContactInformation(contactInformation);

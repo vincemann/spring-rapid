@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 
 @ServiceConfig
-public class GlobalSecurityRuleAutoConfiguration {
+public class RapidGlobalSecurityRuleAutoConfiguration {
 
     @ConditionalOnMissingBean(name = "denyBlockedGlobalSecurityRule")
     @Bean

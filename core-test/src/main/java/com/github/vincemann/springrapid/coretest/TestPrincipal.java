@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coretest;
 
 import com.github.vincemann.springrapid.core.security.AbstractRapidSecurityContext;
-import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
 import org.assertj.core.util.Sets;
 
 import java.util.Arrays;
@@ -13,24 +13,24 @@ import java.util.HashSet;
  */
 public class TestPrincipal {
 
-    public static RapidAuthenticatedPrincipal create(String name,String... roles){
-        RapidAuthenticatedPrincipal principal = new RapidAuthenticatedPrincipal();
+    public static AuthenticatedPrincipalImpl create(String name, String... roles){
+        AuthenticatedPrincipalImpl principal = new AuthenticatedPrincipalImpl();
         principal.setName(name);
         principal.setPassword(AbstractRapidSecurityContext.TEMP_USER_PASSWORD);
         principal.setRoles(Sets.newHashSet(Arrays.asList(roles)));
         return principal;
     }
 
-    public static RapidAuthenticatedPrincipal withName(String name){
-        RapidAuthenticatedPrincipal principal = new RapidAuthenticatedPrincipal();
+    public static AuthenticatedPrincipalImpl withName(String name){
+        AuthenticatedPrincipalImpl principal = new AuthenticatedPrincipalImpl();
         principal.setName(name);
         principal.setPassword(AbstractRapidSecurityContext.TEMP_USER_PASSWORD);
         principal.setRoles(new HashSet<>());
         return principal;
     }
 
-    public static RapidAuthenticatedPrincipal withRoles(String... roles){
-        RapidAuthenticatedPrincipal principal = new RapidAuthenticatedPrincipal();
+    public static AuthenticatedPrincipalImpl withRoles(String... roles){
+        AuthenticatedPrincipalImpl principal = new AuthenticatedPrincipalImpl();
         principal.setName(AbstractRapidSecurityContext.TEMP_USER_NAME);
         principal.setPassword(AbstractRapidSecurityContext.TEMP_USER_PASSWORD);
         principal.setRoles(Sets.newHashSet(Arrays.asList(roles)));

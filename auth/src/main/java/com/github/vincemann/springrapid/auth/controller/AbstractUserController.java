@@ -5,9 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.dto.*;
-import com.github.vincemann.springrapid.auth.dto.user.RapidFindForeignUserDto;
-import com.github.vincemann.springrapid.auth.dto.user.RapidFindOwnUserDto;
-import com.github.vincemann.springrapid.auth.dto.user.RapidFullUserDto;
+import com.github.vincemann.springrapid.auth.dto.user.FindOwnUserDto;
+import com.github.vincemann.springrapid.auth.dto.user.FullUserDto;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
@@ -20,7 +19,6 @@ import com.github.vincemann.springrapid.auth.util.UrlParamUtil;
 import com.github.vincemann.springrapid.core.controller.CrudEntityController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.*;
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingException;
-import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -398,7 +396,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 				.thenReturn(SignupDto.class);
 
 		builder.when(endpoint(getSignupUrl()).and(direction(Direction.RESPONSE)))
-				.thenReturn(RapidFindOwnUserDto.class);
+				.thenReturn(FindOwnUserDto.class);
 
 		builder.when(endpoint(getRequestContactInformationChangeUrl()).and(direction(Direction.REQUEST)))
 				.thenReturn(RequestContactInformationChangeDto.class);
@@ -407,14 +405,14 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 				.thenReturn(ChangePasswordDto.class);
 
 		builder.when(endpoint(getVerifyUserUrl()).and(direction(Direction.RESPONSE)))
-				.thenReturn(RapidFindOwnUserDto.class);
+				.thenReturn(FindOwnUserDto.class);
 
 		builder.when(direction(Direction.RESPONSE).and(roles(AuthRoles.ADMIN)))
-				.thenReturn(RapidFullUserDto.class);
+				.thenReturn(FullUserDto.class);
 
 
 		builder.when(direction(Direction.RESPONSE).and(principal(Principal.OWN)))
-				.thenReturn(RapidFindOwnUserDto.class);
+				.thenReturn(FindOwnUserDto.class);
 	}
 
 //	/**

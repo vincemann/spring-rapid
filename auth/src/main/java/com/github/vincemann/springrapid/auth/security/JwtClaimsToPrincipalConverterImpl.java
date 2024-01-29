@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.security;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.model.RapidAuthAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipalImpl;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 
@@ -19,25 +19,25 @@ import java.util.Optional;
  * Only stores contactInformation in token and fetches user args for principal lazily
  */
 @Transactional
-public class RapidJwtClaimsToPrincipalConverter
-            implements JwtClaimsToPrincipalConverter<RapidAuthAuthenticatedPrincipal> {
+public class JwtClaimsToPrincipalConverterImpl
+            implements JwtClaimsToPrincipalConverter<AuthAuthenticatedPrincipalImpl> {
 
     private UserService userService;
-    private AuthenticatedPrincipalFactory<RapidAuthAuthenticatedPrincipal,AbstractUser<?>> authenticatedPrincipalFactory;
+    private AuthenticatedPrincipalFactory<AuthAuthenticatedPrincipalImpl,AbstractUser<?>> authenticatedPrincipalFactory;
 
     @Autowired
-    public void setAuthenticatedPrincipalFactory(AuthenticatedPrincipalFactory<RapidAuthAuthenticatedPrincipal, AbstractUser<?>> authenticatedPrincipalFactory) {
+    public void setAuthenticatedPrincipalFactory(AuthenticatedPrincipalFactory<AuthAuthenticatedPrincipalImpl, AbstractUser<?>> authenticatedPrincipalFactory) {
         this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
     }
 
     @Override
-    public Map<String,Object> toClaims(RapidAuthAuthenticatedPrincipal user) {
+    public Map<String,Object> toClaims(AuthAuthenticatedPrincipalImpl user) {
         return MapUtils.mapOf("contactInformation",user.getContactInformation());
     }
 
 
     @Override
-    public RapidAuthAuthenticatedPrincipal toPrincipal(Map<String,Object> claims) throws AuthenticationCredentialsNotFoundException {
+    public AuthAuthenticatedPrincipalImpl toPrincipal(Map<String,Object> claims) throws AuthenticationCredentialsNotFoundException {
         String contactInformation = (String) claims.get("contactInformation");
         if (contactInformation == null)
             throw new AuthenticationCredentialsNotFoundException("contactInformation claim of claims-set not found");

@@ -3,14 +3,14 @@ package com.github.vincemann.springrapid.auth.service.extension;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.acl.service.extensions.security.AbstractSecurityExtension;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.model.RapidAuthAuthenticatedPrincipal;
-import com.github.vincemann.springrapid.auth.security.RapidAuthSecurityContextChecker;
+import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.auth.security.AuthSecurityContextChecker;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContextChecker;
+import com.github.vincemann.springrapid.core.security.SecurityContextChecker;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.Message;
@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.Optional;
-import java.util.Set;
 
 
 @Transactional
@@ -36,7 +35,7 @@ public class UserServiceSecurityExtension
 
 
     private UserService userService;
-    private RapidAuthSecurityContextChecker securityContextChecker;
+    private AuthSecurityContextChecker securityContextChecker;
     private JweTokenService jweTokenService;
 
     @LogInteraction
@@ -90,8 +89,8 @@ public class UserServiceSecurityExtension
         Optional<AbstractUser<Serializable>> oldUserOp = userService.findById(update.getId());
         VerifyEntity.isPresent(oldUserOp, update.getId(), update.getClass());
         AbstractUser oldUser = oldUserOp.get();
-        RapidSecurityContextChecker.checkAuthenticated();
-        RapidAuthAuthenticatedPrincipal currPrincipal = securityContextChecker.getSecurityContext().currentPrincipal();
+        SecurityContextChecker.checkAuthenticated();
+        AuthAuthenticatedPrincipalImpl currPrincipal = securityContextChecker.getSecurityContext().currentPrincipal();
         checkRoleChangingPermissions(oldUser, update, currPrincipal);
 //        getProxyController().overrideDefaultExtension();
 //        return getLast().update(update, full,fieldsToRemove);
@@ -102,7 +101,7 @@ public class UserServiceSecurityExtension
      * user cant update roles
      *
      */
-    protected void checkRoleChangingPermissions(AbstractUser<?> old, AbstractUser<?> newUser, RapidAuthAuthenticatedPrincipal currentUser) {
+    protected void checkRoleChangingPermissions(AbstractUser<?> old, AbstractUser<?> newUser, AuthAuthenticatedPrincipalImpl currentUser) {
         // admin tries to edit
         if (currentUser.isAdmin() &&
                 !currentUser.getId().equals(old.getId().toString())) {
@@ -167,7 +166,7 @@ public class UserServiceSecurityExtension
     @LogInteraction
     @Override
     public String createNewAuthToken(String contactInformation) throws EntityNotFoundException {
-        RapidAuthAuthenticatedPrincipal authenticated = securityContextChecker.getSecurityContext().currentPrincipal();
+        AuthAuthenticatedPrincipalImpl authenticated = securityContextChecker.getSecurityContext().currentPrincipal();
         VerifyAccess.condition(authenticated.getContactInformation().equals(contactInformation) ||
                 authenticated.isAdmin(), Message.get("com.github.vincemann.notGoodAdminOrSameUser"));
         return getNext().createNewAuthToken(contactInformation);
@@ -181,7 +180,7 @@ public class UserServiceSecurityExtension
     }
 
     @Autowired
-    public void injectSecurityContextChecker(RapidAuthSecurityContextChecker securityContextChecker) {
+    public void injectSecurityContextChecker(AuthSecurityContextChecker securityContextChecker) {
         this.securityContextChecker = securityContextChecker;
     }
 

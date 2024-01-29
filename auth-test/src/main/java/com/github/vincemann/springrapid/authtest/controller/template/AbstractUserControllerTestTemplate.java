@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.auth.dto.ResetPasswordView;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
-import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
@@ -44,7 +44,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
 
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
-    private RapidSecurityContext<RapidAuthenticatedPrincipal> rapidSecurityContext;
+    private RapidSecurityContext<AuthenticatedPrincipalImpl> rapidSecurityContext;
     private MailSender<MailData> mailSenderMock;
 
 
@@ -268,7 +268,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     @Autowired
-    public void setRapidSecurityContext(RapidSecurityContext<RapidAuthenticatedPrincipal> rapidSecurityContext) {
+    public void setRapidSecurityContext(RapidSecurityContext<AuthenticatedPrincipalImpl> rapidSecurityContext) {
         this.rapidSecurityContext = rapidSecurityContext;
     }
 

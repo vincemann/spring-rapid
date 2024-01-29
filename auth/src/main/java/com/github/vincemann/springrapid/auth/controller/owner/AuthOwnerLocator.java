@@ -6,13 +6,11 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 
 
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
-import java.io.Serializable;
 import java.util.Optional;
 
 /**
@@ -20,7 +18,7 @@ import java.util.Optional;
  */
 @Slf4j
 @Order(Ordered.LOWEST_PRECEDENCE)
-public abstract class AbstractEntitysUserOwnerLocator<Id extends Serializable> implements OwnerLocator<AuditingEntity<Id>> {
+public class AuthOwnerLocator implements OwnerLocator<AuditingEntity> {
 
     private UserService userService;
 
@@ -31,11 +29,11 @@ public abstract class AbstractEntitysUserOwnerLocator<Id extends Serializable> i
 
     //@LogInteraction
     @Override
-    public Optional<String> find(AuditingEntity<Id> entity) {
+    public Optional<String> find(AuditingEntity entity) {
         if (entity.getCreatedById() == null) {
             return Optional.empty();
         }
-        Optional<? extends AbstractUser<Id>> byId = userService.findById(entity.getCreatedById());
+        Optional<? extends AbstractUser> byId = userService.findById(entity.getCreatedById());
         return byId.map(AbstractUser::getContactInformation);
     }
 

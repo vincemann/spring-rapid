@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.coredemo.controller;
 
 
 import com.github.vincemann.springrapid.core.Entity;
-import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
@@ -56,7 +56,7 @@ public class OwnerControllerTest extends AutoMockServiceBeansIntegrationTest {
     CrudServiceLocator crudServiceLocator;
 
     @Autowired
-    RapidSecurityContext<RapidAuthenticatedPrincipal> rapidSecurityContext;
+    RapidSecurityContext<AuthenticatedPrincipalImpl> rapidSecurityContext;
 
     @Autowired
     OwnerControllerTestTemplate ownerController;

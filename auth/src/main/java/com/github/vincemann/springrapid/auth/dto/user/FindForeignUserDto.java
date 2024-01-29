@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 //can only see id
-public class RapidFindForeignUserDto extends IdAwareDto<String> {
+public class FindForeignUserDto extends IdAwareDto<String> {
 
 }

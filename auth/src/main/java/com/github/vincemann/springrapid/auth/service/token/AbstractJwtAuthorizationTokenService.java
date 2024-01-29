@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.security.JwtClaimsToPrincipalConverter;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
-import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import static com.github.vincemann.springrapid.auth.util.RapidJwt.AUTH_CLAIM;
 import static com.github.vincemann.springrapid.auth.util.RapidJwt.create;
 
 @Slf4j
-public abstract class AbstractJwtAuthorizationTokenService<P extends RapidAuthenticatedPrincipal>
+public abstract class AbstractJwtAuthorizationTokenService<P extends AuthenticatedPrincipalImpl>
         implements AuthorizationTokenService<P>, AopLoggable {
 
     private static final String PRINCIPAL_CLAIMS_KEY = "rapid-principal";

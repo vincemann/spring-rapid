@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.model;
 
 import com.github.vincemann.springrapid.core.IdConverter;
-import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public abstract class RapidAuthAuditorAware<ID extends Serializable>
 
 	@Override
 	protected ID currentId() {
-		RapidAuthenticatedPrincipal principal = securityContext.currentPrincipal();
+		AuthenticatedPrincipalImpl principal = securityContext.currentPrincipal();
 		if (principal==null){
 			return null;
 		}

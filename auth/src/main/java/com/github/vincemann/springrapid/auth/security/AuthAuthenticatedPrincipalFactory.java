@@ -1,17 +1,17 @@
 package com.github.vincemann.springrapid.auth.security;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.model.RapidAuthAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipalImpl;
 
-public class RapidAuthAuthenticatedPrincipalFactory<U extends AbstractUser<?>>
-        implements AuthenticatedPrincipalFactory<RapidAuthAuthenticatedPrincipal, U> {
+public class AuthAuthenticatedPrincipalFactory<U extends AbstractUser<?>>
+        implements AuthenticatedPrincipalFactory<AuthAuthenticatedPrincipalImpl, U> {
 
 //    private UserService<U,?> userService;
 
 
     @Override
-    public RapidAuthAuthenticatedPrincipal create(U user) {
-       return new RapidAuthAuthenticatedPrincipal(user.getContactInformation(),user.getPassword(),user
+    public AuthAuthenticatedPrincipalImpl create(U user) {
+       return new AuthAuthenticatedPrincipalImpl(user.getContactInformation(),user.getPassword(),user
                 .getRoles(),user.getId() == null ? null : user.getId().toString());
     }
 

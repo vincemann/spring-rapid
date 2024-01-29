@@ -19,20 +19,20 @@ import java.util.stream.Collectors;
  * Also contains {@link Authentication#getDetails()} information.
  */
 @Getter
-public class RapidAuthenticatedPrincipal implements AuthenticatedPrincipal, CredentialsContainer, UserDetails {
+public class AuthenticatedPrincipalImpl implements AuthenticatedPrincipal, CredentialsContainer, UserDetails {
     private String name;
     private Set<String> roles;
     private String password;
     private String id;
 
-    public RapidAuthenticatedPrincipal(String name, String password, Set<String> roles, String id) {
+    public AuthenticatedPrincipalImpl(String name, String password, Set<String> roles, String id) {
         this.name = name;
         this.password = password;
         this.roles = roles;
         this.id = id;
     }
 
-    public RapidAuthenticatedPrincipal() {
+    public AuthenticatedPrincipalImpl() {
     }
 
     @Override

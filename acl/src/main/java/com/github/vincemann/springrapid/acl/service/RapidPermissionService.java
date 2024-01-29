@@ -2,10 +2,9 @@ package com.github.vincemann.springrapid.acl.service;
 
 import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.security.Roles;
-import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -29,7 +27,7 @@ import java.util.*;
 public class RapidPermissionService implements AclPermissionService {
 
     private MutableAclService aclService;
-    private RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
+    private RapidSecurityContext<AuthenticatedPrincipalImpl> securityContext;
 
     //    private PermissionStringConverter permissionStringConverter;
     /**/
@@ -378,7 +376,7 @@ public class RapidPermissionService implements AclPermissionService {
     }
 
     @Autowired
-    public void injectSecurityContext(RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext) {
+    public void injectSecurityContext(RapidSecurityContext<AuthenticatedPrincipalImpl> securityContext) {
         this.securityContext = securityContext;
     }
 

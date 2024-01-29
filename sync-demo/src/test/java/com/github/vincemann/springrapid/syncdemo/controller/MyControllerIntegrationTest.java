@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.syncdemo.controller;
 
-import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.security.AuthenticatedPrincipalImpl;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.coretest.controller.integration.MvcIntegrationTest;
 import com.github.vincemann.springrapid.syncdemo.controller.template.OwnerControllerTestTemplate;
@@ -16,7 +16,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDate;
@@ -24,7 +23,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class MyControllerIntegrationTest extends MvcIntegrationTest {
@@ -138,7 +136,7 @@ public class MyControllerIntegrationTest extends MvcIntegrationTest {
     protected ClinicCard secondClinicCard;
 
     @Autowired
-    protected RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
+    protected RapidSecurityContext<AuthenticatedPrincipalImpl> securityContext;
 
     @Autowired
     protected TransactionTemplate transactionTemplate;

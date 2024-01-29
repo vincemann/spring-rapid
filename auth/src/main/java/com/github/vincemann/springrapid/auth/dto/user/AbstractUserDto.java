@@ -11,12 +11,12 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @Setter
-public class AbstractRapidUserDto extends IdAwareDto<String> {
+public class AbstractUserDto extends IdAwareDto<String> {
 
     private String contactInformation;
     private Set<String> roles = new HashSet<String>();
 
-    public AbstractRapidUserDto(String contactInformation, Set<String> roles, String id) {
+    public AbstractUserDto(String contactInformation, Set<String> roles, String id) {
         this.contactInformation = contactInformation;
         if (roles==null){
             this.setRoles(new HashSet<>());

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.service.token;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.model.RapidAuthAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipalImpl;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 
@@ -19,14 +19,14 @@ import java.util.Optional;
 
 @WebComponent
 @Slf4j
-public class RapidJwtAuthorizationTokenService extends AbstractJwtAuthorizationTokenService<RapidAuthAuthenticatedPrincipal> {
+public class RapidJwtAuthorizationTokenService extends AbstractJwtAuthorizationTokenService<AuthAuthenticatedPrincipalImpl> {
 
     private UserService userService;
 
 
     @Transactional
     @Override
-    public void verifyToken(JWTClaimsSet claims, RapidAuthAuthenticatedPrincipal principal) {
+    public void verifyToken(JWTClaimsSet claims, AuthAuthenticatedPrincipalImpl principal) {
         super.verifyToken(claims, principal);
         try {
             Optional<AbstractUser<?>> byContactInformation = userService.findByContactInformation(principal.getContactInformation());
