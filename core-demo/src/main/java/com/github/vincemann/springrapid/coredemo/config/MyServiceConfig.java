@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.config;
 
-import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
+import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
@@ -35,7 +35,7 @@ public class MyServiceConfig {
     @Primary
     @Bean
     public PetService petService(@Root PetService petService, ExampleAclExtension aclServiceExtension) {
-        return new ServiceExtensionProxyBuilder<>(petService)
+        return new ExtensionProxyBuilder<>(petService)
                 .addExtension(aclServiceExtension)
                 .build();
     }
@@ -46,7 +46,7 @@ public class MyServiceConfig {
                                      OwnerOfTheYearExtension ownerOfTheYearExtension,
                                      ExampleAclExtension aclServiceExtension,
                                      SaveNameToWordPressDbExtension saveNameToWordPressDbExtension) {
-        return new ServiceExtensionProxyBuilder<>(ownerService)
+        return new ExtensionProxyBuilder<>(ownerService)
                 .addGenericExtension(saveNameToWordPressDbExtension)
                 .addGenericExtension(ownerOfTheYearExtension)
                 .addExtension(aclServiceExtension)

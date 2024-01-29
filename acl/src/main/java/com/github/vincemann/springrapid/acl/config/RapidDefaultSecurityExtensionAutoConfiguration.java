@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.acl.DefaultSecurityExtension;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ProxyController;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxy;
+import com.github.vincemann.springrapid.core.proxy.ExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
@@ -61,7 +61,7 @@ public class RapidDefaultSecurityExtensionAutoConfiguration {
 //        }
 
         for (CrudService securityProxy : securityProxies) {
-            ServiceExtensionProxy proxy = ProxyUtils.getExtensionProxy(securityProxy);
+            ExtensionProxy proxy = ProxyUtils.getExtensionProxy(securityProxy);
             if (!proxy.getDefaultExtensionsEnabled()){
                 log.debug("Default security extensions disabled for proxy: " + proxy);
                 continue;

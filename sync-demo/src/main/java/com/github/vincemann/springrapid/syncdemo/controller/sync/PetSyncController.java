@@ -12,6 +12,6 @@ public class PetSyncController extends SyncEntityController<Pet,Long, PetSyncSer
 
     @Autowired
     public void configureAllowedExtensions(PetParentFilter petsOfOwnerFilter) {
-        addAllowedExtensions(petsOfOwnerFilter);
+        registerExtensions(petsOfOwnerFilter);
     }
 }

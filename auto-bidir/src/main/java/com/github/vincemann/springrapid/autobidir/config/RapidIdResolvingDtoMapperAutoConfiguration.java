@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.autobidir.RapidRelationalDtoManager;
 import com.github.vincemann.springrapid.autobidir.RelationalDtoManager;
 import com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration;
 import com.github.vincemann.springrapid.core.config.RapidServiceAutoConfiguration;
-import com.github.vincemann.springrapid.core.controller.MergeUpdateStrategy;
+import com.github.vincemann.springrapid.core.controller.dto.MergeUpdateStrategy;
 import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import com.github.vincemann.springrapid.autobidir.controller.IdAwareMergeUpdateStrategy;
 import com.github.vincemann.springrapid.autobidir.controller.dtomapper.EntityIdResolver;

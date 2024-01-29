@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.controller.owner;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.core.model.AuditingEntity;
+import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.auth.service.UserService;
 
 

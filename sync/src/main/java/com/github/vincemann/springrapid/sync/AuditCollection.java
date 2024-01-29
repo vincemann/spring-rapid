@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.sync;
 
-import com.github.vincemann.springrapid.core.model.AuditingEntity;
+import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

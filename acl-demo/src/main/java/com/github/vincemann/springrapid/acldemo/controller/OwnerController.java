@@ -2,10 +2,10 @@ package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acl.SecuredCrudController;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.Direction;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappings;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoRequestInfo;
+import com.github.vincemann.springrapid.core.controller.dto.map.context.CrudDtoMappingContextBuilder;
+import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
+import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappings;
+import com.github.vincemann.springrapid.core.controller.dto.map.DtoRequestInfo;
 import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.core.slicing.WebController;
 import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;

@@ -88,18 +88,18 @@ public abstract class AbstractEntityController
      * Example:
      *
      * @Autowired
-     * public void configureAllowedExtensions(ModuleParentFilter parentFilter) {
-     *     setAllowedExtensions(parentFilter);
+     * public void registerAllowedExtensions(ModuleParentFilter parentFilter) {
+     *     registerExtensions(parentFilter);
      * }
      *
      * or
      *
      * public void MyController() {
      *     super()
-     *     setAllowedExtensions(new ModuleParentFilter());
+     *     registerExtensions(new ModuleParentFilter());
      * }
      */
-    protected void addAllowedExtensions(UrlExtension<? super E>... extensions){
+    protected void registerExtensions(UrlExtension<? super E>... extensions){
         this.extensions.addAll(Lists.newArrayList(extensions));
     }
 
@@ -188,7 +188,7 @@ public abstract class AbstractEntityController
         try {
             registerEndpoints();
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("could not register endpoints, method not found",e);
         }
     }
 

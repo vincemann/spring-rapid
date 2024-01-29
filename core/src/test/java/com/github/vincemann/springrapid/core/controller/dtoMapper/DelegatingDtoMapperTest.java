@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.controller.dtoMapper;
 
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDtoMapper;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMapper;
+import com.github.vincemann.springrapid.core.controller.dto.map.DelegatingDtoMapper;
+import com.github.vincemann.springrapid.core.controller.dto.map.DtoMapper;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;

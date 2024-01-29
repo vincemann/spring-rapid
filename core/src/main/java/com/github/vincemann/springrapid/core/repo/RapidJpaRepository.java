@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.io.Serializable;
 import java.util.List;
 
+// I already use this interface in anticipation that I'll need custom methods soon with a diff default repo
 public interface RapidJpaRepository<T extends IdentifiableEntity<ID>,ID extends Serializable>
         extends JpaRepository<T, ID> {
 

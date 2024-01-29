@@ -3,18 +3,15 @@ package com.github.vincemann.springrapid.acldemo.controller;
 import com.github.vincemann.springrapid.acldemo.dto.user.FullUserDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
 import com.github.vincemann.springrapid.acldemo.model.User;
-import com.github.vincemann.springrapid.acldemo.service.MyUserService;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.controller.UserDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.Direction;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappings;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappingsBuilder;
-import com.github.vincemann.springrapid.core.security.Roles;
+import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
+import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
 import org.springframework.stereotype.Controller;
 
-import static com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappingConditions.*;
+import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
 
 @Controller
 public class UserController extends AbstractUserController<User, Long>  {

@@ -4,12 +4,12 @@ import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.authdemo.dto.*;
 import com.github.vincemann.springrapid.authdemo.model.User;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.Direction;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappingsBuilder;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.Principal;
+import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
+import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
+import com.github.vincemann.springrapid.core.controller.dto.map.Principal;
 import org.springframework.stereotype.Controller;
 
-import static com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappingConditions.*;
+import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
 
 @Controller
 public class UserController extends AbstractUserController<User, Long>  {

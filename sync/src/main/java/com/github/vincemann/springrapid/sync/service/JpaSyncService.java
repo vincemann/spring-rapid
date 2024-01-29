@@ -1,8 +1,7 @@
 package com.github.vincemann.springrapid.sync.service;
 
-import com.github.vincemann.springrapid.core.IdConverter;
-import com.github.vincemann.springrapid.core.model.AuditingEntity;
-import com.github.vincemann.springrapid.core.model.IAuditingEntity;
+import com.github.vincemann.springrapid.core.service.id.IdConverter;
+import com.github.vincemann.springrapid.core.model.audit.IAuditingEntity;
 import com.github.vincemann.springrapid.core.service.AbstractCrudService;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
@@ -15,7 +14,6 @@ import com.github.vincemann.springrapid.sync.repo.RapidAuditingRepository;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;

@@ -2,8 +2,8 @@ package com.github.vincemann.springrapid.core.config;
 
 import com.github.vincemann.springrapid.core.controller.dto.DtoPostProcessor;
 import com.github.vincemann.springrapid.core.controller.dto.EntityPostProcessor;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.BasicDtoMapper;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.*;
+import com.github.vincemann.springrapid.core.controller.dto.map.BasicDtoMapper;
+import com.github.vincemann.springrapid.core.controller.dto.map.*;
 import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -15,27 +15,12 @@ import java.util.List;
 @Slf4j
 public class RapidDtoMapperAutoConfiguration {
 
-    public RapidDtoMapperAutoConfiguration() {
-
-    }
-
-//    // no conditional on missing bean bc multiple diff type builders must coexist
-//    @Bean
-//    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-//    public CrudDtoMappingContextBuilder dtoMappingContextBuilder(){
-//        return new CrudDtoMappingContextBuilder();
-//    }
-
-    //  HOW TO MAP, WHEN DTO CLASS IS FOUND
 
     @ConditionalOnMissingBean(name = "defaultDtoMapper")
     @Bean
     public DtoMapper defaultDtoMapper(){
         return new BasicDtoMapper();
         // not using system wide modelmapper bc id need to synchronize the object to maintain the same config -> not performant enough
-//        BasicDtoMapper mapper = new BasicDtoMapper();
-//        mapper.createPermanentModelMapper(modelMapper);
-//        return mapper;
     }
 
 //    @Bean

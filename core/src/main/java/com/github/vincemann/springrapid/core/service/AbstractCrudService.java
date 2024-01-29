@@ -69,6 +69,7 @@ public abstract class AbstractCrudService
         return entityClass;
     }
 
+    // todo fix beanname issue
     @Override
     public String getBeanName() {
 //        if (!Proxy.isProxyClass(this.getClass())) {

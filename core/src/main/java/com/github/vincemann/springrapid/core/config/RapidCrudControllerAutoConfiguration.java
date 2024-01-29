@@ -1,15 +1,13 @@
 package com.github.vincemann.springrapid.core.config;
 
-import com.github.vincemann.springrapid.core.controller.CrudEndpointInfo;
-import com.github.vincemann.springrapid.core.controller.ExtendedRemoveJsonPatchStrategy;
-import com.github.vincemann.springrapid.core.controller.JsonPatchStrategy;
-import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingStrategy;
-import com.github.vincemann.springrapid.core.controller.fetchid.LongUrlParamIdFetchingStrategy;
-//import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.UrlParamIdFetchingStrategyImpl;
-import com.github.vincemann.springrapid.core.controller.MergeUpdateStrategy;
-import com.github.vincemann.springrapid.core.controller.MergeUpdateStrategyImpl;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.JavaXDtoValidationStrategy;
 import com.github.vincemann.springrapid.core.controller.dto.DtoValidationStrategy;
+import com.github.vincemann.springrapid.core.controller.dto.MergeUpdateStrategy;
+import com.github.vincemann.springrapid.core.controller.dto.MergeUpdateStrategyImpl;
+import com.github.vincemann.springrapid.core.controller.dto.map.JavaXDtoValidationStrategy;
+import com.github.vincemann.springrapid.core.controller.id.IdFetchingStrategy;
+import com.github.vincemann.springrapid.core.controller.id.LongUrlParamIdFetchingStrategy;
+import com.github.vincemann.springrapid.core.controller.json.patch.ExtendedRemoveJsonPatchStrategy;
+import com.github.vincemann.springrapid.core.controller.json.patch.JsonPatchStrategy;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -17,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-
-import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 @SuppressWarnings("rawtypes")
 @AutoConfigureAfter({RapidDtoMapperAutoConfiguration.class, RapidDtoLocatorAutoConfiguration.class})
@@ -62,14 +57,6 @@ public class RapidCrudControllerAutoConfiguration {
     public IdFetchingStrategy idFetchingStrategy(){
 //        return new UrlParamIdFetchingStrategyImpl();
         return new LongUrlParamIdFetchingStrategy();
-    }
-
-//    @ConditionalOnMissingBean(EndpointsExposureContext.class)
-    @Bean
-    @ConditionalOnMissingBean(name = "crudEndpointInfo")
-    @Scope(scopeName = SCOPE_PROTOTYPE)
-    public CrudEndpointInfo crudEndpointInfo(){
-        return new CrudEndpointInfo();
     }
 
 

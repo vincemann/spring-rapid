@@ -62,7 +62,7 @@ public class RapidServiceAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ServiceCallContextFactory.class)
     public ServiceCallContextFactory serviceCallContextFactory(){
-        return new DefaultServiceCallContextFactory();
+        return new ServiceCallContextFactoryImpl();
     }
 
 

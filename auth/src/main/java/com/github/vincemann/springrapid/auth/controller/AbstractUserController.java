@@ -16,9 +16,9 @@ import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 
 import com.github.vincemann.springrapid.auth.util.UrlParamUtil;
-import com.github.vincemann.springrapid.core.controller.CrudEntityController;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.*;
-import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingException;
+import com.github.vincemann.springrapid.core.controller.CrudController;
+import com.github.vincemann.springrapid.core.controller.dto.map.*;
+import com.github.vincemann.springrapid.core.controller.id.IdFetchingException;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -41,14 +41,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappingConditions.*;
+import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
 import static com.github.vincemann.springrapid.core.util.HttpServletRequestUtils.getRequestParameterKeysWithoutValue;
 
 
 @Slf4j
 @Getter
 public abstract class AbstractUserController<U extends AbstractUser<ID>, ID extends Serializable>
-			extends CrudEntityController<U,ID> {
+			extends CrudController<U,ID> {
 
 
 	//              DEPENDENCIES

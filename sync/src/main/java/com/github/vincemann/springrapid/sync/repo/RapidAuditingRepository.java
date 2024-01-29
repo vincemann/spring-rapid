@@ -1,15 +1,13 @@
 package com.github.vincemann.springrapid.sync.repo;
 
-import com.github.vincemann.springrapid.core.model.AuditingEntity;
-import com.github.vincemann.springrapid.core.model.IAuditingEntity;
-import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
+import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
+import com.github.vincemann.springrapid.core.model.audit.IAuditingEntity;
 import com.github.vincemann.springrapid.core.util.Specs;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.JpaEntityInformationSupport;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
-import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
@@ -17,12 +15,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.io.Serializable;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
-
-import static com.github.vincemann.springrapid.core.util.FilterUtils.*;
-import static org.springframework.data.jpa.repository.query.QueryUtils.toOrders;
 
 public class RapidAuditingRepository<E extends IAuditingEntity<Id>,Id extends Serializable>
     extends SimpleJpaRepository<E,Id>

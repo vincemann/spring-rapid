@@ -3,8 +3,8 @@ package com.github.vincemann.springrapid.core.controller.dto;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.aoplog.api.annotation.LogParam;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappings;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoRequestInfo;
+import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappings;
+import com.github.vincemann.springrapid.core.controller.dto.map.DtoRequestInfo;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 
 /**

@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.config;
 
-import com.github.vincemann.springrapid.core.proxy.annotation.AnnotationCrudServiceProxyFactory;
+import com.github.vincemann.springrapid.core.proxy.annotation.AnnotationExtensionProxyFactory;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import org.springframework.context.annotation.Bean;
 
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 public class RapidProxyAutoConfiguration {
 
     @Bean
-    public AnnotationCrudServiceProxyFactory annotationCrudServiceProxyFactory(){
-        return new AnnotationCrudServiceProxyFactory();
+    public AnnotationExtensionProxyFactory annotationExtensionProxyFactory(){
+        return new AnnotationExtensionProxyFactory();
     }
 }

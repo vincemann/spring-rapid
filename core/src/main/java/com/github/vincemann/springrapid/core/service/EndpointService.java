@@ -6,7 +6,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import java.lang.reflect.Method;
 
 /**
- * Service that is internally used to register a controller method dynamically.
+ * Service that is internally used to register controller methods dynamically.
  */
 public class EndpointService {
 

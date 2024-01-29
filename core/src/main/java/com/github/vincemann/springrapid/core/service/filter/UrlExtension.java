@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.service.filter;
 
-import com.github.vincemann.springrapid.core.IdConverter;
+import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 
 import java.io.Serializable;

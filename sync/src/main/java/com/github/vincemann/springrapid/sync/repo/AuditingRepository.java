@@ -1,8 +1,6 @@
 package com.github.vincemann.springrapid.sync.repo;
 
-import com.github.vincemann.springrapid.core.model.AuditingEntity;
-import com.github.vincemann.springrapid.core.model.IAuditingEntity;
-import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
+import com.github.vincemann.springrapid.core.model.audit.IAuditingEntity;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import org.springframework.data.jpa.domain.Specification;
 

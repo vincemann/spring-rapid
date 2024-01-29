@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.sync.service;
 
-import com.github.vincemann.springrapid.core.model.AuditingEntity;
-import com.github.vincemann.springrapid.core.model.IAuditingEntity;
+import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
+import com.github.vincemann.springrapid.core.model.audit.IAuditingEntity;
 import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -13,9 +13,7 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.github.vincemann.springrapid.sync.AuditCollection;
 import com.github.vincemann.springrapid.sync.util.CollectionUtils;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ReflectionUtils;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

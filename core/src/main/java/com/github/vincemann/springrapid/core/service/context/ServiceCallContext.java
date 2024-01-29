@@ -1,27 +1,31 @@
 package com.github.vincemann.springrapid.core.service.context;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.EntityLocator;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
- * service call scoped context used for caching and sharing key-value pairs.
- * one context is created for most outer service call.
- * Lives until outer service call returns.
- * for more narrow scope see {@link SubServiceCallContext}
+ * Stores values over the lifetime of one service call.
+ * When {@link com.github.vincemann.springrapid.core.proxy.ExtensionProxy} is called and first extension is called,
+ * it is created and alive until this first method call returns (also alive for all sub service calls)
+ *
+ * For a shorter life time of one sub service call see {@link SubServiceCallContext}.
  */
 @NoArgsConstructor
-public class ServiceCallContext extends AbstractServiceCallContext{
+public abstract class ServiceCallContext {
 
+    protected Map<String,Object> values = new HashMap<>();
 
+    public void setValue(String key, Object value) {
+        values.put(key,value);
+    }
 
+    public <T> T getValue(String key) {
+        return (T) values.get(key);
+    }
+
+    public void clearValue(String key) {
+        values.remove(key);
+    }
 }

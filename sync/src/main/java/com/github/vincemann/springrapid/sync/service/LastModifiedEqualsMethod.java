@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.sync.service;
 
-import com.github.vincemann.springrapid.core.model.IAuditingEntity;
+import com.github.vincemann.springrapid.core.model.audit.IAuditingEntity;
 
 public class LastModifiedEqualsMethod implements EqualsMethod<IAuditingEntity<Long>> {
 

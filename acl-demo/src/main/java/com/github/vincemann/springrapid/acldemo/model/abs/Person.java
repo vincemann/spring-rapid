@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.acldemo.model.abs;
 
-import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.*;
 import org.checkerframework.common.aliasing.qual.Unique;

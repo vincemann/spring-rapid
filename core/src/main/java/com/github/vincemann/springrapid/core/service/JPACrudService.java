@@ -1,8 +1,9 @@
 package com.github.vincemann.springrapid.core.service;
 
+import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.repo.FilterRepository;
-import com.github.vincemann.springrapid.core.repo.RapidFilterRepository;
+import com.github.vincemann.springrapid.core.repo.FilterRepositoryImpl;
 import com.github.vincemann.springrapid.core.repo.RapidJpaRepository;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -28,7 +29,7 @@ import static com.github.vincemann.springrapid.core.util.FilterUtils.*;
 
 
 /**
- * Implementation of {@link AbstractCrudService} that utilizes Jpa's {@link JpaRepository}.
+ * Implementation of {@link AbstractCrudService} that uses Jpa's {@link JpaRepository}.
  *
  * @param <E>  Type of Entity whos crud operations are exposed by this Service
  * @param <Id> Id type of E
@@ -42,7 +43,8 @@ public abstract class JPACrudService
                 Id extends Serializable,
                 R extends RapidJpaRepository<E, Id>
                 >
-        extends AbstractCrudService<E, Id, R> implements InitializingBean
+        extends AbstractCrudService<E, Id, R>
+        implements InitializingBean
 {
 
     protected FilterRepository<E,Id> filterRepository;
@@ -189,9 +191,10 @@ public abstract class JPACrudService
     // todo need better bean based solution
     // create own default jpaRepository containing methods (put into JpaRapidRepo)
     // in sync or softdelete create own Default Repos
+    @LogInteraction(disabled = true)
     @Override
     public void afterPropertiesSet() throws Exception {
-        this.filterRepository = new RapidFilterRepository<>(getEntityClass(),entityManager);
+        this.filterRepository = new FilterRepositoryImpl<>(getEntityClass(),entityManager);
     }
 
 
@@ -201,7 +204,7 @@ public abstract class JPACrudService
 //    }
 
     @Autowired
-    public void setEntityManager(EntityManager entityManager) {
+    public void injectEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 }

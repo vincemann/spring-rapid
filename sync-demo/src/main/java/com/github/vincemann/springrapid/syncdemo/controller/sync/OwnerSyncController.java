@@ -13,7 +13,7 @@ public class OwnerSyncController
 
     @Autowired
     public void configureAllowedExtensions(OwnerTelNumberFilter ownerTelNumberFilter) {
-        addAllowedExtensions(ownerTelNumberFilter);
+        registerExtensions(ownerTelNumberFilter);
     }
 
 }

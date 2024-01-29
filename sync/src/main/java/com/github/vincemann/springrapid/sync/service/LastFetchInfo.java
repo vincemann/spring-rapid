@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.sync.service;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.github.vincemann.springrapid.core.model.AuditingEntity;
+import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import lombok.*;
 

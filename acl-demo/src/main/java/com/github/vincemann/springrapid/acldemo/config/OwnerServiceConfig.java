@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.acldemo.service.Root;
 import com.github.vincemann.springrapid.acldemo.service.ext.UserGainsAdminPermissionAboutSavedContainedUserAclExtension;
 import com.github.vincemann.springrapid.auth.service.extension.UserGainsAdminPermissionAboutSelfAclExtension;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
+import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import org.springframework.context.annotation.Bean;
 
@@ -25,7 +25,7 @@ public class OwnerServiceConfig {
                                         UserGainsAdminPermissionAboutSavedContainedUserAclExtension userHasFullPermissionAboutSavedContainedUserAclExtension,
                                         UserGainsAdminPermissionAboutSelfAclExtension<Owner,Long> userGainsAdminPermissionAboutSelfAclExtension
     ) {
-        return new ServiceExtensionProxyBuilder<>(ownerService)
+        return new ExtensionProxyBuilder<>(ownerService)
                 .addGenericExtension(userHasFullPermissionAboutSavedContainedUserAclExtension)
                 .addGenericExtension(userGainsAdminPermissionAboutSelfAclExtension)
                 .build();
@@ -35,7 +35,7 @@ public class OwnerServiceConfig {
     @Bean
     public OwnerService securedOwnerService(@Acl OwnerService ownerService){
         // CrudAclChecksSecurityExtension will be added automatically by RapidDefaultSecurityExtensionAutoConfiguration
-        return new ServiceExtensionProxyBuilder<>(ownerService).build();
+        return new ExtensionProxyBuilder<>(ownerService).build();
     }
 
 }

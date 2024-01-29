@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.auth.service.extension.UserServiceSecuri
 import com.github.vincemann.springrapid.acl.config.RapidAclAutoConfiguration;
 import com.github.vincemann.springrapid.acl.proxy.*;
 import com.github.vincemann.springrapid.acl.service.extensions.acl.CleanUpAclExtension;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
+import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +62,7 @@ public class RapidUserServiceSecurityAutoConfiguration {
                                             // all other relevant acl stuff in here:
                                             AclUserExtension aclUserServiceExtension
     ) {
-        return new ServiceExtensionProxyBuilder<>(service)
+        return new ExtensionProxyBuilder<>(service)
                 // dont work with default extensions to keep things simple and concrete for user
                 .setDefaultExtensionsEnabled(false)
                 .addExtension(aclUserServiceExtension)
@@ -78,7 +78,7 @@ public class RapidUserServiceSecurityAutoConfiguration {
                                                 UserServiceSecurityExtension securityRule,
                                                 CrudAclChecksSecurityExtension crudAclChecksSecurityExtension
     ) {
-        return new ServiceExtensionProxyBuilder<>(service)
+        return new ExtensionProxyBuilder<>(service)
                 // dont work with default extensions to keep things safer for user related stuff
                 .setDefaultExtensionsEnabled(false)
                 .addExtension(securityRule)

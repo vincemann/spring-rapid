@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coretest.boot;
 
 
-import com.github.vincemann.springrapid.core.bootstrap.DatabaseInitializer;
+import com.github.vincemann.springrapid.core.boot.DatabaseInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;

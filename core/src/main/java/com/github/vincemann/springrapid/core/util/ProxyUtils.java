@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.core.util;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxy;
+import com.github.vincemann.springrapid.core.proxy.ExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
@@ -25,8 +25,8 @@ public class ProxyUtils {
         }
     }
 
-    public static <S extends CrudService<?,?>> ServiceExtensionProxy<S> getExtensionProxy(S service){
-        return (ServiceExtensionProxy<S>) Proxy.getInvocationHandler(AopTestUtils.getUltimateTargetObject(service));
+    public static <S extends CrudService<?,?>> ExtensionProxy<S> getExtensionProxy(S service){
+        return (ExtensionProxy<S>) Proxy.getInvocationHandler(AopTestUtils.getUltimateTargetObject(service));
     }
 
     public static boolean isJDKProxy(Object obj) {

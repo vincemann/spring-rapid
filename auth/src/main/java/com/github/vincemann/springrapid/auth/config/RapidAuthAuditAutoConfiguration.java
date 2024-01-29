@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.config;
 
 
-import com.github.vincemann.springrapid.core.model.LongIdRapidAuthAuditorAware;
+import com.github.vincemann.springrapid.core.model.audit.LongIdAuthAuditorAwareImpl;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +18,6 @@ public class RapidAuthAuditAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "rapidAuthSecurityAuditorAware")
     public AuditorAware<Long> rapidSecurityAuditorAware() {
-        return new LongIdRapidAuthAuditorAware();
+        return new LongIdAuthAuditorAwareImpl();
     }
 }

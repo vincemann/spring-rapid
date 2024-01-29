@@ -38,29 +38,6 @@ public class AclEvaluationContext {
         return entity.get();
     }
 
-    // just use entity Locator !
-//    public IdentifiableEntity<?> resolveEntity() {
-//        if (targetEntity != null)
-//            return targetEntity;
-//        Optional<IdentifiableEntity<?>> entity = ServiceCallContextHolder.getContext().resolveEntity(id, entityClass);
-//        if (entity.isEmpty()){
-//            throw new IllegalArgumentException("Could not find target entity for acl operation");
-//        } else {
-//            this.targetEntity = entity.get();
-//        }
-//        return targetEntity;
-//    }
-//
-//    public IdentifiableEntity<?> forceResolveEntity() {
-//        Optional<IdentifiableEntity> entity = ServiceCallContextHolder.getContext().resolveRefreshedEntity(id,entityClass);
-//        // use runtime exception here bc it is expected by the service code to detect missing entities before issuing the check acl permissions call
-//        if (entity.isEmpty())
-//            throw new IllegalArgumentException("Could not find target entity for acl operation");
-//        this.targetEntity = entity.get();
-//        return entity.get();
-//    }
-
-
     @Builder
     public AclEvaluationContext(Permission checkedPermission, IdentifiableEntity<?> targetEntity, Serializable id, Class entityClass) {
         this.checkedPermission = checkedPermission;

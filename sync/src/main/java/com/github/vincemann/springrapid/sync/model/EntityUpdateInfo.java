@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.sync.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import lombok.*;
 
 import java.util.Date;

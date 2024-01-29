@@ -1,19 +1,15 @@
 package com.github.vincemann.springrapid.core.config;
 
-import com.github.vincemann.springrapid.core.controller.DelegatingDtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.dto.DtoClassLocator;
-import com.github.vincemann.springrapid.core.controller.dto.RoleFallbackDtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.dto.DtoClassLocatorImpl;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
 
 import java.util.List;
-
-import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 @WebConfig
 @Slf4j
@@ -35,14 +31,8 @@ public class RapidDtoLocatorAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DtoClassLocator.class)
     public DtoClassLocator dtoClassLocator(){
-        return new RoleFallbackDtoClassLocator();
+        return new DtoClassLocatorImpl();
     }
 
 
-    @Bean
-    @ConditionalOnMissingBean(name = "delegatingDtoClassLocator")
-    @Scope(SCOPE_PROTOTYPE)
-    public DelegatingDtoClassLocator delegatingDtoClassLocator(DtoClassLocator globalLocator){
-        return new DelegatingDtoClassLocator(globalLocator);
-    }
 }

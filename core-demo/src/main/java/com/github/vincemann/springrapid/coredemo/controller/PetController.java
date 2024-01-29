@@ -1,9 +1,9 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
 import com.github.vincemann.springrapid.core.controller.CrudController;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.Direction;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMappings;
+import com.github.vincemann.springrapid.core.controller.dto.map.context.CrudDtoMappingContextBuilder;
+import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
+import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappings;
 import com.github.vincemann.springrapid.core.slicing.WebController;
 import com.github.vincemann.springrapid.coredemo.dto.pet.PetDto;
 import com.github.vincemann.springrapid.coredemo.dto.pet.UpdatePetDto;
@@ -27,6 +27,6 @@ public class PetController extends CrudController<Pet, Long, PetService> {
 
     @Autowired
     public void configureAllowedExtensions(PetsParentFilter petsOfOwnerFilter) {
-        addAllowedExtensions(petsOfOwnerFilter);
+        registerExtensions(petsOfOwnerFilter);
     }
 }

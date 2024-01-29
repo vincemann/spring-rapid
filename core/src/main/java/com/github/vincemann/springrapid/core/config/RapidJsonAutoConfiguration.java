@@ -7,8 +7,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.controller.json.JsonDtoPropertyValidator;
 import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
-import com.github.vincemann.springrapid.core.controller.json.RapidJsonDtoPropertyValidator;
-import com.github.vincemann.springrapid.core.controller.json.RapidJsonMapper;
+import com.github.vincemann.springrapid.core.controller.json.JsonDtoPropertyValidatorImpl;
+import com.github.vincemann.springrapid.core.controller.json.JsonMapperImpl;
 import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,13 +56,13 @@ public class RapidJsonAutoConfiguration implements WebMvcConfigurer {
     @ConditionalOnMissingBean(JsonDtoPropertyValidator.class)
     @Bean
     public JsonDtoPropertyValidator jsonDtoPropertyValidator(){
-        return new RapidJsonDtoPropertyValidator();
+        return new JsonDtoPropertyValidatorImpl();
     }
 
     @ConditionalOnMissingBean(JsonMapper.class)
     @Bean
     public JsonMapper jsonMapper(){
-        return new RapidJsonMapper();
+        return new JsonMapperImpl();
     }
 
 }
