@@ -1,12 +1,15 @@
 package com.github.vincemann.springrapid.coretest.util;
 
 import com.github.vincemann.springrapid.core.controller.CrudController;
+import com.github.vincemann.springrapid.core.controller.UrlParamWebExtensionParser;
+import com.github.vincemann.springrapid.core.controller.WebExtensionType;
 import com.github.vincemann.springrapid.core.service.filter.WebExtension;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
+import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
 import com.google.common.collect.Sets;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.context.ApplicationContext;
@@ -17,6 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.github.vincemann.springrapid.core.controller.UrlParamWebExtensionParser.getUrlParamKey;
+import static com.github.vincemann.springrapid.core.controller.WebExtensionType.*;
 
 public class RapidTestUtil {
 
@@ -60,10 +66,10 @@ public class RapidTestUtil {
         return sb.toString();
     }
 
-    public static String createExtensionsString(List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> extensions, ApplicationContext applicationContext){
+    public static String createExtensionsString(List<UrlWebExtension> extensions, ApplicationContext applicationContext){
         StringBuilder sb = new StringBuilder();
         int filterCount = 0;
-        for (com.github.vincemann.springrapid.coretest.controller.UrlExtension extension : extensions) {
+        for (UrlWebExtension extension : extensions) {
             String[] beanNamesForType = applicationContext.getBeanNamesForType(extension.getExtensionType());
             Assertions.assertEquals(1,beanNamesForType.length,"no single bean found with type: " + extension.getExtensionType().getSimpleName() + ". Found beanNames: " + Arrays.toString(beanNamesForType));
             WebExtension bean = (WebExtension) applicationContext.getBean(beanNamesForType[0]);
@@ -83,26 +89,26 @@ public class RapidTestUtil {
         return sb.toString();
     }
 
-    public static void addUrlExtensionsToRequest(ApplicationContext applicationContext, MockHttpServletRequestBuilder requestBuilder, com.github.vincemann.springrapid.coretest.controller.UrlExtension... extensions){
-        List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> queryFilters = findExtensionsOfSubType(Lists.newArrayList(extensions), QueryFilter.class);
-        List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> entityFilters = findExtensionsOfSubType(Lists.newArrayList(extensions), EntityFilter.class);
-        List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> sortingStrategies = findExtensionsOfSubType(Lists.newArrayList(extensions), SortingExtension.class);
+    public static void addUrlExtensionsToRequest(ApplicationContext applicationContext, MockHttpServletRequestBuilder requestBuilder, UrlWebExtension... extensions){
+        List<UrlWebExtension> queryFilters = findExtensionsOfSubType(Lists.newArrayList(extensions), QueryFilter.class);
+        List<UrlWebExtension> entityFilters = findExtensionsOfSubType(Lists.newArrayList(extensions), EntityFilter.class);
+        List<UrlWebExtension> sortingStrategies = findExtensionsOfSubType(Lists.newArrayList(extensions), SortingExtension.class);
 
         Assertions.assertEquals(extensions.length,queryFilters.size()+entityFilters.size()+sortingStrategies.size());
 
         if (!queryFilters.isEmpty()){
-            requestBuilder.param(CrudController.QUERY_FILTER_URL_KEY,createExtensionsString(queryFilters,applicationContext));
+            requestBuilder.param(getUrlParamKey(QUERY_FILTER),createExtensionsString(queryFilters,applicationContext));
         }
         if (!entityFilters.isEmpty()){
-            requestBuilder.param(CrudController.ENTITY_FILTER_URL_KEY,createExtensionsString(entityFilters,applicationContext));
+            requestBuilder.param(getUrlParamKey(ENTITY_FILTER),createExtensionsString(entityFilters,applicationContext));
         }
         if (!sortingStrategies.isEmpty()){
-            requestBuilder.param(CrudController.ENTITY_SORTING_STRATEGY_URL_KEY,createExtensionsString(sortingStrategies,applicationContext));
+            requestBuilder.param(getUrlParamKey(SORTING),createExtensionsString(sortingStrategies,applicationContext));
         }
     }
 
 
-    protected static List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> findExtensionsOfSubType(List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> extensions, Class<? extends WebExtension> type){
+    protected static List<UrlWebExtension> findExtensionsOfSubType(List<UrlWebExtension> extensions, Class<? extends WebExtension> type){
         return extensions.stream().filter(e -> type.isAssignableFrom(e.getExtensionType())).collect(Collectors.toList());
     }
 

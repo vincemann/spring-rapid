@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
+import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +91,7 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
     }
 
 
-    public  MockHttpServletRequestBuilder findAll(UrlExtension... extensions) throws Exception {
+    public  MockHttpServletRequestBuilder findAll(UrlWebExtension... extensions) throws Exception {
         MockHttpServletRequestBuilder requestBuilder = get(controller.getFindAllUrl());
         RapidTestUtil.addUrlExtensionsToRequest(applicationContext,requestBuilder,extensions);
         return requestBuilder;

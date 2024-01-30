@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.core.config;
 
 import com.github.vincemann.springrapid.core.CoreProperties;
+import com.github.vincemann.springrapid.core.controller.UrlParamWebExtensionParser;
+import com.github.vincemann.springrapid.core.controller.WebExtensionParser;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.service.id.LongIdConverter;
 import com.github.vincemann.springrapid.core.util.*;
@@ -58,6 +60,13 @@ public class RapidGeneralAutoConfiguration {
     @ConfigurationProperties(prefix = "rapid-core")
     public CoreProperties coreProperties(){
         return new CoreProperties();
+    }
+
+
+    @Bean
+    @ConditionalOnMissingBean(WebExtensionParser.class)
+    public WebExtensionParser webExtensionParser(){
+        return new UrlParamWebExtensionParser();
     }
 
 }

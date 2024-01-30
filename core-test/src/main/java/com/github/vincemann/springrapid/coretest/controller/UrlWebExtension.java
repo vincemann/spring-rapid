@@ -19,19 +19,19 @@ import java.util.List;
  * Can be converted to String via {@link com.github.vincemann.springrapid.coretest.util.RapidTestUtil#createExtensionsString(List, ApplicationContext)}
  * which can be added as url param for some endpoints like {@link CrudController#findAll(HttpServletRequest, HttpServletResponse)}.
  *
- * Use {@link CrudControllerTestTemplate#findAll(UrlExtension...)} and similar helper methods
+ * Use {@link CrudControllerTestTemplate#findAll(UrlWebExtension...)} and similar helper methods
  * to add extensions while testing, whenever possible.
  *
- * If not possible call {@link com.github.vincemann.springrapid.coretest.util.RapidTestUtil#addUrlExtensionsToRequest(ApplicationContext, MockHttpServletRequestBuilder, UrlExtension...)} to add
+ * If not possible call {@link com.github.vincemann.springrapid.coretest.util.RapidTestUtil#addUrlExtensionsToRequest(ApplicationContext, MockHttpServletRequestBuilder, UrlWebExtension...)} to add
  * to mvc request.
  */
 @Getter
-public class UrlExtension {
+public class UrlWebExtension {
 
     Class<? extends WebExtension> extensionType;
     String[] args;
 
-    public UrlExtension(Class<? extends WebExtension> extensionType, String... args) {
+    public UrlWebExtension(Class<? extends WebExtension> extensionType, String... args) {
         this.extensionType = extensionType;
         this.args = args;
     }

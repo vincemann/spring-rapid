@@ -14,7 +14,7 @@ import com.github.vincemann.springrapid.coredemo.service.filter.PetNameEndsWithF
 import com.github.vincemann.springrapid.coredemo.service.sort.LastNameAscSorting;
 import com.github.vincemann.springrapid.coredemo.service.sort.LastNameDescSorting;
 import com.github.vincemann.springrapid.coretest.util.TestPrincipal;
-import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
+import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MvcResult;
@@ -377,7 +377,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         securityContext.login(TestPrincipal.withName(KAHN));
         // memory filter
         Set<ReadOwnOwnerDto> responseDtos = deserializeToSet(
-                perform(ownerController.findAll(new UrlExtension(HasPetsFilter.class)))
+                perform(ownerController.findAll(new UrlWebExtension(HasPetsFilter.class)))
                 .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
         RapidSecurityContext.logout();
 
@@ -412,8 +412,8 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
         securityContext.login(TestPrincipal.withName(KAHN));
         // memory filter
-        UrlExtension hasPetsFilter = new UrlExtension(HasPetsFilter.class);
-        UrlExtension sortByNameDesc = new UrlExtension(LastNameDescSorting.class);
+        UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
+        UrlWebExtension sortByNameDesc = new UrlWebExtension(LastNameDescSorting.class);
         List<ReadOwnOwnerDto> responseDtos = deserializeToList(
                 perform(ownerController.findAll(hasPetsFilter,sortByNameDesc))
                         .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
@@ -433,7 +433,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
 
         // diff sorting
-        UrlExtension sortByNameAsc = new UrlExtension(LastNameAscSorting.class);
+        UrlWebExtension sortByNameAsc = new UrlWebExtension(LastNameAscSorting.class);
         securityContext.login(TestPrincipal.withName(KAHN));
         responseDtos = deserializeToList(
                 perform(ownerController.findAll(hasPetsFilter,sortByNameAsc))
@@ -480,8 +480,8 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
         securityContext.login(TestPrincipal.withName(KAHN));
         // memory filter
-        UrlExtension hasPetsFilter = new UrlExtension(HasPetsFilter.class);
-        UrlExtension telNrPrefixFilter = new UrlExtension(OwnerTelNumberFilter.class,telnrPrefix);
+        UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
+        UrlWebExtension telNrPrefixFilter = new UrlWebExtension(OwnerTelNumberFilter.class,telnrPrefix);
         Set<ReadOwnOwnerDto> responseDtos = deserializeToSet(getMvc().perform(ownerController.findAll(telNrPrefixFilter,hasPetsFilter))
                 .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
         RapidSecurityContext.logout();
@@ -521,10 +521,10 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
         securityContext.login(TestPrincipal.withName(KAHN));
         // memory filter
-        UrlExtension hasPetsFilter = new UrlExtension(HasPetsFilter.class);
-        UrlExtension petNameEndsWithAFilter = new UrlExtension(PetNameEndsWithFilter.class,"a");
+        UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
+        UrlWebExtension petNameEndsWithAFilter = new UrlWebExtension(PetNameEndsWithFilter.class,"a");
         // jpql query filters (always come first)
-        UrlExtension telNrPrefixFilter = new UrlExtension(OwnerTelNumberFilter.class,telnrPrefix);
+        UrlWebExtension telNrPrefixFilter = new UrlWebExtension(OwnerTelNumberFilter.class,telnrPrefix);
         Set<ReadForeignOwnerDto> responseDtos = deserializeToSet(getMvc().perform(ownerController.findAll(telNrPrefixFilter,hasPetsFilter,petNameEndsWithAFilter))
                 .andReturn().getResponse().getContentAsString(), ReadForeignOwnerDto.class);
         RapidSecurityContext.logout();
@@ -571,10 +571,10 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
         securityContext.login(TestPrincipal.withName(KAHN));
         // memory filter
-        UrlExtension hasPetsFilter = new UrlExtension(HasPetsFilter.class);
+        UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
         // jpql filters (always come first)
-        UrlExtension telNrPrefixFilter = new UrlExtension(OwnerTelNumberFilter.class,telnrPrefix);
-        UrlExtension cityPrefixFilter = new UrlExtension(CityPrefixFilter.class, niceCityPrefix);
+        UrlWebExtension telNrPrefixFilter = new UrlWebExtension(OwnerTelNumberFilter.class,telnrPrefix);
+        UrlWebExtension cityPrefixFilter = new UrlWebExtension(CityPrefixFilter.class, niceCityPrefix);
         Set<ReadOwnOwnerDto> responseDtos = deserializeToSet(getMvc().perform(ownerController.findAll(telNrPrefixFilter,cityPrefixFilter,hasPetsFilter))
                 .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
         RapidSecurityContext.logout();

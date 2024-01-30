@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.syncdemo.controller;
 import com.github.vincemann.springrapid.core.util.Entity;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.coretest.util.TestPrincipal;
-import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
+import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
@@ -505,7 +505,7 @@ public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationT
         Assertions.assertTrue(updatedOwner3.getLastModifiedDate().after(lastServerUpdate));
 
         // now should ask for update info for owner2 and owner3
-        UrlExtension telPrefixFilter0176 = new UrlExtension(OwnerTelNumberFilter.class,"0176");
+        UrlWebExtension telPrefixFilter0176 = new UrlWebExtension(OwnerTelNumberFilter.class,"0176");
         Set<EntitySyncStatus> statuses = ownerSyncController.fetchSyncStatusesSinceTs_assertUpdates(clientUpdate,telPrefixFilter0176);
         Assertions.assertEquals(1,statuses.size());
         EntitySyncStatus owner3SyncStatus = statuses.stream().filter(s -> s.getId().equals(updatedOwner3.getId().toString())).findFirst().get();
@@ -562,7 +562,7 @@ public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationT
         Assertions.assertTrue(updatedKahn.getLastModifiedDate().after(clientUpdate));
 
         // now should ask for update info for owners with tel nr filter
-        UrlExtension telPrefixFilter0176 = new UrlExtension(OwnerTelNumberFilter.class,"0176");
+        UrlWebExtension telPrefixFilter0176 = new UrlWebExtension(OwnerTelNumberFilter.class,"0176");
         Set<EntitySyncStatus> statuses = ownerSyncController.fetchSyncStatusesSinceTs_assertUpdates(clientUpdate,telPrefixFilter0176);
 
         Assertions.assertEquals(1,statuses.size());
@@ -627,7 +627,7 @@ public class OwnerSyncControllerIntegrationTest extends MyControllerIntegrationT
         Assertions.assertTrue(updatedBella.getLastModifiedDate().after(lastServerUpdate));
 
         // now should ask for update infos for all pets with owner=kahn since clientUpdate ts
-        UrlExtension parentFilter = new UrlExtension(PetParentFilter.class,owner.getId().toString());
+        UrlWebExtension parentFilter = new UrlWebExtension(PetParentFilter.class,owner.getId().toString());
         Set<EntitySyncStatus> statuses = petSyncController.fetchSyncStatusesSinceTs_assertUpdates(clientUpdate,parentFilter);
 
         Assertions.assertEquals(1,statuses.size());

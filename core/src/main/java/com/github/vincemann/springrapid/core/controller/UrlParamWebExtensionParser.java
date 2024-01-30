@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class UrlWebExtensionParser implements WebExtensionParser, ApplicationContextAware {
+public class UrlParamWebExtensionParser implements WebExtensionParser, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
     protected Set<WebExtension> extensions = new HashSet<>();

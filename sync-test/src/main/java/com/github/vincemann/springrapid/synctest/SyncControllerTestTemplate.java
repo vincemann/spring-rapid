@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
-import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
+import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
 import com.github.vincemann.springrapid.coretest.controller.template.MvcControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import com.github.vincemann.springrapid.sync.controller.SyncEntityController;
@@ -44,11 +44,11 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
                 .param("ts", String.valueOf(lastClientUpdate.getTime()));
     }
 
-    public MockHttpServletRequestBuilder fetchSyncStatusesSinceTs(Date clientUpdate, UrlExtension... filters) {
+    public MockHttpServletRequestBuilder fetchSyncStatusesSinceTs(Date clientUpdate, UrlWebExtension... filters) {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controller.getFetchEntitySyncStatusesSinceTsUrl())
                 .param("ts", String.valueOf(clientUpdate.getTime()));
         if (filters.length != 0){
-            for (UrlExtension filter : filters) {
+            for (UrlWebExtension filter : filters) {
                 assert QueryFilter.class.isAssignableFrom(filter.getExtensionType()) || EntityFilter.class.isAssignableFrom(filter.getExtensionType());
             }
             RapidTestUtil.addUrlExtensionsToRequest(applicationContext,requestBuilder,filters);
@@ -85,14 +85,14 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
                 .andExpect(MockMvcResultMatchers.content().string(""));
     }
 
-    public void fetchSyncStatusesSinceTs_assertNoUpdates(Date clientUpdate, UrlExtension... jpqlFilters) throws Exception {
+    public void fetchSyncStatusesSinceTs_assertNoUpdates(Date clientUpdate, UrlWebExtension... jpqlFilters) throws Exception {
         mvc.perform(fetchSyncStatusesSinceTs(clientUpdate,jpqlFilters))
                 .andExpect(MockMvcResultMatchers.status().is(204))
                 .andExpect(MockMvcResultMatchers.content().string(""));
     }
 
 
-    public Set<EntitySyncStatus> fetchSyncStatusesSinceTs_assertUpdates(Timestamp clientUpdate, UrlExtension... jpqlFilters) throws Exception {
+    public Set<EntitySyncStatus> fetchSyncStatusesSinceTs_assertUpdates(Timestamp clientUpdate, UrlWebExtension... jpqlFilters) throws Exception {
         String json = mvc.perform(fetchSyncStatusesSinceTs(clientUpdate,jpqlFilters))
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andReturn().getResponse().getContentAsString();

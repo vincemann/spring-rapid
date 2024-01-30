@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.model.Toy;
 import com.github.vincemann.springrapid.coredemo.service.filter.PetsParentFilter;
-import com.github.vincemann.springrapid.coretest.controller.UrlExtension;
+import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +71,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
         assertPetHasOwner(BELLA,KAHN);
         assertPetHasOwner(KITTY,MEIER);
 
-        UrlExtension parentFilter = new UrlExtension(PetsParentFilter.class,savedKahn.getId().toString());
+        UrlWebExtension parentFilter = new UrlWebExtension(PetsParentFilter.class,savedKahn.getId().toString());
         String json = perform(controller.findAll(parentFilter))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
