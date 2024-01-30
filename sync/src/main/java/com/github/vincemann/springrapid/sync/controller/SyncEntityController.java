@@ -35,6 +35,9 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 
+import static com.github.vincemann.springrapid.core.controller.WebExtensionType.ENTITY_FILTER;
+import static com.github.vincemann.springrapid.core.controller.WebExtensionType.QUERY_FILTER;
+
 /**
  * Offers methods for evaluating {@link EntitySyncStatus} of an entity or multiple entities.
  * Entities need to record audit information -> {@link AuditingEntity}.
@@ -134,8 +137,8 @@ public class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Seri
      */
     public ResponseEntity<String> fetchEntitySyncStatusesSinceTimestamp(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, JsonProcessingException {
         long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
-        List<QueryFilter<? super E>> filters = extractExtensions(request,QUERY_FILTER_URL_KEY);
-        List<EntityFilter<? super E>> ramFilters = extractExtensions(request,ENTITY_FILTER_URL_KEY);
+        List<QueryFilter<? super E>> filters = extractExtensions(request, QUERY_FILTER);
+        List<EntityFilter<? super E>> ramFilters = extractExtensions(request,ENTITY_FILTER);
         Set<EntitySyncStatus> syncStatuses = serviceFindUpdatesSinceTimestamp(new Timestamp(lastUpdateTimestamp),filters,ramFilters);
         if (syncStatuses.isEmpty())
             return ResponseEntity.noContent().build();
@@ -207,13 +210,13 @@ public class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Seri
     }
 
     @Autowired
-    public void injectIdFetchingStrategy(IdFetchingStrategy<Id> idFetchingStrategy) {
+    public void setIdFetchingStrategy(IdFetchingStrategy<Id> idFetchingStrategy) {
         this.idFetchingStrategy = idFetchingStrategy;
     }
 
     @Autowired
     @Lazy
-    public void injectService(SyncService<E,Id> service) {
+    public void setService(SyncService<E,Id> service) {
         this.service = service;
     }
 }

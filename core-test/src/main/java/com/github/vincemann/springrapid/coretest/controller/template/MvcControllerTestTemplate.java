@@ -11,7 +11,7 @@ public abstract class MvcControllerTestTemplate<C> implements MvcAware {
     protected MockMvc mvc;
 
     @Autowired
-    public void injectController(C controller) {
+    public void setController(C controller) {
         this.controller = controller;
     }
 

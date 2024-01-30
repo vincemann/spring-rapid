@@ -125,17 +125,17 @@ public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends S
 
     @Lazy
     @Autowired
-    public void injectRepo(AbstractCrudService<E, Id, ?> crudService) {
+    public void setRepo(AbstractCrudService<E, Id, ?> crudService) {
         this.crudService = crudService;
     }
 
     @Autowired
-    public void injectEntityManager(EntityManager entityManager) {
+    public void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
     @Autowired
-    public void injectIdConverter(IdConverter<Id> idConverter) {
+    public void setIdConverter(IdConverter<Id> idConverter) {
         this.idConverter = idConverter;
     }
 

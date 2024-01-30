@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.filter.UrlExtension;
+import com.github.vincemann.springrapid.core.service.filter.WebExtension;
 import com.github.vincemann.springrapid.core.util.Lists;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -41,9 +41,6 @@ public abstract class AbstractEntityController
         implements ApplicationListener<ContextRefreshedEvent>, InitializingBean, ApplicationContextAware
 {
 
-    public static final String QUERY_FILTER_URL_KEY = "qfilter";
-    public static final String ENTITY_FILTER_URL_KEY = "filter";
-    public static final String ENTITY_SORTING_STRATEGY_URL_KEY = "sort";
 
     protected Class<E> entityClass;
     protected Class<ID> idClass;
@@ -53,7 +50,7 @@ public abstract class AbstractEntityController
     protected CoreProperties coreProperties;
     protected EndpointService endpointService;
     protected JsonMapper jsonMapper;
-    protected Set<UrlExtension> extensions = new HashSet<>();
+    protected WebExtensionParser extensionParser;
 
     protected ApplicationContext applicationContext;
 
@@ -78,9 +75,10 @@ public abstract class AbstractEntityController
         this.entityBaseUrl = baseUrl + "/" + urlEntityName + "/";
     }
 
+
     /**
-     * call this method in order to add whitelisted {@link UrlExtension}.
-     * Given extensions are only used to retrieve {@link UrlExtension#getName()} and getClass.
+     * call this method in order to add whitelisted {@link WebExtension}.
+     * Given extensions are only used to retrieve {@link WebExtension#getName()} and getClass.
      * When extension matches request, applicationContext.getBean(extension.getClass()) is executed and bean
      * retrieved from context will be used - you can use {@link org.springframework.context.annotation.Scope} Prototype
      * if you want a new instance of extension to be created for each request.
@@ -99,54 +97,13 @@ public abstract class AbstractEntityController
      *     registerExtensions(new ModuleParentFilter());
      * }
      */
-    protected void registerExtensions(UrlExtension<? super E>... extensions){
-        this.extensions.addAll(Lists.newArrayList(extensions));
+    protected void registerExtensions(WebExtension<? super E>... extensions){
+        extensionParser.registerExtensions(extensions);
     }
 
-    /**
-     * extracts entity filters, queryFilters or EntitySortingStrategies from http request url parameter
-     * i.E.:
-     *  REQUEST URL: /api/core/...?filter=filter1:arg1:arg2,filter2,filter3:myarg&sort=sortById
-     */
-    protected  <Ext extends UrlExtension<? super E>> List<Ext> extractExtensions(HttpServletRequest request, String urlParamKey) throws BadEntityException {
-        String extensionParam = request.getParameter(urlParamKey);
-        List<Ext> result = new ArrayList<>();
 
-        // Check if the "filter" parameter is not null and not empty
-        if (extensionParam != null && !extensionParam.isEmpty()) {
-            // Split the parameter value into individual filter bean names
-            for (String extensionString : extensionParam.split(",")) {
-                try {
-                    String[] extensionElements = extensionString.split(":");
-                    String extensionName = extensionElements[0];
-                    List<Ext> matching = (List<Ext>) (Object) extensions.stream()
-                            .filter(e -> e.getName().equals(extensionName))
-                            .collect(Collectors.toList());
-                    if (matching.isEmpty())
-                        throw new BadEntityException("No extension found for name: " + extensionName);
-                    if (matching.size() > 1)
-                        throw new BadEntityException("Multiple extensions found with name: " + extensionName);
-
-                    Ext extension = matching.get(0);
-                    // create new bean if scope is prototype
-                    Ext extensionBean = (Ext) applicationContext.getBean(extension.getClass());
-                    if (extensionElements.length > 1) {
-                        // Create a new array with length-1 elements
-                        String[] args = new String[extensionElements.length - 1];
-                        // Copy elements from the original array starting from index 1 to the new array
-                        System.arraycopy(extensionElements, 1, args, 0, extensionElements.length - 1);
-                        extensionBean.setArgs(args);
-                    }
-                    result.add(extensionBean);
-                } catch (NoSuchBeanDefinitionException e) {
-                    throw new BadEntityException("No extension bean found with name: " + extensionString);
-                } catch (ClassCastException e) {
-                    throw new IllegalArgumentException("Extension bean not applicable for entity type: " + extensionString);
-                }
-
-            }
-        }
-        return result;
+    protected  <Ext extends WebExtension<? super E>> List<Ext> extractExtensions(HttpServletRequest request, WebExtensionType type) throws BadEntityException {
+        return (List<Ext>) extensionParser.parse(request,type);
     }
 
 
@@ -193,18 +150,23 @@ public abstract class AbstractEntityController
     }
 
     @Autowired
-    public void injectJsonMapper(JsonMapper mapper) {
+    public void setJsonMapper(JsonMapper mapper) {
         this.jsonMapper = mapper;
     }
 
 
     @Autowired
-    public void injectCoreProperties(CoreProperties properties) {
+    public void setExtensionParser(WebExtensionParser extensionParser) {
+        this.extensionParser = extensionParser;
+    }
+
+    @Autowired
+    public void setCoreProperties(CoreProperties properties) {
         this.coreProperties = properties;
     }
 
     @Autowired
-    public void injectEndpointService(EndpointService endpointService) {
+    public void setEndpointService(EndpointService endpointService) {
         this.endpointService = endpointService;
     }
 }

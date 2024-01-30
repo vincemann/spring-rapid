@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.coretest.controller;
 
 import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
+import com.github.vincemann.springrapid.core.service.filter.WebExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
@@ -27,10 +28,10 @@ import java.util.List;
 @Getter
 public class UrlExtension {
 
-    Class<? extends com.github.vincemann.springrapid.core.service.filter.UrlExtension> extensionType;
+    Class<? extends WebExtension> extensionType;
     String[] args;
 
-    public UrlExtension(Class<? extends com.github.vincemann.springrapid.core.service.filter.UrlExtension> extensionType, String... args) {
+    public UrlExtension(Class<? extends WebExtension> extensionType, String... args) {
         this.extensionType = extensionType;
         this.args = args;
     }

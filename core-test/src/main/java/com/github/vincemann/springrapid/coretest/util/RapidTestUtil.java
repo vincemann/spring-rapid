@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coretest.util;
 
 import com.github.vincemann.springrapid.core.controller.CrudController;
-import com.github.vincemann.springrapid.core.service.filter.UrlExtension;
+import com.github.vincemann.springrapid.core.service.filter.WebExtension;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
@@ -66,7 +66,7 @@ public class RapidTestUtil {
         for (com.github.vincemann.springrapid.coretest.controller.UrlExtension extension : extensions) {
             String[] beanNamesForType = applicationContext.getBeanNamesForType(extension.getExtensionType());
             Assertions.assertEquals(1,beanNamesForType.length,"no single bean found with type: " + extension.getExtensionType().getSimpleName() + ". Found beanNames: " + Arrays.toString(beanNamesForType));
-            UrlExtension bean = (UrlExtension) applicationContext.getBean(beanNamesForType[0]);
+            WebExtension bean = (WebExtension) applicationContext.getBean(beanNamesForType[0]);
             Assertions.assertNotNull(bean);
             sb.append(bean.getName());
             int count = 0;
@@ -102,7 +102,7 @@ public class RapidTestUtil {
     }
 
 
-    protected static List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> findExtensionsOfSubType(List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> extensions, Class<? extends UrlExtension> type){
+    protected static List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> findExtensionsOfSubType(List<com.github.vincemann.springrapid.coretest.controller.UrlExtension> extensions, Class<? extends WebExtension> type){
         return extensions.stream().filter(e -> type.isAssignableFrom(e.getExtensionType())).collect(Collectors.toList());
     }
 

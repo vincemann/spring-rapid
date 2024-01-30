@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import java.io.Serializable;
 
 // generic parameter is only set for type safety in AbstractEntityController's addAllowedExtensions
-public interface UrlExtension<E> {
+public interface WebExtension<E> {
     public String getName();
     public void setArgs(String... args) throws BadEntityException;
 

@@ -23,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * protected methods, if you need any customization.
  * 
  * @author Sanjay Patel
+ * @modifiedBy vincemann
  */
 @Slf4j
 public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
