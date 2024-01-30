@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
+import com.github.vincemann.springrapid.coretest.MvcAware;
 import com.github.vincemann.springrapid.coretest.controller.template.MvcControllerTestTemplate;
 import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Profiles;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.*;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -36,6 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Getter
 @AutoConfigureMockMvc
 @SpringBootTest
+@ActiveProfiles("test")
 public abstract class AbstractMvcTest extends InitializingTest implements InitializingBean
 {
 
@@ -58,9 +62,9 @@ public abstract class AbstractMvcTest extends InitializingTest implements Initia
     protected void setTestTemplatesMvc(){
         ReflectionUtils.doWithFields(this.getClass(),field -> {
             Class<?> fieldType = field.getType();
-            if (MvcControllerTestTemplate.class.isAssignableFrom(fieldType)){
+            if (MvcAware.class.isAssignableFrom(fieldType)){
                 field.setAccessible(true);
-                MvcControllerTestTemplate testTemplate = (MvcControllerTestTemplate) field.get(this);
+                MvcAware testTemplate = (MvcAware) field.get(this);
                 testTemplate.setMvc(mvc);
             }
         });

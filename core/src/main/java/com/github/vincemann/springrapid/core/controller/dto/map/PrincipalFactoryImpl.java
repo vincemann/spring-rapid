@@ -3,15 +3,15 @@ package com.github.vincemann.springrapid.core.controller.dto.map;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
 public class PrincipalFactoryImpl implements PrincipalFactory {
 
-    private OwnerLocator<IdentifiableEntity<?>> ownerLocator;
+    private OwnerLocator ownerLocator;
 
-    public PrincipalFactoryImpl(OwnerLocator<IdentifiableEntity<?>> ownerLocator) {
-        this.ownerLocator = ownerLocator;
+    public PrincipalFactoryImpl() {
     }
 
     @Override
@@ -25,6 +25,11 @@ public class PrincipalFactoryImpl implements PrincipalFactory {
                         : Principal.FOREIGN;
             }
         }
-        return null;
+        return Principal.ALL;
+    }
+
+    @Autowired
+    public void setOwnerLocator(OwnerLocator ownerLocator) {
+        this.ownerLocator = ownerLocator;
     }
 }

@@ -16,7 +16,7 @@ public class DtoMappingsBuilder {
     }
 
     public DtoMappingsBuilder when(Predicate<DtoRequestInfo> condition) {
-        Assert.notNull(predicate,"after one call of when must come one call of thenReturn");
+        Assert.isNull(predicate,"after one call of when must come one call of thenReturn");
         this.predicate = condition;
         return this;
     }

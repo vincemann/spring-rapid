@@ -3,7 +3,6 @@ package com.github.vincemann.springrapid.coretest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ReflectionUtils;
 
@@ -17,16 +16,16 @@ import java.util.List;
 @Slf4j
 public abstract class InitializingTest {
 
-    private List<TestMethodInitializable> beforeEachMethodInitializables = new ArrayList<>();
-    private List<TestMethodInitializable> afterEachMethodInitializables = new ArrayList<>();
-    private boolean init = false;
-    private boolean afterInit = false;
+    private List<TestMethodInitializable> beforeEach = new ArrayList<>();
+    private List<TestMethodInitializable> afterEach = new ArrayList<>();
+    private boolean beforeEachInitialized = false;
+    private boolean afterEachInitialized = false;
 
 
     @Transactional
     @BeforeEach
-    public void callBeforeInitializables() throws Exception {
-        if (!init) {
+    public void callBeforeEach() {
+        if (!beforeEachInitialized) {
             ReflectionUtils.doWithFields(this.getClass(), field -> {
                 ReflectionUtils.makeAccessible(field);
                 Object member = field.get(this);
@@ -34,20 +33,20 @@ public abstract class InitializingTest {
                     ((TestInitializable) member).before();
                 }
                 if (member instanceof TestMethodInitializable) {
-                    beforeEachMethodInitializables.add((TestMethodInitializable) member);
+                    beforeEach.add((TestMethodInitializable) member);
                     ((TestMethodInitializable) member).before();
                 }
             });
         } else {
-            beforeEachMethodInitializables.forEach(TestInitializable::before);
+            beforeEach.forEach(TestInitializable::before);
         }
-        init = true;
+        beforeEachInitialized = true;
     }
 
     @Transactional
     @AfterEach
-    public void callAfterInitializables(){
-        if (!afterInit) {
+    public void callAfterEach(){
+        if (!afterEachInitialized) {
             ReflectionUtils.doWithFields(this.getClass(), field -> {
                 ReflectionUtils.makeAccessible(field);
                 Object member = field.get(this);
@@ -55,13 +54,13 @@ public abstract class InitializingTest {
                     ((TestInitializable) member).after();
                 }
                 if (member instanceof TestMethodInitializable) {
-                    afterEachMethodInitializables.add((TestMethodInitializable) member);
+                    afterEach.add((TestMethodInitializable) member);
                     ((TestMethodInitializable) member).after();
                 }
             });
         } else {
-            afterEachMethodInitializables.forEach(TestInitializable::after);
+            afterEach.forEach(TestInitializable::after);
         }
-        afterInit = true;
+        afterEachInitialized = true;
     }
 }

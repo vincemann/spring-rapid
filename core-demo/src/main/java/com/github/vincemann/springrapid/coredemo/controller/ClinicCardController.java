@@ -13,7 +13,8 @@ public class ClinicCardController extends CrudController<ClinicCard, Long> {
 
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {
-        builder.when(any()).thenReturn(ClinicCardDto.class);
+        builder.when(any())
+                .thenReturn(ClinicCardDto.class);
     }
 
 }

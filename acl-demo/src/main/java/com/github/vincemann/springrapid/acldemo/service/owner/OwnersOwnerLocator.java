@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class OwnerOwnerLocator implements OwnerLocator<Owner> {
+public class OwnersOwnerLocator implements OwnerLocator<Owner> {
 
     @Override
     public boolean supports(Class clazz) {

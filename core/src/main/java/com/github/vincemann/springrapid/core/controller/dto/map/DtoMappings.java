@@ -12,7 +12,7 @@ import java.util.function.Predicate;
 //@ToString
 public class DtoMappings {
 
-    private List<Mapping> mappings;
+    private List<Mapping> mappings = new ArrayList<>();
 
     public List<Mapping> get() {
         return mappings;
@@ -20,7 +20,7 @@ public class DtoMappings {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("DtoMappings: { ");
+        StringBuilder sb = new StringBuilder("DtoMappings: {\n");
         for (Mapping mapping : mappings) {
             Predicate<DtoRequestInfo> condition = mapping.getCondition();
             if (condition instanceof DescribablePredicate) {
@@ -28,7 +28,7 @@ public class DtoMappings {
             } else {
                 sb.append(condition.toString());
             }
-            sb.append("  ->  ").append(mapping.getDtoClass().getSimpleName()).append(", ");
+            sb.append("  ->  ").append(mapping.getDtoClass().getSimpleName()).append(",\n");
         }
         sb.setLength(sb.length() - 2); // Remove the last comma and space
         sb.append(" }");

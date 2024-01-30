@@ -7,9 +7,9 @@ import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.authdemo.model.User;
 import com.github.vincemann.springrapid.core.sec.Roles;
 import com.google.common.collect.Sets;
-import org.springframework.boot.test.context.TestComponent;
+import org.springframework.stereotype.Component;
 
-@TestComponent
+@Component
 public class MyAuthTestAdapter extends AuthTestAdapter {
 
     private int nameCount = 0;
