@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.acls.domain.BasePermission;
 
 @Configuration
-public class ServiceExtensionsConfig {
+public class ExtensionsConfig {
 
     @Bean
     public RoleGainsPermissionAboutSavedAclExtension vetHasFullPermissionAboutSavedAclExtension(){

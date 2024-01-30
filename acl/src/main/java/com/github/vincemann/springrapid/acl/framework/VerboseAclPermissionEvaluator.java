@@ -182,7 +182,7 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
     }
 
     @Autowired
-    public void injectPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
+    public void setPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
         this.permissionStringConverter = permissionStringConverter;
     }
 }

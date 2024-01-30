@@ -28,23 +28,22 @@ import java.util.HashSet;
  * Copied an modified from:
  * https://gist.github.com/matteocedroni/b0e5a935127316603dfb
  *
- * DefaultImpl of {@link AclSecurityChecker}.
+ * DefaultImpl of {@link AclTemplate}.
  * Uses {@link MethodSecurityExpressionHandler} for expression evaluation
  *
  *
  */
-public class AclSecurityCheckerImpl
-        implements AclSecurityChecker, ApplicationContextAware {
+public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
 
     private Method triggerCheckMethod;
     private SpelExpressionParser parser;
     private ApplicationContext applicationContext;
-    private RapidAclSecurityContext<?> rapidSecurityContext;
+    private RapidAclSecurityContext securityContext;
     private PermissionStringConverter permissionStringConverter;
 
-    public AclSecurityCheckerImpl() {
+    public AclTemplateImpl() {
         try {
-            this.triggerCheckMethod = AclSecurityCheckerImpl.SecurityObject.class.getMethod("triggerCheck");
+            this.triggerCheckMethod = AclTemplateImpl.SecurityObject.class.getMethod("triggerCheck");
         } catch (NoSuchMethodException e) {
             log.error(e.getMessage(), e);
         }
@@ -62,10 +61,10 @@ public class AclSecurityCheckerImpl
                     .checkedPermission(permission)
                     .targetEntity(entity)
                     .build();
-            rapidSecurityContext.setAclContext(aclContext);
+            securityContext.setAclContext(aclContext);
 
             boolean permitted = _checkPermission(entity.getId(), entity.getClass(), permission);
-            rapidSecurityContext.clearAclContext();
+            securityContext.clearAclContext();
 //            boolean permitted = checkExpression("hasPermission(" + entity.getId() + ",'" + entity.getClass().getName() + "','" + permissionString + "')");
             if (permitted) {
                 filtered.add(entity);
@@ -85,11 +84,11 @@ public class AclSecurityCheckerImpl
                 .id(id)
                 .entityClass(clazz)
                 .build();
-        rapidSecurityContext.setAclContext(aclContext);
+        securityContext.setAclContext(aclContext);
         boolean permitted = _checkPermission(id, clazz, permission);
-        rapidSecurityContext.clearAclContext();
+        securityContext.clearAclContext();
         if (!permitted) {
-            RapidPrincipal principal = rapidSecurityContext.currentPrincipal();
+            RapidPrincipal principal = securityContext.currentPrincipal();
             String permissionString = permissionStringConverter.convert(permission);
             throw new AccessDeniedException("Permission not Granted! Principal: " + principal.shortToString() +
                     " does not have Permission: " + permissionString + " for entity: {" + clazz.getSimpleName() + ", id: " + id + "}");
@@ -121,11 +120,11 @@ public class AclSecurityCheckerImpl
                 .checkedPermission(permission)
                 .targetEntity(entity)
                 .build();
-        rapidSecurityContext.setAclContext(aclContext);
+        securityContext.setAclContext(aclContext);
 
         boolean permitted = _checkPermission(entity.getId(), entity.getClass(), permission);
         if (!permitted) {
-            RapidPrincipal principal = rapidSecurityContext.currentPrincipal();
+            RapidPrincipal principal = securityContext.currentPrincipal();
             String permissionString = permissionStringConverter.convert(permission);
             throw new AccessDeniedException("Permission not Granted! Principal: " + principal.shortToString() +
                     " does not have Permission: " + permissionString + " for entity: " + entity);
@@ -139,7 +138,7 @@ public class AclSecurityCheckerImpl
 //            log.debug("EVALUATING SECURITY EXPRESSION: [" + securityExpression + "]...");
 //        }
 
-        AclSecurityCheckerImpl.SecurityObject securityObject = new AclSecurityCheckerImpl.SecurityObject();
+        AclTemplateImpl.SecurityObject securityObject = new AclTemplateImpl.SecurityObject();
         MethodSecurityExpressionHandler expressionHandler = applicationContext.getBean(MethodSecurityExpressionHandler.class);
         //gibt dem einfach nen gemockten Methodenaufruf und nen gemocktes securityObject rein
         EvaluationContext evaluationContext = expressionHandler.createEvaluationContext(
@@ -158,8 +157,8 @@ public class AclSecurityCheckerImpl
     }
 
     @Autowired
-    public void injectRapidSecurityContext(RapidAclSecurityContext<?> rapidSecurityContext) {
-        this.rapidSecurityContext = rapidSecurityContext;
+    public void setRapidSecurityContext(RapidAclSecurityContext rapidSecurityContext) {
+        this.securityContext = rapidSecurityContext;
     }
 
     @Override
@@ -168,7 +167,7 @@ public class AclSecurityCheckerImpl
     }
 
     @Autowired
-    public void injectPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
+    public void setPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
         this.permissionStringConverter = permissionStringConverter;
     }
 

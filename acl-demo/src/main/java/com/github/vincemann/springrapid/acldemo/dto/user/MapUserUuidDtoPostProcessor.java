@@ -22,7 +22,7 @@ public class MapUserUuidDtoPostProcessor implements EntityPostProcessor<CreateUs
     // need lazy injection here, otherwise not wrapped with aop proxies somehow
     @Lazy
     @Autowired
-    public void injectUserService(MyJpaUserService userService) {
+    public void setUserService(MyJpaUserService userService) {
         this.userService = userService;
     }
 

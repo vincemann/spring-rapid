@@ -1,14 +1,14 @@
 package com.github.vincemann.springrapid.acldemo.dto;
 
 
-import com.github.vincemann.springrapid.acldemo.dto.abs.MyIdDto;
-import com.github.vincemann.springrapid.acldemo.model.abs.MyIdentifiableEntity;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.acldemo.model.Specialty;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
-
 import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentIdCollection;
-import lombok.*;
+import com.github.vincemann.springrapid.core.dto.IdAwareDto;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.Size;
 import java.util.HashSet;
@@ -18,7 +18,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 
-public class SpecialtyDto extends MyIdDto<Long> {
+public class SpecialtyDto extends IdAwareDto<Long> {
 
     @Builder
     public SpecialtyDto(@Size(min = 2, max = 255) String description, Set<Long> vetIds) {

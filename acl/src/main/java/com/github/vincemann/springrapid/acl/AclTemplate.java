@@ -11,13 +11,13 @@ import java.io.Serializable;
 import java.util.Collection;
 
 /**
- * API for dynamic acl permission checking.
- * Always use this API to check acl permissions
- * All methods, except {@link this#checkExpression(String)} will create {@link AclEvaluationContext} that can be used downstream.
+ * API for dynamic programmatic acl permission checking.
+ * Always use this API to check acl permissions, if using this library.
+ * All methods, except {@link this#checkExpression(String)} will create {@link AclEvaluationContext} that can be used downstream
  */
 @Component
 @LogInteraction
-public interface AclSecurityChecker extends AopLoggable {
+public interface AclTemplate extends AopLoggable {
 
     public boolean checkExpression(String securityExpression);
 

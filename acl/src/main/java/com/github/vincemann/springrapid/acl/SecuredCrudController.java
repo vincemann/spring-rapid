@@ -16,8 +16,8 @@ public abstract class SecuredCrudController<E extends IdentifiableEntity<Id>, Id
     @Secured
     @Lazy
     @Override
-    public void injectCrudService(CrudService<E,Id> crudService) {
-        super.injectCrudService(crudService);
+    public void setCrudService(CrudService<E,Id> crudService) {
+        super.setCrudService(crudService);
     }
 
 

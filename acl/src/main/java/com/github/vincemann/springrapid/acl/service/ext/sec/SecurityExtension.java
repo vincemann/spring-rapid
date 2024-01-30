@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acl.service.ext.sec;
 
-import com.github.vincemann.springrapid.acl.AclSecurityChecker;
+import com.github.vincemann.springrapid.acl.AclTemplate;
 import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class SecurityExtension<T>
         extends BasicServiceExtension<T> {
 
-    protected AclSecurityChecker securityChecker;
+    protected AclTemplate securityChecker;
 
     @Autowired
-    public void injectAclSecurityChecker(AclSecurityChecker securityChecker) {
+    public void setAclSecurityChecker(AclTemplate securityChecker) {
         this.securityChecker = securityChecker;
     }
 }

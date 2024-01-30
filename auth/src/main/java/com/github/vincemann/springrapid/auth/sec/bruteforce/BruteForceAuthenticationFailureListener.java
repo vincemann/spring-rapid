@@ -17,7 +17,7 @@ public class BruteForceAuthenticationFailureListener implements ApplicationListe
     }
 
     @Autowired
-    public void injectLoginAttemptService(LoginAttemptService loginAttemptService) {
+    public void setLoginAttemptService(LoginAttemptService loginAttemptService) {
         this.loginAttemptService = loginAttemptService;
     }
 

@@ -33,7 +33,7 @@ public abstract class AbstractAuditorAware<ID extends Serializable>
 	}
 
 //	@Autowired
-//	public void injectIdConverter(IdConverter<ID> idConverter) {
+//	public void setIdConverter(IdConverter<ID> idConverter) {
 //		this.idConverter = idConverter;
 //
 //	}

@@ -73,17 +73,17 @@ public class AdminInitializer implements CommandLineRunner {
 
     @Autowired
     @Acl
-    public void injectUserService(UserService<AbstractUser<Serializable>, Serializable> userService) {
+    public void setUserService(UserService<AbstractUser<Serializable>, Serializable> userService) {
         this.userService = userService;
     }
 
     @Autowired
-    public void injectLemonProperties(AuthProperties authProperties) {
+    public void setLemonProperties(AuthProperties authProperties) {
         this.authProperties = authProperties;
     }
 
     @Autowired
-    public void injectSecurityContext(RapidSecurityContext<?> securityContext) {
+    public void setSecurityContext(RapidSecurityContext<?> securityContext) {
         this.securityContext = securityContext;
     }
 }

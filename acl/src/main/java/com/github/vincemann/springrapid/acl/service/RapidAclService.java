@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 @LogInteraction(Severity.TRACE)
-public interface AclPermissionService extends AopLoggable {
+public interface RapidAclService extends AopLoggable {
 
     void savePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission... permissions);
 

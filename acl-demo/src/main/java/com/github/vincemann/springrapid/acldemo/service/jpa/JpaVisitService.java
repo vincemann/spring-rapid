@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.acl.proxy.Acl;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.acl.service.AceNotFoundException;
 import com.github.vincemann.springrapid.acl.service.AclNotFoundException;
-import com.github.vincemann.springrapid.acl.service.AclPermissionService;
+import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.acldemo.repo.VisitRepository;
@@ -46,7 +46,7 @@ public class JpaVisitService extends JPACrudService<Visit,Long, VisitRepository>
         implements VisitService, TargetClassAware {
 
 
-    private AclPermissionService aclPermissionService;
+    private RapidAclService rapidAclService;
     private OwnerService ownerService;
     private final OwnerRepository ownerRepository;
 
@@ -60,7 +60,7 @@ public class JpaVisitService extends JPACrudService<Visit,Long, VisitRepository>
         Owner owner = VerifyEntity.isPresent(ownerById, ownerId, Owner.class);
         Visit visit = VerifyEntity.isPresent(service.findById(visitId), visitId, Visit.class);
 
-        aclPermissionService.savePermissionForUserOverEntity(owner.getUser().getContactInformation(),visit, BasePermission.READ);
+        rapidAclService.savePermissionForUserOverEntity(owner.getUser().getContactInformation(),visit, BasePermission.READ);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class JpaVisitService extends JPACrudService<Visit,Long, VisitRepository>
             Owner owner = VerifyEntity.isPresent(ownerById, ownerId, Owner.class);
             Visit visit = VerifyEntity.isPresent(service.findById(visitId), visitId, Visit.class);
 
-            aclPermissionService.deletePermissionForUserOverEntity(owner.getUser().getContactInformation(),visit, BasePermission.READ);
+            rapidAclService.deletePermissionForUserOverEntity(owner.getUser().getContactInformation(),visit, BasePermission.READ);
         } catch (AclNotFoundException | AceNotFoundException e) {
             throw new BadEntityException(e);
         }
@@ -82,8 +82,8 @@ public class JpaVisitService extends JPACrudService<Visit,Long, VisitRepository>
     }
 
     @Autowired
-    public void injectAclPermissionService(AclPermissionService aclPermissionService) {
-        this.aclPermissionService = aclPermissionService;
+    public void setAclPermissionService(RapidAclService rapidAclService) {
+        this.rapidAclService = rapidAclService;
     }
 
     @Override

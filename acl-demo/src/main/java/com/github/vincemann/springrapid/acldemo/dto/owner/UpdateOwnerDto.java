@@ -7,9 +7,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
-@NoArgsConstructor
-
-@Getter @Setter
+@NoArgsConstructor @Getter @Setter
 public class UpdateOwnerDto extends AbstractOwnerDto {
 
 

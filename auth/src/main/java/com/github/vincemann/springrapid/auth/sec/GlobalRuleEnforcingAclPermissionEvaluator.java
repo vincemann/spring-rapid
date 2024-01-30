@@ -117,7 +117,7 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
     }
 
 //    @Autowired
-//    public void injectSecurityContext(RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext) {
+//    public void setSecurityContext(RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext) {
 //        this.securityContext = securityContext;
 //    }
 }

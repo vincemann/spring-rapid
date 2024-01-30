@@ -60,7 +60,7 @@ public abstract class AbstractCrudService
     }
 
     @Autowired
-    public void injectRepository(R repository) {
+    public void setRepository(R repository) {
         this.repository = repository;
     }
 

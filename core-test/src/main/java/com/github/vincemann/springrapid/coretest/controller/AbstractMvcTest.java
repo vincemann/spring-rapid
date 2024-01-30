@@ -133,12 +133,12 @@ public abstract class AbstractMvcTest extends InitializingTest implements Initia
     }
 
     @Autowired
-    public void injectJsonMapper(JsonMapper jsonMapper) {
+    public void setJsonMapper(JsonMapper jsonMapper) {
         this.jsonMapper = jsonMapper;
     }
 
     @Autowired
-    public void injectWac(WebApplicationContext wac) {
+    public void setWac(WebApplicationContext wac) {
         this.wac = wac;
     }
 }

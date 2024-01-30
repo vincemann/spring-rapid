@@ -165,17 +165,17 @@ public class UserServiceSecurityExtension
 
 
     @Autowired
-    public void injectSecurityContext(RapidSecurityContext securityContext) {
+    public void setSecurityContext(RapidSecurityContext securityContext) {
         this.securityContext = securityContext;
     }
 
     @Autowired
-    public void injectUserService(UserService userService) {
+    public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
     @Autowired
-    public void injectJweTokenService(JweTokenService jweTokenService) {
+    public void setJweTokenService(JweTokenService jweTokenService) {
         this.jweTokenService = jweTokenService;
     }
 }

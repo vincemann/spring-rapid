@@ -512,47 +512,47 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
 
     @Autowired
     @Lazy
-    public void injectCrudService(CrudService<E, Id> crudService) {
+    public void setCrudService(CrudService<E, Id> crudService) {
         this.service = crudService;
     }
 
     @Autowired
-    public void injectMergeUpdateStrategy(MergeUpdateStrategy mergeUpdateStrategy) {
+    public void setMergeUpdateStrategy(MergeUpdateStrategy mergeUpdateStrategy) {
         this.mergeUpdateStrategy = mergeUpdateStrategy;
     }
 
     @Autowired
-    public void injectJsonPatchStrategy(JsonPatchStrategy jsonPatchStrategy) {
+    public void setJsonPatchStrategy(JsonPatchStrategy jsonPatchStrategy) {
         this.jsonPatchStrategy = jsonPatchStrategy;
     }
 
     @Autowired
-    public void injectOwnerLocator(DelegatingOwnerLocator ownerLocator) {
+    public void setOwnerLocator(DelegatingOwnerLocator ownerLocator) {
         this.ownerLocator = ownerLocator;
     }
 
     @Autowired
-    public void injectValidationStrategy(DtoValidationStrategy dtoValidationStrategy) {
+    public void setValidationStrategy(DtoValidationStrategy dtoValidationStrategy) {
         this.dtoValidationStrategy = dtoValidationStrategy;
     }
 
     @Autowired
-    public void injectDtoClassLocator(DtoClassLocator dtoClassLocator) {
+    public void setDtoClassLocator(DtoClassLocator dtoClassLocator) {
         this.dtoClassLocator = dtoClassLocator;
     }
 
     @Autowired
-    public void injectDtoMapper(DelegatingDtoMapper dtoMapper) {
+    public void setDtoMapper(DelegatingDtoMapper dtoMapper) {
         this.dtoMapper = dtoMapper;
     }
 
     @Autowired
-    public void injectIdIdFetchingStrategy(IdFetchingStrategy<Id> idFetchingStrategy) {
+    public void setIdIdFetchingStrategy(IdFetchingStrategy<Id> idFetchingStrategy) {
         this.idFetchingStrategy = idFetchingStrategy;
     }
 
     @Autowired
-    public void injectJsonDtoPropertyValidator(JsonDtoPropertyValidator jsonDtoPropertyValidator) {
+    public void setJsonDtoPropertyValidator(JsonDtoPropertyValidator jsonDtoPropertyValidator) {
         this.jsonDtoPropertyValidator = jsonDtoPropertyValidator;
     }
 

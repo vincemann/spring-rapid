@@ -24,7 +24,7 @@ public class OwnerGainsReadPermissionForSavedVisitsAclExtension extends AclExten
         } catch (EntityNotFoundException e) {
             throw new BadEntityException(e);
         }
-        aclPermissionService.savePermissionForUserOverEntity(owner.getUser().getContactInformation(),
+        rapidAclService.savePermissionForUserOverEntity(owner.getUser().getContactInformation(),
                 visit, BasePermission.READ);
         return savedVisit;
     }

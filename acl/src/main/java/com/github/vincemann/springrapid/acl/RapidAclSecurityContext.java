@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Holds {@link AclEvaluationContext}, that will get set for each acl evaluation in {@link AclSecurityCheckerImpl}.
+ * Holds {@link AclEvaluationContext}, that will get set for each acl evaluation in {@link AclTemplateImpl}.
  */
 @Getter
 @Setter

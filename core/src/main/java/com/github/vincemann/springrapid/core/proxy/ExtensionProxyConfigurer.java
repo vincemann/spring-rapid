@@ -27,12 +27,12 @@ public abstract class ExtensionProxyConfigurer<S extends CrudService> implements
     @Overwrite
     @Autowired
     @Secured
-    public void injectService(S service) {
+    public void setService(S service) {
         this.service = service;
     }
      **/
     @Autowired
-    public void injectService(S service) {
+    public void setService(S service) {
         this.service = service;
     }
 }

@@ -27,7 +27,6 @@ import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappin
 public class VisitController
         extends SecuredCrudController<Visit, Long>
 {
-    private OwnerService ownerService;
     @Getter
     private String subscribeOwnerUrl;
     private VisitService service;
@@ -59,9 +58,4 @@ public class VisitController
         return ResponseEntity.ok().build();
     }
 
-
-    @Autowired
-    public void injectOwnerService(OwnerService ownerService) {
-        this.ownerService = ownerService;
-    }
 }

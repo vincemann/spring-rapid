@@ -29,8 +29,7 @@ public class SystemArchitecture {
     @Pointcut("!execution(* getEntityClass(..))" +
             " && !execution(* getTargetClass(..))" +
             " && !execution(* toString(..))" +
-            " && !execution(* getBeanName(..))" +
-            " && !execution(* inject*(..))"
+            " && !execution(* getBeanName(..))"
     )
     public void ignoreHelperServiceMethods(){}
 

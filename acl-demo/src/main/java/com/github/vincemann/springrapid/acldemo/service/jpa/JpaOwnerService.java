@@ -73,7 +73,7 @@ public class JpaOwnerService
     }
 
     @Autowired
-    public void injectUserService(UserService<User,?> userService) {
+    public void setUserService(UserService<User,?> userService) {
         this.userService = userService;
     }
 }

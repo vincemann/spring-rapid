@@ -6,7 +6,6 @@ import org.springframework.security.acls.model.Permission;
 
 public class PermissionStringConverterImpl implements PermissionStringConverter {
 
-    @Cacheable(value = "permissionStringMapping")
     @Override
     public String convert(Permission permission) {
         String pattern = permission.getPattern().toLowerCase();
@@ -26,7 +25,6 @@ public class PermissionStringConverterImpl implements PermissionStringConverter 
         }
     }
 
-    @Cacheable(value = "permissionStringMapping")
     @Override
     public Permission convert(String permission) {
         if (permission.equals("ADMINISTRATION")){

@@ -9,7 +9,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-
 public class VetReadsOwnerDto extends AbstractOwnerDto {
 
 

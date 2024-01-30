@@ -13,7 +13,8 @@ public class SpecialtyController extends CrudController<Specialty,Long> {
 
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {
-        builder.when(any()).thenReturn(SpecialtyDto.class);
+        builder.when(any())
+                .thenReturn(SpecialtyDto.class);
     }
 
 }

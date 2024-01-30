@@ -26,7 +26,9 @@ public class VetController
         builder.when(endpoint(getCreateUrl()))
                 .thenReturn(CreateVetDto.class);
 
-        builder.when(roles(MyRoles.VET).and(principal(Principal.OWN)).and(direction(Direction.REQUEST)))
+        builder.when(roles(MyRoles.VET)
+                        .and(principal(Principal.OWN))
+                        .and(direction(Direction.REQUEST)))
                 .thenReturn(VetUpdatesOwnDto.class);
 
         builder.when(direction(Direction.RESPONSE))

@@ -14,8 +14,8 @@ public class RapidAclSecurityAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(RapidSecurityContext.class)
-    public RapidAclSecurityContext<?> rapidSAclSecurityContext(){
-        return new RapidAclSecurityContext<>();
+    public RapidAclSecurityContext rapidSAclSecurityContext(){
+        return new RapidAclSecurityContext();
     }
 
 }

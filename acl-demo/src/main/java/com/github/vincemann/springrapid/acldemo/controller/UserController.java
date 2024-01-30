@@ -19,14 +19,17 @@ public class UserController extends AbstractUserController<User, Long>  {
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {
 
-        builder.when(endpoint(getSignupUrl()).and(direction(Direction.REQUEST)))
-                .thenReturn(SignupDto.class);
-
-        builder.when(endpoint(getSignupUrl()).and(direction(Direction.RESPONSE)))
-                .thenReturn(UUIDSignupResponseDto.class);
-
         builder.when(roles(AuthRoles.ADMIN))
                 .thenReturn(FullUserDto.class);
+
+        builder.when(endpoint(getSignupUrl())
+                        .and(direction(Direction.REQUEST)))
+                .thenReturn(SignupDto.class);
+
+        builder.when(endpoint(getSignupUrl())
+                        .and(direction(Direction.RESPONSE)))
+                .thenReturn(UUIDSignupResponseDto.class);
+
 
         super.configureDtoMappings(builder);
 

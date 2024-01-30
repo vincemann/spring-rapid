@@ -199,12 +199,12 @@ public abstract class JPACrudService
 
 
 //    @Autowired
-//    public void injectFilterRepository(FilterRepository<E, Id> filterRepository) {
+//    public void setFilterRepository(FilterRepository<E, Id> filterRepository) {
 //        this.filterRepository = filterRepository;
 //    }
 
     @Autowired
-    public void injectEntityManager(EntityManager entityManager) {
+    public void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 }

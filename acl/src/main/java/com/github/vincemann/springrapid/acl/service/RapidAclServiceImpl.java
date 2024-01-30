@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.acl.service;
 
 import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.sec.Roles;
 import lombok.extern.slf4j.Slf4j;
@@ -24,15 +23,15 @@ import java.util.*;
 @Service
 @Transactional
 @Slf4j
-public class RapidPermissionService implements AclPermissionService {
+public class RapidAclServiceImpl implements RapidAclService {
 
     private MutableAclService aclService;
-    private RapidSecurityContext<RapidPrincipal> securityContext;
+    private RapidSecurityContext securityContext;
 
     //    private PermissionStringConverter permissionStringConverter;
     /**/
     @Autowired
-    public RapidPermissionService(MutableAclService aclService) {
+    public RapidAclServiceImpl(MutableAclService aclService) {
         this.aclService = aclService;
     }
 
@@ -137,22 +136,6 @@ public class RapidPermissionService implements AclPermissionService {
             return aclService.createAcl(oi);
         }
     }
-
-//    @Override
-//    public void inheritPermissionEntriesOfParent(IdentifiableEntity<?> targetObj, IdentifiableEntity<?> parent) throws AclNotFoundException {
-//        ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
-//        ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
-//
-//        MutableAcl childAcl = findOrCreateAcl(childOi);
-//        MutableAcl parentAcl = findAcl(parentOi);
-//
-////        childAcl.setEntriesInheriting(true);
-//        childAcl.setParent(parentAcl);
-//
-//        logAclInformation(parentAcl, childAcl);
-//
-//        aclService.updateAcl(childAcl);
-//    }
 
     @Override
     public void inheritAces(IdentifiableEntity<?> parent, List<AclCascadeInfo> infos) throws AclNotFoundException {
@@ -371,17 +354,13 @@ public class RapidPermissionService implements AclPermissionService {
 
 
     @Autowired
-    public void injectAclService(MutableAclService aclService) {
+    public void setAclService(MutableAclService aclService) {
         this.aclService = aclService;
     }
 
     @Autowired
-    public void injectSecurityContext(RapidSecurityContext<RapidPrincipal> securityContext) {
+    public void setSecurityContext(RapidSecurityContext securityContext) {
         this.securityContext = securityContext;
     }
 
-//    @Autowired
-//    public void injectPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
-//        this.permissionStringConverter = permissionStringConverter;
-//    }
 }

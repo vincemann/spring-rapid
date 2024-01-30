@@ -55,13 +55,13 @@ public class RapidUserDetailsService
 
 
 	@Autowired
-	public void injectPrincipalUserConverter(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {
+	public void setPrincipalUserConverter(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {
 		this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
 	}
 
 
 	@Autowired
-	public void injectUserService(UserService userService) {
+	public void setUserService(UserService userService) {
 		this.userService = userService;
 	}
 }

@@ -4,9 +4,9 @@ import com.github.vincemann.springrapid.acl.AclProperties;
 import com.github.vincemann.springrapid.acl.framework.AdminDefaultPermissionGrantingStrategy;
 import com.github.vincemann.springrapid.acl.framework.oidresolve.ObjectIdentityResolver;
 import com.github.vincemann.springrapid.acl.framework.oidresolve.RapidObjectIdentityResolver;
-import com.github.vincemann.springrapid.acl.service.AclPermissionService;
+import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
-import com.github.vincemann.springrapid.acl.service.RapidPermissionService;
+import com.github.vincemann.springrapid.acl.service.RapidAclServiceImpl;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverterImpl;
 import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.sec.Roles;
@@ -147,10 +147,10 @@ public class RapidAclAutoConfiguration {
     }
 
 
-    @ConditionalOnMissingBean(AclPermissionService.class)
+    @ConditionalOnMissingBean(RapidAclService.class)
     @Bean
-    public AclPermissionService rapidAclPermissionService(MutableAclService aclService){
-        return new RapidPermissionService(aclService);
+    public RapidAclService rapidAclPermissionService(MutableAclService aclService){
+        return new RapidAclServiceImpl(aclService);
     }
 
     @ConditionalOnMissingBean(LookupStrategy.class)

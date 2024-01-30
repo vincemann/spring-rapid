@@ -675,22 +675,22 @@ public abstract class JpaUserService
 //    }
 
     @Autowired
-    public void injectAuthorizationTokenService(AuthorizationTokenService authorizationTokenService) {
+    public void setAuthorizationTokenService(AuthorizationTokenService authorizationTokenService) {
         this.authorizationTokenService = authorizationTokenService;
     }
 
     @Autowired
-    public void injectSecurityContext(RapidSecurityContext securityContext) {
+    public void setSecurityContext(RapidSecurityContext securityContext) {
         this.securityContext = securityContext;
     }
 
     @Autowired
-    public void injectPasswordEncoder(RapidPasswordEncoder passwordEncoder) {
+    public void setPasswordEncoder(RapidPasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
     @Autowired
-    public void injectProperties(AuthProperties properties) {
+    public void setProperties(AuthProperties properties) {
         this.properties = properties;
     }
 
@@ -700,23 +700,23 @@ public abstract class JpaUserService
     }
 
     @Autowired
-    public void injectJweTokenService(JweTokenService jweTokenService) {
+    public void setJweTokenService(JweTokenService jweTokenService) {
         this.jweTokenService = jweTokenService;
     }
 
     @Lazy
     @Autowired
-    public void injectIdIdConverter(IdConverter<ID> idIdConverter) {
+    public void setIdIdConverter(IdConverter<ID> idIdConverter) {
         this.idConverter = idIdConverter;
     }
 
     @Autowired
-    public void injectPrincipalUserConverter(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {
+    public void setPrincipalUserConverter(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {
         this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
     }
 
     @Autowired
-    public void injectPasswordValidator(PasswordValidator passwordValidator) {
+    public void setPasswordValidator(PasswordValidator passwordValidator) {
         this.passwordValidator = passwordValidator;
     }
 

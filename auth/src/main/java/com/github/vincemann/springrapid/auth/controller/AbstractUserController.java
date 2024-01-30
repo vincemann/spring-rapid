@@ -675,7 +675,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 
 	@Autowired
-	public void injectHttpTokenService(HttpTokenService httpTokenService) {
+	public void setHttpTokenService(HttpTokenService httpTokenService) {
 		this.httpTokenService = httpTokenService;
 	}
 
@@ -683,14 +683,14 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@Autowired
 	@Secured
 	@Override
-	public void injectCrudService(CrudService<U,ID> crudService) {
-		super.injectCrudService(crudService);
+	public void setCrudService(CrudService<U,ID> crudService) {
+		super.setCrudService(crudService);
 	}
 
 //	@Root
 	@Lazy
 	@Autowired
-	public void injectUserService(UserService<U,ID> Service) {
+	public void setUserService(UserService<U,ID> Service) {
 		this.userService = Service;
 	}
 
@@ -701,7 +701,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 
 	@Autowired
-	public void injectAuthProperties(AuthProperties authProperties) {
+	public void setAuthProperties(AuthProperties authProperties) {
 		this.authProperties = authProperties;
 	}
 

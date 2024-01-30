@@ -29,7 +29,7 @@ public class CleanUpAclExtension
     @Override
     public void deleteById(Serializable id) throws EntityNotFoundException {
         getNext().deleteById(id);
-        aclPermissionService.deleteAclOfEntity(getEntityClass(),id,deleteCascade);
+        rapidAclService.deleteAclOfEntity(getEntityClass(),id,deleteCascade);
     }
 
 

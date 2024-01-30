@@ -20,7 +20,7 @@ import com.github.vincemann.springrapid.limitsaves.LimitActionsExtension;
          }
 
          @Autowired
-         public void injectLimitSignupsExtension(LimitSignupsExtension limitSignupsExtension) {
+         public void setLimitSignupsExtension(LimitSignupsExtension limitSignupsExtension) {
             this.limitSignupsExtension = limitSignupsExtension;
          }
 

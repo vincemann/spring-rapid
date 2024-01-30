@@ -61,7 +61,7 @@ public class MergeUpdateStrategyImpl implements MergeUpdateStrategy {
     }
 
     @Autowired
-    public void injectCoreProperties(CoreProperties coreProperties) {
+    public void setCoreProperties(CoreProperties coreProperties) {
         this.coreProperties = coreProperties;
     }
 }

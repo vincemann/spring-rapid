@@ -6,48 +6,51 @@ import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerCreatesPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerUpdatesPetDto;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
-import com.github.vincemann.springrapid.acldemo.service.PetService;
-import com.github.vincemann.springrapid.core.controller.dto.map.context.CrudDtoMappingContextBuilder;
+import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
-import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappings;
-import com.github.vincemann.springrapid.core.sec.Roles;
+import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
 import org.springframework.stereotype.Controller;
+
+import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
 
 
 @Controller
-public class PetController extends SecuredCrudController<Pet, Long, PetService> {
+public class PetController extends SecuredCrudController<Pet, Long> {
 
     @Override
-    protected DtoMappings provideDtoMappingContext(CrudDtoMappingContextBuilder builder) {
-        return builder
+    protected void configureDtoMappings(DtoMappingsBuilder builder) {
 
-                .withRoles(MyRoles.OWNER)
-                .withAllPrincipals()
-                .forEndpoint(getCreateUrl(),Direction.REQUEST, OwnerCreatesPetDto.class)
-                .forEndpoint(getCreateUrl(),Direction.RESPONSE, FullPetDto.class)
+        builder.when(roles(AuthRoles.ADMIN))
+                        .thenReturn(FullPetDto.class);
 
+        builder.when(endpoint(getCreateUrl())
+                        .and(roles(MyRoles.OWNER))
+                        .and(direction(Direction.REQUEST)))
+                .thenReturn(OwnerCreatesPetDto.class);
 
-                .withRoles(MyRoles.OWNER)
-//                .withPrincipal(DtoRequestInfo.Principal.OWN)
-                .withAllPrincipals()
-                .forEndpoint(getUpdateUrl(), Direction.REQUEST, OwnerUpdatesPetDto.class)
-
-                .withRoles(MyRoles.OWNER)
-//                .withPrincipal(DtoRequestInfo.Principal.OWN)
-                .withAllPrincipals()
-                .forResponse(FullPetDto.class)
-
-                .withRoles(MyRoles.VET)
-                .withAllPrincipals()
-                .forEndpoint(getUpdateUrl(), Direction.REQUEST, FullPetDto.class)
-                .forResponse(FullPetDto.class)
+        builder.when(endpoint(getCreateUrl())
+                        .and(roles(MyRoles.OWNER))
+                        .and(direction(Direction.RESPONSE)))
+                .thenReturn(FullPetDto.class);
 
 
+        builder.when(endpoint(getUpdateUrl())
+                        .and(roles(MyRoles.OWNER))
+                        .and(direction(Direction.REQUEST)))
+                .thenReturn(OwnerUpdatesPetDto.class);
 
-                .withRoles(Roles.ADMIN)
-                .withAllPrincipals()
-                .forAll(FullPetDto.class)
+        builder.when(roles(MyRoles.OWNER)
+                        .and(direction(Direction.RESPONSE)))
+                .thenReturn(FullPetDto.class);
 
-                .build();
+        builder.when(endpoint(getUpdateUrl())
+                        .and(roles(MyRoles.VET))
+                        .and(direction(Direction.REQUEST)))
+                .thenReturn(FullPetDto.class);
+
+        builder.when(roles(MyRoles.VET)
+                        .and(direction(Direction.RESPONSE)))
+                .thenReturn(FullPetDto.class);
+
     }
 }

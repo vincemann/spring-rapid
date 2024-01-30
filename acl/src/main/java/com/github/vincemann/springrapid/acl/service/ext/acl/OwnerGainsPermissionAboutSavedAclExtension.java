@@ -25,7 +25,7 @@ public class OwnerGainsPermissionAboutSavedAclExtension
     }
 
     @Autowired
-    public void injectDelegatingOwnerLocator(DelegatingOwnerLocator delegatingOwnerLocator) {
+    public void setDelegatingOwnerLocator(DelegatingOwnerLocator delegatingOwnerLocator) {
         this.delegatingOwnerLocator = delegatingOwnerLocator;
     }
 
@@ -39,7 +39,7 @@ public class OwnerGainsPermissionAboutSavedAclExtension
             throw new BadEntityException("Owner not found for entity: " + saved + " which is needed to give acl permission for");
         }
         for (Permission permission : permissions) {
-            aclPermissionService.savePermissionForUserOverEntity(optionalOwner.get(),saved, permission);
+            rapidAclService.savePermissionForUserOverEntity(optionalOwner.get(),saved, permission);
         }
         return saved;
     }

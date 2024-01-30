@@ -1,5 +1,6 @@
-package com.github.vincemann.springrapid.core.service.pass;
+package com.github.vincemann.springrapid.core.service;
 
+import com.github.vincemann.springrapid.core.service.pass.BcryptRapidPasswordEncoder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

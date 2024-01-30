@@ -22,7 +22,7 @@ public class AuthenticatedGainsPermissionAboutSavedAclExtension extends AclExten
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
         IdentifiableEntity saved = getNext().save(entity);
-        aclPermissionService.savePermissionForAuthenticatedOverEntity(saved, permissions);
+        rapidAclService.savePermissionForAuthenticatedOverEntity(saved, permissions);
         return saved;
     }
 }

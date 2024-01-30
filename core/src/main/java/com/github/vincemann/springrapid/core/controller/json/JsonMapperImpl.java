@@ -38,7 +38,7 @@ public class JsonMapperImpl implements JsonMapper {
 
 
     @Autowired
-    public void injectObjectMapper(ObjectMapper objectMapper) {
+    public void setObjectMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 }

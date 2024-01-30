@@ -38,12 +38,12 @@ public abstract class AuthAuditorAwareImpl<ID extends Serializable>
 	}
 
 	@Autowired
-	public void injectSecurityContext(RapidSecurityContext securityContext) {
+	public void setSecurityContext(RapidSecurityContext securityContext) {
 		this.securityContext = securityContext;
 	}
 
 	@Autowired
-	public void injectIdIdConverter(IdConverter<ID> idIdConverter) {
+	public void setIdIdConverter(IdConverter<ID> idIdConverter) {
 		this.idConverter = idIdConverter;
 	}
 }

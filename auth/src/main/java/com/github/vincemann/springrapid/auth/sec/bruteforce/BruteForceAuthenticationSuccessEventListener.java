@@ -17,7 +17,7 @@ public class BruteForceAuthenticationSuccessEventListener implements Application
     }
 
     @Autowired
-    public void injectLoginAttemptService(LoginAttemptService loginAttemptService) {
+    public void setLoginAttemptService(LoginAttemptService loginAttemptService) {
         this.loginAttemptService = loginAttemptService;
     }
 }

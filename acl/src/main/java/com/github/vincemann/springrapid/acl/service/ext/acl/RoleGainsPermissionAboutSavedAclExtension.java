@@ -27,7 +27,7 @@ public class RoleGainsPermissionAboutSavedAclExtension extends AclExtension<Crud
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
         IdentifiableEntity saved = getNext().save(entity);
         for (Permission permission : permissions) {
-            aclPermissionService.savePermissionForRoleOverEntity(saved,role, permission);
+            rapidAclService.savePermissionForRoleOverEntity(saved,role, permission);
         }
         return saved;
     }

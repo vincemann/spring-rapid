@@ -38,7 +38,7 @@ public class AuthOwnerLocator implements OwnerLocator<AuditingEntity> {
     }
 
     @Autowired
-    public void injectUserService(UserService userService) {
+    public void setUserService(UserService userService) {
         this.userService = userService;
     }
 }

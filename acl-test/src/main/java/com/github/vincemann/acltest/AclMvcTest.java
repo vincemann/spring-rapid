@@ -31,7 +31,7 @@ public abstract class AclMvcTest extends AbstractMvcTest {
     }
 
     @Autowired
-    public void injectAclCache(AclCache aclCache) {
+    public void setAclCache(AclCache aclCache) {
         this.aclCache = aclCache;
     }
 }

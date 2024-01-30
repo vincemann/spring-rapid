@@ -27,7 +27,7 @@ public class UserGainsAdminPermissionAboutSavedContainedUserAclExtension
         UserAwareEntity saved = getNext().save(entity);
         String user = saved.getAuthenticationName();
         User containedUser = saved.getUser();
-        aclPermissionService.savePermissionForUserOverEntity(user,containedUser, BasePermission.ADMINISTRATION);
+        rapidAclService.savePermissionForUserOverEntity(user,containedUser, BasePermission.ADMINISTRATION);
         return saved;
     }
 }

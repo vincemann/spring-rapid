@@ -41,7 +41,7 @@ public class JwtAuthorizationTokenServiceImpl extends AbstractJwtAuthorizationTo
 
     @Lazy
     @Autowired
-    public void injectUserService(UserService userService) {
+    public void setUserService(UserService userService) {
         this.userService = userService;
     }
 }

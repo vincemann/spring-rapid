@@ -56,17 +56,17 @@ public abstract class AbstractJwtAuthorizationTokenService
     }
 
     @Autowired
-    public void injectJwsTokenService(JwsTokenService jwsTokenService) {
+    public void setJwsTokenService(JwsTokenService jwsTokenService) {
         this.jwsTokenService = jwsTokenService;
     }
 
     @Autowired
-    public void injectJwtPrincipalConverter(JwtPrincipalConverter jwtPrincipalConverter) {
+    public void setJwtPrincipalConverter(JwtPrincipalConverter jwtPrincipalConverter) {
         this.jwtPrincipalConverter = jwtPrincipalConverter;
     }
 
     @Autowired
-    public void injectProperties(AuthProperties properties) {
+    public void setProperties(AuthProperties properties) {
         this.properties = properties;
     }
 }

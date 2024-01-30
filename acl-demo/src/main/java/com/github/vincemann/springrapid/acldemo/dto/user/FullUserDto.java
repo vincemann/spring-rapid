@@ -1,15 +1,13 @@
 package com.github.vincemann.springrapid.acldemo.dto.user;
 
-import com.github.vincemann.springrapid.acldemo.dto.abs.MyIdDto;
-import com.github.vincemann.springrapid.acldemo.model.abs.MyIdentifiableEntity;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.dto.IdAwareDto;
 import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter @Setter @ToString @NoArgsConstructor
-public class FullUserDto extends MyIdDto<Long> {
+public class FullUserDto extends IdAwareDto<Long> {
     private String uuid;
     private String contactInformation;
     private String password;

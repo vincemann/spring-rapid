@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * No exact Permission match is needed, if ADMIN permission is given.
- * Otherwise exactly like {@link DefaultPermissionGrantingStrategy}.
+ * Otherwise same as {@link DefaultPermissionGrantingStrategy}.
  */
 @Slf4j
 public class AdminDefaultPermissionGrantingStrategy extends DefaultPermissionGrantingStrategy {
@@ -138,7 +138,7 @@ public class AdminDefaultPermissionGrantingStrategy extends DefaultPermissionGra
     }
 
 //    @Autowired
-//    public void injectPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
+//    public void setPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
 //        this.permissionStringConverter = permissionStringConverter;
 //    }
 }

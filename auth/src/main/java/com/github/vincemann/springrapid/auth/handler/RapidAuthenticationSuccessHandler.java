@@ -60,17 +60,17 @@ public class RapidAuthenticationSuccessHandler
     }
 
     @Autowired
-	public void injectProperties(CoreProperties properties) {
+	public void setProperties(CoreProperties properties) {
 		this.properties = properties;
 	}
 
 	@Autowired
-	public void injectUserService(UserService userService) {
+	public void setUserService(UserService userService) {
 		this.userService = userService;
 	}
 	
 	@Autowired
-	public void injectHttpTokenService(HttpTokenService httpTokenService) {
+	public void setHttpTokenService(HttpTokenService httpTokenService) {
 		this.httpTokenService = httpTokenService;
 	}
 }

@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 /**
  * Service that does not have restrictions from {@link Secured}, realized with {@link com.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule}s,
  * but manages Acl information.
- * This is used for dependency injection purposes.
+ * This is used for dependency setion purposes.
  */
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)

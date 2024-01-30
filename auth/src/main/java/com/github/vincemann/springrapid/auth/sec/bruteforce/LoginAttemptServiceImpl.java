@@ -54,7 +54,7 @@ public class LoginAttemptServiceImpl implements LoginAttemptService{
     }
 
     @Autowired
-    public void injectAuthProperties(AuthProperties authProperties) {
+    public void setAuthProperties(AuthProperties authProperties) {
         this.authProperties = authProperties;
     }
 

@@ -196,31 +196,31 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 	@Autowired
-	public void injectHttpTokenService(HttpTokenService httpTokenService) {
+	public void setHttpTokenService(HttpTokenService httpTokenService) {
 		this.httpTokenService = httpTokenService;
 	}
 
 	@Autowired
-	public void injectAuthorizationTokenService(AuthorizationTokenService<AuthAuthenticatedPrincipal> authorizationTokenService) {
+	public void setAuthorizationTokenService(AuthorizationTokenService authorizationTokenService) {
 		this.authorizationTokenService = authorizationTokenService;
 	}
 
 	@Autowired
-	public void injectSecurityContext(RapidSecurityContext<AuthAuthenticatedPrincipal> securityContext) {
+	public void setSecurityContext(RapidSecurityContext securityContext) {
 		this.securityContext = securityContext;
 	}
 
 	@Autowired
-	public void injectProperties(AuthProperties properties) {
+	public void setProperties(AuthProperties properties) {
 		this.properties = properties;
 	}
 
 	@Autowired
-	public void injectAuthenticationSuccessHandler(RapidAuthenticationSuccessHandler authenticationSuccessHandler) {
+	public void setAuthenticationSuccessHandler(RapidAuthenticationSuccessHandler authenticationSuccessHandler) {
 		this.authenticationSuccessHandler = authenticationSuccessHandler;
 	}
 	@Autowired
-	public void injectLoginAttemptService(LoginAttemptService loginAttemptService) {
+	public void setLoginAttemptService(LoginAttemptService loginAttemptService) {
 		this.loginAttemptService = loginAttemptService;
 	}
 
