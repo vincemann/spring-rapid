@@ -1,7 +1,7 @@
 spring:
 
   # Active profile
-  profiles.active: dev,service,web
+  profiles.active: dev
 
   jpa:
     hibernate:
