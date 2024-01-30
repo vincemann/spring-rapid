@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.handler.RapidAuthenticationSuccessHandler;
 import com.github.vincemann.springrapid.auth.sec.JwtAuthenticationFilter;
 import com.github.vincemann.springrapid.auth.sec.bruteforce.LoginAttemptService;
@@ -31,8 +30,8 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	protected AuthProperties properties;
 	protected HttpTokenService httpTokenService;
-	protected AuthorizationTokenService<AuthAuthenticatedPrincipal> authorizationTokenService;
-	protected RapidSecurityContext<AuthAuthenticatedPrincipal> securityContext;
+	protected AuthorizationTokenService authorizationTokenService;
+	protected RapidSecurityContext securityContext;
 	protected RapidAuthenticationSuccessHandler authenticationSuccessHandler;
 	protected LoginAttemptService loginAttemptService;
 

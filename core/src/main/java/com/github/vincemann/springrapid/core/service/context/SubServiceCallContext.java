@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
  * Is only used as a last resort for inter service component communication.
  */
 @NoArgsConstructor
-public class SubServiceCallContext extends ServiceCallContext {
+public class SubServiceCallContext extends AbstractServiceCallContext {
 
 
 }

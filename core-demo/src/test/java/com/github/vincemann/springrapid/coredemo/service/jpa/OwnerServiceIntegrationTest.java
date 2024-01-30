@@ -18,10 +18,7 @@ import java.util.Optional;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
 import static com.github.vincemann.springrapid.coredemo.service.jpa.JpaOwnerService.OWNER_OF_THE_YEARS_NAME;
-import static com.github.vincemann.springrapid.coretest.service.ExistenceMatchers.notPresentInDatabase;
 import static com.github.vincemann.ezcompare.PropertyMatchers.propertyAssert;
-import static com.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.*;
-import static com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder.*;
 
 
 

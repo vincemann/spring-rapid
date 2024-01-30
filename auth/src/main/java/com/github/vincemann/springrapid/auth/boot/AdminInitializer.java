@@ -26,7 +26,7 @@ public class AdminInitializer implements CommandLineRunner {
 
     private UserService<AbstractUser<Serializable>, Serializable> userService;
     private AuthProperties authProperties;
-    private RapidSecurityContext<?> securityContext;
+    private RapidSecurityContext securityContext;
 
 
     @Transactional
@@ -83,7 +83,7 @@ public class AdminInitializer implements CommandLineRunner {
     }
 
     @Autowired
-    public void setSecurityContext(RapidSecurityContext<?> securityContext) {
+    public void setSecurityContext(RapidSecurityContext securityContext) {
         this.securityContext = securityContext;
     }
 }

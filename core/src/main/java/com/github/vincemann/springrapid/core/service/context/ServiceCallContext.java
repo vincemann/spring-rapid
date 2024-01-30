@@ -13,19 +13,7 @@ import java.util.Map;
  * For a shorter life time of one sub service call see {@link SubServiceCallContext}.
  */
 @NoArgsConstructor
-public abstract class ServiceCallContext {
+public class ServiceCallContext extends AbstractServiceCallContext{
 
-    protected Map<String,Object> values = new HashMap<>();
 
-    public void setValue(String key, Object value) {
-        values.put(key,value);
-    }
-
-    public <T> T getValue(String key) {
-        return (T) values.get(key);
-    }
-
-    public void clearValue(String key) {
-        values.remove(key);
-    }
 }

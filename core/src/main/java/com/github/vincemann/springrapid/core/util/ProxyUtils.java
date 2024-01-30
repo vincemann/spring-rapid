@@ -25,8 +25,8 @@ public class ProxyUtils {
         }
     }
 
-    public static <S extends CrudService<?,?>> ExtensionProxy<S> getExtensionProxy(S service){
-        return (ExtensionProxy<S>) Proxy.getInvocationHandler(AopTestUtils.getUltimateTargetObject(service));
+    public static <S extends CrudService> ExtensionProxy getExtensionProxy(S service){
+        return (ExtensionProxy) Proxy.getInvocationHandler(AopTestUtils.getUltimateTargetObject(service));
     }
 
     public static boolean isJDKProxy(Object obj) {
