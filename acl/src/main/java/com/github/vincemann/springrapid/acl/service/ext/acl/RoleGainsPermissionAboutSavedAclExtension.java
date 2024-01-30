@@ -9,7 +9,7 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.transaction.annotation.Transactional;
 
 
-public class RoleGainsPermissionAboutSavedAclExtension extends AbstractAclExtension<CrudService>
+public class RoleGainsPermissionAboutSavedAclExtension extends AclExtension<CrudService>
         implements CrudServiceExtension<CrudService> {
 
 

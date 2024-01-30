@@ -1,10 +1,9 @@
 package com.github.vincemann.springrapid.auth.config;
 
-import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.sec.*;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.JwtAuthorizationTokenServiceImpl;
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -17,14 +16,8 @@ public class RapidAuthSecurityAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(AuthorizationTokenService.class)
-    public AuthorizationTokenService<AuthAuthenticatedPrincipalImpl> authorizationTokenService(){
+    public AuthorizationTokenService<AuthAuthenticatedPrincipal> authorizationTokenService(){
         return new JwtAuthorizationTokenServiceImpl();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(RapidSecurityContext.class)
-    public RapidSecurityContext<?> rapidSecurityContext(){
-        return new RapidAuthSecurityContext();
     }
 
 
@@ -32,15 +25,15 @@ public class RapidAuthSecurityAutoConfiguration {
     // if user wishes to create AuthPrincipal differently or with diff subtypes he can define own bean
     @Bean
     @ConditionalOnMissingBean(AuthenticatedPrincipalFactory.class)
-    public AuthenticatedPrincipalFactory<?,?> authenticatedPrincipalFactory(){
-        return new AuthAuthenticatedPrincipalFactory<>();
+    public AuthenticatedPrincipalFactory authenticatedPrincipalFactory(){
+        return new AuthenticatedPrincipalFactoryImpl();
     }
 
 
     @Bean
-    @ConditionalOnMissingBean(JwtClaimsToPrincipalConverter.class)
-    public JwtClaimsToPrincipalConverter<AuthAuthenticatedPrincipalImpl> jwtClaimsPrincipalConverter(){
-        return new JwtClaimsToPrincipalConverterImpl();
+    @ConditionalOnMissingBean(JwtPrincipalConverter.class)
+    public JwtPrincipalConverter<AuthAuthenticatedPrincipal> jwtClaimsPrincipalConverter(){
+        return new JwtPrincipalConverterImpl();
     }
 
     @Bean

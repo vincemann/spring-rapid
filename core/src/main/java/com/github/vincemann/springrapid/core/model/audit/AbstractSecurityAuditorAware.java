@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.model.audit;
 
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
-import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,7 +20,7 @@ public abstract class AbstractSecurityAuditorAware<Id extends Serializable> exte
             return null;
         }
 
-        AuthenticatedPrincipalImpl principal = (AuthenticatedPrincipalImpl) authentication.getPrincipal();
+        RapidPrincipal principal = (RapidPrincipal) authentication.getPrincipal();
         if (principal == null){
             return null;
         }
@@ -28,8 +28,7 @@ public abstract class AbstractSecurityAuditorAware<Id extends Serializable> exte
         if (principal.getId() == null){
             return null;
         }
-        Id id = idIdConverter.toId(principal.getId());
-        return id;
+        return idIdConverter.toId(principal.getId());
     }
 
 

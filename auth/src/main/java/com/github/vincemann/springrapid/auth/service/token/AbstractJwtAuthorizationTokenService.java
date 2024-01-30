@@ -3,10 +3,10 @@ package com.github.vincemann.springrapid.auth.service.token;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.sec.JwtClaimsToPrincipalConverter;
+import com.github.vincemann.springrapid.auth.sec.JwtPrincipalConverter;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
-import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,20 +17,20 @@ import static com.github.vincemann.springrapid.auth.util.RapidJwt.AUTH_CLAIM;
 import static com.github.vincemann.springrapid.auth.util.RapidJwt.create;
 
 @Slf4j
-public abstract class AbstractJwtAuthorizationTokenService<P extends AuthenticatedPrincipalImpl>
-        implements AuthorizationTokenService<P>, AopLoggable {
+public abstract class AbstractJwtAuthorizationTokenService
+        implements AuthorizationTokenService, AopLoggable {
 
     private static final String PRINCIPAL_CLAIMS_KEY = "rapid-principal";
 
 
     private JwsTokenService jwsTokenService;
-    private JwtClaimsToPrincipalConverter<P> jwtPrincipalConverter;
+    private JwtPrincipalConverter jwtPrincipalConverter;
     private AuthProperties properties;
 
 
     @LogInteraction
     @Override
-    public String createToken(P principal) {
+    public String createToken(RapidPrincipal principal) {
         Map<String, Object> principalClaims = jwtPrincipalConverter.toClaims(principal);
         JWTClaimsSet claims = create(AUTH_CLAIM,
                 principal.getName(),
@@ -43,15 +43,15 @@ public abstract class AbstractJwtAuthorizationTokenService<P extends Authenticat
 
     @LogInteraction
     @Override
-    public P parseToken(String token) throws BadTokenException {
+    public RapidPrincipal parseToken(String token) throws BadTokenException {
         JWTClaimsSet jwtClaimsSet = jwsTokenService.parseToken(token);
         Map<String, Object> principalClaims = (Map<String, Object>) jwtClaimsSet.getClaim(PRINCIPAL_CLAIMS_KEY);
-        P principal = jwtPrincipalConverter.toPrincipal(principalClaims);
+        RapidPrincipal principal = jwtPrincipalConverter.toPrincipal(principalClaims);
         verifyToken(jwtClaimsSet, principal);
         return principal;
     }
 
-    public void verifyToken(JWTClaimsSet claims, P principal) {
+    public void verifyToken(JWTClaimsSet claims, RapidPrincipal principal) {
         RapidJwt.validateNotExpired(claims);
     }
 
@@ -61,7 +61,7 @@ public abstract class AbstractJwtAuthorizationTokenService<P extends Authenticat
     }
 
     @Autowired
-    public void injectJwtPrincipalConverter(JwtClaimsToPrincipalConverter<P> jwtPrincipalConverter) {
+    public void injectJwtPrincipalConverter(JwtPrincipalConverter jwtPrincipalConverter) {
         this.jwtPrincipalConverter = jwtPrincipalConverter;
     }
 

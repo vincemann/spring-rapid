@@ -1,8 +1,7 @@
-package com.github.vincemann.acltest.controller;
+package com.github.vincemann.acltest;
 
 import com.github.vincemann.acltest.ClearAclCacheTestExecutionListener;
-
-import com.github.vincemann.springrapid.coretest.controller.integration.MvcIntegrationTest;
+import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.model.AclCache;
@@ -18,7 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
         mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
 )
 @Sql(scripts = "classpath:/remove-acl-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public abstract class AclMvcIntegrationTest extends MvcIntegrationTest {
+public abstract class AclMvcTest extends AbstractMvcTest {
 
     private AclCache aclCache;
 

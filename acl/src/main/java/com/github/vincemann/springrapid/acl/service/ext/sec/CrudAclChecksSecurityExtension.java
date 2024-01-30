@@ -18,7 +18,7 @@ import java.util.Set;
  */
 @Transactional
 public class CrudAclChecksSecurityExtension
-        extends AbstractSecurityExtension<CrudService>
+        extends SecurityExtension<CrudService>
                 implements CrudServiceExtension<CrudService> {
 
 

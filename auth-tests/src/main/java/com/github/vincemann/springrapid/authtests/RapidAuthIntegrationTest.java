@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.acltest.controller.AclMvcIntegrationTest;
+import com.github.vincemann.acltest.AclMvcTest;
 import com.github.vincemann.springrapid.acl.proxy.Acl;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.config.RapidAdminAutoConfiguration;
@@ -12,7 +12,7 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
-import com.github.vincemann.springrapid.authtest.controller.template.UserControllerTestTemplate;
+import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.coretest.util.TransactionalTestUtil;
@@ -64,7 +64,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Slf4j
 // dont do like that because its db impl specific - use service
 //@Sql(scripts = "classpath:/remove-user.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public abstract class RapidAuthIntegrationTest extends AclMvcIntegrationTest {
+public abstract class RapidAuthIntegrationTest extends AclMvcTest {
 
 
 

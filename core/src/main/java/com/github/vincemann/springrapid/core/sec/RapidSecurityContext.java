@@ -12,28 +12,25 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.*;
 
-/**
- * Wrapper for Springs {@link SecurityContext#getAuthentication()} in a strongly typed manner.
- * @param <P> Principal Type
- */
 @LogInteraction(Severity.TRACE)
-public interface RapidSecurityContext<P extends AuthenticatedPrincipalImpl>
+public interface RapidSecurityContext
         extends AopLoggable {
 
     @LogInteraction(Severity.DEBUG)
     @CustomToString(key = "arg1", toStringMethod = "shortToString")
-    P login(P principal);
+    RapidPrincipal login(RapidPrincipal principal);
+
 
     @LogInteraction(Severity.DEBUG)
     @CustomToString(key = "ret", toStringMethod = "shortToString")
-    P currentPrincipal();
+    RapidPrincipal currentPrincipal();
 
     public static void logout(){
         SecurityContextHolder.clearContext();
     }
 
     //Convenience methods that could all be realized by using login
-    void runAs(P principal, Runnable runnable);
+    void runAs(RapidPrincipal principal, Runnable runnable);
     public void runWithRoles(Set<String> roles, Runnable runnable);
     public void runAuthenticated(Runnable runnable);
     public void runAsAdmin(Runnable privRunnable);

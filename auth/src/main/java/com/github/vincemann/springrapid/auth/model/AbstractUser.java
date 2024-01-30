@@ -15,9 +15,9 @@ import java.util.Set;
 @Getter @Setter
 @MappedSuperclass
 @AllArgsConstructor
-public class AbstractUser<ID extends Serializable>
-	extends AuditingEntity<ID>
-		implements AuthenticatingEntity<ID>
+public class AbstractUser<Id extends Serializable>
+	extends AuditingEntity<Id>
+		implements AuthenticatingEntity<Id>
 {
 	public static final int CONTACT_INFORMATION_MAX = 250;
 

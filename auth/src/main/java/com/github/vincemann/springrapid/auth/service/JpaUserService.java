@@ -8,10 +8,10 @@ import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
-import com.github.vincemann.springrapid.auth.service.validation.PasswordValidator;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
+import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
@@ -38,6 +38,8 @@ import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.util.*;
 
+import static com.github.vincemann.springrapid.auth.util.PrincipalUtils.isAnon;
+
 /**
  * Note:
  * If you extend from this class and annotate with @{@link org.springframework.stereotype.Service} or @{@link org.springframework.stereotype.Component}
@@ -60,8 +62,8 @@ public abstract class JpaUserService
     public static final String VERIFY_CONTACT_INFORMATION_AUDIENCE = "verify";
     public static final String FORGOT_PASSWORD_AUDIENCE = "forgot-password";
 
-    private AuthorizationTokenService<AuthAuthenticatedPrincipalImpl> authorizationTokenService;
-    private RapidSecurityContext<AuthAuthenticatedPrincipalImpl> securityContext;
+    private AuthorizationTokenService authorizationTokenService;
+    private RapidSecurityContext securityContext;
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
     private RapidPasswordEncoder passwordEncoder;
     private AuthProperties properties;
@@ -90,15 +92,12 @@ public abstract class JpaUserService
 
     @Override
     public Map<String, Object> getContext() {
-
-        // make the context
-        Map<String, Object> context = new HashMap<String, Object>(3);
-        context.put("reCaptchaSiteKey", properties.getRecaptcha().getSitekey());
+        Map<String, Object> context = new HashMap<String, Object>(2);
         context.put("shared", properties.getShared());
-        AuthAuthenticatedPrincipalImpl principal = securityContext.currentPrincipal();
+        RapidPrincipal principal = securityContext.currentPrincipal();
         if (principal != null) {
-            if (!principal.isAnon()) {
-                AuthAuthenticatedPrincipalImpl withoutPw = new AuthAuthenticatedPrincipalImpl(principal);
+            if (!isAnon(principal)) {
+                RapidPrincipal withoutPw = new RapidPrincipal(principal);
                 withoutPw.setPassword(null);
                 context.put("user", withoutPw);
             }
@@ -578,7 +577,7 @@ public abstract class JpaUserService
 
     @Override
     public String createNewAuthToken() throws EntityNotFoundException {
-        return createNewAuthToken(securityContext.currentPrincipal().getContactInformation());
+        return createNewAuthToken(securityContext.currentPrincipal().getName());
     }
 
     @Transactional
@@ -643,11 +642,11 @@ public abstract class JpaUserService
 
 
 
-    protected AuthorizationTokenService<AuthAuthenticatedPrincipalImpl> getAuthorizationTokenService() {
+    protected AuthorizationTokenService getAuthorizationTokenService() {
         return authorizationTokenService;
     }
 
-    protected RapidSecurityContext<AuthAuthenticatedPrincipalImpl> getSecurityContext() {
+    protected RapidSecurityContext getSecurityContext() {
         return securityContext;
     }
 
@@ -676,12 +675,12 @@ public abstract class JpaUserService
 //    }
 
     @Autowired
-    public void injectAuthorizationTokenService(AuthorizationTokenService<AuthAuthenticatedPrincipalImpl> authorizationTokenService) {
+    public void injectAuthorizationTokenService(AuthorizationTokenService authorizationTokenService) {
         this.authorizationTokenService = authorizationTokenService;
     }
 
     @Autowired
-    public void injectSecurityContext(RapidSecurityContext<AuthAuthenticatedPrincipalImpl> securityContext) {
+    public void injectSecurityContext(RapidSecurityContext securityContext) {
         this.securityContext = securityContext;
     }
 
@@ -721,10 +720,5 @@ public abstract class JpaUserService
         this.passwordValidator = passwordValidator;
     }
 
-//    @Lazy
-//    @Autowired
-//    public void injectUserService(AbstractUserService<U, ID, R> userService) {
-//        this.userService = userService;
-//    }
 }
 

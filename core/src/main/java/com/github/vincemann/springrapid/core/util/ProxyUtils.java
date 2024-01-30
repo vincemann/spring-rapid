@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.util;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import org.hibernate.Hibernate;
@@ -34,7 +34,7 @@ public class ProxyUtils {
                 Proxy.getInvocationHandler(obj) != null;
     }
     public static boolean isRootService(Object target) {
-        if (target instanceof AbstractServiceExtension)
+        if (target instanceof BasicServiceExtension)
             return false;
         return !Proxy.isProxyClass(target.getClass()) || Proxy.getInvocationHandler(target) == null;
     }

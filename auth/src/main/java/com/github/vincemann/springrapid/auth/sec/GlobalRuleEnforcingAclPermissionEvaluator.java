@@ -19,12 +19,12 @@ import java.util.List;
 public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermissionEvaluator {
 
     private List<GlobalSecurityRule> globalSecurityRules = new ArrayList<>();
-    private RapidAclSecurityContext<?> securityContext;
+    private RapidAclSecurityContext securityContext;
 
 
 
 
-    public GlobalRuleEnforcingAclPermissionEvaluator(AclService aclService, List<GlobalSecurityRule> globalSecurityRules, RapidAclSecurityContext<?> securityContext) {
+    public GlobalRuleEnforcingAclPermissionEvaluator(AclService aclService, List<GlobalSecurityRule> globalSecurityRules, RapidAclSecurityContext securityContext) {
         super(aclService);
         this.globalSecurityRules = globalSecurityRules;
         this.securityContext = securityContext;

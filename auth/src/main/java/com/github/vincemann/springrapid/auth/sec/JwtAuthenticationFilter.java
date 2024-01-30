@@ -1,11 +1,12 @@
 package com.github.vincemann.springrapid.auth.sec;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
 import com.github.vincemann.springrapid.auth.service.token.JwtService;
+import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.google.common.collect.Sets;
 import lombok.AllArgsConstructor;
@@ -28,8 +29,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
 	private HttpTokenService httpTokenService;
-    private AuthorizationTokenService<AuthAuthenticatedPrincipalImpl> authorizationTokenService;
-    private RapidSecurityContext<AuthAuthenticatedPrincipalImpl> securityContext;
+    private AuthorizationTokenService authorizationTokenService;
+    private RapidSecurityContext securityContext;
     private AuthProperties authProperties;
 
 
@@ -59,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             try {
-                AuthAuthenticatedPrincipalImpl principal = authorizationTokenService.parseToken(token);
+                RapidPrincipal principal = authorizationTokenService.parseToken(token);
                 securityContext.login(principal);
                 log.debug("Token authentication successful");
                 log.debug("Principal: " + principal + " logged in");
@@ -83,7 +84,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     protected void loginAnon() {
-        AuthAuthenticatedPrincipalImpl anon = new AuthAuthenticatedPrincipalImpl("anonymousUser",null, Sets.newHashSet(AuthRoles.ANON),null);
+        RapidPrincipal anon = new RapidPrincipal("anon",null, Sets.newHashSet(AuthRoles.ANON),null);
         securityContext.login(anon);
     }
 

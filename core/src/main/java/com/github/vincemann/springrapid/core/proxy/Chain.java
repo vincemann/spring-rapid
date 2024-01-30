@@ -9,6 +9,6 @@ interface Chain{
     Object getLast();
 
 
-    Object getNext(AbstractServiceExtension<?> extension);
+    Object getNext(BasicServiceExtension<?> extension);
 
 }

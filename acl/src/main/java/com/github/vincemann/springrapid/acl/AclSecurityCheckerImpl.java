@@ -2,8 +2,8 @@ package com.github.vincemann.springrapid.acl;
 
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
-import com.github.vincemann.springrapid.core.sec.SecurityContextChecker;
+import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
+import com.github.vincemann.springrapid.core.sec.AuthorizationTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +53,7 @@ public class AclSecurityCheckerImpl
 
     @Override
     public <E extends IdentifiableEntity<? extends Serializable>, C extends Collection<E>> C filter(C toFilter, Permission permission) {
-        SecurityContextChecker.checkAuthenticated();
+        AuthorizationTemplate.assertAuthenticated();
         Collection<E> filtered = new HashSet<>();
 //        String permissionString = permissionStringConverter.convert(permission);
         for (E entity : toFilter) {
@@ -89,7 +89,7 @@ public class AclSecurityCheckerImpl
         boolean permitted = _checkPermission(id, clazz, permission);
         rapidSecurityContext.clearAclContext();
         if (!permitted) {
-            AuthenticatedPrincipalImpl principal = rapidSecurityContext.currentPrincipal();
+            RapidPrincipal principal = rapidSecurityContext.currentPrincipal();
             String permissionString = permissionStringConverter.convert(permission);
             throw new AccessDeniedException("Permission not Granted! Principal: " + principal.shortToString() +
                     " does not have Permission: " + permissionString + " for entity: {" + clazz.getSimpleName() + ", id: " + id + "}");
@@ -108,7 +108,7 @@ public class AclSecurityCheckerImpl
         if (clazz == null) {
             throw new IllegalArgumentException("Clazz must not be null");
         }
-        SecurityContextChecker.checkAuthenticated();
+        AuthorizationTemplate.assertAuthenticated();
 
 //        RapidAuthenticatedPrincipal p = rapidSecurityContext.currentPrincipal();
         String permissionString = permissionStringConverter.convert(permission);
@@ -125,7 +125,7 @@ public class AclSecurityCheckerImpl
 
         boolean permitted = _checkPermission(entity.getId(), entity.getClass(), permission);
         if (!permitted) {
-            AuthenticatedPrincipalImpl principal = rapidSecurityContext.currentPrincipal();
+            RapidPrincipal principal = rapidSecurityContext.currentPrincipal();
             String permissionString = permissionStringConverter.convert(permission);
             throw new AccessDeniedException("Permission not Granted! Principal: " + principal.shortToString() +
                     " does not have Permission: " + permissionString + " for entity: " + entity);

@@ -1,14 +1,12 @@
 package com.github.vincemann.springrapid.authtest.config;
 
-import com.github.vincemann.springrapid.authtest.controller.template.UserControllerTestTemplate;
-import com.github.vincemann.springrapid.coretest.slicing.WebTestConfig;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
-@WebTestConfig
-public class AuthControllerTestTemplateAutoConfiguration {
+@TestConfiguration
+public class RapidAuthControllerTestTemplateAutoConfiguration {
 
    @ConditionalOnMissingBean(name = "userControllerTestTemplate")
    @Bean

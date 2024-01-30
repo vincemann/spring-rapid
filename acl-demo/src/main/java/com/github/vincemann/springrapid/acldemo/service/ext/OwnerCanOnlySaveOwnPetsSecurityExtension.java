@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.service.ext;
 
-import com.github.vincemann.springrapid.acl.service.ext.sec.AbstractSecurityExtension;
+import com.github.vincemann.springrapid.acl.service.ext.sec.SecurityExtension;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
@@ -13,7 +13,7 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.security.access.AccessDeniedException;
 
 @Component
-public class OwnerCanOnlySaveOwnPetsSecurityExtension  extends AbstractSecurityExtension<PetService>
+public class OwnerCanOnlySaveOwnPetsSecurityExtension  extends SecurityExtension<PetService>
         implements GenericCrudServiceExtension<PetService, Pet,Long>
 {
 

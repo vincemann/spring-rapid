@@ -18,7 +18,7 @@ import java.io.Serializable;
  * Removes Acl's on delete, if existing.
  */
 public class CleanUpAclExtension
-        extends AbstractAclExtension<CrudService>
+        extends AclExtension<CrudService>
                 implements CrudServiceExtension<CrudService>
 {
     @Setter

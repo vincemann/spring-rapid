@@ -1,8 +1,5 @@
 package com.github.vincemann.springrapid.autobidir;
 
-import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
-import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
-import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.util.RepositoryUtil;
 import org.aspectj.lang.JoinPoint;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;

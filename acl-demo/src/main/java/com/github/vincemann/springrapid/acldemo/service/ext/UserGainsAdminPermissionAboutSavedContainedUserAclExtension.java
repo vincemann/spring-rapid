@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.service.ext;
 
-import com.github.vincemann.springrapid.acl.service.ext.acl.AbstractAclExtension;
+import com.github.vincemann.springrapid.acl.service.ext.acl.AclExtension;
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.model.abs.UserAwareEntity;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class UserGainsAdminPermissionAboutSavedContainedUserAclExtension
-        extends AbstractAclExtension<CrudService<UserAwareEntity,Long>>
+        extends AclExtension<CrudService<UserAwareEntity,Long>>
                 implements GenericCrudServiceExtension<CrudService<UserAwareEntity,Long>, UserAwareEntity,Long> {
 
     @Transactional

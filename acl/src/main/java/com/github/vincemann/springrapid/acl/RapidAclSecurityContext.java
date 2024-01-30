@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.acl;
 
-import com.github.vincemann.springrapid.core.sec.AbstractRapidSecurityContext;
-import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContextImpl;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +9,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class RapidAclSecurityContext<P extends AuthenticatedPrincipalImpl> extends AbstractRapidSecurityContext<P> {
+public class RapidAclSecurityContext extends RapidSecurityContextImpl {
     private AclEvaluationContext aclContext;
 
     public void clearAclContext(){

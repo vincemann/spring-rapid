@@ -1,9 +1,8 @@
 package com.github.vincemann.springrapid.core.proxy.annotation;
 
-import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 
 import java.lang.annotation.*;
-import java.util.Map;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -17,11 +16,11 @@ public @interface DefineProxy {
      * use either this or {@link this#extensionClasses()}, not both
      */
     String[] extensions() default {};
-    Class<? extends AbstractServiceExtension>[] extensionClasses() default {};
+    Class<? extends BasicServiceExtension>[] extensionClasses() default {};
     boolean defaultExtensionsEnabled() default true;
 
     /**
      * which default extensions should be ignored
      */
-    Class<? extends AbstractServiceExtension>[] ignoredExtensions() default {};
+    Class<? extends BasicServiceExtension>[] ignoredExtensions() default {};
 }

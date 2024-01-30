@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.proxy.annotation;
 
-import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxy;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -45,7 +45,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         //log.debug("postProcessing bean : " + beanName);
-        if (bean instanceof CrudService && !(bean instanceof AbstractServiceExtension)) {
+        if (bean instanceof CrudService && !(bean instanceof BasicServiceExtension)) {
             Object proxied = beanFactory.getBean(beanName);
             Object unwrappedBean = AopTestUtils.getUltimateTargetObject(proxied);
 
@@ -100,8 +100,8 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
 //                        internalProxy = createdInternalProxies.get(beanName);
                         internalProxy = createdInternalProxies.get(proxyName);
                         boolean defaultEnabled = proxyDefinition.get().defaultExtensionsEnabled();
-                        AbstractServiceExtension[] extensions = resolveExtensions(proxyDefinition.get())
-                                .toArray(new AbstractServiceExtension[0]);
+                        BasicServiceExtension[] extensions = resolveExtensions(proxyDefinition.get())
+                                .toArray(new BasicServiceExtension[0]);
                         if (internalProxy == null) {
                             internalProxy = new ExtensionProxyBuilder<>(lastProxiedBean)
                                     .addGenericExtensions(extensions)
@@ -286,7 +286,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         return name;
     }
 
-    protected List<AbstractServiceExtension> resolveExtensions(DefineProxy proxyDefinition){
+    protected List<BasicServiceExtension> resolveExtensions(DefineProxy proxyDefinition){
         String[] beanNameExtensions = proxyDefinition.extensions();
         Class[] classExtensions = proxyDefinition.extensionClasses();
         if (beanNameExtensions.length > 0 && classExtensions.length > 0)
@@ -300,8 +300,8 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         }
     }
 
-    protected List<AbstractServiceExtension> resolveExtensions(Class[] classExtensions) {
-        List<AbstractServiceExtension> extensions = new ArrayList<>();
+    protected List<BasicServiceExtension> resolveExtensions(Class[] classExtensions) {
+        List<BasicServiceExtension> extensions = new ArrayList<>();
         ArrayList<Class> extensionStrings = Lists.newArrayList(classExtensions);
         for (Class extensionClass : extensionStrings) {
             Object extension = null;
@@ -315,10 +315,10 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
 //            } else {
             extension = beanFactory.getBean(extensionClass);
 //            }
-            if (!(extension instanceof AbstractServiceExtension)) {
+            if (!(extension instanceof BasicServiceExtension)) {
                 throw new IllegalArgumentException("Given extension bean: " + extensionClass.getSimpleName() + " is not of Type AbstractServiceExtension");
             }
-            AbstractServiceExtension serviceExtension = (AbstractServiceExtension) extension;
+            BasicServiceExtension serviceExtension = (BasicServiceExtension) extension;
             beanFactory.autowireBean(extension);
             //beanFactory.autowireBeanProperties();
             extensions.add(serviceExtension);
@@ -327,8 +327,8 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         return extensions;
     }
 
-    protected List<AbstractServiceExtension> resolveExtensions(String[] extensionStringArr) {
-        List<AbstractServiceExtension> extensions = new ArrayList<>();
+    protected List<BasicServiceExtension> resolveExtensions(String[] extensionStringArr) {
+        List<BasicServiceExtension> extensions = new ArrayList<>();
         ArrayList<String> extensionStrings = Lists.newArrayList(extensionStringArr);
         for (String extensionString : extensionStrings) {
             Object extension = null;
@@ -342,10 +342,10 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
 //            } else {
             extension = beanFactory.getBean(extensionString);
 //            }
-            if (!(extension instanceof AbstractServiceExtension)) {
+            if (!(extension instanceof BasicServiceExtension)) {
                 throw new IllegalArgumentException("Given extension bean: " + extensionString + " is not of Type AbstractServiceExtension");
             }
-            AbstractServiceExtension serviceExtension = (AbstractServiceExtension) extension;
+            BasicServiceExtension serviceExtension = (BasicServiceExtension) extension;
             beanFactory.autowireBean(extension);
             //beanFactory.autowireBeanProperties();
             extensions.add(serviceExtension);

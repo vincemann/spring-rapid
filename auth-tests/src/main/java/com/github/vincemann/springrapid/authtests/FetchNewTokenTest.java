@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
-import com.github.vincemann.springrapid.authtest.controller.template.AbstractUserControllerTestTemplate;
+import com.github.vincemann.springrapid.authtest.AbstractUserControllerTestTemplate;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.test.web.servlet.MvcResult;

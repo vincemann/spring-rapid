@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.service.extension;
 
-import com.github.vincemann.springrapid.acl.service.ext.acl.AbstractAclExtension;
+import com.github.vincemann.springrapid.acl.service.ext.acl.AclExtension;
 import com.github.vincemann.springrapid.auth.model.AuthenticatingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
@@ -12,7 +12,7 @@ import java.io.Serializable;
 
 public class UserGainsPermissionAboutSelfAclExtension
         <E extends IdentifiableEntity<Id> & AuthenticatingEntity<Id>,Id extends Serializable>
-        extends AbstractAclExtension<CrudService<E,Id>>
+        extends AclExtension<CrudService<E,Id>>
         implements GenericCrudServiceExtension<CrudService<E,Id>,E,Id>
 {
     private Permission permission;

@@ -1,15 +1,12 @@
 package com.github.vincemann.springrapid.core.service.context;
 
-import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.JPACrudService;
-import com.github.vincemann.springrapid.core.util.EntityLocator;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 import java.util.Stack;
@@ -47,7 +44,7 @@ public class ServiceCallContextAdvice {
 //        System.err.println("SERVICE CALL CONTEXT: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
         // jdkProxies dont match, because they wont be wrapped with glibc aop proxies - so look out for most outer extension
-        if (joinPoint.getTarget() instanceof AbstractServiceExtension) {
+        if (joinPoint.getTarget() instanceof BasicServiceExtension) {
             boolean init = initGlobalContext();
             if (init){
                 initSubContext();

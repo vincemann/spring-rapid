@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.service.validation;
+package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 

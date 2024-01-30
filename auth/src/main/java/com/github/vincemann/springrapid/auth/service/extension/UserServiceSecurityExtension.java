@@ -1,16 +1,17 @@
 package com.github.vincemann.springrapid.auth.service.extension;
 
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
-import com.github.vincemann.springrapid.acl.service.ext.sec.AbstractSecurityExtension;
+import com.github.vincemann.springrapid.acl.service.ext.sec.SecurityExtension;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipalImpl;
-import com.github.vincemann.springrapid.auth.sec.AuthSecurityContextChecker;
+import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.sec.SecurityContextChecker;
+import com.github.vincemann.springrapid.core.sec.AuthorizationTemplate;
+import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.Message;
@@ -26,28 +27,32 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.util.Optional;
 
+import static com.github.vincemann.springrapid.auth.util.PrincipalUtils.isAdmin;
+
 
 @Transactional
 @Slf4j
 public class UserServiceSecurityExtension
-        extends AbstractSecurityExtension<UserService>
+        extends SecurityExtension<UserService>
             implements UserServiceExtension<UserService> {
 
 
     private UserService userService;
-    private AuthSecurityContextChecker securityContextChecker;
     private JweTokenService jweTokenService;
+
+    private RapidSecurityContext securityContext;
+
 
     @LogInteraction
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
-        securityContextChecker.checkAdmin();
+        AuthorizationTemplate.assertHasRoles(AuthRoles.ADMIN);
         return getNext().save(entity);
     }
 
     @Override
     public AbstractUser signupAdmin(AbstractUser admin) throws AlreadyRegisteredException, BadEntityException {
-        securityContextChecker.checkAdmin();
+        AuthorizationTemplate.assertHasRoles(AuthRoles.ADMIN);
         return getNext().signupAdmin(admin);
     }
 
@@ -55,26 +60,14 @@ public class UserServiceSecurityExtension
     @Override
     public AbstractUser fullUpdate(AbstractUser entity) throws BadEntityException, EntityNotFoundException {
         checkUpdatePermissions(entity);
-        // todo why getLast
-//        return getLast().fullUpdate(entity);
         return getNext().fullUpdate(entity);
     }
 
     @Override
     public AbstractUser softUpdate(AbstractUser entity) throws EntityNotFoundException, BadEntityException {
         checkUpdatePermissions(entity);
-        // todo why getLast
-//        return getLast().softUpdate(entity);
         return getNext().softUpdate(entity);
     }
-
-    // everybody must be able to do this
-//    @LogInteraction
-//    @Override
-//    public void resendVerificationMail(AbstractUser user) throws EntityNotFoundException, BadEntityException {
-//        getSecurityChecker().checkPermission(user, BasePermission.WRITE);
-//        getNext().resendVerificationMail(user);
-//    }
 
     @LogInteraction
     @Override
@@ -89,11 +82,9 @@ public class UserServiceSecurityExtension
         Optional<AbstractUser<Serializable>> oldUserOp = userService.findById(update.getId());
         VerifyEntity.isPresent(oldUserOp, update.getId(), update.getClass());
         AbstractUser oldUser = oldUserOp.get();
-        SecurityContextChecker.checkAuthenticated();
-        AuthAuthenticatedPrincipalImpl currPrincipal = securityContextChecker.getSecurityContext().currentPrincipal();
+        AuthorizationTemplate.assertAuthenticated();
+        RapidPrincipal currPrincipal = securityContext.currentPrincipal();
         checkRoleChangingPermissions(oldUser, update, currPrincipal);
-//        getProxyController().overrideDefaultExtension();
-//        return getLast().update(update, full,fieldsToRemove);
     }
 
     /**
@@ -101,9 +92,9 @@ public class UserServiceSecurityExtension
      * user cant update roles
      *
      */
-    protected void checkRoleChangingPermissions(AbstractUser<?> old, AbstractUser<?> newUser, AuthAuthenticatedPrincipalImpl currentUser) {
+    protected void checkRoleChangingPermissions(AbstractUser<?> old, AbstractUser<?> newUser, RapidPrincipal currentUser) {
         // admin tries to edit
-        if (currentUser.isAdmin() &&
+        if (isAdmin(currentUser) &&
                 !currentUser.getId().equals(old.getId().toString())) {
             return;
         } else {
@@ -166,13 +157,17 @@ public class UserServiceSecurityExtension
     @LogInteraction
     @Override
     public String createNewAuthToken(String contactInformation) throws EntityNotFoundException {
-        AuthAuthenticatedPrincipalImpl authenticated = securityContextChecker.getSecurityContext().currentPrincipal();
-        VerifyAccess.condition(authenticated.getContactInformation().equals(contactInformation) ||
-                authenticated.isAdmin(), Message.get("com.github.vincemann.notGoodAdminOrSameUser"));
+        RapidPrincipal authenticated = securityContext.currentPrincipal();
+        VerifyAccess.condition(authenticated.getName().equals(contactInformation) ||
+                isAdmin(authenticated), Message.get("com.github.vincemann.notGoodAdminOrSameUser"));
         return getNext().createNewAuthToken(contactInformation);
     }
 
 
+    @Autowired
+    public void injectSecurityContext(RapidSecurityContext securityContext) {
+        this.securityContext = securityContext;
+    }
 
     @Autowired
     public void injectUserService(UserService userService) {
@@ -180,63 +175,7 @@ public class UserServiceSecurityExtension
     }
 
     @Autowired
-    public void injectSecurityContextChecker(AuthSecurityContextChecker securityContextChecker) {
-        this.securityContextChecker = securityContextChecker;
-    }
-
-    @Autowired
     public void injectJweTokenService(JweTokenService jweTokenService) {
         this.jweTokenService = jweTokenService;
     }
-
-    //todo did not find method... problems?
-    ////@LogInteraction(level = LogInteraction.Level.TRACE)
-//    @CalledByProxy
-//    public void postAuthorizeProcessUser(AbstractUser user, AbstractUser result){
-//        //only include contactInformation if user has write permission
-//        if(!hasWritePermission(user)){
-//            result.setContactInformation(null);
-//        }
-//    }
-
-    //    @Override
-//    public Map<String, String> fetchFullToken(String authHeader) {
-//        getSecurityChecker().checkAuthenticated();
-//        return getNext().fetchFullToken(authHeader);
-//    }
-
-
-//    private boolean hasWritePermission(AbstractUser user){
-//        try {
-//            getSecurityChecker().checkPermission(user.getId(),user.getClass(), BasePermission.WRITE);
-//            return true;
-//        }catch (AccessDeniedException e){
-//            return false;
-//        }
-//    }
-
-    //    @CalledByProxy
-//    public void preAuthorizeFindByContactInformation(String contactInformation) throws EntityNotFoundException {
-//        //only include contactInformation if user has write permission
-//        Optional<AbstractUser> byContactInformation = userRepository.findByContactInformation(contactInformation);
-//        EntityUtils.checkPresent(byContactInformation,"No User found with contactInformation: " +contactInformation);
-//        getSecurityChecker().checkPermission(byContactInformation.get().getId(),byContactInformation.get().getClass(), BasePermission.WRITE);
-//    }
-
-    //this is done by mapping to specific dto
-//    @CalledByProxy
-//    public void postAuthorizeFindByContactInformation(String contactInformation, AbstractUser result){
-//        //only include contactInformation if user has write permission
-//        Optional<AbstractUser> byContactInformation = userRepository.findByContactInformation(contactInformation);
-//        byContactInformation.ifPresent(new Consumer<>() {
-//            @Override
-//            public void accept(AbstractUser o) {
-//                AbstractUser detached = JpaUtils.detach(o);
-//                if(!hasWritePermission(detached)){
-//                    result.setContactInformation(null);
-//                }
-//            }
-//        });
-//
-//    }
 }

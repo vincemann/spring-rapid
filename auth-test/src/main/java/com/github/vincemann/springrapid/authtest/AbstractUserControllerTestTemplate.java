@@ -1,14 +1,12 @@
-package com.github.vincemann.springrapid.authtest.controller.template;
+package com.github.vincemann.springrapid.authtest;
 
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.controller.dto.ResetPasswordView;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
-import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import org.mockito.ArgumentCaptor;
@@ -22,12 +20,11 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.io.Serializable;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Activate spring Security, so login endpoint and auth web config is enabled, when using this template.
@@ -44,7 +41,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
 
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
-    private RapidSecurityContext<AuthenticatedPrincipalImpl> rapidSecurityContext;
+    private RapidSecurityContext rapidSecurityContext;
     private MailSender<MailData> mailSenderMock;
 
 
@@ -268,7 +265,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     @Autowired
-    public void setRapidSecurityContext(RapidSecurityContext<AuthenticatedPrincipalImpl> rapidSecurityContext) {
+    public void setRapidSecurityContext(RapidSecurityContext rapidSecurityContext) {
         this.rapidSecurityContext = rapidSecurityContext;
     }
 

@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
 
 
 
-import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.core.util.Message;
@@ -30,14 +30,13 @@ public class RapidUserDetailsService
 		implements UserDetailsService, AopLoggable {
 
 	private UserService userService;
-	//keep it typeless...
 	private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
 
 
 	@Transactional
 	@LogInteraction
 	@Override
-	public AuthenticatedPrincipalImpl loadUserByUsername(String contactInformation) throws UsernameNotFoundException {
+	public RapidPrincipal loadUserByUsername(String contactInformation) throws UsernameNotFoundException {
 		AbstractUser<?> user;
 		try {
 			Optional<AbstractUser<?>> byContactInformation = userService.findByContactInformation(contactInformation);

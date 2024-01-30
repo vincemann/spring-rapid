@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
 
-import com.github.vincemann.springrapid.acl.service.ext.acl.AbstractAclExtension;
+import com.github.vincemann.springrapid.acl.service.ext.acl.AclExtension;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.sec.Roles;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Transactional
 public class AclUserExtension
-        extends AbstractAclExtension<UserService>
+        extends AclExtension<UserService>
             implements UserServiceExtension<UserService>
 {
 

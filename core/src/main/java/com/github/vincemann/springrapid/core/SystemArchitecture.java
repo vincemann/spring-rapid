@@ -34,7 +34,7 @@ public class SystemArchitecture {
     )
     public void ignoreHelperServiceMethods(){}
 
-    @Pointcut("!this(com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension+)")
+    @Pointcut("!this(com.github.vincemann.springrapid.core.proxy.BasicServiceExtension+)")
     public void ignoreExtensions(){}
 
     @Pointcut("!target(java.lang.reflect.Proxy)")

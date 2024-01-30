@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Component
 public class OwnerGainsPermissionAboutSavedAclExtension
-        extends AbstractAclExtension<CrudService>
+        extends AclExtension<CrudService>
         implements CrudServiceExtension<CrudService>
 {
 

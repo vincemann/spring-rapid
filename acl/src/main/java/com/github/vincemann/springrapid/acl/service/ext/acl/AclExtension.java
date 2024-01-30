@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @param <S>
  */
 @Getter
-public abstract class AbstractAclExtension<S>
+public abstract class AclExtension<S>
         extends BasicServiceExtension<S> {
 
     protected AclPermissionService aclPermissionService;

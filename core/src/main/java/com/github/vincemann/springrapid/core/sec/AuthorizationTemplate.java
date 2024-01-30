@@ -6,18 +6,18 @@ import org.springframework.security.access.AccessDeniedException;
 /**
  * Convenience wrapper for accessing data from {@link RapidSecurityContext}.
  */
-public class SecurityContextChecker {
+public class AuthorizationTemplate {
 
-    private SecurityContextChecker(){}
+    private AuthorizationTemplate(){}
 
-    public static void checkAuthenticated() throws AccessDeniedException {
+    public static void assertAuthenticated() throws AccessDeniedException {
         boolean authenticated = RapidSecurityContext.isAuthenticated();
         VerifyAccess.condition(authenticated,"No Authenticated User");
     }
 
 
-    public static void checkHasRoles(String... roles) throws AccessDeniedException {
-        checkAuthenticated();
+    public static void assertHasRoles(String... roles) throws AccessDeniedException {
+        assertAuthenticated();
         for (String required : roles) {
             if (!RapidSecurityContext.hasRole(required)){
                 throw new AccessDeniedException("User does not have requested role: " + required);
@@ -25,8 +25,8 @@ public class SecurityContextChecker {
         }
     }
 
-    public static void checkDoesNotHaveRoles(String... roles) throws AccessDeniedException {
-        checkAuthenticated();
+    public static void assertNotHasRoles(String... roles) throws AccessDeniedException {
+        assertAuthenticated();
         for (String required : roles) {
             if (RapidSecurityContext.hasRole(required)){
                 throw new AccessDeniedException("User has forbidden role: " + required);

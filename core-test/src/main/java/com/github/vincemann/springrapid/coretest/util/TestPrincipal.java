@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coretest.util;
 
-import com.github.vincemann.springrapid.core.sec.AbstractRapidSecurityContext;
-import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContextImpl;
+import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import org.assertj.core.util.Sets;
 
 import java.util.Arrays;
@@ -13,26 +13,26 @@ import java.util.HashSet;
  */
 public class TestPrincipal {
 
-    public static AuthenticatedPrincipalImpl create(String name, String... roles){
-        AuthenticatedPrincipalImpl principal = new AuthenticatedPrincipalImpl();
+    public static RapidPrincipal create(String name, String... roles){
+        RapidPrincipal principal = new RapidPrincipal();
         principal.setName(name);
-        principal.setPassword(AbstractRapidSecurityContext.TEMP_USER_PASSWORD);
+        principal.setPassword(RapidSecurityContextImpl.TEMP_USER_PASSWORD);
         principal.setRoles(Sets.newHashSet(Arrays.asList(roles)));
         return principal;
     }
 
-    public static AuthenticatedPrincipalImpl withName(String name){
-        AuthenticatedPrincipalImpl principal = new AuthenticatedPrincipalImpl();
+    public static RapidPrincipal withName(String name){
+        RapidPrincipal principal = new RapidPrincipal();
         principal.setName(name);
-        principal.setPassword(AbstractRapidSecurityContext.TEMP_USER_PASSWORD);
+        principal.setPassword(RapidSecurityContextImpl.TEMP_USER_PASSWORD);
         principal.setRoles(new HashSet<>());
         return principal;
     }
 
-    public static AuthenticatedPrincipalImpl withRoles(String... roles){
-        AuthenticatedPrincipalImpl principal = new AuthenticatedPrincipalImpl();
-        principal.setName(AbstractRapidSecurityContext.TEMP_USER_NAME);
-        principal.setPassword(AbstractRapidSecurityContext.TEMP_USER_PASSWORD);
+    public static RapidPrincipal withRoles(String... roles){
+        RapidPrincipal principal = new RapidPrincipal();
+        principal.setName(RapidSecurityContextImpl.TEMP_USER_NAME);
+        principal.setPassword(RapidSecurityContextImpl.TEMP_USER_PASSWORD);
         principal.setRoles(Sets.newHashSet(Arrays.asList(roles)));
         return principal;
     }

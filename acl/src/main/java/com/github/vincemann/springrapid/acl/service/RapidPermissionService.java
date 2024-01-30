@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.acl.service;
 
 import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.sec.Roles;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import java.util.*;
 public class RapidPermissionService implements AclPermissionService {
 
     private MutableAclService aclService;
-    private RapidSecurityContext<AuthenticatedPrincipalImpl> securityContext;
+    private RapidSecurityContext<RapidPrincipal> securityContext;
 
     //    private PermissionStringConverter permissionStringConverter;
     /**/
@@ -376,7 +376,7 @@ public class RapidPermissionService implements AclPermissionService {
     }
 
     @Autowired
-    public void injectSecurityContext(RapidSecurityContext<AuthenticatedPrincipalImpl> securityContext) {
+    public void injectSecurityContext(RapidSecurityContext<RapidPrincipal> securityContext) {
         this.securityContext = securityContext;
     }
 

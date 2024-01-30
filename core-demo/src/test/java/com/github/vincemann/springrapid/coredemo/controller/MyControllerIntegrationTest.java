@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
-import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coredemo.controller.template.OwnerControllerTestTemplate;
@@ -137,7 +137,7 @@ public class MyControllerIntegrationTest extends MvcIntegrationTest
     protected ClinicCard secondClinicCard;
 
     @Autowired
-    protected RapidSecurityContext<AuthenticatedPrincipalImpl> securityContext;
+    protected RapidSecurityContext<RapidPrincipal> securityContext;
 
     @Autowired
     protected TransactionTemplate transactionTemplate;

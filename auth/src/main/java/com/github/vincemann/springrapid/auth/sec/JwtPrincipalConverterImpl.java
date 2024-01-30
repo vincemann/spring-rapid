@@ -1,10 +1,10 @@
 package com.github.vincemann.springrapid.auth.sec;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipalImpl;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 
+import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,25 +19,24 @@ import java.util.Optional;
  * Only stores contactInformation in token and fetches user args for principal lazily
  */
 @Transactional
-public class JwtClaimsToPrincipalConverterImpl
-            implements JwtClaimsToPrincipalConverter<AuthAuthenticatedPrincipalImpl> {
+public class JwtPrincipalConverterImpl implements JwtPrincipalConverter {
 
     private UserService userService;
-    private AuthenticatedPrincipalFactory<AuthAuthenticatedPrincipalImpl,AbstractUser<?>> authenticatedPrincipalFactory;
+    private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
 
     @Autowired
-    public void setAuthenticatedPrincipalFactory(AuthenticatedPrincipalFactory<AuthAuthenticatedPrincipalImpl, AbstractUser<?>> authenticatedPrincipalFactory) {
+    public void setAuthenticatedPrincipalFactory(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {
         this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
     }
 
     @Override
-    public Map<String,Object> toClaims(AuthAuthenticatedPrincipalImpl user) {
-        return MapUtils.mapOf("contactInformation",user.getContactInformation());
+    public Map<String,Object> toClaims(RapidPrincipal user) {
+        return MapUtils.mapOf("contactInformation",user.getName());
     }
 
 
     @Override
-    public AuthAuthenticatedPrincipalImpl toPrincipal(Map<String,Object> claims) throws AuthenticationCredentialsNotFoundException {
+    public RapidPrincipal toPrincipal(Map<String,Object> claims) throws AuthenticationCredentialsNotFoundException {
         String contactInformation = (String) claims.get("contactInformation");
         if (contactInformation == null)
             throw new AuthenticationCredentialsNotFoundException("contactInformation claim of claims-set not found");

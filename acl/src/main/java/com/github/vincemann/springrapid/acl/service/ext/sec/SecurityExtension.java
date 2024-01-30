@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @see com.github.vincemann.springrapid.core.proxy.BasicServiceExtension
  */
 @Getter
-public abstract class AbstractSecurityExtension<T>
+public abstract class SecurityExtension<T>
         extends BasicServiceExtension<T> {
 
     protected AclSecurityChecker securityChecker;

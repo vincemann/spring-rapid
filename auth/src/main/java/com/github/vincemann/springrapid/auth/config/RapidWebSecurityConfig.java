@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.handler.RapidAuthenticationSuccessHandler;
 import com.github.vincemann.springrapid.auth.sec.JwtAuthenticationFilter;
 import com.github.vincemann.springrapid.auth.sec.bruteforce.LoginAttemptService;
@@ -31,8 +31,8 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	protected AuthProperties properties;
 	protected HttpTokenService httpTokenService;
-	protected AuthorizationTokenService<AuthAuthenticatedPrincipalImpl> authorizationTokenService;
-	protected RapidSecurityContext<AuthAuthenticatedPrincipalImpl> securityContext;
+	protected AuthorizationTokenService<AuthAuthenticatedPrincipal> authorizationTokenService;
+	protected RapidSecurityContext<AuthAuthenticatedPrincipal> securityContext;
 	protected RapidAuthenticationSuccessHandler authenticationSuccessHandler;
 	protected LoginAttemptService loginAttemptService;
 
@@ -201,12 +201,12 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Autowired
-	public void injectAuthorizationTokenService(AuthorizationTokenService<AuthAuthenticatedPrincipalImpl> authorizationTokenService) {
+	public void injectAuthorizationTokenService(AuthorizationTokenService<AuthAuthenticatedPrincipal> authorizationTokenService) {
 		this.authorizationTokenService = authorizationTokenService;
 	}
 
 	@Autowired
-	public void injectSecurityContext(RapidSecurityContext<AuthAuthenticatedPrincipalImpl> securityContext) {
+	public void injectSecurityContext(RapidSecurityContext<AuthAuthenticatedPrincipal> securityContext) {
 		this.securityContext = securityContext;
 	}
 

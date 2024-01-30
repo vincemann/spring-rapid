@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 
 public class NeedCreatePermissionOnParentForSaveExtension
-        extends AbstractSecurityExtension<CrudService>
+        extends SecurityExtension<CrudService>
         implements CrudServiceExtension<CrudService> {
 
 

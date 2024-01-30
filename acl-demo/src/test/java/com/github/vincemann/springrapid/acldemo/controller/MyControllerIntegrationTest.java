@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
-import com.github.vincemann.acltest.controller.AclMvcIntegrationTest;
+import com.github.vincemann.acltest.AclMvcTest;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.controller.templates.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.templates.PetControllerTestTemplate;
@@ -18,8 +18,8 @@ import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.repo.*;
 import com.github.vincemann.springrapid.acldemo.service.*;
 import com.github.vincemann.springrapid.auth.controller.dto.SignupDto;
-import com.github.vincemann.springrapid.authtest.controller.template.UserControllerTestTemplate;
-import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
+import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +41,7 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.creat
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 // add admin before each test
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class MyControllerIntegrationTest extends AclMvcIntegrationTest
+public class MyControllerIntegrationTest extends AclMvcTest
 {
 
     //Types
@@ -184,7 +184,7 @@ public class MyControllerIntegrationTest extends AclMvcIntegrationTest
     protected VisitControllerTestTemplate visitController;
 
     @Autowired
-    protected RapidSecurityContext<AuthenticatedPrincipalImpl> securityContext;
+    protected RapidSecurityContext<RapidPrincipal> securityContext;
 
 
     @Override

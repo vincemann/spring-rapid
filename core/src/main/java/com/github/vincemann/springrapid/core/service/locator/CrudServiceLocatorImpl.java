@@ -2,24 +2,20 @@ package com.github.vincemann.springrapid.core.service.locator;
 
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.ServiceBeanType;
-import com.github.vincemann.springrapid.core.util.EntityLocator;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import com.github.vincemann.springrapid.core.util.Lists;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.util.Assert;
@@ -65,7 +61,7 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationCo
 
     public void loadPrimaryServices(){
         List<String> beanNames = Lists.newArrayList(beanFactory.getBeanNamesForType(CrudService.class));
-        List<String> extensionNames = Lists.newArrayList(beanFactory.getBeanNamesForType(AbstractServiceExtension.class));
+        List<String> extensionNames = Lists.newArrayList(beanFactory.getBeanNamesForType(BasicServiceExtension.class));
 
         //skip extensions
         beanNames.removeAll(extensionNames);

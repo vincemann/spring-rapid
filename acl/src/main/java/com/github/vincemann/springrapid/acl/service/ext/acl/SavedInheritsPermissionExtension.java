@@ -17,7 +17,7 @@ import java.io.Serializable;
 @Transactional
 @Getter
 public class SavedInheritsPermissionExtension<E extends IdentifiableEntity<Id> & AclParentAware, Id extends Serializable>
-        extends AbstractAclExtension<CrudService<E, Id>>
+        extends AclExtension<CrudService<E, Id>>
         implements GenericCrudServiceExtension<CrudService<E, Id>, E, Id> {
 
     private Permission[] permissionsToInherit;

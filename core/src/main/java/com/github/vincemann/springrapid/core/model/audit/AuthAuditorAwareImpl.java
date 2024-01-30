@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.model.audit;
 
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
-import com.github.vincemann.springrapid.core.sec.AuthenticatedPrincipalImpl;
+import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import java.io.Serializable;
 public abstract class AuthAuditorAwareImpl<ID extends Serializable>
 			extends AbstractAuditorAware<ID> {
 
-	private RapidSecurityContext<?> securityContext;
+	private RapidSecurityContext securityContext;
 	private IdConverter<ID> idConverter;
 
 	public AuthAuditorAwareImpl() {
@@ -26,7 +26,7 @@ public abstract class AuthAuditorAwareImpl<ID extends Serializable>
 
 	@Override
 	protected ID currentId() {
-		AuthenticatedPrincipalImpl principal = securityContext.currentPrincipal();
+		RapidPrincipal principal = securityContext.currentPrincipal();
 		if (principal==null){
 			return null;
 		}
@@ -38,7 +38,7 @@ public abstract class AuthAuditorAwareImpl<ID extends Serializable>
 	}
 
 	@Autowired
-	public void injectSecurityContext(RapidSecurityContext<?> securityContext) {
+	public void injectSecurityContext(RapidSecurityContext securityContext) {
 		this.securityContext = securityContext;
 	}
 
