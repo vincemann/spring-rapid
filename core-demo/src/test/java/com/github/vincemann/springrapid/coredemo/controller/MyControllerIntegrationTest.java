@@ -10,7 +10,7 @@ import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.coredemo.repo.*;
 import com.github.vincemann.springrapid.coredemo.service.*;
 import com.github.vincemann.springrapid.coredemo.service.ext.OwnerOfTheYearExtension;
-import com.github.vincemann.springrapid.coretest.controller.integration.MvcIntegrationTest;
+import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class MyControllerIntegrationTest extends MvcIntegrationTest
+public class MyControllerIntegrationTest extends AbstractMvcTest
 {
 
     //Types
@@ -137,7 +137,7 @@ public class MyControllerIntegrationTest extends MvcIntegrationTest
     protected ClinicCard secondClinicCard;
 
     @Autowired
-    protected RapidSecurityContext<RapidPrincipal> securityContext;
+    protected RapidSecurityContext securityContext;
 
     @Autowired
     protected TransactionTemplate transactionTemplate;
