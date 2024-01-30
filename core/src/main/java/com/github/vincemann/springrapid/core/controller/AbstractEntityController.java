@@ -51,6 +51,7 @@ public abstract class AbstractEntityController
     protected EndpointService endpointService;
     protected JsonMapper jsonMapper;
     protected WebExtensionParser extensionParser;
+    private List<String> ignoredEndPoints = new ArrayList<>();
 
     protected ApplicationContext applicationContext;
 

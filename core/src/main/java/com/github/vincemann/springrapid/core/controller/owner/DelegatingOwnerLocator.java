@@ -12,11 +12,16 @@ import java.util.Optional;
 /**
  * @see OwnerLocator
  */
-public class DelegatingOwnerLocator implements AopLoggable {
+public class DelegatingOwnerLocator implements OwnerLocator<IdentifiableEntity<?>>, AopLoggable {
     private List<OwnerLocator> ownerLocators = new ArrayList<>();
 
     public void register(OwnerLocator ownerLocator){
         ownerLocators.add(ownerLocator);
+    }
+
+    @Override
+    public boolean supports(Class clazz) {
+        return ownerLocators.stream().anyMatch(l -> l.supports(clazz));
     }
 
     @LogInteraction

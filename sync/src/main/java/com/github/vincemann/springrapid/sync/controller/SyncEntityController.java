@@ -151,9 +151,12 @@ public class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Seri
 
     @Override
     protected void registerEndpoints() throws NoSuchMethodException {
-        registerEndpoint(createFetchEntitySyncStatusRequestMappingInfo(), "fetchEntitySyncStatus");
-        registerEndpoint(createFetchEntitySyncStatusesRequestMappingInfo(), "fetchEntitySyncStatuses");
-        registerEndpoint(createFetchEntitySyncStatusesSinceTsRequestMappingInfo(), "fetchEntitySyncStatusesSinceTimestamp");
+        if (!getIgnoredEndPoints().contains(getFetchEntitySyncStatusUrl()))
+            registerEndpoint(createFetchEntitySyncStatusRequestMappingInfo(), "fetchEntitySyncStatus");
+        if (!getIgnoredEndPoints().contains(getFetchEntitySyncStatusesUrl()))
+            registerEndpoint(createFetchEntitySyncStatusesRequestMappingInfo(), "fetchEntitySyncStatuses");
+        if (!getIgnoredEndPoints().contains(getFetchEntitySyncStatusesSinceTsUrl()))
+            registerEndpoint(createFetchEntitySyncStatusesSinceTsRequestMappingInfo(), "fetchEntitySyncStatusesSinceTimestamp");
     }
 
 

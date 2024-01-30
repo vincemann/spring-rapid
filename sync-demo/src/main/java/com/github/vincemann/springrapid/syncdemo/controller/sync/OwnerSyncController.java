@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class OwnerSyncController
-        extends SyncEntityController<Owner,Long> {
+public class OwnerSyncController extends SyncEntityController<Owner,Long> {
 
     @Autowired
     public void registerAllowedExtensions(OwnerTelNumberFilter ownerTelNumberFilter) {

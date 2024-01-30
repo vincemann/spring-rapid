@@ -9,9 +9,7 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.context.ServiceCallContextHolder;
 import com.github.vincemann.springrapid.core.service.context.SubServiceCallContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
-import com.github.vincemann.springrapid.core.util.EntityLocator;
-import com.github.vincemann.springrapid.core.util.ProxyUtils;
-import com.github.vincemann.springrapid.core.util.RepositoryUtil;
+import com.github.vincemann.springrapid.core.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -22,7 +20,6 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.test.util.AopTestUtils;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Optional;
 
 import static com.github.vincemann.springrapid.autobidir.advice.RelationalServiceUpdateAdvice.RELATIONAL_UPDATE_CONTEXT_KEY;
@@ -32,7 +29,7 @@ import static com.github.vincemann.springrapid.autobidir.advice.RelationalServic
 @Order(3)
 public class RelationalEntityAdvice {
 
-    private EntityLocator entityLocator;
+//    private EntityLocator entityLocator;
     private RelationalEntityManager relationalEntityManager;
 
     private CrudServiceLocator crudServiceLocator;
@@ -76,31 +73,28 @@ public class RelationalEntityAdvice {
 
 
         if (updateContext == null){
-            if (log.isWarnEnabled())
-                log.warn("update context is null - only limited auto-rel management possible");
-            // repo is called directly, not from service via update- or save-methods
+            // update context not set on direct repo calls or crud service updated calls, when service was not properly wrapped with aop proxy
             if (entity.getId() == null){
                 // save operation and update context null
                 relationalEntityManager.save(entity);
-                clearContext();
+                clearSubContext();
                 return;
             }else{
-                // todo just do full update and warning - fetch old entity from repo
-                throw new IllegalArgumentException("Usage of repo directly is not permitted with set id yet, use Service api for updates");
-//                // update context null and no safe operation
-//                if (log.isWarnEnabled())
-//                    log.warn("update context null and update operation - assuming full update");
-////                throw new IllegalArgumentException("Cannot use update function yet without calling service upfront");
-//
-////                // repo is called directly, so also use repo to find old entity
-//                Optional<IdentifiableEntity> old = repoResolveById(joinPoint, entity.getId());
-//                VerifyEntity.isPresent(old,entity.getId(),entity.getClass());
-//                // full detach only works like that
-//                IdentifiableEntity oldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(old.get()));
-//                entityManager.detach(oldEntity);
-//                relationalEntityManager.update(oldEntity, entity);
-//                clearContext();
-//                return entity;
+                if (log.isWarnEnabled()){
+                    log.warn("Update context is null - only limited auto-rel management possible");
+                    log.warn("If this is no direct call on repo, make sure your crud service bean is wrapped with aop proxy");
+                    log.warn("Update context null and update operation with set id on repo - assuming full update");
+                }
+
+//                // repo is probably called directly, so also use repo to find old entity
+                Optional<IdentifiableEntity> old = repoResolveById(joinPoint, entity.getId());
+                VerifyEntity.isPresent(old,entity.getId(),entity.getClass());
+                // full detach only works like that
+                IdentifiableEntity detachedOld = MyJpaUtils.deepDetachOrGet(old.get());
+                IdentifiableEntity detachedUpdateEntity = MyJpaUtils.deepDetachOrGet(entity);
+                relationalEntityManager.update(entity,detachedOld, detachedUpdateEntity);
+                clearSubContext();
+                return;
             }
         }
 
@@ -109,29 +103,29 @@ public class RelationalEntityAdvice {
         if (entity.getId() == null || updateContext.getOperationType()==null) {
             // save
             relationalEntityManager.save(entity);
-            clearContext();
+            clearSubContext();
         } else {
             // update
             switch (updateContext.getOperationType()){
                 case FULL:
                     relationalEntityManager.update(entity, updateContext.getDetachedOldEntity(),updateContext.getDetachedUpdateEntity());
-                    clearContext();
+                    clearSubContext();
                     break;
                 case PARTIAL:
                     String[] whiteListedFieldsToUpdate = updateContext.getWhiteListedFields().toArray(new String[0]);
 //                    System.err.println(Arrays.toString(whiteListedFieldsToUpdate));
                     relationalEntityManager.partialUpdate(entity, updateContext.getDetachedOldEntity(),
                             updateContext.getDetachedUpdateEntity(), whiteListedFieldsToUpdate);
-                    clearContext();
+                    clearSubContext();
                     break;
                 case SOFT:
-                    clearContext();
+                    clearSubContext();
                     break;
             }
         }
     }
 
-    protected void clearContext(){
+    protected void clearSubContext(){
         SubServiceCallContext subContext = ServiceCallContextHolder.getSubContext();
         if (subContext != null)
             subContext.clearValue(RELATIONAL_UPDATE_CONTEXT_KEY);
@@ -143,7 +137,7 @@ public class RelationalEntityAdvice {
 //        return entityLocator.findEntity(entityClass,id);
 //    }
 
-    // todo just create repoLocator...
+    // todo just create repoLocator
     protected Optional<IdentifiableEntity> repoResolveById(JoinPoint joinPoint, Serializable id) {
         SimpleJpaRepository repo = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
         Class entityClass = RepositoryUtil.getRepoType(repo);
@@ -160,10 +154,10 @@ public class RelationalEntityAdvice {
         this.crudServiceLocator = crudServiceLocator;
     }
 
-    @Autowired
-    public void setEntityLocator(EntityLocator entityLocator) {
-        this.entityLocator = entityLocator;
-    }
+//    @Autowired
+//    public void setEntityLocator(EntityLocator entityLocator) {
+//        this.entityLocator = entityLocator;
+//    }
 
     @Autowired
     public void setRelationalEntityManager(RelationalEntityManager relationalEntityManager) {

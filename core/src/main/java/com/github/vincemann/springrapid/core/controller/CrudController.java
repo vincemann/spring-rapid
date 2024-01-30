@@ -66,8 +66,6 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
     private JsonDtoPropertyValidator jsonDtoPropertyValidator;
     private PrincipalFactory principalFactory;
 
-    private List<String> ignoredEndPoints = new ArrayList<>();
-
 
     //              CONTROLLER METHODS
 
@@ -356,22 +354,22 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
 
     @Override
     protected void registerEndpoints() throws NoSuchMethodException {
-        if (ignoredEndPoints.contains(getCreateUrl())) {
+        if (!getIgnoredEndPoints().contains(getCreateUrl())) {
             registerEndpoint(createCreateRequestMappingInfo(), "create");
         }
-        if (ignoredEndPoints.contains(getFindUrl())) {
+        if (!getIgnoredEndPoints().contains(getFindUrl())) {
             registerEndpoint(createFindRequestMappingInfo(), "find");
         }
-        if (ignoredEndPoints.contains(getUpdateUrl())) {
+        if (!getIgnoredEndPoints().contains(getUpdateUrl())) {
             registerEndpoint(createUpdateRequestMappingInfo(), "update");
         }
-        if (ignoredEndPoints.contains(getDeleteUrl())) {
+        if (!getIgnoredEndPoints().contains(getDeleteUrl())) {
             registerEndpoint(createDeleteRequestMappingInfo(), "delete");
         }
-        if (ignoredEndPoints.contains(getFindAllUrl())) {
+        if (!getIgnoredEndPoints().contains(getFindAllUrl())) {
             registerEndpoint(createFindAllRequestMappingInfo(), "findAll");
         }
-        if (ignoredEndPoints.contains(getFindSomeUrl())) {
+        if (!getIgnoredEndPoints().contains(getFindSomeUrl())) {
             registerEndpoint(createFindSomeRequestMappingInfo(), "findSome");
         }
     }
@@ -443,7 +441,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
         return service.save(entity);
     }
 
-    protected void serviceDelete(Id id) throws BadEntityException, EntityNotFoundException {
+    protected void serviceDelete(Id id) throws EntityNotFoundException {
         service.deleteById(id);
     }
 

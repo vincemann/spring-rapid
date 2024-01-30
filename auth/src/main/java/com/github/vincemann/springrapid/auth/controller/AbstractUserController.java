@@ -468,47 +468,47 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	protected void registerEndpoints() throws NoSuchMethodException {
 		super.registerEndpoints();
 
-		if (getIgnoredEndPoints().contains(getContextUrl())){
+		if (!getIgnoredEndPoints().contains(getContextUrl())){
 			registerEndpoint(createContextRequestMappingInfo(),"context");
 		}
-		if (getIgnoredEndPoints().contains(getSignupUrl())){
+		if (!getIgnoredEndPoints().contains(getSignupUrl())){
 			registerEndpoint(createSignupRequestMappingInfo(),"signup");
 		}
-		if (getIgnoredEndPoints().contains(getResendVerificationContactInformationUrl())){
+		if (!getIgnoredEndPoints().contains(getResendVerificationContactInformationUrl())){
 			registerEndpoint(createResendVerificationContactInformationRequestMappingInfo(),"resendVerificationMail");
 		}
-		if (getIgnoredEndPoints().contains(getVerifyUserUrl())){
+		if (!getIgnoredEndPoints().contains(getVerifyUserUrl())){
 			registerEndpoint(createVerifyUserRequestMappingInfo(),"verifyUser");
 		}
-		if (getIgnoredEndPoints().contains(getForgotPasswordUrl())){
+		if (!getIgnoredEndPoints().contains(getForgotPasswordUrl())){
 			registerEndpoint(createForgotPasswordRequestMappingInfo(),"forgotPassword");
 		}
-		if (getIgnoredEndPoints().contains(getResetPasswordViewUrl())){
+		if (!getIgnoredEndPoints().contains(getResetPasswordViewUrl())){
 			registerViewEndpoint(createResetPasswordViewRequestMappingInfo(),"showResetPassword");
 		}
-		if (getIgnoredEndPoints().contains(getResetPasswordUrl())){
+		if (!getIgnoredEndPoints().contains(getResetPasswordUrl())){
 			registerEndpoint(createResetPasswordRequestMappingInfo(),"resetPassword");
 		}
-		if (getIgnoredEndPoints().contains(getFetchByContactInformationUrl())){
+		if (!getIgnoredEndPoints().contains(getFetchByContactInformationUrl())){
 			registerEndpoint(createFetchByContactInformationRequestMappingInfo(),"fetchByContactInformation");
 		}
-		if (getIgnoredEndPoints().contains(getChangePasswordUrl())){
+		if (!getIgnoredEndPoints().contains(getChangePasswordUrl())){
 			registerEndpoint(createChangePasswordRequestMappingInfo(),"changePassword");
 		}
-		if (getIgnoredEndPoints().contains(getRequestContactInformationChangeUrl())){
+		if (!getIgnoredEndPoints().contains(getRequestContactInformationChangeUrl())){
 			registerEndpoint(createRequestContactInformationChangeRequestMappingInfo(),"requestContactInformationChange");
 		}
-		if (getIgnoredEndPoints().contains(getChangeContactInformationUrl())){
+		if (!getIgnoredEndPoints().contains(getChangeContactInformationUrl())){
 			registerEndpoint(createChangeContactInformationRequestMappingInfo(),"changeContactInformation");
 		}
 
 //		if (getEndpointInfo().isExposeChangeContactInformationView()){
 //			registerViewEndpoint(createChangeContactInformationRequestViewMappingInfo(),"showChangeContactInformation");
 //		}
-		if (getIgnoredEndPoints().contains(getFetchNewAuthTokenUrl())){
+		if (!getIgnoredEndPoints().contains(getFetchNewAuthTokenUrl())){
 			registerEndpoint(createNewAuthTokenRequestMappingInfo(),"createNewAuthToken");
 		}
-		if (getIgnoredEndPoints().contains(getPingUrl())){
+		if (!getIgnoredEndPoints().contains(getPingUrl())){
 			registerEndpoint(createPingRequestMappingInfo(),"ping");
 		}
 	}
