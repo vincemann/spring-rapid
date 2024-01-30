@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.condition;
+package com.github.vincemann.springrapid.core.util.condition;
 
 import com.github.vincemann.springrapid.core.util.OtherConfigPresentCondition;
 import org.springframework.context.annotation.Conditional;

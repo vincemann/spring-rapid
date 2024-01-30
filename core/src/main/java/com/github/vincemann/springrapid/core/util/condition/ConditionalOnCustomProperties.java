@@ -1,6 +1,5 @@
-package com.github.vincemann.springrapid.core.condition;
+package com.github.vincemann.springrapid.core.util.condition;
 
-import com.github.vincemann.springrapid.core.util.CustomPropertyCondition;
 import org.springframework.context.annotation.Conditional;
 
 import java.lang.annotation.*;

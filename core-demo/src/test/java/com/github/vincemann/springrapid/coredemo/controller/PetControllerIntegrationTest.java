@@ -275,6 +275,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
         );
 
         PetDto responseDto = deserialize(getMvc().perform(controller.update(updateJson, createdBellaDto.getId()))
+                .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), PetDto.class);
         Assertions.assertEquals(savedKahn.getId(),responseDto.getOwnerId());
         Assertions.assertEquals(2,responseDto.getToyIds().size());
@@ -307,6 +308,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
         );
 
         PetDto responseDto = deserialize(getMvc().perform(controller.update(updateJson, createdBellaDto.getId()))
+                .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), PetDto.class);
         Assertions.assertEquals(savedKahn.getId(),responseDto.getOwnerId());
         Assertions.assertEquals(1,responseDto.getToyIds().size());
@@ -329,6 +331,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
         String addPetTypeJson = createUpdateJsonRequest(createUpdateJsonLine("add", "/petTypeId",savedCatPetType.getId().toString()));
 
         PetDto responseDto = deserialize(getMvc().perform(controller.update(addPetTypeJson, createdBellaDto.getId()))
+                .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), PetDto.class);
         Assertions.assertEquals(savedCatPetType.getId(),responseDto.getPetTypeId());
 
@@ -348,6 +351,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
         );
 
         PetDto responseDto = deserialize(getMvc().perform(controller.update(updateOwnerJson, createdBellaDto.getId()))
+                .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), PetDto.class);
         Assertions.assertEquals(savedMeier.getId(),responseDto.getOwnerId());
 
@@ -371,6 +375,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
         );
 
         PetDto responseDto = deserialize(getMvc().perform(controller.update(updateOwnerJson, createdBellaDto.getId()))
+                .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), PetDto.class);
         Assertions.assertEquals(savedMeier.getId(),responseDto.getOwnerId());
 
