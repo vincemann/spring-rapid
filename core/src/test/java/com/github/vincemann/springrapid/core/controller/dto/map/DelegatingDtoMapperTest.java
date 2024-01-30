@@ -1,7 +1,5 @@
 package com.github.vincemann.springrapid.core.controller.dto.map;
 
-import com.github.vincemann.springrapid.core.controller.dto.map.DelegatingDtoMapper;
-import com.github.vincemann.springrapid.core.controller.dto.map.DtoMapper;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -17,7 +15,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class DelegatingDtoMapperTest {
-    DelegatingDtoMapper mapper;
+    DelegatingDtoMapperImpl mapper;
     DtoMapper defaultMapper;
 
     DtoMapper<KnownEntity,KnownDto> customEntityMapper;
@@ -62,9 +60,9 @@ class DelegatingDtoMapperTest {
         defaultMapper = Mockito.mock(DtoMapper.class);
         when(defaultMapper.supports(any(Class.class)))
                 .thenReturn(true);
-        mapper = new DelegatingDtoMapper();
-        mapper.registerDelegate(customEntityMapper);
-        mapper.registerDelegate(defaultMapper);
+        mapper = new DelegatingDtoMapperImpl();
+        mapper.register(customEntityMapper);
+        mapper.register(defaultMapper);
     }
 
     @Test

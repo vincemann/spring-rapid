@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.core.util;
 
+import com.github.vincemann.springrapid.core.condition.ConditionalOnCustomProperties;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;

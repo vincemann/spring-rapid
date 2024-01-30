@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acl.service.ext.acl;
 
-import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
+import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocatorImpl;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -17,7 +17,7 @@ public class OwnerGainsPermissionAboutSavedAclExtension
         implements CrudServiceExtension<CrudService>
 {
 
-    private DelegatingOwnerLocator delegatingOwnerLocator;
+    private DelegatingOwnerLocatorImpl delegatingOwnerLocator;
     private Permission[] permissions;
 
     public OwnerGainsPermissionAboutSavedAclExtension(Permission... permissions) {
@@ -25,7 +25,7 @@ public class OwnerGainsPermissionAboutSavedAclExtension
     }
 
     @Autowired
-    public void setDelegatingOwnerLocator(DelegatingOwnerLocator delegatingOwnerLocator) {
+    public void setDelegatingOwnerLocator(DelegatingOwnerLocatorImpl delegatingOwnerLocator) {
         this.delegatingOwnerLocator = delegatingOwnerLocator;
     }
 

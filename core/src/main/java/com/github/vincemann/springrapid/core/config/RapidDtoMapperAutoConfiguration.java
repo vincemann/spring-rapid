@@ -4,12 +4,17 @@ import com.github.vincemann.springrapid.core.controller.dto.DtoPostProcessor;
 import com.github.vincemann.springrapid.core.controller.dto.EntityPostProcessor;
 import com.github.vincemann.springrapid.core.controller.dto.map.BasicDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dto.map.*;
+import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.ContextRefreshedEvent;
 
-import java.util.List;
+import java.util.Map;
 
 @Configuration
 @Slf4j
@@ -31,17 +36,25 @@ public class RapidDtoMapperAutoConfiguration {
 //        return mapper;
 //    }
 
-    @ConditionalOnMissingBean(name = "delegatingDtoMapper")
+    @ConditionalOnMissingBean(DelegatingDtoMapper.class)
     @Bean
-    //ordered List of DtoMappers gets injected @see @Order
-    public DelegatingDtoMapper delegatingDtoMapper(List<DtoMapper> dtoMappers, List<EntityPostProcessor> dtoEntityPostProcessors, List<DtoPostProcessor> dtoPostProcessors){
-        DelegatingDtoMapper delegatingDtoMapper = new DelegatingDtoMapper();
-        dtoMappers.forEach(delegatingDtoMapper::registerDelegate);
-        dtoEntityPostProcessors.forEach(delegatingDtoMapper::registerEntityPostProcessor);
-        dtoPostProcessors.forEach(delegatingDtoMapper::registerEntityDtoPostProcessor);
-        return delegatingDtoMapper;
+    public DelegatingDtoMapper delegatingDtoMapper(){
+        return new DelegatingDtoMapperImpl();
     }
 
+    @Bean
+    @ConditionalOnBean(DelegatingDtoMapper.class)
+    public ApplicationListener<ContextRefreshedEvent> dtoMapperRegistrar(ApplicationContext context, DelegatingDtoMapper delegatingDtoMapper) {
+        return event -> {
+            Map<String, DtoMapper> mappers = context.getBeansOfType(DtoMapper.class);
+            Map<String, DtoPostProcessor> dtoPPs = context.getBeansOfType(DtoPostProcessor.class);
+            Map<String, EntityPostProcessor> entityPPs = context.getBeansOfType(EntityPostProcessor.class);
+
+            mappers.values().forEach(delegatingDtoMapper::register);
+            dtoPPs.values().forEach(delegatingDtoMapper::registerDtoPostProcessor);
+            entityPPs.values().forEach(delegatingDtoMapper::registerEntityPostProcessor);
+        };
+    }
 
 
 }

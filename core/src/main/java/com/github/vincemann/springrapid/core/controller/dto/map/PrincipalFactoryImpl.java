@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class PrincipalFactoryImpl implements PrincipalFactory {
 
-    private OwnerLocator<IdentifiableEntity<?>> ownerLocator;
+    private DelegatingOwnerLocator ownerLocator;
 
     public PrincipalFactoryImpl() {
     }
@@ -30,7 +30,7 @@ public class PrincipalFactoryImpl implements PrincipalFactory {
     }
 
     @Autowired
-    public void setOwnerLocator(OwnerLocator<IdentifiableEntity<?>> ownerLocator) {
+    public void setOwnerLocator(DelegatingOwnerLocator ownerLocator) {
         this.ownerLocator = ownerLocator;
     }
 }

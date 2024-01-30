@@ -1,5 +1,6 @@
-package com.github.vincemann.springrapid.core.util;
+package com.github.vincemann.springrapid.core.condition;
 
+import com.github.vincemann.springrapid.core.util.OtherConfigPresentCondition;
 import org.springframework.context.annotation.Conditional;
 
 import java.lang.annotation.*;

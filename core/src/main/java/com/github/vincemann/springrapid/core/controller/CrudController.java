@@ -13,6 +13,7 @@ import com.github.vincemann.springrapid.core.controller.json.JsonDtoPropertyVali
 import com.github.vincemann.springrapid.core.controller.json.patch.JsonPatchStrategy;
 import com.github.vincemann.springrapid.core.controller.json.patch.PatchInfo;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
+import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
