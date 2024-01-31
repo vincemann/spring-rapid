@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.BeansException;
@@ -26,6 +27,7 @@ public abstract class AbstractCrudService
     private String beanName;
     private R repository;
     // root version of service
+    @Setter
     protected CrudService<E, Id> service;
 
     // todo for some reason this only works in the setter, not in afterPropertiesSet, fix
@@ -97,6 +99,7 @@ public abstract class AbstractCrudService
 //        }
         this.beanName = name;
     }
+
 
 
 }

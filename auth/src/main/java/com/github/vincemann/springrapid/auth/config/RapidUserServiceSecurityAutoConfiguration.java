@@ -28,7 +28,7 @@ import org.springframework.security.acls.model.MutableAclService;
 @Configuration
 @Slf4j
 //we need the acl beans here
-@AutoConfigureAfter({RapidAclAutoConfiguration.class, RapidAclExtensionsAutoConfiguration.class})
+@AutoConfigureAfter({RapidAclExtensionsAutoConfiguration.class})
 public class RapidUserServiceSecurityAutoConfiguration {
 
 

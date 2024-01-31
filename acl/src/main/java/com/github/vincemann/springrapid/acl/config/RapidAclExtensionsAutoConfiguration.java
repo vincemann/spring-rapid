@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Scope;
 
 @Configuration
 @Slf4j
-@AutoConfigureAfter(RapidJsonAutoConfiguration.class)
 public class RapidAclExtensionsAutoConfiguration {
 
     public RapidAclExtensionsAutoConfiguration() {

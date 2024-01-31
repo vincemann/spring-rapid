@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Slf4j
 @EnableConfigurationProperties
-@AutoConfigureBefore(RapidCrudControllerAutoConfiguration.class)
 public class RapidAuthGeneralAutoConfiguration {
 
 

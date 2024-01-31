@@ -2,7 +2,6 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.github.vincemann.springrapid.acl.config.RapidAclAutoConfiguration,\
 com.github.vincemann.springrapid.acl.config.RapidAclMethodSecurityAutoConfiguration,\
 com.github.vincemann.springrapid.acl.config.RapidAclSchemaAutoConfiguration,\
-com.github.vincemann.springrapid.acl.config.RapidSecurityProxyAutoConfiguration,\
 com.github.vincemann.springrapid.acl.config.RapidAclExtensionsAutoConfiguration,\
 com.github.vincemann.springrapid.acl.config.RapidDefaultSecurityExtensionAutoConfiguration,\
 com.github.vincemann.springrapid.acl.config.RapidDefaultAclExtensionsAutoConfiguration, \
