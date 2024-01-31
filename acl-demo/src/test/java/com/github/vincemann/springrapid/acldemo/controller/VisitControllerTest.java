@@ -165,18 +165,14 @@ public class VisitControllerTest extends MyIntegrationTest {
         String meierToken = userController.login2xx(OWNER_MEIER_CONTACT_INFORMATION, OWNER_MEIER_PASSWORD);
         Visit visit = createVisit(vetDiCaprioToken, savedKahn, savedDicaprio, checkTeethVisit, savedBella);
 
-        // meier cant read visit
+        // meier cant subscribe visit
         mvc.perform(visitController.find(visit.getId())
                 .header(HttpHeaders.AUTHORIZATION,meierToken))
                 .andExpect(status().isForbidden());
 
-        mvc.perform(get(visitController.getController().getSubscribeOwnerUrl())
-                .header(HttpHeaders.AUTHORIZATION,vetDiCaprioToken)
-                .param("ownerid",savedMeier.getId().toString())
-                .param("visitid",visit.getId().toString())
-                .param("read",Boolean.TRUE.toString()))
+        mvc.perform(visitController.subscribe(vetDiCaprioToken,savedMeier.getId(),visit.getId(),true))
                 .andExpect(status().is2xxSuccessful());
-        // now meier should be able to read visit
+        // now meier should be able to subscribe visit
 
         mvc.perform(visitController.find(visit.getId())
                 .header(HttpHeaders.AUTHORIZATION,meierToken))
@@ -196,30 +192,22 @@ public class VisitControllerTest extends MyIntegrationTest {
         String meierToken = userController.login2xx(OWNER_MEIER_CONTACT_INFORMATION, OWNER_MEIER_PASSWORD);
         Visit visit = createVisit(vetDiCaprioToken, savedKahn, savedDicaprio, checkTeethVisit, savedBella);
 
-        // meier cant read visit
+        // meier cant subscribe visit
         mvc.perform(visitController.find(visit.getId())
                 .header(HttpHeaders.AUTHORIZATION,meierToken))
                 .andExpect(status().isForbidden());
 
-        mvc.perform(get(visitController.getController().getSubscribeOwnerUrl())
-                .header(HttpHeaders.AUTHORIZATION,vetDiCaprioToken)
-                .param("ownerid",savedMeier.getId().toString())
-                .param("visitid",visit.getId().toString())
-                .param("subscribe",Boolean.TRUE.toString()))
+        mvc.perform(visitController.subscribe(vetDiCaprioToken,savedMeier.getId(),visit.getId(),true))
                 .andExpect(status().is2xxSuccessful());
-        // now meier should be able to read visit
+        // now meier should be able to subscribe visit
 
         mvc.perform(visitController.find(visit.getId())
                 .header(HttpHeaders.AUTHORIZATION,meierToken))
                 .andExpect(status().is2xxSuccessful());
 
         // revoke
-        mvc.perform(get(visitController.getController().getSubscribeOwnerUrl())
-                .header(HttpHeaders.AUTHORIZATION,vetDiCaprioToken)
-                .param("ownerid",savedMeier.getId().toString())
-                .param("visitid",visit.getId().toString())
-                .param("read",Boolean.FALSE.toString()))
-                .andExpect(status().is2xxSuccessful());
+        mvc.perform(visitController.subscribe(vetDiCaprioToken,savedMeier.getId(),visit.getId(),false))
+                        .andExpect(status().is2xxSuccessful());
 
         mvc.perform(visitController.find(visit.getId())
                 .header(HttpHeaders.AUTHORIZATION,meierToken))
