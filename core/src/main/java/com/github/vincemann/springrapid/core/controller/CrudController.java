@@ -13,7 +13,6 @@ import com.github.vincemann.springrapid.core.controller.json.JsonDtoPropertyVali
 import com.github.vincemann.springrapid.core.controller.json.patch.JsonPatchStrategy;
 import com.github.vincemann.springrapid.core.controller.json.patch.PatchInfo;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
-import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -72,7 +71,6 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
 
     public ResponseEntity<String> findAll(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, BadEntityException {
 
-        List<String> noValParams = getRequestParameterKeysWithoutValue(request);
 
         List<QueryFilter<? super E>> queryFilters = extractExtensions(request,QUERY_FILTER);
         List<EntityFilter<? super E>> entityFilters = extractExtensions(request,ENTITY_FILTER);
@@ -84,7 +82,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
         List<Object> dtos = new ArrayList<>();
         for (E e : foundEntities) {
             dtos.add(dtoMapper.mapToDto(e,
-                    createDtoClass(getFindAllUrl(), Direction.RESPONSE,noValParams, e)));
+                    createDtoClass(getFindAllUrl(), Direction.RESPONSE,request.getParameterMap(), e)));
         }
         afterFindAll(dtos, foundEntities, request, response,entityFilters, queryFilters, sortings);
         String json = jsonMapper.writeDto(dtos);
@@ -223,12 +221,12 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
 
 
 
-    protected Class<?> createDtoClass(String endpoint, Direction direction, List<String> urlParams, E entity) throws BadEntityException {
+    protected Class<?> createDtoClass(String endpoint, Direction direction, Map<String, String[]> urlParams, E entity) throws BadEntityException {
         DtoRequestInfo dtoRequestInfo = createDtoRequestInfo(endpoint, direction,urlParams, entity);
         return dtoClassLocator.find(dtoRequestInfo,dtoMappings);
     }
 
-    protected DtoRequestInfo createDtoRequestInfo(String endpoint, Direction direction,List<String> urlParams, E entity) {
+    protected DtoRequestInfo createDtoRequestInfo(String endpoint, Direction direction,Map<String, String[]> urlParams, E entity) {
         Principal principal = principalFactory.create(entity);
         return DtoRequestInfo.builder()
                 .authorities(RapidSecurityContext.getRoles())

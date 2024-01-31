@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.core.controller.dto.map;
 
+import com.github.vincemann.springrapid.core.controller.UrlParamWebExtensionParser;
+import com.github.vincemann.springrapid.core.controller.WebExtensionType;
 import com.github.vincemann.springrapid.core.util.Lists;
 
 import java.util.Arrays;
@@ -47,6 +49,19 @@ public class DtoMappingConditions {
         };
     }
 
+    public static Predicate<DtoRequestInfo> urlWebExtension(String extensionName, WebExtensionType type){
+        return new DescribablePredicate<>("url-web-extension: " + extensionName) {
+            @Override
+            public boolean test(DtoRequestInfo dtoRequestInfo) {
+                String[] values = dtoRequestInfo.getUrlParams().get(UrlParamWebExtensionParser.getUrlParamKey(type));
+                if (values != null && values.length != 0){
+                    return Lists.newArrayList(values).contains(extensionName);
+                }
+                return false;
+            }
+        };
+    }
+
     public static Predicate<DtoRequestInfo> roles(String... roles){
         return new DescribablePredicate<>("roles: " + Arrays.toString(roles)) {
             @Override
@@ -65,14 +80,26 @@ public class DtoMappingConditions {
         };
     }
 
+    /**
+     * checks if url param keys all exist
+     */
     public static Predicate<DtoRequestInfo> urlParam(String... urlParams){
         return new DescribablePredicate<>("url-params: " + Arrays.toString(urlParams)) {
             @Override
             public boolean test(DtoRequestInfo dtoRequestInfo) {
-                return new HashSet<>(dtoRequestInfo.getUrlParams()).containsAll(Lists.newArrayList(urlParams));
+                return dtoRequestInfo.getUrlParams().keySet().containsAll(Lists.newArrayList(urlParams));
             }
         };
     }
+
+//    public static Predicate<DtoRequestInfo> urlParamWithValue(String... urlParams){
+//        return new DescribablePredicate<>("url-params: " + Arrays.toString(urlParams)) {
+//            @Override
+//            public boolean test(DtoRequestInfo dtoRequestInfo) {
+//                // todo implement
+//            }
+//        };
+//    }
 
 
 

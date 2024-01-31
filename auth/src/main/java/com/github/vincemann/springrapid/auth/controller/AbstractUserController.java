@@ -43,7 +43,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
-import static com.github.vincemann.springrapid.core.util.HttpServletRequestUtils.getRequestParameterKeysWithoutValue;
 
 
 @Slf4j
@@ -118,11 +117,10 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	public ResponseEntity<String> signup(
 			HttpServletRequest request,
 			HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
-
-		List<String> noValParams = getRequestParameterKeysWithoutValue(request);
+		
 
 		String jsonDto = readBody(request);
-		Class<?> dtoClass = createDtoClass(getSignupUrl(),Direction.REQUEST,noValParams,null);
+		Class<?> dtoClass = createDtoClass(getSignupUrl(),Direction.REQUEST,request.getParameterMap(),null);
 		Object signupDto = getJsonMapper().readDto(jsonDto, dtoClass);
 		getDtoValidationStrategy().validate(signupDto);
 		log.debug("Signing up: " + signupDto);
@@ -132,7 +130,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(getSignupUrl(), Direction.RESPONSE,noValParams, saved));
+				createDtoClass(getSignupUrl(), Direction.RESPONSE,request.getParameterMap(), saved));
 		return ok(getJsonMapper().writeDto(dto));
 	}
 
@@ -154,7 +152,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 			HttpServletRequest request,
 //			@RequestParam String code,
 			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException, IdFetchingException {
-		List<String> noValParams = getRequestParameterKeysWithoutValue(request);
 
 		String code = readRequestParam(request, "code");
 
@@ -164,7 +161,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(getVerifyUserUrl(), Direction.RESPONSE,noValParams, saved));
+				createDtoClass(getVerifyUserUrl(), Direction.RESPONSE,request.getParameterMap(), saved));
 		return ok(getJsonMapper().writeDto(dto));
 	}
 
@@ -185,8 +182,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	public ResponseEntity<String> resetPassword(
 //			@RequestBody ResetPasswordForm form,
 			HttpServletRequest request,HttpServletResponse response) throws IOException, BadEntityException, EntityNotFoundException, BadTokenException {
-
-		List<String> noValParams = getRequestParameterKeysWithoutValue(request);
 
 		String body = readBody(request);
 		// todo terrible, fix this, check for equality in inline js in html file
@@ -209,7 +204,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		U saved = getSecuredService().resetPassword(password, code);
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(resetPasswordUrl, Direction.RESPONSE,noValParams, saved));
+				createDtoClass(resetPasswordUrl, Direction.RESPONSE,request.getParameterMap(), saved));
 		return ok(getJsonMapper().writeDto(dto));
 	}
 
@@ -226,7 +221,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 
 	public ResponseEntity<String> fetchByContactInformation(HttpServletRequest request,HttpServletResponse response/*,@RequestParam String contactInformation*/) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
-		List<String> noValParams = getRequestParameterKeysWithoutValue(request);
 
 		String contactInformation = readRequestParam(request, "contactInformation");
 		log.debug("Fetching user by contactInformation: " + contactInformation);
@@ -234,7 +228,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+contactInformation+" not found");
 		U user = byContactInformation.get();
 		Object responseDto = getDtoMapper().mapToDto(user,
-				createDtoClass(getFetchByContactInformationUrl(), Direction.RESPONSE,noValParams, user));
+				createDtoClass(getFetchByContactInformationUrl(), Direction.RESPONSE,request.getParameterMap(), user));
 		return ok(getJsonMapper().writeDto(responseDto));
 	}
 
@@ -242,12 +236,11 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	public ResponseEntity<?> changePassword(HttpServletRequest request,
 //			@RequestBody ChangePasswordForm changePasswordForm,
 			HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
-		List<String> noValParams = getRequestParameterKeysWithoutValue(request);
 
 		Id id = fetchId(request);
 		String body = readBody(request);
 		U user = fetchUser(id);
-		Class<?> dtoClass = createDtoClass(getChangePasswordUrl(),Direction.REQUEST,noValParams,user);
+		Class<?> dtoClass = createDtoClass(getChangePasswordUrl(),Direction.REQUEST,request.getParameterMap(),user);
 		ChangePasswordDto changePasswordDto = (ChangePasswordDto) getJsonMapper().readDto(body, dtoClass);
 		getDtoValidationStrategy().validate(changePasswordDto);
 
@@ -260,12 +253,11 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	public ResponseEntity<?> requestContactInformationChange(HttpServletRequest request
 								   /*@RequestBody RequestContactInformationChangeForm contactInformationChangeForm*/,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException, IOException, AlreadyRegisteredException {
-		List<String> noValParams = getRequestParameterKeysWithoutValue(request);
 
 		Id id = fetchId(request);
 		String body = readBody(request);
 		U user = fetchUser(id);
-		Class<?> dtoClass = createDtoClass(getRequestContactInformationChangeUrl(),Direction.REQUEST,noValParams,user);
+		Class<?> dtoClass = createDtoClass(getRequestContactInformationChangeUrl(),Direction.REQUEST,request.getParameterMap(),user);
 		RequestContactInformationChangeDto dto = (RequestContactInformationChangeDto) getJsonMapper().readDto(body, dtoClass);
 		getDtoValidationStrategy().validate(dto);
 		log.debug("Requesting contactInformation change for user: " + user);

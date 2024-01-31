@@ -3,8 +3,11 @@ package com.github.vincemann.springrapid.core.controller.dto.map;
 import com.github.vincemann.springrapid.core.util.Lists;
 import lombok.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents information about current Request.
@@ -18,11 +21,11 @@ public class DtoRequestInfo {
     private Direction direction;
     private List<String> authorities = new ArrayList<>();
     private Principal principal;
-    private List<String> urlParams = new ArrayList<>();
+    private Map<String, String[]> urlParams = new HashMap<>();
 
 
     @Builder
-    public DtoRequestInfo(String endpoint, Direction direction, List<String> authorities, Principal principal, List<String> urlParams) {
+    public DtoRequestInfo(String endpoint, Direction direction, List<String> authorities, Principal principal, Map<String, String[]> urlParams) {
         this.endpoint = endpoint;
         this.direction = direction;
         if (authorities!=null)
@@ -38,7 +41,7 @@ public class DtoRequestInfo {
         this.endpoint=info.getEndpoint();
         this.direction=info.getDirection();
         this.authorities = Lists.newArrayList(info.getAuthorities());
-        this.urlParams = Lists.newArrayList(info.getUrlParams());
+        this.urlParams = new HashMap<>(info.getUrlParams());
         this.principal = info.getPrincipal();
     }
 
