@@ -74,17 +74,17 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
 
         List<QueryFilter<? super E>> queryFilters = extractExtensions(request,QUERY_FILTER);
         List<EntityFilter<? super E>> entityFilters = extractExtensions(request,ENTITY_FILTER);
-        List<SortingExtension> sortings = extractExtensions(request,SORTING);
+        List<SortingExtension> sorting = extractExtensions(request,SORTING);
 
-        beforeFindAll(request, response,entityFilters,queryFilters,sortings);
+        beforeFindAll(request, response,entityFilters,queryFilters,sorting);
         logSecurityContext();
-        Set<E> foundEntities = serviceFindAll(queryFilters, entityFilters,sortings);
+        Set<E> foundEntities = serviceFindAll(queryFilters, entityFilters,sorting);
         List<Object> dtos = new ArrayList<>();
         for (E e : foundEntities) {
             dtos.add(dtoMapper.mapToDto(e,
-                    createDtoClass(getFindAllUrl(), Direction.RESPONSE,request.getParameterMap(), e)));
+                    createDtoClass(getFindAllUrl(), Direction.RESPONSE,request, e)));
         }
-        afterFindAll(dtos, foundEntities, request, response,entityFilters, queryFilters, sortings);
+        afterFindAll(dtos, foundEntities, request, response,entityFilters, queryFilters, sorting);
         String json = jsonMapper.writeDto(dtos);
         return ok(json);
 
@@ -92,8 +92,6 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
 
     public ResponseEntity<String> findSome(HttpServletRequest request, HttpServletResponse response) throws IOException, BadEntityException {
         logSecurityContext();
-
-        List<String> noValParams = getRequestParameterKeysWithoutValue(request);
 
         String json = readBody(request);
         CollectionType idSetType = getJsonMapper().getObjectMapper()
@@ -108,7 +106,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
         List<Object> dtos = new ArrayList<>();
         for (E e : foundEntities) {
             dtos.add(dtoMapper.mapToDto(e,
-                    createDtoClass(getFindSomeUrl(), Direction.RESPONSE,noValParams, e)));
+                    createDtoClass(getFindSomeUrl(), Direction.RESPONSE,request, e)));
         }
         afterFindSome(dtos, foundEntities, request, response);
         String responseJson = jsonMapper.writeDto(dtos);
@@ -118,8 +116,6 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
 
     public ResponseEntity<String> find(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, JsonProcessingException {
 
-        List<String> noValParams = getRequestParameterKeysWithoutValue(request);
-
         Id id = fetchId(request);
         beforeFind(id, request, response);
         logSecurityContext();
@@ -127,7 +123,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
         E found = VerifyEntity.isPresent(optionalEntity, id, getEntityClass());
         Object dto = dtoMapper.mapToDto(
                 found,
-                createDtoClass(getFindUrl(), Direction.RESPONSE,noValParams, found)
+                createDtoClass(getFindUrl(), Direction.RESPONSE,request, found)
         );
         afterFind(id, dto, optionalEntity, request, response);
         return ok(jsonMapper.writeDto(dto));
@@ -136,10 +132,8 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
 
     public ResponseEntity<String> create(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
 
-        List<String> noValParams = getRequestParameterKeysWithoutValue(request);
-
         String json = readBody(request);
-        Class<?> dtoClass = createDtoClass(getCreateUrl(), Direction.REQUEST, noValParams,null);
+        Class<?> dtoClass = createDtoClass(getCreateUrl(), Direction.REQUEST, request,null);
         jsonDtoPropertyValidator.validateDto(json, dtoClass);
         Object dto = getJsonMapper().readDto(json, dtoClass);
         beforeCreate(dto, request, response);
@@ -149,14 +143,13 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
         logSecurityContext();
         E savedEntity = serviceCreate(entity);
         Object resultDto = dtoMapper.mapToDto(savedEntity,
-                createDtoClass(getCreateUrl(), Direction.RESPONSE,noValParams, savedEntity));
+                createDtoClass(getCreateUrl(), Direction.RESPONSE,request, savedEntity));
         afterCreate(resultDto, entity, request, response);
         return ok(jsonMapper.writeDto(resultDto));
     }
 
     public ResponseEntity<String> update(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, JsonPatchException, IOException {
-
-        List<String> noValParams = getRequestParameterKeysWithoutValue(request);
+        
 
         String patchString = readBody(request);
         log.debug("patchString: " + patchString);
@@ -165,7 +158,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
         // i indirectly check if by using secured service.findById
         Optional<E> savedOptional = getService().findById(id);
         E saved = VerifyEntity.isPresent(savedOptional, id, getEntityClass());
-        Class<?> dtoClass = createDtoClass(getUpdateUrl(), Direction.REQUEST,noValParams, saved);
+        Class<?> dtoClass = createDtoClass(getUpdateUrl(), Direction.REQUEST,request, saved);
         beforeUpdate(dtoClass, id, patchString, request, response);
         jsonDtoPropertyValidator.validatePatch(patchString, dtoClass);
 
@@ -191,7 +184,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
 
         logSecurityContext();
         E updated = servicePartialUpdate(patchEntity, relevantFields.toArray(new String[0]));
-        Class<?> resultDtoClass = createDtoClass(getUpdateUrl(), Direction.RESPONSE,noValParams, updated);
+        Class<?> resultDtoClass = createDtoClass(getUpdateUrl(), Direction.RESPONSE,request, updated);
         // no third arg, bc mapping all possible fields
         Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
         afterUpdate(resultDto, updated, request, response);
@@ -221,17 +214,17 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
 
 
 
-    protected Class<?> createDtoClass(String endpoint, Direction direction, Map<String, String[]> urlParams, E entity) throws BadEntityException {
-        DtoRequestInfo dtoRequestInfo = createDtoRequestInfo(endpoint, direction,urlParams, entity);
+    protected Class<?> createDtoClass(String endpoint, Direction direction, HttpServletRequest request, E entity) throws BadEntityException {
+        DtoRequestInfo dtoRequestInfo = createDtoRequestInfo(endpoint, direction,request, entity);
         return dtoClassLocator.find(dtoRequestInfo,dtoMappings);
     }
 
-    protected DtoRequestInfo createDtoRequestInfo(String endpoint, Direction direction,Map<String, String[]> urlParams, E entity) {
+    protected DtoRequestInfo createDtoRequestInfo(String endpoint, Direction direction,HttpServletRequest request, E entity) {
         Principal principal = principalFactory.create(entity);
         return DtoRequestInfo.builder()
                 .authorities(RapidSecurityContext.getRoles())
                 .direction(direction)
-                .urlParams(urlParams)
+                .request(request)
                 .principal(principal)
                 .endpoint(endpoint)
                 .build();

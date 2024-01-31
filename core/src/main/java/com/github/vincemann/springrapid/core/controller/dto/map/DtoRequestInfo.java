@@ -21,27 +21,25 @@ public class DtoRequestInfo {
     private Direction direction;
     private List<String> authorities = new ArrayList<>();
     private Principal principal;
-    private Map<String, String[]> urlParams = new HashMap<>();
+    private HttpServletRequest request;
 
 
     @Builder
-    public DtoRequestInfo(String endpoint, Direction direction, List<String> authorities, Principal principal, Map<String, String[]> urlParams) {
+    public DtoRequestInfo(String endpoint, Direction direction, List<String> authorities, Principal principal, HttpServletRequest request) {
         this.endpoint = endpoint;
         this.direction = direction;
+        this.request = request;
         if (authorities!=null)
             this.authorities = authorities;
         if (principal!=null)
             this.principal = principal;
-        if (urlParams != null)
-            this.urlParams = urlParams;
-
     }
 
     public DtoRequestInfo(DtoRequestInfo info){
         this.endpoint=info.getEndpoint();
         this.direction=info.getDirection();
         this.authorities = Lists.newArrayList(info.getAuthorities());
-        this.urlParams = new HashMap<>(info.getUrlParams());
+        this.request = info.getRequest();
         this.principal = info.getPrincipal();
     }
 

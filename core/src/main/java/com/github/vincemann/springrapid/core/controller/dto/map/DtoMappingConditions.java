@@ -53,9 +53,9 @@ public class DtoMappingConditions {
         return new DescribablePredicate<>("url-web-extension: " + extensionName) {
             @Override
             public boolean test(DtoRequestInfo dtoRequestInfo) {
-                String[] values = dtoRequestInfo.getUrlParams().get(UrlParamWebExtensionParser.getUrlParamKey(type));
-                if (values != null && values.length != 0){
-                    return Lists.newArrayList(values).contains(extensionName);
+                String extensionString = dtoRequestInfo.getRequest().getParameter(UrlParamWebExtensionParser.getUrlParamKey(type));
+                if (extensionString != null){
+                    return extensionString.contains(extensionName);
                 }
                 return false;
             }
@@ -87,7 +87,7 @@ public class DtoMappingConditions {
         return new DescribablePredicate<>("url-params: " + Arrays.toString(urlParams)) {
             @Override
             public boolean test(DtoRequestInfo dtoRequestInfo) {
-                return dtoRequestInfo.getUrlParams().keySet().containsAll(Lists.newArrayList(urlParams));
+                return dtoRequestInfo.getRequest().getParameterMap().keySet().containsAll(Lists.newArrayList(urlParams));
             }
         };
     }
