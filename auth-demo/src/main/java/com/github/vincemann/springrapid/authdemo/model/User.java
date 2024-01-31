@@ -37,8 +37,8 @@ public class User extends AbstractUser<Long> {
 	}
 
 	@Builder
-	public User(String contactInformation, String password, String name, Set<String> roles, String newContactInformation, long credentialsUpdatedMillis, String captchaResponse) {
-		super(contactInformation,newContactInformation, password, roles, credentialsUpdatedMillis, captchaResponse);
+	public User(String contactInformation, String password, String name, Set<String> roles, String newContactInformation, long credentialsUpdatedMillis) {
+		super(contactInformation,newContactInformation, password, roles, credentialsUpdatedMillis);
 		this.name = name;
 	}
 

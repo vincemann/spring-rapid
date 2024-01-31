@@ -19,7 +19,6 @@ import static com.github.vincemann.springrapid.core.util.ProxyUtils.aopUnproxy;
 
 public class BasicAuthTest extends RapidAuthIntegrationTest {
 
-//	private static final String TEST_RECAPTCHA = "6LdwxRcUAAAAABkhOGWQXhl9FsR27D5YUJRuGzx0";
 
 	@BeforeEach
 	public void setup() throws Exception {
@@ -29,9 +28,6 @@ public class BasicAuthTest extends RapidAuthIntegrationTest {
 
 		Mockito.when(aopUnproxy(properties).getShared())
 				.thenReturn(testSharedProperties);
-		// todo reenable captcha
-//		Mockito.when(unproxy(properties).getRecaptcha().getSitekey())
-//				.thenReturn(TEST_RECAPTCHA);
 	}
 
 	@Test
@@ -49,9 +45,6 @@ public class BasicAuthTest extends RapidAuthIntegrationTest {
 		mvc.perform(get(authProperties.getController().getContextUrl())
 				.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().is(200))
-//				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
-				// todo reenable captcha
-//				.andExpect(jsonPath("$.reCaptchaSiteKey").isString())
 				.andExpect(jsonPath("$.shared").value(hasEntry("testKey","testValue")))
 
 				.andExpect(jsonPath("$.user.id").value(getAdmin().getId()))
@@ -69,9 +62,6 @@ public class BasicAuthTest extends RapidAuthIntegrationTest {
 		mvc.perform(get(authProperties.getController().getContextUrl()))
 				.andExpect(status().is(200))
 				.andExpect(header().doesNotExist(HttpHeaders.AUTHORIZATION))
-				// todo reenable captcha
-
-//				.andExpect(jsonPath("$.reCaptchaSiteKey").isString())
 				.andExpect(jsonPath("$.shared").value(hasEntry("testKey","testValue")))
 				.andExpect(jsonPath("$.user").doesNotExist());
 	}

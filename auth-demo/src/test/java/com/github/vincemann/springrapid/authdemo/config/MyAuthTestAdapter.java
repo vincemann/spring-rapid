@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.authdemo.adapter;
+package com.github.vincemann.springrapid.authdemo.config;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.controller.dto.SignupDto;
@@ -9,7 +9,6 @@ import com.github.vincemann.springrapid.core.sec.Roles;
 import com.google.common.collect.Sets;
 import org.springframework.stereotype.Component;
 
-@Component
 public class MyAuthTestAdapter extends AuthTestAdapter {
 
     private int nameCount = 0;
@@ -20,13 +19,6 @@ public class MyAuthTestAdapter extends AuthTestAdapter {
         return new User(contactInformation,password,createUniqueName(),roles);
     }
 
-
-    public String createUniqueName(){
-        String name = NAME+nameCount;
-        nameCount++;
-        return name;
-    }
-
     @Override
     public SignupDto createValidSignupDto() {
         SignupDto signupDto = super.createValidSignupDto();
@@ -34,25 +26,14 @@ public class MyAuthTestAdapter extends AuthTestAdapter {
     }
 
     @Override
-    public String getUpdatableFieldName() {
-        return "name";
-    }
-
-    @Override
-    public String getNewValidFieldValue() {
-        return "newSuperName";
-    }
-
-    @Override
-    public String getInvalidFieldValue() {
-        // too long
-        return "A123456789A123456789A123456789A123456789A123456789A123456789A123456789";
-    }
-
-    @Override
     public SignupDto createInvalidSignupDto() {
         SignupDto signupDto = super.createInvalidSignupDto();
         return new MySignupDto(signupDto.getContactInformation(), signupDto.getPassword(),createUniqueName(),signupDto.getRoles());
+    }
+
+
+    private String createUniqueName(){
+        return NAME+nameCount++;
     }
 
 }

@@ -39,18 +39,6 @@ public abstract class AuthTestAdapter {
     public static String UNKNOWN_USER_ID = "99";
 
 
-    public String getUpdatableFieldName(){
-        return null;
-    }
-
-    public String getNewValidFieldValue(){
-        return null;
-    }
-
-    public String getInvalidFieldValue(){
-        return null;
-    }
-
     public void beforeEach() throws Exception{}
 
     public void afterEach()throws Exception {}
