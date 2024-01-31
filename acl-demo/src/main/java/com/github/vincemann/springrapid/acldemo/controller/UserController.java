@@ -32,7 +32,5 @@ public class UserController extends AbstractUserController<User, Long>  {
 
 
         super.configureDtoMappings(builder);
-
-
     }
 }

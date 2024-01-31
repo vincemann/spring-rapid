@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.service.captcha.CaptchaValidator;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.config.RapidCrudControllerAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
@@ -28,14 +27,5 @@ public class RapidAuthGeneralAutoConfiguration {
     }
 
 
-
-    /**
-     * Configures CaptchaValidator if missing
-     */
-    @Bean
-    @ConditionalOnMissingBean(CaptchaValidator.class)
-    public CaptchaValidator captchaValidator(AuthProperties properties) {
-        return new CaptchaValidator(properties);
-    }
 
 }

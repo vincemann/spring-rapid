@@ -136,114 +136,6 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         return bean;
     }
 
-//    @Override
-//    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-//        // log.debug("postProcessing bean : " + beanName);
-//        if (bean instanceof CrudService && !(bean instanceof AbstractServiceExtension)) {
-//            Object proxied = beanFactory.getBean(beanName);
-//            Object unwrappedBean = AopTestUtils.getUltimateTargetObject(proxied);
-//
-//            List<DefineProxy> proxyDefinitions = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), DefineProxy.class, DefineProxies.class);
-//            List<CreateProxy> toCreate = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), CreateProxy.class, CreateProxies.class);
-//            Map<String, CrudService> createdInternalProxies = new HashMap<>();
-//            if (toCreate.isEmpty()) {
-//                return proxied;
-//            }
-//            boolean primaryBeanRegistered = beanFactory.getBeanDefinition(beanName).isPrimary();
-//            Class serviceInterface = resolveServiceInterface(unwrappedBean, beanName);
-//            // todo fancyly log this annotation to show proxy chain with arrows
-//            if (log.isDebugEnabled())
-//                log.debug("Identified Proxies of bean: " + beanName + " : " + toCreate);
-//
-//            for (CreateProxy proxy : toCreate) {
-//                // make sure there is only one primary bean
-//                if (proxy.primary()) {
-//                    if (primaryBeanRegistered) {
-//                        throw new IllegalArgumentException("Multiple ProxyBeans marked as primary");
-//                    }
-//                    primaryBeanRegistered = true;
-//                }
-//
-//                GenericBeanDefinition proxyBeanDef = createBeanDef(proxy.qualifiers(), proxy.primary(), ((Class<? extends CrudService>) serviceInterface));
-//                String proxyBeanName = resolveProxyName(proxy.qualifiers(), proxy.primary(), proxy.name(), unwrappedBean.getClass());
-//                if (log.isDebugEnabled())
-//                    log.debug("creating proxyBean with name: " + proxyBeanName);
-//
-//                // compose proxy instance by creating all internal proxies needed and form a proxy chain
-//                CrudService lastProxiedBean = (CrudService) proxied;
-//                for (String proxyName : proxy.proxies()) {
-//                    CrudService internalProxy;
-//                    Optional<DefineProxy> proxyDefinition = proxyDefinitions
-//                            .stream()
-//                            .filter(p -> p.name().equals(proxyName))
-//                            .findFirst();
-//                    if (proxyDefinition.isEmpty()) {
-//                        // did not find matching local proxy definition, must be a proxy from elsewhere
-//                        // try to find globally, proxy definitions name is assumed to be the global bean name
-//                        if (beanFactory.containsBean(proxyName)) {
-//                            internalProxy = (CrudService) beanFactory.getBean(proxyName);
-//                        } else {
-//                            throw new IllegalArgumentException("Proxy with name: " + proxyName + " could not be found. Make sure to create a local ProxyDefinition with this name or define a bean globally with that name");
-//                        }
-//                    } else {
-//                        // this is the normal case
-//                        // found local proxy definition, now create proxy
-//                        internalProxy = createdInternalProxies.get(proxyName);
-//                        boolean defaultEnabled = proxyDefinition.get().defaultExtensionsEnabled();
-//                        AbstractServiceExtension[] extensions = resolveExtensions(proxyDefinition.get())
-//                                .toArray(new AbstractServiceExtension[0]);
-//                        if (internalProxy == null) {
-//                            internalProxy = new ServiceExtensionProxyBuilder<>(lastProxiedBean)
-//                                    .addGenericExtensions(extensions)
-//                                    .toggleDefaultExtensions(defaultEnabled)
-//                                    .ignoreDefaultExtensions(proxyDefinition.get().ignoredExtensions())
-//                                    .build();
-//                        }
-//                        // create the proxy instance and put it into the context
-//                        BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.rootBeanDefinition(CrudService.class);
-//                        beanDefinitionBuilder.setScope(proxyBeanDef.getScope());
-//                        beanDefinitionBuilder.addConstructorArgValue(lastProxiedBean);
-//                        beanDefinitionBuilder.setLazyInit(false);
-//
-//                        String proxyBeanNameInContext = Arrays.stream(beanFactory.getBeanNamesForType(CrudService.class))
-//                                .filter(name -> name.contains(proxyBeanName))
-//                                .findFirst().orElse(null);
-//
-//                        // if the proxy bean is already in the context, use it. Otherwise register a new one
-//                        if (proxyBeanNameInContext != null) {
-//                            internalProxy = beanFactory.getBean(proxyBeanNameInContext, CrudService.class);
-//                        } else {
-//                            // register proxy bean into the context
-//                            beanFactory.registerBeanDefinition(proxyBeanName, beanDefinitionBuilder.getBeanDefinition());
-//                            createdInternalProxies.put(proxyBeanName, internalProxy);
-//                        }
-//
-//                        // create the next proxy and form the proxy chain
-//                        lastProxiedBean = internalProxy;
-//                    }
-//
-//                    // the last created proxy from the chain is the most outer proxy -> entry point for proxy chain -> gets autowired
-//                    CrudService proxyBean = lastProxiedBean;
-//
-//                    if (log.isDebugEnabled()) {
-//                        log.debug("creating proxyBean : " + proxyBean);
-//                        log.debug("Registering beanDef of proxyBean first: " + proxyBeanDef);
-//                    }
-//
-//                    // register the proxy into Spring's context
-//                    beanFactory.registerBeanDefinition(proxyBeanName, proxyBeanDef);
-//                    beanFactory.registerSingleton(proxyBeanName, proxyBean);
-//                    proxyBean.setBeanName(proxyBeanName);
-//                    if (log.isDebugEnabled()) {
-//                        log.debug("registered proxyBean: " + proxyBeanName);
-//                    }
-//                }
-//            }
-//        }
-//        return bean;
-//
-//    }
-
 
     protected Class resolveServiceInterface(Object bean, String beanName) {
         String entityName = ((CrudService) bean).getEntityClass().getSimpleName();
@@ -304,19 +196,9 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         List<BasicServiceExtension> extensions = new ArrayList<>();
         ArrayList<Class> extensionStrings = Lists.newArrayList(classExtensions);
         for (Class extensionClass : extensionStrings) {
-            Object extension = null;
-//            if (extensionString.endsWith(".class")) {
-//                try {
-//                    Class<?> extensionType = Class.forName(extensionString);
-//                    extension = beanFactory.getBean(extensionType);
-//                } catch (ClassNotFoundException e) {
-//                    throw new IllegalArgumentException("Could not find matching class for extension: " + extensionString, e);
-//                }
-//            } else {
-            extension = beanFactory.getBean(extensionClass);
-//            }
+            Object extension = beanFactory.getBean(extensionClass);
             if (!(extension instanceof BasicServiceExtension)) {
-                throw new IllegalArgumentException("Given extension bean: " + extensionClass.getSimpleName() + " is not of Type AbstractServiceExtension");
+                throw new IllegalArgumentException("Given extension bean: " + extensionClass.getSimpleName() + " is not of Type BasicServiceExtension");
             }
             BasicServiceExtension serviceExtension = (BasicServiceExtension) extension;
             beanFactory.autowireBean(extension);
@@ -331,17 +213,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         List<BasicServiceExtension> extensions = new ArrayList<>();
         ArrayList<String> extensionStrings = Lists.newArrayList(extensionStringArr);
         for (String extensionString : extensionStrings) {
-            Object extension = null;
-//            if (extensionString.endsWith(".class")) {
-//                try {
-//                    Class<?> extensionType = Class.forName(extensionString);
-//                    extension = beanFactory.getBean(extensionType);
-//                } catch (ClassNotFoundException e) {
-//                    throw new IllegalArgumentException("Could not find matching class for extension: " + extensionString, e);
-//                }
-//            } else {
-            extension = beanFactory.getBean(extensionString);
-//            }
+            Object extension = beanFactory.getBean(extensionString);
             if (!(extension instanceof BasicServiceExtension)) {
                 throw new IllegalArgumentException("Given extension bean: " + extensionString + " is not of Type AbstractServiceExtension");
             }
@@ -353,15 +225,4 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         }
         return extensions;
     }
-
-
-//    private List<SecurityServiceExtension> resolveRules(SecurityProxy proxy){
-//        List<SecurityServiceExtension> rules = new ArrayList<>();
-//        ArrayList<Class<? extends SecurityServiceExtension>> pluginTypes = Lists.newArrayList(proxy.rules());
-//        for (Class<? extends SecurityServiceExtension> ruleType : pluginTypes) {
-//            SecurityServiceExtension rule = beanFactory.getBean(ruleType);
-//            rules.add(rule);
-//        }
-//        return rules;
-//    }
 }

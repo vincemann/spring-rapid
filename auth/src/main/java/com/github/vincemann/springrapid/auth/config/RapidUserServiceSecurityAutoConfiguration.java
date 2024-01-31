@@ -22,8 +22,8 @@ import org.springframework.security.acls.model.MutableAclService;
 
 
 /**
- * Adds acl security stack in form of configuring @{@link Acl} and @{@link Secured} versions (proxies) of {@link UserService}
- * with default Security- and AclExtensions.
+ * Creates @{@link Acl} and @{@link Secured} versions (proxies) of {@link UserService}
+ * with default security- and acl-extensions for user service.
  */
 @Configuration
 @Slf4j

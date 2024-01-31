@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acl.SecuredCrudController;
+import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.acldemo.dto.VisitDto;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
@@ -24,8 +25,7 @@ import java.util.Optional;
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.any;
 
 @Controller
-public class VisitController
-        extends SecuredCrudController<Visit, Long>
+public class VisitController extends SecuredCrudController<Visit, Long>
 {
     @Getter
     private String subscribeOwnerUrl;
@@ -38,7 +38,8 @@ public class VisitController
 
     @Autowired
     @Lazy
-    public void setService(VisitService service) {
+    @Secured
+    public void setVisitService(VisitService service) {
         this.service = service;
     }
 

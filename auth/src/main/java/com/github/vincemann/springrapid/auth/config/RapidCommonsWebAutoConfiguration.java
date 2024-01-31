@@ -59,24 +59,5 @@ public class RapidCommonsWebAutoConfiguration {
         return converter;
 	}
 
-//	@Bean
-//	public MapperUtils lmapUtils(ObjectMapper mapper){
-//		return new MapperUtils(mapper);
-//	}
-
-	/**
-	 * Configures LemonCorsConfig if missing and lemon.cors.allowed-origins is provided
-	 */
-	@Bean
-	@ConditionalOnProperty(name="lemon.cors.allowed-origins")
-	@ConditionalOnMissingBean(CorsConfigurationSource.class)
-	public CorsConfigurationSource corsConfigurationSource(AuthProperties properties) {
-		return new RapidCorsConfigurationSource(properties);
-	}
-	
-
-	
-
-
 
 }

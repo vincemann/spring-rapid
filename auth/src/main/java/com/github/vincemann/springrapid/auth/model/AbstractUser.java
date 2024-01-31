@@ -14,7 +14,6 @@ import java.util.Set;
 
 @Getter @Setter
 @MappedSuperclass
-@AllArgsConstructor
 public class AbstractUser<Id extends Serializable>
 	extends AuditingEntity<Id>
 		implements AuthenticatingEntity<Id>
@@ -47,6 +46,14 @@ public class AbstractUser<Id extends Serializable>
 	@JsonIgnore
 	protected Long credentialsUpdatedMillis = System.currentTimeMillis();
 
+
+	public AbstractUser(String contactInformation, String newContactInformation, String password, Set<String> roles, Long credentialsUpdatedMillis) {
+		this.contactInformation = contactInformation;
+		this.newContactInformation = newContactInformation;
+		this.password = password;
+		this.roles = roles;
+		this.credentialsUpdatedMillis = credentialsUpdatedMillis;
+	}
 
 	public final boolean hasRole(String role) {
 		return roles.contains(role);

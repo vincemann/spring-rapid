@@ -22,7 +22,7 @@ public class RapidAuthAclAutoConfiguration {
 //	@Primary
     @ConditionalOnMissingBean(PermissionEvaluator.class)
     @Bean
-    public PermissionEvaluator permissionEvaluator(AclService aclService, @Autowired(required = false) List<GlobalSecurityRule> globalSecurityRules, RapidAclSecurityContext<?> securityContext){
+    public PermissionEvaluator permissionEvaluator(AclService aclService, @Autowired(required = false) List<GlobalSecurityRule> globalSecurityRules, RapidAclSecurityContext securityContext){
         return new GlobalRuleEnforcingAclPermissionEvaluator(aclService,globalSecurityRules,securityContext);
     }
 }

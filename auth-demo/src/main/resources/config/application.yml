@@ -6,9 +6,6 @@ server:
 
 spring:
 
-  # Active profile
-  profiles.active: dev
-
 #  exaxmple mail config for google mail
 #  mail:
 #    host: smtp.gmail.com

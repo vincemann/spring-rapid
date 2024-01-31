@@ -23,13 +23,15 @@ public class VetController
         builder.when(roles(AuthRoles.ADMIN))
                         .thenReturn(FullVetDto.class);
 
-        builder.when(endpoint(getCreateUrl()))
+        builder.when(endpoint(getCreateUrl()).and(direction(Direction.REQUEST)))
                 .thenReturn(CreateVetDto.class);
 
-        builder.when(roles(MyRoles.VET)
+        builder.when(endpoint(getUpdateUrl())
+                        .and(roles(MyRoles.VET))
                         .and(principal(Principal.OWN))
                         .and(direction(Direction.REQUEST)))
                 .thenReturn(VetUpdatesOwnDto.class);
+
 
         builder.when(direction(Direction.RESPONSE))
                 .thenReturn(FullVetDto.class);

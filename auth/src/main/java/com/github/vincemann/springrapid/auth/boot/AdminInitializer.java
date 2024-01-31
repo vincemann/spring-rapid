@@ -24,7 +24,7 @@ import java.util.Optional;
  */
 public class AdminInitializer implements CommandLineRunner {
 
-    private UserService<AbstractUser<Serializable>, Serializable> userService;
+    private UserService userService;
     private AuthProperties authProperties;
     private RapidSecurityContext securityContext;
 
@@ -73,7 +73,7 @@ public class AdminInitializer implements CommandLineRunner {
 
     @Autowired
     @Acl
-    public void setUserService(UserService<AbstractUser<Serializable>, Serializable> userService) {
+    public void setUserService(UserService userService) {
         this.userService = userService;
     }
 

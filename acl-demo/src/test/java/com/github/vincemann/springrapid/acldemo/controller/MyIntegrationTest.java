@@ -17,9 +17,9 @@ import com.github.vincemann.springrapid.acldemo.dto.vet.FullVetDto;
 import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.repo.*;
 import com.github.vincemann.springrapid.acldemo.service.*;
+import com.github.vincemann.springrapid.auth.boot.AdminInitializer;
 import com.github.vincemann.springrapid.auth.controller.dto.SignupDto;
 import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
-import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +41,7 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.creat
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 // add admin before each test
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class MyControllerIntegrationTest extends AclMvcTest
+public class MyIntegrationTest extends AclMvcTest
 {
 
     //Types
@@ -184,7 +184,11 @@ public class MyControllerIntegrationTest extends AclMvcTest
     protected VisitControllerTestTemplate visitController;
 
     @Autowired
-    protected RapidSecurityContext<RapidPrincipal> securityContext;
+    protected RapidSecurityContext securityContext;
+
+    @Autowired
+    private AdminInitializer adminInitializer;
+
 
 
     @Override
@@ -297,6 +301,8 @@ public class MyControllerIntegrationTest extends AclMvcTest
                 .pets(new HashSet<>())
                 .reason("teeth hurt")
                 .build();
+
+        adminInitializer.run();
     }
 
     protected void assertVetHasSpecialties(String vetName, String... descriptions) {

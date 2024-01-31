@@ -30,13 +30,26 @@ public class User extends AbstractUser<Long> {
 	}
 
 	@Builder
-	public User(String contactInformation, String password, String uuid, Set<String> roles, String newContactInformation, long credentialsUpdatedMillis, String captchaResponse) {
-		super(contactInformation,newContactInformation, password, roles, credentialsUpdatedMillis, captchaResponse);
+	public User(String contactInformation, String password, String uuid, Set<String> roles, String newContactInformation, long credentialsUpdatedMillis) {
+		super(contactInformation,newContactInformation, password, roles, credentialsUpdatedMillis);
 		this.uuid = uuid;
 	}
 
 	@Override
 	public String toString() {
-		return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
+		return "User{" +
+				"uuid='" + uuid + '\'' +
+				", contactInformation='" + contactInformation + '\'' +
+				", newContactInformation='" + newContactInformation + '\'' +
+				", password='" + "hidden" + '\'' +
+				", roles=" + roles +
+				", credentialsUpdatedMillis=" + credentialsUpdatedMillis +
+				", roles=" + getRoles() +
+				", createdById=" + getCreatedById() +
+				", createdDate=" + getCreatedDate() +
+				", lastModifiedById=" + getLastModifiedById() +
+				", lastModifiedDate=" + getLastModifiedDate() +
+				", id=" + getId() +
+				'}';
 	}
 }

@@ -18,7 +18,7 @@ import static com.github.vincemann.ezcompare.PropertyMatchers.propertyAssert;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class VisitControllerTest extends MyControllerIntegrationTest {
+public class VisitControllerTest extends MyIntegrationTest {
 
 
 
@@ -205,7 +205,7 @@ public class VisitControllerTest extends MyControllerIntegrationTest {
                 .header(HttpHeaders.AUTHORIZATION,vetDiCaprioToken)
                 .param("ownerid",savedMeier.getId().toString())
                 .param("visitid",visit.getId().toString())
-                .param("read",Boolean.TRUE.toString()))
+                .param("subscribe",Boolean.TRUE.toString()))
                 .andExpect(status().is2xxSuccessful());
         // now meier should be able to read visit
 

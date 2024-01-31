@@ -306,6 +306,28 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
     }
 
 
+    /**
+     * implement this method in order to set request -> dto-class mappings.
+     *
+     * example:
+     *  @Override
+     *     protected void configureDtoMappings(DtoMappingsBuilder builder) {
+     *
+     *         builder.when(endpoint(getCreateUrl()).and(direction(Direction.REQUEST)))
+     *                 .thenReturn(CreateOwnerDto.class);
+     *
+     *         builder.when(endpoint(getUpdateUrl()).and(direction(Direction.REQUEST)))
+     *                 .thenReturn(UpdateOwnerDto.class);
+     *
+     *         builder.when(direction(Direction.RESPONSE).and(principal(Principal.OWN)))
+     *                 .thenReturn(ReadOwnOwnerDto.class);
+     *     }
+     *
+     * you can combine {@link DtoMappingConditions} with your own predicates.
+     * Note:
+     * order is important, the first match counts, make sure to put fallback mappings at the end.
+     *
+     */
     protected abstract void configureDtoMappings(DtoMappingsBuilder builder);
 
     protected String getMediaType() {

@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.auth.config;
 
-import com.github.vincemann.springrapid.auth.model.AuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.sec.*;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.JwtAuthorizationTokenServiceImpl;
@@ -16,7 +15,7 @@ public class RapidAuthSecurityAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(AuthorizationTokenService.class)
-    public AuthorizationTokenService<AuthAuthenticatedPrincipal> authorizationTokenService(){
+    public AuthorizationTokenService authorizationTokenService(){
         return new JwtAuthorizationTokenServiceImpl();
     }
 
@@ -32,13 +31,7 @@ public class RapidAuthSecurityAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(JwtPrincipalConverter.class)
-    public JwtPrincipalConverter<AuthAuthenticatedPrincipal> jwtClaimsPrincipalConverter(){
+    public JwtPrincipalConverter jwtClaimsPrincipalConverter(){
         return new JwtPrincipalConverterImpl();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(AuthSecurityContextChecker.class)
-    public AuthSecurityContextChecker rapidAuthSecurityContextChecker(){
-        return new AuthSecurityContextChecker();
     }
 }
