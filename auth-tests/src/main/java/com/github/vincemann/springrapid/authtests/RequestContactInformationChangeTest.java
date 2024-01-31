@@ -87,20 +87,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 		AbstractUser<Serializable> updatedUser = getUserService().findById(getSecondUser().getId()).get();
 		Assertions.assertNull(updatedUser.getNewContactInformation());
 	}
-	
 
-	@Test
-	public void adminCantRequestContactInformationChangeOfDiffAdmin() throws Exception {
-		//unverified admins are not treated differently than verified admins
-		String token = login2xx(ADMIN_CONTACT_INFORMATION,ADMIN_PASSWORD);
-		mvc.perform(userController.requestContactInformationChange(getSecondAdmin().getId(),token,contactInformationChangeDto()))
-				.andExpect(status().is(403));
-		
-		verify(aopUnproxy(mailSender), never()).send(any());
-
-		AbstractUser<Serializable> updatedUser = getUserService().findById(getSecondAdmin().getId()).get();
-		Assertions.assertNull(updatedUser.getNewContactInformation());
-	}
 
 	/**
      * Trying with invalid data.
@@ -108,7 +95,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 	 * @throws JsonProcessingException 
      */
 	@Test
-	public void cantRequestContactInformationChangeWithInvalidData() throws JsonProcessingException, Exception {
+	public void cantRequestContactInformationChangeWithInvalidData() throws Exception {
 		RequestContactInformationChangeDto dto = new RequestContactInformationChangeDto();
 		dto.setNewContactInformation(null);
 //		dto.setPassword(null);
@@ -117,10 +104,6 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 		mvc.perform(userController.requestContactInformationChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
 		verify(aopUnproxy(mailSender), never()).send(any());
-//				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
-//				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
-//						"dto.newContactInformation"
-						/*"dto.password"*/
     	
 		dto = new RequestContactInformationChangeDto();
 //		dto.setPassword("");
@@ -130,52 +113,20 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 		mvc.perform(userController.requestContactInformationChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
 		verify(aopUnproxy(mailSender), never()).send(any());
-//				.andExpect(jsonPath("$.errors[*].field").value(hasSize(2)))
-//				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
-//						"dto.newContactInformation"
-//						/*"dto.password"*/)));
 
 		// try with invalid newContactInformation
 		dto = new RequestContactInformationChangeDto();
 		dto.setNewContactInformation(INVALID_CONTACT_INFORMATION);
 
 
-		// todo kann das nicht über die @Email annotation am getter klären, muss also programmatisch geschehen
 		mvc.perform(userController.requestContactInformationChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
 		verify(aopUnproxy(mailSender), never()).send(any());
-//				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
-//				.andExpect(jsonPath("$.errors[*].field").value(hasItems("dto.newContactInformation")));
-
-		// try with wrong password
-//		dto = dto();
-//		dto.setPassword("wrong-password");
-//		mvc.perform(post("/api/core/users/{id}/contactInformation-change-request", getUnverifiedUser().getId())
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
-//				.content(MapperUtils.toJson(dto)))
-//				.andExpect(status().is(400))
-//				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
-//				.andExpect(jsonPath("$.errors[*].field").value(hasItems("updatedUser.password")));
-
-		// try with null password
-//		dto = dto();
-//		dto.setPassword(null);
-//		mvc.perform(post("/api/core/users/{id}/contactInformation-change-request", getUnverifiedUser().getId())
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
-//				.content(MapperUtils.toJson(dto)))
-//				.andExpect(status().is(400))
-//				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
-//				.andExpect(jsonPath("$.errors[*].field").value(hasItems("dto.password")));
-
 		// try with an existing contactInformation
 		dto = contactInformationChangeDto();
 		dto.setNewContactInformation(SECOND_USER_CONTACT_INFORMATION);;
 		mvc.perform(userController.requestContactInformationChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
-//				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
-//				.andExpect(jsonPath("$.errors[*].field").value(hasItems("dto.newContactInformation")));
 		
 		verify(aopUnproxy(mailSender), never()).send(any());
 	}

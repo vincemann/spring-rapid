@@ -247,8 +247,8 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		Id id = fetchId(request);
 		String body = readBody(request);
 		U user = fetchUser(id);
-		Class<? extends ChangePasswordDto> dtoClass = (Class<? extends ChangePasswordDto>) createDtoClass(getChangePasswordUrl(),Direction.REQUEST,noValParams,user);
-		ChangePasswordDto changePasswordDto = getJsonMapper().readDto(body, dtoClass);
+		Class<?> dtoClass = createDtoClass(getChangePasswordUrl(),Direction.REQUEST,noValParams,user);
+		ChangePasswordDto changePasswordDto = (ChangePasswordDto) getJsonMapper().readDto(body, dtoClass);
 		getDtoValidationStrategy().validate(changePasswordDto);
 
 		log.debug("Changing password of user with id: " + id);
@@ -265,8 +265,8 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		Id id = fetchId(request);
 		String body = readBody(request);
 		U user = fetchUser(id);
-		Class<? extends RequestContactInformationChangeDto> dtoClass = (Class<? extends RequestContactInformationChangeDto>) createDtoClass(getRequestContactInformationChangeUrl(),Direction.REQUEST,noValParams,user);
-		RequestContactInformationChangeDto dto = getJsonMapper().readDto(body, dtoClass);
+		Class<?> dtoClass = createDtoClass(getRequestContactInformationChangeUrl(),Direction.REQUEST,noValParams,user);
+		RequestContactInformationChangeDto dto = (RequestContactInformationChangeDto) getJsonMapper().readDto(body, dtoClass);
 		getDtoValidationStrategy().validate(dto);
 		log.debug("Requesting contactInformation change for user: " + user);
 		getSecuredService().requestContactInformationChange(user, dto.getNewContactInformation());
@@ -274,15 +274,8 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	}
 
 
-	public ResponseEntity<?> changeContactInformation(
-			HttpServletRequest request,
-//			@RequestParam String code,
-			HttpServletResponse response) throws BadEntityException, EntityNotFoundException, AlreadyRegisteredException {
-
-//		ID id = fetchId(request);
-//		log.debug("Changing contactInformation of user with id: " + id);
+	public ResponseEntity<?> changeContactInformation(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, AlreadyRegisteredException {
 		String code = readRequestParam(request, "code");
-//		U user = fetchUser(id);
 		U saved = getSecuredService().changeContactInformation(code);
 		appendFreshTokenOf(saved,response);
 		return okNoContent();
@@ -374,6 +367,10 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		builder.when(endpoint(getResetPasswordUrl())
 						.and(direction(Direction.REQUEST)))
 				.thenReturn(ResetPasswordDto.class);
+
+		builder.when(endpoint(getResetPasswordUrl())
+						.and(direction(Direction.RESPONSE)))
+				.thenReturn(FindOwnUserDto.class);
 
 		builder.when(endpoint(getFetchByContactInformationUrl())
 						.and(direction(Direction.RESPONSE))

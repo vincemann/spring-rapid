@@ -55,8 +55,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Fills tokens Map in an integration test manner by creating and logging all users in.
  */
 @SpringBootTest({
-//        "logging.level.com.naturalprogrammer=ERROR", // logging.level.root=ERROR does not work: https://stackoverflow.com/questions/49048298/springboottest-not-overriding-logging-level
-//        "logging.level.org.springframework=ERROR",
         "lemon.recaptcha.sitekey="
 })
 @ImportAutoConfiguration(exclude = RapidAdminAutoConfiguration.class)
@@ -95,7 +93,7 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
     @Autowired
     protected JweTokenService jweTokenService;
 
-    protected Map<Serializable, String> tokens = new HashMap<>(6);
+//    protected Map<Serializable, String> tokens = new HashMap<>(6);
 
     protected AbstractUser<Serializable> admin;
     protected AbstractUser<Serializable> secondAdmin;
@@ -147,13 +145,13 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
 
     protected void createTestUsers() throws Exception {
         admin = aclUserService.save(testAdapter.createTestUser(ADMIN_CONTACT_INFORMATION,/*"Admin",*/ ADMIN_PASSWORD, AuthRoles.ADMIN));
-        secondAdmin = aclUserService.save(testAdapter.createTestUser(SECOND_ADMIN_CONTACT_INFORMATION,/*"Second Admin",*/ SECOND_ADMIN_PASSWORD, AuthRoles.ADMIN));
-        blockedAdmin = aclUserService.save(testAdapter.createTestUser(BLOCKED_ADMIN_CONTACT_INFORMATION,/*"Blocked Admin",*/ BLOCKED_ADMIN_PASSWORD, AuthRoles.ADMIN, AuthRoles.BLOCKED));
+        secondAdmin =  aclUserService.save(testAdapter.createTestUser(SECOND_ADMIN_CONTACT_INFORMATION,/*"Second Admin",*/ SECOND_ADMIN_PASSWORD, AuthRoles.ADMIN));
+        blockedAdmin =  aclUserService.save(testAdapter.createTestUser(BLOCKED_ADMIN_CONTACT_INFORMATION,/*"Blocked Admin",*/ BLOCKED_ADMIN_PASSWORD, AuthRoles.ADMIN, AuthRoles.BLOCKED));
 
-        user = aclUserService.save(testAdapter.createTestUser(USER_CONTACT_INFORMATION,/*"User",*/ USER_PASSWORD, AuthRoles.USER));
-        secondUser = aclUserService.save(testAdapter.createTestUser(SECOND_USER_CONTACT_INFORMATION,/*"User",*/ SECOND_USER_PASSWORD, AuthRoles.USER));
-        unverifiedUser = aclUserService.save(testAdapter.createTestUser(UNVERIFIED_USER_CONTACT_INFORMATION,/*"Unverified User",*/ UNVERIFIED_USER_PASSWORD, AuthRoles.USER, AuthRoles.UNVERIFIED));
-        blockedUser = aclUserService.save(testAdapter.createTestUser(BLOCKED_USER_CONTACT_INFORMATION,/*"Blocked User",*/ BLOCKED_USER_PASSWORD, AuthRoles.USER, AuthRoles.BLOCKED));
+        user =  aclUserService.save(testAdapter.createTestUser(USER_CONTACT_INFORMATION,/*"User",*/ USER_PASSWORD, AuthRoles.USER));
+        secondUser =  aclUserService.save(testAdapter.createTestUser(SECOND_USER_CONTACT_INFORMATION,/*"User",*/ SECOND_USER_PASSWORD, AuthRoles.USER));
+        unverifiedUser =  aclUserService.save(testAdapter.createTestUser(UNVERIFIED_USER_CONTACT_INFORMATION,/*"Unverified User",*/ UNVERIFIED_USER_PASSWORD, AuthRoles.USER, AuthRoles.UNVERIFIED));
+        blockedUser =  aclUserService.save(testAdapter.createTestUser(BLOCKED_USER_CONTACT_INFORMATION,/*"Blocked User",*/ BLOCKED_USER_PASSWORD, AuthRoles.USER, AuthRoles.BLOCKED));
         // sleep so login shortly after wont result in obsolete token
 //        Thread.sleep(400);
     }
@@ -216,7 +214,7 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
     protected void tearDown() throws Exception {
         System.err.println("TEST ENDS HERE -----------------------------------------------------------------------------------------------------------------");
         System.err.println("clearing test data");
-        tokens.clear();
+//        tokens.clear();
         System.err.println("deleting users");
         clearAclCache();
         // done via sql script

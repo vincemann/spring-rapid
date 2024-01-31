@@ -43,7 +43,7 @@ import static com.github.vincemann.springrapid.auth.util.PrincipalUtils.isAnon;
 /**
  * Note:
  * If you extend from this class and annotate with @{@link org.springframework.stereotype.Service} or @{@link org.springframework.stereotype.Component}
- * make sure to not also add @{@link org.springframework.context.annotation.Primary}.
+ * make sure to not also add {@link org.springframework.context.annotation.Primary}
  *
  */
 @Validated
@@ -67,7 +67,6 @@ public abstract class JpaUserService
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
     private RapidPasswordEncoder passwordEncoder;
     private AuthProperties properties;
-//    private MailSender<MailData> mailSender;
     private JweTokenService jweTokenService;
     private IdConverter<ID> idConverter;
     private PasswordValidator passwordValidator;
@@ -75,18 +74,6 @@ public abstract class JpaUserService
     private EntityManager entityManager;
     private MessageSender messageSender;
 
-    public JpaUserService<U,ID,R> getService(){
-        return (JpaUserService<U, ID, R>) service;
-    }
-
-    /**
-     * Creates a new user object. Must be overridden in the
-     * subclass, like this:
-     * <p>
-     * public User newUser() {
-     * return new User();
-     * }
-     */
     public abstract U newUser();
 
 
@@ -127,11 +114,6 @@ public abstract class JpaUserService
         makeUnverified(saved);
 
         log.debug("saved and send verification mail for unverified new user: " + saved);
-
-        // NO
-        //logout anon and login user, it is expected that signed up user is logged in after this method is called
-//        securityContext.login(authenticatedPrincipalFactory.create(saved));
-
         return saved;
     }
 
@@ -153,7 +135,6 @@ public abstract class JpaUserService
     protected void makeUnverified(U user) {
         user.getRoles().add(AuthRoles.UNVERIFIED);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-//        TransactionalUtils.afterCommit(() -> sendVerificationMail(user));
         TransactionalUtils.afterCommit(() -> sendVerificationMessage(user));
     }
 
@@ -174,9 +155,6 @@ public abstract class JpaUserService
      * Resends verification mail to the user.
      */
     public void resendVerificationMessage(U user) throws EntityNotFoundException, BadEntityException {
-
-//        // The user must exist
-
         VerifyEntity.isPresent(user, "User not found");
         // must be unverified
         VerifyEntity.is(user.getRoles().contains(AuthRoles.UNVERIFIED), " Already verified");
@@ -207,12 +185,6 @@ public abstract class JpaUserService
             // this makes sense to do here not in security plugin
             VerifyEntity.is(user.hasRole(AuthRoles.UNVERIFIED), "Already Verified");
             //verificationCode is jwtToken
-
-
-//            VerifyAccess.condition(
-//                    claims.getClaim("id").equals(user.getId().toString()),
-//                    "Wrong user id in token");
-
 
             //no login needed bc token of user is appended in controller -> we avoid dynamic logins in a stateless env
             //also to be able to use read-only security test -> generic principal type does not need to be passed into this class
@@ -269,16 +241,6 @@ public abstract class JpaUserService
                 .toUriString();
         log.info("forgotPasswordLink: " + forgotPasswordLink);
 
-
-//        MailData mailData = MailData.builder()
-//                .to(user.getContactInformation())
-////                .topic( Message.get("com.github.vincemann.forgotPasswordSubject"))
-//                .topic(FORGOT_PASSWORD_AUDIENCE)
-//                .body(Message.get("com.github.vincemann.forgotPasswordContactInformation", forgotPasswordLink))
-//                .link(forgotPasswordLink)
-//                .code(forgotPasswordCode)
-//                .build();
-//        mailSender.send(mailData);
         messageSender.sendMessage(forgotPasswordLink,FORGOT_PASSWORD_AUDIENCE,forgotPasswordCode,user.getContactInformation());
 
 
@@ -301,20 +263,11 @@ public abstract class JpaUserService
             U user = extractUserFromClaims(claims);
             RapidJwt.validateIssuedAfter(claims, user.getCredentialsUpdatedMillis());
 
-
-//            VerifyAccess.condition(
-//                    claims.getClaim("id").equals(user.getId().toString()),
-//                    "Wrong user id in token");
-
-
             // sets the password
             user.setPassword(passwordEncoder.encode(newPassword));
             user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-            //user.setForgotPasswordCode(null);
             try {
-                // todo changed to softupdate
                 return service.softUpdate(user);
-//                return update(user);
             } catch (NonTransientDataAccessException e) {
                 throw new RuntimeException("Could not reset users password", e);
             }
@@ -433,20 +386,11 @@ public abstract class JpaUserService
         // todo dont detach and see if setter triggers javax validation annotations
         entityManager.detach(user);
 
-//        LexUtils.validateField("updatedUser.password",
-//                passwordEncoder.matches(newContactInformation.getPassword(),
-//                        user.getPassword()),
-//                "com.github.vincemann.wrong.password").go();
-
 //        // preserves the new contactInformation id
         user.setNewContactInformation(newContactInformation);
-//        //user.setChangeContactInformationCode(LemonValidationUtils.uid());
         U saved;
         try {
-            // todo changed to softupdate
             saved = service.softUpdate(user);
-            // after successful commit, mails a link to the user
-//            TransactionalUtils.afterCommit(() -> mailChangeContactInformationLink(saved));
         } catch (NonTransientDataAccessException | BadEntityException e) {
             throw new RuntimeException("ContactInformation was malformed, although validation check was successful");
         }
@@ -481,18 +425,6 @@ public abstract class JpaUserService
                     .queryParam("code", changeContactInformationCode)
                     .toUriString();
             log.info("change contactInformation link: " + changeContactInformationLink);
-
-
-            // mail it
-//            MailData mailData = MailData.builder()
-//                    .to(user.getContactInformation())
-////                    .topic( Message.get("com.github.vincemann.changeContactInformationSubject"))
-//                    .topic(CHANGE_CONTACT_INFORMATION_AUDIENCE)
-//                    .body(Message.get("com.github.vincemann.changeContactInformationContactInformation", changeContactInformationLink))
-//                    .link(changeContactInformationLink)
-//                    .code(changeContactInformationCode)
-//                    .build();
-//            mailSender.send(mailData);
             messageSender.sendMessage(changeContactInformationLink,CHANGE_CONTACT_INFORMATION_AUDIENCE,changeContactInformationCode,user.getContactInformation());
 
             log.debug("Change contactInformation link mail queued.");
@@ -518,10 +450,6 @@ public abstract class JpaUserService
 
             RapidJwt.validate(claims, CHANGE_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
 
-//            VerifyAccess.condition(
-//                    claims.getClaim("id").equals(user.getId().toString()),
-//                    "Wrong user id in token");
-
             VerifyEntity.is(StringUtils.isNotBlank(user.getNewContactInformation()), "No new contactInformation found. Looks like you have already changed.");
 
 
@@ -531,13 +459,9 @@ public abstract class JpaUserService
 
             // Ensure that the contactInformation would be unique
             checkUniqueContactInformation(user.getNewContactInformation());
-//            VerifyEntity.is(
-//                    !findByContactInformation(user.getNewContactInformation()).isPresent(), "ContactInformation Id already used");
-
             // update the fields
             user.setContactInformation(user.getNewContactInformation());
             user.setNewContactInformation(null);
-            //user.setChangeContactInformationCode(null);
             user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 
             // todo create method for that
@@ -616,22 +540,9 @@ public abstract class JpaUserService
                 .fromHttpUrl(
                         properties.getCoreProperties().getApplicationUrl()
                                 + properties.getController().getVerifyUserUrl())
-//                .queryParam("id", user.getId())
                 .queryParam("code", verificationCode)
                 .toUriString();
         log.info("verify link: " + verifyLink);
-
-
-//        // send the mail
-//        MailData mailData = MailData.builder()
-//                .to(user.getContactInformation())
-////                .topic(Message.get("com.github.vincemann.verifySubject"))
-//                .topic(VERIFY_CONTACT_INFORMATION_AUDIENCE)
-//                .body(Message.get("com.github.vincemann.verifyContactInformation", verifyLink))
-//                .link(verifyLink)
-//                .code(verificationCode)
-//                .build();
-//        mailSender.send(mailData);
         messageSender.sendMessage(verifyLink,VERIFY_CONTACT_INFORMATION_AUDIENCE,verificationCode, user.getContactInformation());
 
 
@@ -670,9 +581,6 @@ public abstract class JpaUserService
         return passwordValidator;
     }
 
-    //    protected UserService<U, ID> getRootUserService() {
-//        return rootUserService;
-//    }
 
     @Autowired
     public void setAuthorizationTokenService(AuthorizationTokenService authorizationTokenService) {

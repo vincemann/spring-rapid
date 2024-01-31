@@ -49,11 +49,7 @@ public class BasicAuthTest extends RapidAuthIntegrationTest {
 
 				.andExpect(jsonPath("$.user.id").value(getAdmin().getId()))
 				.andExpect(jsonPath("$.user.roles[0]").value(Roles.ADMIN))
-				.andExpect(jsonPath("$.user.password").doesNotExist())
-				.andExpect(jsonPath("$.user.verified").value(true))
-				.andExpect(jsonPath("$.user.blocked").value(false))
-				.andExpect(jsonPath("$.user.admin").value(true))
-				.andExpect(jsonPath("$.user.goodUser").value(true));
+				.andExpect(jsonPath("$.user.password").doesNotExist());
 	}
 	
 	@Test

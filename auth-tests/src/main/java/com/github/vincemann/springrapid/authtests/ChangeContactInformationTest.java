@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -40,9 +41,9 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 
 		mvc.perform(userController.changeContactInformationWithLink(mailData.getLink(),token))
 				//gets new token for new contactInformation to use
-				.andExpect(status().is2xxSuccessful())
+				.andExpect(status().is(204))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
-				.andExpect(jsonPath("$.id").value(getUser().getId()));
+				.andExpect(content().string(""));
 
 		
 		AbstractUser<Serializable> updatedUser = getUserService().findById(getUser().getId()).get();
@@ -58,9 +59,9 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 
 		mvc.perform(userController.changeContactInformationWithLink(mailData.getLink(),token))
 				//gets new token for new contactInformation to use
-				.andExpect(status().is2xxSuccessful())
+				.andExpect(status().is(204))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
-				.andExpect(jsonPath("$.id").value(getUnverifiedUser().getId()));
+				.andExpect(content().string(""));
 
 
 		AbstractUser<Serializable> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
@@ -89,13 +90,14 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 
 		mvc.perform(userController.changeContactInformationWithLink(mailData.getLink(),token))
 				//gets new token for new contactInformation to use
-				.andExpect(status().is2xxSuccessful());
+				.andExpect(status().is2xxSuccessful())
+				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
+				.andExpect(content().string(""));
 
 		mvc.perform(userController.changeContactInformationWithLink(mailData.getLink(),token))
 				//gets new token for new contactInformation to use
 				.andExpect(status().is(401))
-				.andExpect(header().doesNotExist(HttpHeaders.AUTHORIZATION))
-				.andExpect(jsonPath("$.id").doesNotExist());
+				.andExpect(header().doesNotExist(HttpHeaders.AUTHORIZATION));
 	}
 
 
