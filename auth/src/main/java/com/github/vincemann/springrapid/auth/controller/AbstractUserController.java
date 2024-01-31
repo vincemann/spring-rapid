@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.controller.dto.*;
+import com.github.vincemann.springrapid.auth.controller.dto.user.FindForeignUserDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.controller.dto.user.FindOwnUserDto;
 import com.github.vincemann.springrapid.auth.controller.dto.user.FullUserDto;
@@ -51,10 +52,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 			extends CrudController<U, Id> {
 
 
-	//              DEPENDENCIES
 
-
-	// dont change to S, autoconfig needs raw userService version, getUserService methods will cast to S
 	private UserService<U, Id> userService;
 	private UserService<U, Id> securedService;
 
@@ -107,8 +105,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	/**
 	 * Returns public shared context properties needed at the client side,
 	 */
-//	@GetMapping("#{lemon.userController.contextUrl}")
-//	@ResponseBody
 	public ResponseEntity<String> context(HttpServletRequest request,HttpServletResponse response) throws JsonProcessingException {
 
 		log.debug("Getting context ");
@@ -119,13 +115,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 
 
-	/**
-	 * Signs up a user, and
-	 * returns current-user data and an Authorization token as a response header.
-	 */
-//	@PostMapping("${lemon.userController.signupUrl}")
-//	@ResponseStatus(HttpStatus.CREATED)
-//	@ResponseBody
 	public ResponseEntity<String> signup(
 			HttpServletRequest request,
 			HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
@@ -147,11 +136,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return ok(getJsonMapper().writeDto(dto));
 	}
 
-	/**
-	 * Resends verification mail
-	 */
-//	@PostMapping("${lemon.userController.resendVerificationContactInformationUrl}")
-//	@ResponseStatus(HttpStatus.NO_CONTENT)
 	// todo add limit actions extension ect so nobody can spam contactInformations
 	public ResponseEntity<?> resendVerificationMail(HttpServletRequest request,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException {
 		String contactInformation = readRequestParam(request, "contactInformation");
@@ -166,8 +150,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	/**
 	 * Verifies current-user -> send code per contactInformation
 	 */
-//	@PostMapping("${lemon.userController.verifyUserUrl}")
-//	@ResponseBody
 	public ResponseEntity<String> verifyUser(
 			HttpServletRequest request,
 //			@RequestParam String code,
@@ -190,8 +172,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	/**
 	 * The forgot Password feature -> mail new password to contactInformation
 	 */
-//	@PostMapping("${lemon.userController.forgotPasswordUrl}")
-//	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<?> forgotPassword(HttpServletRequest request,HttpServletResponse response/*@RequestParam String contactInformation*/) throws EntityNotFoundException, BadEntityException {
 		String contactInformation = readRequestParam(request, "contactInformation");
 		log.debug("Received forgot password request for: " + contactInformation);
@@ -199,17 +179,9 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return okNoContent();
 	}
 
-
-	public static String makeUrl(HttpServletRequest request)
-	{
-		return request.getRequestURL().toString() + "?" + request.getQueryString();
-	}
-
 	/**
 	 * Resets password after it's forgotten
 	 */
-//	@PostMapping("${lemon.userController.resetPasswordUrl}")
-//	@ResponseBody
 	public ResponseEntity<String> resetPassword(
 //			@RequestBody ResetPasswordForm form,
 			HttpServletRequest request,HttpServletResponse response) throws IOException, BadEntityException, EntityNotFoundException, BadTokenException {
@@ -217,8 +189,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		List<String> noValParams = getRequestParameterKeysWithoutValue(request);
 
 		String body = readBody(request);
-		String url = makeUrl(request);
-
 		// todo terrible, fix this, check for equality in inline js in html file
 		// and send propert json in body not url param encoded in body
 		Map<String, String> queryParams = UrlParamUtil.splitQuery(body);
@@ -255,11 +225,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	}
 
 
-	/**
-	 * Fetches a user by contactInformation
-	 */
-//	@PostMapping("${lemon.userController.fetchByContactInformationUrl}")
-//	@ResponseBody
 	public ResponseEntity<String> fetchByContactInformation(HttpServletRequest request,HttpServletResponse response/*,@RequestParam String contactInformation*/) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
 		List<String> noValParams = getRequestParameterKeysWithoutValue(request);
 
@@ -273,12 +238,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return ok(getJsonMapper().writeDto(responseDto));
 	}
 
-	
-	/**
-	 * Changes password
-	 */
-//	@PostMapping("${lemon.userController.changePasswordUrl}")
-//	@ResponseStatus(HttpStatus.NO_CONTENT)
+
 	public ResponseEntity<?> changePassword(HttpServletRequest request,
 //			@RequestBody ChangePasswordForm changePasswordForm,
 			HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
@@ -298,11 +258,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	}
 
 
-	/**
-	 * Requests for changing contactInformation
-	 */
-//	@PostMapping("${lemon.userController.requestContactInformationChangeUrl}")
-//	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<?> requestContactInformationChange(HttpServletRequest request
 								   /*@RequestBody RequestContactInformationChangeForm contactInformationChangeForm*/,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException, IOException, AlreadyRegisteredException {
 		List<String> noValParams = getRequestParameterKeysWithoutValue(request);
@@ -319,14 +274,10 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	}
 
 
-	/**
-	 * Changes the contactInformation
-	 */
-	public ResponseEntity<String> changeContactInformation(
+	public ResponseEntity<?> changeContactInformation(
 			HttpServletRequest request,
 //			@RequestParam String code,
-			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException, IdFetchingException, AlreadyRegisteredException {
-		List<String> noValParams = getRequestParameterKeysWithoutValue(request);
+			HttpServletResponse response) throws BadEntityException, EntityNotFoundException, AlreadyRegisteredException {
 
 //		ID id = fetchId(request);
 //		log.debug("Changing contactInformation of user with id: " + id);
@@ -334,9 +285,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 //		U user = fetchUser(id);
 		U saved = getSecuredService().changeContactInformation(code);
 		appendFreshTokenOf(saved,response);
-		Object responseDto = getDtoMapper().mapToDto(saved,
-				createDtoClass(changeContactInformationUrl, Direction.RESPONSE,noValParams, saved));
-		return ok(getJsonMapper().writeDto(responseDto));
+		return okNoContent();
 	}
 
 
@@ -394,27 +343,51 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	@Override
 	protected void configureDtoMappings(DtoMappingsBuilder builder) {
-		builder.when(endpoint(getSignupUrl()).and(direction(Direction.REQUEST)))
-				.thenReturn(SignupDto.class);
 
-		builder.when(endpoint(getSignupUrl()).and(direction(Direction.RESPONSE)))
-				.thenReturn(FindOwnUserDto.class);
-
-		builder.when(endpoint(getRequestContactInformationChangeUrl()).and(direction(Direction.REQUEST)))
-				.thenReturn(RequestContactInformationChangeDto.class);
-
-		builder.when(endpoint(getChangePasswordUrl()).and(direction(Direction.REQUEST)))
-				.thenReturn(ChangePasswordDto.class);
-
-		builder.when(endpoint(getVerifyUserUrl()).and(direction(Direction.RESPONSE)))
-				.thenReturn(FindOwnUserDto.class);
-
-		builder.when(direction(Direction.RESPONSE).and(roles(AuthRoles.ADMIN)))
+		builder.when(direction(Direction.RESPONSE)
+						.and(roles(AuthRoles.ADMIN)))
 				.thenReturn(FullUserDto.class);
 
 
-		builder.when(direction(Direction.RESPONSE).and(principal(Principal.OWN)))
+		builder.when(endpoint(getSignupUrl())
+						.and(direction(Direction.REQUEST)))
+				.thenReturn(SignupDto.class);
+
+		builder.when(endpoint(getSignupUrl())
+						.and(direction(Direction.RESPONSE)))
 				.thenReturn(FindOwnUserDto.class);
+
+		builder.when(endpoint(getRequestContactInformationChangeUrl())
+						.and(direction(Direction.REQUEST)))
+				.thenReturn(RequestContactInformationChangeDto.class);
+
+
+
+		builder.when(endpoint(getChangePasswordUrl())
+						.and(direction(Direction.REQUEST)))
+				.thenReturn(ChangePasswordDto.class);
+
+		builder.when(endpoint(getVerifyUserUrl())
+						.and(direction(Direction.RESPONSE)))
+				.thenReturn(FindOwnUserDto.class);
+
+		builder.when(endpoint(getResetPasswordUrl())
+						.and(direction(Direction.REQUEST)))
+				.thenReturn(ResetPasswordDto.class);
+
+		builder.when(endpoint(getFetchByContactInformationUrl())
+						.and(direction(Direction.RESPONSE))
+						.and(roles(AuthRoles.ANON)))
+				.thenReturn(FindForeignUserDto.class);
+
+
+		builder.when(direction(Direction.RESPONSE)
+						.and(principal(Principal.OWN)))
+				.thenReturn(FindOwnUserDto.class);
+
+		builder.when(direction(Direction.RESPONSE)
+						.and(principal(Principal.FOREIGN)))
+				.thenReturn(FindForeignUserDto.class);
 	}
 
 //	/**

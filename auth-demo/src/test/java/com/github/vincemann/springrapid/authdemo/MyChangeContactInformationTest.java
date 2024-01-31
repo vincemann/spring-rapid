@@ -6,9 +6,4 @@ import org.junit.jupiter.api.Test;
 
 public class MyChangeContactInformationTest extends ChangeContactInformationTest {
 
-    @Test
-    @Override
-    public void canChangeOwnContactInformation() throws Exception {
-        super.canChangeOwnContactInformation();
-    }
 }
