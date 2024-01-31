@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.syncdemo.controller;
 
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import com.github.vincemann.springrapid.coretest.controller.integration.MvcIntegrationTest;
+import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
 import com.github.vincemann.springrapid.syncdemo.controller.template.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnOwnerDto;
@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class MyControllerIntegrationTest extends MvcIntegrationTest {
+public class MyIntegrationTest extends AbstractMvcTest {
 
     //Types
     protected final Vet VetType = new Vet();
@@ -136,7 +136,7 @@ public class MyControllerIntegrationTest extends MvcIntegrationTest {
     protected ClinicCard secondClinicCard;
 
     @Autowired
-    protected RapidSecurityContext<RapidPrincipal> securityContext;
+    protected RapidSecurityContext securityContext;
 
     @Autowired
     protected TransactionTemplate transactionTemplate;

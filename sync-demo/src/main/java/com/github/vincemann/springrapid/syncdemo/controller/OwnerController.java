@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
 import com.github.vincemann.springrapid.core.controller.dto.map.Principal;
 import com.github.vincemann.springrapid.syncdemo.dto.ClinicCardDto;
+import com.github.vincemann.springrapid.syncdemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadForeignOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.UpdateOwnerDto;
@@ -18,19 +19,20 @@ public class OwnerController extends CrudController<Owner, Long> {
 
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {
-        builder.when(endpoint(getCreateUrl()))
-                        .thenReturn(UpdateOwnerDto.class);
+        builder.when(endpoint(getCreateUrl()).and(direction(Direction.REQUEST)))
+                        .thenReturn(CreateOwnerDto.class);
+
+        builder.when(endpoint(getCreateUrl()).and(direction(Direction.RESPONSE)))
+                .thenReturn(ReadOwnOwnerDto.class);
+
+        builder.when(endpoint(getUpdateUrl()).and(direction(Direction.REQUEST)))
+                .thenReturn(CreateOwnerDto.class);
 
         builder.when(direction(Direction.RESPONSE).and(principal(Principal.OWN)))
                         .thenReturn(ReadOwnOwnerDto.class);
 
         builder.when(direction(Direction.RESPONSE).and(principal(Principal.FOREIGN)))
                 .thenReturn(ReadForeignOwnerDto.class);
-
-
-
-
-        builder.when(any()).thenReturn(ClinicCardDto.class);
     }
 
 //    @Override
