@@ -44,7 +44,6 @@ import java.io.Serializable;
 import java.util.*;
 
 import static com.github.vincemann.springrapid.core.controller.WebExtensionType.*;
-import static com.github.vincemann.springrapid.core.util.HttpServletRequestUtils.getRequestParameterKeysWithoutValue;
 
 
 @Slf4j

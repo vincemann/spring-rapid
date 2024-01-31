@@ -120,7 +120,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		
 
 		String jsonDto = readBody(request);
-		Class<?> dtoClass = createDtoClass(getSignupUrl(),Direction.REQUEST,request.getParameterMap(),null);
+		Class<?> dtoClass = createDtoClass(getSignupUrl(),Direction.REQUEST,request,null);
 		Object signupDto = getJsonMapper().readDto(jsonDto, dtoClass);
 		getDtoValidationStrategy().validate(signupDto);
 		log.debug("Signing up: " + signupDto);
@@ -130,7 +130,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(getSignupUrl(), Direction.RESPONSE,request.getParameterMap(), saved));
+				createDtoClass(getSignupUrl(), Direction.RESPONSE,request, saved));
 		return ok(getJsonMapper().writeDto(dto));
 	}
 
@@ -161,7 +161,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(getVerifyUserUrl(), Direction.RESPONSE,request.getParameterMap(), saved));
+				createDtoClass(getVerifyUserUrl(), Direction.RESPONSE,request, saved));
 		return ok(getJsonMapper().writeDto(dto));
 	}
 
@@ -204,7 +204,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		U saved = getSecuredService().resetPassword(password, code);
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(resetPasswordUrl, Direction.RESPONSE,request.getParameterMap(), saved));
+				createDtoClass(resetPasswordUrl, Direction.RESPONSE,request, saved));
 		return ok(getJsonMapper().writeDto(dto));
 	}
 
@@ -228,7 +228,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+contactInformation+" not found");
 		U user = byContactInformation.get();
 		Object responseDto = getDtoMapper().mapToDto(user,
-				createDtoClass(getFetchByContactInformationUrl(), Direction.RESPONSE,request.getParameterMap(), user));
+				createDtoClass(getFetchByContactInformationUrl(), Direction.RESPONSE,request, user));
 		return ok(getJsonMapper().writeDto(responseDto));
 	}
 
@@ -240,7 +240,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		Id id = fetchId(request);
 		String body = readBody(request);
 		U user = fetchUser(id);
-		Class<?> dtoClass = createDtoClass(getChangePasswordUrl(),Direction.REQUEST,request.getParameterMap(),user);
+		Class<?> dtoClass = createDtoClass(getChangePasswordUrl(),Direction.REQUEST,request,user);
 		ChangePasswordDto changePasswordDto = (ChangePasswordDto) getJsonMapper().readDto(body, dtoClass);
 		getDtoValidationStrategy().validate(changePasswordDto);
 
@@ -257,7 +257,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		Id id = fetchId(request);
 		String body = readBody(request);
 		U user = fetchUser(id);
-		Class<?> dtoClass = createDtoClass(getRequestContactInformationChangeUrl(),Direction.REQUEST,request.getParameterMap(),user);
+		Class<?> dtoClass = createDtoClass(getRequestContactInformationChangeUrl(),Direction.REQUEST,request,user);
 		RequestContactInformationChangeDto dto = (RequestContactInformationChangeDto) getJsonMapper().readDto(body, dtoClass);
 		getDtoValidationStrategy().validate(dto);
 		log.debug("Requesting contactInformation change for user: " + user);
