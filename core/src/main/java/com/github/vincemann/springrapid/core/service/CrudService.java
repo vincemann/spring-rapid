@@ -26,7 +26,6 @@ import java.util.Set;
  * @param <E>       Type of Entity whos crud operations are exposed by this Service
  * @param <Id>      Id Type of E
  */
-@Component
 @LogInteraction
 @LogConfig(logAllChildrenMethods = true)
 public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Serializable>
