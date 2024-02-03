@@ -23,6 +23,7 @@ public abstract class AbstractCrudService
                 Id extends Serializable,
                 R extends CrudRepository<E, Id>
                 >
+    // targetClassAware is needed for aop proxy stuff to work, in order to get the real class behind proxy
         implements CrudService<E, Id>, TargetClassAware, ApplicationContextAware {
     private String beanName;
     private R repository;

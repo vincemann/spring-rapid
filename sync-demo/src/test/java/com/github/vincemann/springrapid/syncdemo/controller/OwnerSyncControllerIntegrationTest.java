@@ -2,11 +2,13 @@ package com.github.vincemann.springrapid.syncdemo.controller;
 
 import com.github.vincemann.springrapid.core.util.Entity;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
+import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.util.TestPrincipal;
 import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
+import com.github.vincemann.springrapid.syncdemo.controller.template.ClinicCardControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.controller.template.OwnerSyncControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.controller.template.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.controller.template.PetSyncControllerTestTemplate;
@@ -46,6 +48,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
     @Autowired
     ApplicationContext applicationContext;
+
+    @Autowired
+    ClinicCardControllerTestTemplate clinicCardController;
 
 
     @Test
@@ -927,6 +932,8 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Timestamp clientUpdate = new Timestamp(new Date().getTime());
         Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
 
+//        clinicCardController.perform(clinicCardController.delete(card.getId()))
+//                .andExpect(status().is2xxSuccessful());
         // update owner by removing clinic card
         clinicCardService.deleteById(card.getId());
         Owner updatedOwner = fetchOwner(owner.getId());

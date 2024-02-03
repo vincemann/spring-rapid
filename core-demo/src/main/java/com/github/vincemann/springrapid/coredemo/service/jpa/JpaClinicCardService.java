@@ -7,7 +7,6 @@ import com.github.vincemann.springrapid.coredemo.repo.ClinicCardRepository;
 import com.github.vincemann.springrapid.coredemo.service.ClinicCardService;
 
 @Component
-//@DisableAutoBiDir
 public class JpaClinicCardService
         extends JPACrudService<ClinicCard,Long, ClinicCardRepository>
             implements ClinicCardService
