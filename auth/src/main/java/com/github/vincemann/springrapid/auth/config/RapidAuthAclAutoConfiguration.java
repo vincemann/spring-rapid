@@ -19,7 +19,6 @@ import java.util.List;
 @Configuration
 public class RapidAuthAclAutoConfiguration {
 
-//	@Primary
     @ConditionalOnMissingBean(PermissionEvaluator.class)
     @Bean
     public PermissionEvaluator permissionEvaluator(AclService aclService, @Autowired(required = false) List<GlobalSecurityRule> globalSecurityRules, RapidAclSecurityContext securityContext){

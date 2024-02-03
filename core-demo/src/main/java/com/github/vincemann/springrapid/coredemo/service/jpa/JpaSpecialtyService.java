@@ -14,7 +14,10 @@ import java.util.Optional;
 @Primary
 @Service
 @Component
-public class JpaSpecialtyService extends JPACrudService<Specialty,Long, SpecialtyRepository> implements SpecialtyService, TargetClassAware {
+public class JpaSpecialtyService
+        extends JPACrudService<Specialty,Long, SpecialtyRepository>
+        implements SpecialtyService
+{
 
     @Override
     public Optional<Specialty> findByDescription(String description) {

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.checkerframework.common.aliasing.qual.Unique;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -33,7 +34,7 @@ public class Specialty extends IdentifiableEntityImpl<Long>
     private String description;
 
 
-    @ManyToMany(mappedBy = "specialtys", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "specialtys", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @BiDirParentCollection(Vet.class)
     private Set<Vet> vets = new HashSet<>();
 
