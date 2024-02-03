@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 
 
-import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentId;
+import com.github.vincemann.springrapid.autobidir.id.annotation.parent.BiDirParentId;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;

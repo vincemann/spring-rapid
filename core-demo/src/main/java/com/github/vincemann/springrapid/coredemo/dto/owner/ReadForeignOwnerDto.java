@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.dto.owner;
 
 import com.github.vincemann.springrapid.coredemo.model.Pet;
-import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildIdCollection;
+import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildIdCollection;
 
 import lombok.*;
 import org.springframework.lang.Nullable;

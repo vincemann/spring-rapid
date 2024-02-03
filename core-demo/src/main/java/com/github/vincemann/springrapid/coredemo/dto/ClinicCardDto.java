@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.coredemo.dto.abs.MyIdDto;
 import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 
-import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentId;
+import com.github.vincemann.springrapid.autobidir.id.annotation.parent.BiDirParentId;
 import lombok.*;
 
 import java.util.Date;

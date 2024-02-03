@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.model;
 
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildCollection;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import com.github.vincemann.springrapid.coredemo.model.abs.Person;
 import lombok.Builder;

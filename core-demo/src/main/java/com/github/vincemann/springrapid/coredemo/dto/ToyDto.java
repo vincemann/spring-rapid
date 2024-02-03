@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.dto;
 
 import com.github.vincemann.springrapid.coredemo.model.Pet;
-import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentId;
+import com.github.vincemann.springrapid.autobidir.id.annotation.parent.BiDirParentId;
 import lombok.*;
 
 import javax.validation.constraints.Size;

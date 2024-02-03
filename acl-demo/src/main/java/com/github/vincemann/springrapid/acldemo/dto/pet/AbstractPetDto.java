@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.acldemo.dto.pet;
 
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.model.PetType;
-import com.github.vincemann.springrapid.autobidir.dto.child.annotation.UniDirChildId;
+import com.github.vincemann.springrapid.autobidir.id.annotation.child.UniDirChildId;
 import com.github.vincemann.springrapid.core.dto.IdAwareDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

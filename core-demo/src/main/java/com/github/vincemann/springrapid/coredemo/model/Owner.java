@@ -3,13 +3,12 @@ package com.github.vincemann.springrapid.coredemo.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import com.github.vincemann.springrapid.coredemo.model.abs.Person;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildEntity;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildCollection;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildEntity;
 
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import java.util.*;
 
 import static javax.persistence.CascadeType.*;

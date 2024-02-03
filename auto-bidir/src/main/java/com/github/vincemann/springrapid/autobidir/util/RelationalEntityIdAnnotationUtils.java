@@ -1,11 +1,11 @@
 package com.github.vincemann.springrapid.autobidir.util;
 
-import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildId;
-import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildIdCollection;
-import com.github.vincemann.springrapid.autobidir.dto.child.annotation.UniDirChildId;
-import com.github.vincemann.springrapid.autobidir.dto.child.annotation.UniDirChildIdCollection;
-import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentId;
-import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentIdCollection;
+import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildId;
+import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildIdCollection;
+import com.github.vincemann.springrapid.autobidir.id.annotation.child.UniDirChildId;
+import com.github.vincemann.springrapid.autobidir.id.annotation.child.UniDirChildIdCollection;
+import com.github.vincemann.springrapid.autobidir.id.annotation.parent.BiDirParentId;
+import com.github.vincemann.springrapid.autobidir.id.annotation.parent.BiDirParentIdCollection;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;

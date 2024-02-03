@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.coredemo.dto;
 
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
-import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildIdCollection;
+import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildIdCollection;
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
 

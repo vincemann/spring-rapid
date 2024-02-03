@@ -2,9 +2,9 @@ package com.github.vincemann.springrapid.syncdemo.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
-import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildCollection;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.child.UniDirChildEntity;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import lombok.Builder;

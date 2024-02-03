@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.autobidir.config;
 
-import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtilImpl;
-import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtil;
+import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerUtilImpl;
+import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerUtil;
 import com.github.vincemann.springrapid.core.util.Lists;
 import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

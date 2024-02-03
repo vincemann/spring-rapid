@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.acldemo.model;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 
-import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentCollection;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentCollection;
 import lombok.*;
 import org.checkerframework.common.aliasing.qual.Unique;
 

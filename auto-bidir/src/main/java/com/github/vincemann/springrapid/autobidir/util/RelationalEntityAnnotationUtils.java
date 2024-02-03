@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.autobidir.util;
 
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildCollection;
-import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentCollection;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildCollection;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.child.UniDirChildCollection;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentCollection;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

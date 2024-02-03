@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.autobidir.config;
 
-import com.github.vincemann.springrapid.autobidir.AutoBiDirUtils;
+import com.github.vincemann.springrapid.autobidir.util.AutoBiDirUtils;
 import com.github.vincemann.springrapid.autobidir.DisableAutoBiDir;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import org.springframework.context.annotation.Configuration;

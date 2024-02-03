@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.syncdemo.dto.owner;
 
-import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildId;
-import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildIdCollection;
+import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildId;
+import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildIdCollection;
 import com.github.vincemann.springrapid.syncdemo.model.ClinicCard;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
 import lombok.Builder;

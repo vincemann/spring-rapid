@@ -1,17 +1,17 @@
 package com.github.vincemann.springrapid.autobidir.config;
 
-import com.github.vincemann.springrapid.autobidir.RelationalDtoManagerImpl;
-import com.github.vincemann.springrapid.autobidir.RelationalDtoManager;
+import com.github.vincemann.springrapid.autobidir.id.RelationalDtoManagerImpl;
+import com.github.vincemann.springrapid.autobidir.id.RelationalDtoManager;
 import com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration;
 import com.github.vincemann.springrapid.core.config.RapidServiceAutoConfiguration;
 import com.github.vincemann.springrapid.core.controller.dto.MergeUpdateStrategy;
 import org.springframework.context.annotation.Configuration;
-import com.github.vincemann.springrapid.autobidir.controller.IdAwareMergeUpdateStrategy;
-import com.github.vincemann.springrapid.autobidir.controller.dtomapper.EntityIdResolver;
-import com.github.vincemann.springrapid.autobidir.controller.dtomapper.IdResolvingDtoPostProcessor;
-import com.github.vincemann.springrapid.autobidir.controller.dtomapper.UniDirParentIdResolver;
-import com.github.vincemann.springrapid.autobidir.controller.dtomapper.biDir.BiDirChildIdResolver;
-import com.github.vincemann.springrapid.autobidir.controller.dtomapper.biDir.BiDirParentIdResolver;
+import com.github.vincemann.springrapid.autobidir.id.IdAwareMergeUpdateStrategy;
+import com.github.vincemann.springrapid.autobidir.id.EntityIdResolver;
+import com.github.vincemann.springrapid.autobidir.id.IdResolvingDtoPostProcessor;
+import com.github.vincemann.springrapid.autobidir.id.UniDirParentIdResolver;
+import com.github.vincemann.springrapid.autobidir.id.biDir.BiDirChildIdResolver;
+import com.github.vincemann.springrapid.autobidir.id.biDir.BiDirParentIdResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;

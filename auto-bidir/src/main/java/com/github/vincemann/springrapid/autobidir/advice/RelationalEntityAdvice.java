@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.autobidir.advice;
 
-import com.github.vincemann.springrapid.autobidir.AutoBiDirUtils;
-import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.util.AutoBiDirUtils;
+import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManager;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;

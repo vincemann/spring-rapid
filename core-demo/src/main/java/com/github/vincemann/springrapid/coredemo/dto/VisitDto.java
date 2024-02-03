@@ -2,8 +2,8 @@ package com.github.vincemann.springrapid.coredemo.dto;
 
 import com.github.vincemann.springrapid.coredemo.dto.abs.MyIdDto;
 import com.github.vincemann.springrapid.coredemo.model.*;
-import com.github.vincemann.springrapid.autobidir.dto.child.annotation.UniDirChildId;
-import com.github.vincemann.springrapid.autobidir.dto.child.annotation.UniDirChildIdCollection;
+import com.github.vincemann.springrapid.autobidir.id.annotation.child.UniDirChildId;
+import com.github.vincemann.springrapid.autobidir.id.annotation.child.UniDirChildIdCollection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.Builder;
 import lombok.Getter;

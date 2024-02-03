@@ -3,9 +3,9 @@ package com.github.vincemann.springrapid.acldemo.dto.pet;
 import com.github.vincemann.springrapid.acldemo.model.Illness;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 
-import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildIdCollection;
+import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildIdCollection;
 
-import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentId;
+import com.github.vincemann.springrapid.autobidir.id.annotation.parent.BiDirParentId;
 import lombok.*;
 
 import java.time.LocalDate;

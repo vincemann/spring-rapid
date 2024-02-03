@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.syncdemo.dto;
 
-import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildIdCollection;
+import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildIdCollection;
 import com.github.vincemann.springrapid.syncdemo.model.Specialty;
 import com.github.vincemann.springrapid.syncdemo.model.Vet;
 import lombok.Builder;

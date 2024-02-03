@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.syncdemo.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildEntity;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildCollection;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildEntity;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import com.github.vincemann.springrapid.sync.service.ext.AuditCollection;
 import com.github.vincemann.springrapid.syncdemo.model.abs.Person;

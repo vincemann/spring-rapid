@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.model;
 
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildCollection;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.child.UniDirChildCollection;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.child.UniDirChildEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import lombok.Builder;

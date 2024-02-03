@@ -3,11 +3,11 @@ package com.github.vincemann.springrapid.acldemo.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildCollection;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.child.UniDirChildEntity;
 
 
-import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.autobidir.config;
 
-import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerImpl;
-import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerImpl;
+import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManager;
 import com.github.vincemann.springrapid.autobidir.advice.RelationalEntityAdvice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

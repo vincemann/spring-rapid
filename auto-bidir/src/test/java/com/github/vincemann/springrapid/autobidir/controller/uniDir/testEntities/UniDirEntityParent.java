@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.autobidir.controller.uniDir.testEntities;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.child.UniDirChildEntity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

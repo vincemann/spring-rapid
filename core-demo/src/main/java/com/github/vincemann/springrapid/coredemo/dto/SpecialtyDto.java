@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.coredemo.dto.abs.MyIdDto;
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
 
-import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentIdCollection;
+import com.github.vincemann.springrapid.autobidir.id.annotation.parent.BiDirParentIdCollection;
 import lombok.*;
 
 import javax.validation.constraints.Size;
