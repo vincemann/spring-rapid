@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.util;
+package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
