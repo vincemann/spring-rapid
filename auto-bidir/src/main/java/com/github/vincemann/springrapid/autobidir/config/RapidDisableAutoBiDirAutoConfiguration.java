@@ -16,7 +16,7 @@ import org.springframework.test.util.AopTestUtils;
 import java.util.Map;
 
 @Configuration
-public class RapidDisabledServicesAutoConfiguration implements ApplicationListener<ApplicationReadyEvent>, ApplicationContextAware {
+public class RapidDisableAutoBiDirAutoConfiguration implements ApplicationListener<ApplicationReadyEvent>, ApplicationContextAware {
 
     ApplicationContext applicationContext;
 

@@ -45,7 +45,7 @@ public class BiDirEntityAdvice {
 
         Optional<IdentifiableEntity> entity = findById(joinPoint, id);
         if (entity.isPresent()) {
-            relationalEntityManager.remove(entity.get());
+            relationalEntityManager.delete(entity.get());
         } else {
             log.warn("preDelete BiDirEntity could not be done, because for id: " + id + " was no entity found");
         }
@@ -66,7 +66,7 @@ public class BiDirEntityAdvice {
         IdentifiableEntity old = findById(joinPoint, update.getId()).get();
         IdentifiableEntity detachedOldEntity = JpaUtils.deepDetach(old);
 
-        relationalEntityManager.update(old, detachedOldEntity, update);
+        relationalEntityManager.fullUpdate(old, detachedOldEntity, update);
     }
 
     @Before(

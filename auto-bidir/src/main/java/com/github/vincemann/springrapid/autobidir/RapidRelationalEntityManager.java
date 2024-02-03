@@ -43,7 +43,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
     }
 
     @Override
-    public void remove(IdentifiableEntity entity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
+    public void delete(IdentifiableEntity entity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(getTargetClass(entity));
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
@@ -79,7 +79,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 
 
     @Override
-    public <E extends IdentifiableEntity> E update(E managed, E oldEntity, E updateEntity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
+    public <E extends IdentifiableEntity> E fullUpdate(E managed, E oldEntity, E updateEntity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(getTargetClass(updateEntity));
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
