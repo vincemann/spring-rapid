@@ -14,12 +14,12 @@ import java.util.List;
  * Otherwise same as {@link DefaultPermissionGrantingStrategy}.
  */
 @Slf4j
-public class AdminDefaultPermissionGrantingStrategy extends DefaultPermissionGrantingStrategy {
+public class AdministrationDefaultPermissionGrantingStrategy extends DefaultPermissionGrantingStrategy {
 
     private final transient AuditLogger auditLogger;
 //    private PermissionStringConverter permissionStringConverter;
 
-    public AdminDefaultPermissionGrantingStrategy(AuditLogger auditLogger) {
+    public AdministrationDefaultPermissionGrantingStrategy(AuditLogger auditLogger) {
         super(auditLogger);
         this.auditLogger = auditLogger;
     }

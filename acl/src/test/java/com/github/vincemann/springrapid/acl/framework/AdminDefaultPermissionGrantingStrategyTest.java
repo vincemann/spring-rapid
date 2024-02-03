@@ -25,7 +25,7 @@ class AdminDefaultPermissionGrantingStrategyTest {
     @Mock
     AuditLogger auditLogger;
     @InjectMocks
-    AdminDefaultPermissionGrantingStrategy permissionGrantingStrategy;
+    AdministrationDefaultPermissionGrantingStrategy permissionGrantingStrategy;
     @Mock
     AccessControlEntry entry;
     Permission readPermission;

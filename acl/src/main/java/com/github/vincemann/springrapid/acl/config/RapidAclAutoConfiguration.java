@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acl.config;
 
 import com.github.vincemann.springrapid.acl.AclProperties;
-import com.github.vincemann.springrapid.acl.framework.AdminDefaultPermissionGrantingStrategy;
+import com.github.vincemann.springrapid.acl.framework.AdministrationDefaultPermissionGrantingStrategy;
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.acl.service.RapidAclServiceImpl;
@@ -97,7 +97,7 @@ public class RapidAclAutoConfiguration {
     @ConditionalOnMissingBean(PermissionGrantingStrategy.class)
     @Bean
     public PermissionGrantingStrategy permissionGrantingStrategy() {
-        return new AdminDefaultPermissionGrantingStrategy(new ConsoleAuditLogger());
+        return new AdministrationDefaultPermissionGrantingStrategy(new ConsoleAuditLogger());
     }
 
     @Autowired

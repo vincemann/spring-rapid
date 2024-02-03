@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.AuthorizationTemplate;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +39,9 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
     private Method triggerCheckMethod;
     private SpelExpressionParser parser;
     private ApplicationContext applicationContext;
-    private RapidAclSecurityContext securityContext;
     private PermissionStringConverter permissionStringConverter;
+
+    private RapidSecurityContext securityContext;
 
     public AclTemplateImpl() {
         try {
@@ -57,14 +59,7 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
 //        String permissionString = permissionStringConverter.convert(permission);
         for (E entity : toFilter) {
 
-            AclEvaluationContext aclContext = AclEvaluationContext.builder()
-                    .checkedPermission(permission)
-                    .targetEntity(entity)
-                    .build();
-            securityContext.setAclContext(aclContext);
-
             boolean permitted = _checkPermission(entity.getId(), entity.getClass(), permission);
-            securityContext.clearAclContext();
 //            boolean permitted = checkExpression("hasPermission(" + entity.getId() + ",'" + entity.getClass().getName() + "','" + permissionString + "')");
             if (permitted) {
                 filtered.add(entity);
@@ -79,14 +74,7 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
     @Override
     public void checkPermission(Serializable id, Class<?> clazz, Permission permission) {
 
-        AclEvaluationContext aclContext = AclEvaluationContext.builder()
-                .checkedPermission(permission)
-                .id(id)
-                .entityClass(clazz)
-                .build();
-        securityContext.setAclContext(aclContext);
         boolean permitted = _checkPermission(id, clazz, permission);
-        securityContext.clearAclContext();
         if (!permitted) {
             RapidPrincipal principal = securityContext.currentPrincipal();
             String permissionString = permissionStringConverter.convert(permission);
@@ -116,12 +104,6 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
 
     public void checkPermission(IdentifiableEntity<?> entity, Permission permission) throws AccessDeniedException {
 
-        AclEvaluationContext aclContext = AclEvaluationContext.builder()
-                .checkedPermission(permission)
-                .targetEntity(entity)
-                .build();
-        securityContext.setAclContext(aclContext);
-
         boolean permitted = _checkPermission(entity.getId(), entity.getClass(), permission);
         if (!permitted) {
             RapidPrincipal principal = securityContext.currentPrincipal();
@@ -134,9 +116,6 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
 
     @Override
     public boolean checkExpression(String securityExpression) {
-//        if (log.isDebugEnabled()) {
-//            log.debug("EVALUATING SECURITY EXPRESSION: [" + securityExpression + "]...");
-//        }
 
         AclTemplateImpl.SecurityObject securityObject = new AclTemplateImpl.SecurityObject();
         MethodSecurityExpressionHandler expressionHandler = applicationContext.getBean(MethodSecurityExpressionHandler.class);
@@ -145,21 +124,13 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
                 SecurityContextHolder.getContext().getAuthentication(),
                 new SimpleMethodInvocation(securityObject, triggerCheckMethod)
         );
-        boolean checkResult = ExpressionUtils.evaluateAsBoolean(parser.parseExpression(securityExpression), evaluationContext);
-//        if (log.isDebugEnabled()) {
-//            log.debug("SECURITY EXPRESSION EVALUATED AS: " + checkResult);
-//        }
-        return checkResult;
+        return ExpressionUtils.evaluateAsBoolean(parser.parseExpression(securityExpression), evaluationContext);
     }
 
     private static class SecurityObject {
         public void triggerCheck() { /*NOP*/ }
     }
 
-    @Autowired
-    public void setRapidSecurityContext(RapidAclSecurityContext rapidSecurityContext) {
-        this.securityContext = rapidSecurityContext;
-    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -169,6 +140,11 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
     @Autowired
     public void setPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
         this.permissionStringConverter = permissionStringConverter;
+    }
+
+    @Autowired
+    public void setSecurityContext(RapidSecurityContext securityContext) {
+        this.securityContext = securityContext;
     }
 
     //i dont want two ways of checking roles or authenticated

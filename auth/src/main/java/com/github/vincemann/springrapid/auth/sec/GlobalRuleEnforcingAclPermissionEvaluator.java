@@ -1,9 +1,11 @@
 package com.github.vincemann.springrapid.auth.sec;
 
-import com.github.vincemann.springrapid.acl.AclEvaluationContext;
-import com.github.vincemann.springrapid.acl.RapidAclSecurityContext;
 import com.github.vincemann.springrapid.acl.framework.VerboseAclPermissionEvaluator;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.util.EntityLocator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.model.AclService;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,20 +13,23 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * call {@link GlobalSecurityRule#checkAccess(AclEvaluationContext)} on each permission evaluation.
+ * call {@link GlobalSecurityRule#checkAccess(IdentifiableEntity, Object, RapidSecurityContext)} on each permission evaluation.
  */
 @Slf4j
 public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermissionEvaluator {
 
     private List<GlobalSecurityRule> globalSecurityRules = new ArrayList<>();
-    private RapidAclSecurityContext securityContext;
+    private RapidSecurityContext securityContext;
+
+    private EntityLocator entityLocator;
 
 
 
 
-    public GlobalRuleEnforcingAclPermissionEvaluator(AclService aclService, List<GlobalSecurityRule> globalSecurityRules, RapidAclSecurityContext securityContext) {
+    public GlobalRuleEnforcingAclPermissionEvaluator(AclService aclService, List<GlobalSecurityRule> globalSecurityRules, RapidSecurityContext securityContext) {
         super(aclService);
         this.globalSecurityRules = globalSecurityRules;
         this.securityContext = securityContext;
@@ -48,7 +53,7 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
         if (targetDomainObject == null)    // if no domain object is provided,
             return true;                // let's pass, allowing the service method
         // to throw a more sensible error message
-        Boolean allowAccess = performGlobalSecurityChecks();
+        Boolean allowAccess = performGlobalSecurityChecks((IdentifiableEntity<?>) targetDomainObject,permission);
         if (allowAccess != null)
             return allowAccess;
         else
@@ -59,22 +64,34 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
     @Override
     public boolean hasPermission(Authentication authentication,
                                  Serializable targetId, String targetType, Object permission) {
-        Boolean allowAccess = performGlobalSecurityChecks();
-        if (allowAccess != null)
-            return allowAccess;
-        else
-            return super.hasPermission(authentication,targetId,targetType,permission);
+        try {
+            Optional<IdentifiableEntity> entity = entityLocator.findEntity(Class.forName(targetType), targetId);
+            if (entity.isEmpty())
+                throw new IllegalArgumentException("entity permission gets checked for does not exist, check before checking acl info");
+            Boolean allowAccess = performGlobalSecurityChecks(entity.get(),permission);
+            if (allowAccess != null)
+                return allowAccess;
+            else
+                return super.hasPermission(authentication,targetId,targetType,permission);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
 
-    public Boolean performGlobalSecurityChecks(){
+    public Boolean performGlobalSecurityChecks(IdentifiableEntity<?> entity, Object permission){
         for (GlobalSecurityRule globalSecurityRule : globalSecurityRules) {
-            Boolean allowAccess = globalSecurityRule.checkAccess(securityContext.getAclContext());
+            Boolean allowAccess = globalSecurityRule.checkAccess(entity,permission,securityContext);
             if (allowAccess != null)
                 return allowAccess;
         }
 
         return null;
+    }
+
+    @Autowired
+    public void setEntityLocator(EntityLocator entityLocator) {
+        this.entityLocator = entityLocator;
     }
 }
