@@ -7,8 +7,8 @@ import com.github.vincemann.springrapid.autobidir.dto.child.annotation.UniDirChi
 import com.github.vincemann.springrapid.autobidir.dto.child.annotation.UniDirChildIdCollection;
 import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentId;
 import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentIdCollection;
-import com.github.vincemann.springrapid.autobidir.util.AutoBiDirEntityReflectionUtils;
-import com.github.vincemann.springrapid.autobidir.util.EntityIdAnnotationUtils;
+import com.github.vincemann.springrapid.autobidir.util.RelationalEntityReflectionUtils;
+import com.github.vincemann.springrapid.autobidir.util.RelationalEntityIdAnnotationUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
@@ -22,7 +22,7 @@ import java.util.*;
 import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetClass;
 
 @Slf4j
-public class RapidRelationalDtoManager implements RelationalDtoManager {
+public class RelationalDtoManagerImpl implements RelationalDtoManager {
 
 
     @Cacheable(value = "dtoRelationTypes")
@@ -199,7 +199,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
         EntityReflectionUtils.doWithAnnotatedFields(entityIdAnnotationType, getTargetClass(entity), field -> {
             Serializable id = (Serializable) field.get(entity);
             if (id != null) {
-                result.put((Class<C>) EntityIdAnnotationUtils.getEntityType(field.getAnnotation(entityIdAnnotationType)), id);
+                result.put((Class<C>) RelationalEntityIdAnnotationUtils.getEntityType(field.getAnnotation(entityIdAnnotationType)), id);
             } else {
                 log.warn("Null id found in BiDirParentDto " + entity + " for EntityIdField with name: " + field.getName());
             }
@@ -213,7 +213,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
         EntityReflectionUtils.doWithAnnotatedFields(entityCollectionIdAnnotationType,getTargetClass(entity),field -> {
             Collection<Serializable> idCollection = (Collection<Serializable>) field.get(entity);
             if (idCollection != null) {
-                result.put((Class<C>) EntityIdAnnotationUtils.getEntityType(field.getAnnotation(entityCollectionIdAnnotationType)), idCollection);
+                result.put((Class<C>) RelationalEntityIdAnnotationUtils.getEntityType(field.getAnnotation(entityCollectionIdAnnotationType)), idCollection);
             }/*else {
                throw new IllegalArgumentException("Null idCollection found in UniDirParentDto "+ this + " for ChildIdCollectionField with name: " + field.getName());
             }*/
@@ -249,7 +249,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
             }
         }
 
-        AutoBiDirEntityReflectionUtils.doWithIdFieldsWithEntityType(getTargetClass(src), entityIdAnnotationClass, target.getClass(), field -> {
+        RelationalEntityReflectionUtils.doWithIdFieldsWithEntityType(getTargetClass(src), entityIdAnnotationClass, target.getClass(), field -> {
             Object prevEntityId = field.get(target);
             if (prevEntityId != null) {
                 log.warn("Warning, prev EntityId: " + prevEntityId + " was not null -> overriding with new value: " + entityId);

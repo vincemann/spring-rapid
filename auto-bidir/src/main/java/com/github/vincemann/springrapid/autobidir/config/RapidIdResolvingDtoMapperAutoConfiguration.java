@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.autobidir.config;
 
-import com.github.vincemann.springrapid.autobidir.RapidRelationalDtoManager;
+import com.github.vincemann.springrapid.autobidir.RelationalDtoManagerImpl;
 import com.github.vincemann.springrapid.autobidir.RelationalDtoManager;
 import com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration;
 import com.github.vincemann.springrapid.core.config.RapidServiceAutoConfiguration;
@@ -41,7 +41,7 @@ public class RapidIdResolvingDtoMapperAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(RelationalDtoManager.class)
     public RelationalDtoManager relationalDtoManager(){
-        return new RapidRelationalDtoManager();
+        return new RelationalDtoManagerImpl();
     }
 
     @ConditionalOnMissingBean(name = "biDiChildIdResolver")

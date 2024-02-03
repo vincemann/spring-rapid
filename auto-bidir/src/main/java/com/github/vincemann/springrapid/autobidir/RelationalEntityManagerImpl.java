@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Id;
 import javax.persistence.PersistenceContext;
 import java.util.*;
 
@@ -17,7 +16,7 @@ import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetCla
 
 @Slf4j
 @Transactional
-public class RapidRelationalEntityManager implements RelationalEntityManager {
+public class RelationalEntityManagerImpl implements RelationalEntityManager {
 
     private RelationalEntityManagerUtil relationalEntityManagerUtil;
     @PersistenceContext

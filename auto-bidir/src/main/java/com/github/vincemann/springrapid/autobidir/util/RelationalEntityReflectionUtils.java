@@ -5,7 +5,7 @@ import lombok.NonNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
-public class AutoBiDirEntityReflectionUtils {
+public class RelationalEntityReflectionUtils {
 
     private static class AnnotationAndEntityTypeFilter extends org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter {
         private Class<? extends Annotation> annotationType;
@@ -19,13 +19,13 @@ public class AutoBiDirEntityReflectionUtils {
 
         @Override
         public boolean matches(Field field) {
-            return super.matches(field) && EntityIdAnnotationUtils.getEntityType(field.getAnnotation(annotationType)).equals(entityType);
+            return super.matches(field) && RelationalEntityIdAnnotationUtils.getEntityType(field.getAnnotation(annotationType)).equals(entityType);
         }
     }
 
     /**
      * Offers callback for fields in @param class that have annotation of type @param annotationType.
-     * Annotation Type must be of EntityIdType, see: {@link EntityIdAnnotationUtils#getEntityType(Annotation)}.
+     * Annotation Type must be of EntityIdType, see: {@link RelationalEntityIdAnnotationUtils#getEntityType(Annotation)}.
      * The Value of this Annotation, which is always the entityType must match @param entityType
      * @param clazz
      * @param fieldCallback

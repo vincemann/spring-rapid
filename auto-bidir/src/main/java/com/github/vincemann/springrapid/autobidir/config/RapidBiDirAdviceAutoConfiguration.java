@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.autobidir.config;
 
-import com.github.vincemann.springrapid.autobidir.RapidRelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerImpl;
 import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
-import com.github.vincemann.springrapid.autobidir.advice.BiDirEntityAdvice;
+import com.github.vincemann.springrapid.autobidir.advice.RelationalEntityAdvice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -20,16 +20,16 @@ public class RapidBiDirAdviceAutoConfiguration {
 
 
     @Bean
-    @ConditionalOnMissingBean(BiDirEntityAdvice.class)
-    public BiDirEntityAdvice biDirEntityAdvice(){
-        return new BiDirEntityAdvice();
+    @ConditionalOnMissingBean(RelationalEntityAdvice.class)
+    public RelationalEntityAdvice biDirEntityAdvice(){
+        return new RelationalEntityAdvice();
     }
 
 
     @Bean
     @ConditionalOnMissingBean(RelationalEntityManager.class)
     public RelationalEntityManager relationalEntityManager(){
-        return new RapidRelationalEntityManager();
+        return new RelationalEntityManagerImpl();
     }
 
 }

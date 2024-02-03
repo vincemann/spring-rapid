@@ -10,7 +10,7 @@ import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirC
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentCollection;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
-import com.github.vincemann.springrapid.autobidir.util.EntityAnnotationUtils;
+import com.github.vincemann.springrapid.autobidir.util.RelationalEntityAnnotationUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetClass;
 
 @Slf4j
-public class RapidRelationalEntityManagerUtil implements RelationalEntityManagerUtil {
+public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerUtil {
 
 
     @Cacheable(value = "entityRelationTypes")
@@ -312,7 +312,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 //                field.set(entity, emptyCollection);
 //                entityCollection = emptyCollection;
             }
-            Class<C> entityType = (Class<C>) EntityAnnotationUtils.getEntityType(field.getAnnotation(entityAnnotationClass));
+            Class<C> entityType = (Class<C>) RelationalEntityAnnotationUtils.getEntityType(field.getAnnotation(entityAnnotationClass));
             entityType_collectionMap.put(entityType, entityCollection);
         });
         return entityType_collectionMap;

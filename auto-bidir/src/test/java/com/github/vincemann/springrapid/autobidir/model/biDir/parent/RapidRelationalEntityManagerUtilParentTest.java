@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.autobidir.model.biDir.parent;
 
-import com.github.vincemann.springrapid.autobidir.RapidRelationalEntityManagerUtil;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtilImpl;
 import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtil;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.util.Lists;
@@ -61,7 +61,7 @@ class RapidRelationalEntityManagerUtilParentTest {
 
     @BeforeEach
     void setUp() {
-        this.relationalEntityManagerUtil = new RapidRelationalEntityManagerUtil();
+        this.relationalEntityManagerUtil = new RelationalEntityManagerUtilImpl();
         this.testEntityChild= new EntityChild();
         testEntityChild.setId(1L);
         this.testEntityParent = new EntityParent();

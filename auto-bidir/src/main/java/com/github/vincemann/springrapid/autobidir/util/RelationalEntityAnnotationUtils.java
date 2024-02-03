@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirP
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
-public class EntityAnnotationUtils {
+public class RelationalEntityAnnotationUtils {
 
     public static Class<?> getEntityType(Annotation annotation){
         if (annotation instanceof BiDirChildCollection){

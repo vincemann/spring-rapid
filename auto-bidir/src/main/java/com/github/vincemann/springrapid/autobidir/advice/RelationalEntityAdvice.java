@@ -24,7 +24,7 @@ import java.util.Set;
 @Aspect
 @Slf4j
 @Order(4)
-public class BiDirEntityAdvice {
+public class RelationalEntityAdvice {
 
     private RelationalEntityManager relationalEntityManager;
 

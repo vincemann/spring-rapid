@@ -11,7 +11,7 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class EntityIdAnnotationUtils {
+public class RelationalEntityIdAnnotationUtils {
     private static final Map<Annotation, Class<?>> annotationTypeCache = new ConcurrentHashMap<>();
 
     public static Class<?> getEntityType(Annotation annotation){

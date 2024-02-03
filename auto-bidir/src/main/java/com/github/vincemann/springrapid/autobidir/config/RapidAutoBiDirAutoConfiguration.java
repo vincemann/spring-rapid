@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.autobidir.config;
 
-import com.github.vincemann.springrapid.autobidir.RapidRelationalEntityManagerUtil;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtilImpl;
 import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtil;
 import com.github.vincemann.springrapid.core.util.Lists;
 import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
@@ -24,7 +24,7 @@ public class RapidAutoBiDirAutoConfiguration implements CacheManagerCustomizer<C
     @Bean
     @ConditionalOnMissingBean(RelationalEntityManagerUtil.class)
     public RelationalEntityManagerUtil relationalEntityManagerUtil(){
-        return new RapidRelationalEntityManagerUtil();
+        return new RelationalEntityManagerUtilImpl();
     }
 
 
