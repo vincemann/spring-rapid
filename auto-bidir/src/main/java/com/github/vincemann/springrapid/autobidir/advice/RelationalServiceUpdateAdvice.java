@@ -15,8 +15,6 @@ import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 @Slf4j
@@ -34,10 +32,10 @@ public class RelationalServiceUpdateAdvice {
     }
 
     @Before(
-            value = "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
-                    "com.github.vincemann.springrapid.core.SystemArchitecture.fullUpdateOperation() && " +
-                    "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
-                    "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreJdkProxies() && " +
+            value = "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
+                    "com.github.vincemann.springrapid.core.RapidArchitecture.fullUpdateOperation() && " +
+                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
+                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
                     "args(updateEntity)")
     public void preFullUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException {
 //        System.err.println("full update matches " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
@@ -51,10 +49,10 @@ public class RelationalServiceUpdateAdvice {
         // -> use unproxy in jpaUtils
 
         IdentifiableEntity old = entityLocator.findEntity(updateEntity).get();
-        IdentifiableEntity detachedOldEntity = MyJpaUtils.deepDetach(old);
+        IdentifiableEntity detachedOldEntity = JpaUtils.deepDetach(old);
 
         RelationalAdviceContext updateContext = RelationalAdviceContext.builder()
-                .detachedUpdateEntity(MyJpaUtils.deepDetachOrGet(updateEntity))
+                .detachedUpdateEntity(JpaUtils.deepDetachOrGet(updateEntity))
                 .detachedOldEntity(detachedOldEntity)
                 .operationType(RelationalAdviceContext.OperationType.FULL)
                 .build();
@@ -62,10 +60,10 @@ public class RelationalServiceUpdateAdvice {
     }
 
     @Before(value =
-            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
-                    "com.github.vincemann.springrapid.core.SystemArchitecture.partialUpdateOperation() && " +
-                    "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
-                    "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreJdkProxies() && " +
+            "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
+                    "com.github.vincemann.springrapid.core.RapidArchitecture.partialUpdateOperation() && " +
+                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
+                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
                     "args(updateEntity,fieldsToUpdate)")
     public void prePartialUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, String... fieldsToUpdate) throws EntityNotFoundException {
 //        System.err.println("partial update without propertiesToUpdate matches " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
@@ -79,10 +77,10 @@ public class RelationalServiceUpdateAdvice {
     }
 
     @Before(value =
-            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() &&" +
-                    "com.github.vincemann.springrapid.core.SystemArchitecture.softUpdateOperation() && " +
-                    "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
-                    "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreJdkProxies() && " +
+            "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() &&" +
+                    "com.github.vincemann.springrapid.core.RapidArchitecture.softUpdateOperation() && " +
+                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
+                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
                     "args(updateEntity)")
     public void preSoftUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException {
 //        System.err.println("soft update matches " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
@@ -98,10 +96,10 @@ public class RelationalServiceUpdateAdvice {
     }
 
     @Before(value =
-            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
-                    "com.github.vincemann.springrapid.core.SystemArchitecture.saveOperation() && " +
-                    "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
-                    "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreJdkProxies() && " +
+            "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
+                    "com.github.vincemann.springrapid.core.RapidArchitecture.saveOperation() && " +
+                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
+                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
                     "args(createdEntity)")
     public void preCreateRelEntity(JoinPoint joinPoint, IdentifiableEntity createdEntity) throws EntityNotFoundException {
 //        System.err.println("create matches " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
@@ -134,7 +132,7 @@ public class RelationalServiceUpdateAdvice {
         NullAwareBeanUtils.copyProperties(detachedOldEntity,old,whiteList);
 
         RelationalAdviceContext updateContext = RelationalAdviceContext.builder()
-                .detachedUpdateEntity(MyJpaUtils.deepDetachOrGet(updateEntity))
+                .detachedUpdateEntity(JpaUtils.deepDetachOrGet(updateEntity))
                 .detachedOldEntity(detachedOldEntity)
                 .whiteListedFields(whiteList)
                 .operationType(RelationalAdviceContext.OperationType.PARTIAL)

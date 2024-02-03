@@ -1,8 +1,6 @@
 package com.github.vincemann.springrapid.core.util;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.util.MyJpaUtils;
-import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import org.springframework.util.ReflectionUtils;
 
 import java.io.Serializable;

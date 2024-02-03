@@ -101,7 +101,7 @@ public abstract class JPACrudService
             // intellij idea says first breakpoint skipped because it happened in debugger evaluation, so the first execution never halts
             // the second invocation (that should never occur in the first place) halts then
 //            System.err.println("managed entity: " + managedEntity);
-            E detachedUpdateEntity = MyJpaUtils.deepDetachOrGet(update);
+            E detachedUpdateEntity = JpaUtils.deepDetachOrGet(update);
             // copy non null values from update to entityToUpdate
             // also copy null values from explicitly given fieldsToRemove
             // updates are applied on the go by hibernate bc entityToUpdate is managed in current session

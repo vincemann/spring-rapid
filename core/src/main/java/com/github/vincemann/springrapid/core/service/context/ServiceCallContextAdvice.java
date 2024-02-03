@@ -35,10 +35,10 @@ public class ServiceCallContextAdvice {
     }
 
     // dont ignore proxies because context should be created when most outer proxy is called
-    @Around(value = "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() " +
+    @Around(value = "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() " +
             // jdkProxies dont match, because they wont be wrapped with glibc aop proxies - so look out for most outer extension
 //            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions()" +
-            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreHelperServiceMethods() "
+            "&& com.github.vincemann.springrapid.core.RapidArchitecture.ignoreHelperServiceMethods() "
     )
     public Object aroundServiceOperation(ProceedingJoinPoint joinPoint) throws Throwable {
 //        System.err.println("SERVICE CALL CONTEXT: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());

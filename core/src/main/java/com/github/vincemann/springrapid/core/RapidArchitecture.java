@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-public class SystemArchitecture {
+public class RapidArchitecture {
 
     @Pointcut("execution(* save(..))")
     public void saveOperation(){}
