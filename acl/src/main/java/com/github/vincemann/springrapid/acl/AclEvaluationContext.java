@@ -11,10 +11,10 @@ import java.util.Optional;
 
 /**
  * Much simpler version of {@link org.springframework.expression.EvaluationContext} only for acl evaluations and adjusted to this library.
- * stores relevant information for one explicit acl checking call.
- * I.E. does authenticated have permission READ over target entity y.
+ * Stores relevant information for one explicit acl checking call.
+ * I.E. does authenticated user x have permission READ over target entity y.
  * <p>
- * Combine with {@link com.github.vincemann.springrapid.core.sec.RapidSecurityContext} to also gain information about authenticated.
+ * Combine with {@link com.github.vincemann.springrapid.core.sec.RapidSecurityContext} to also use information about authenticated.
  * <p>
  * Either {@link this#targetEntity} is set or id and entityClass.
  * You can use {@link this#resolveEntity(EntityLocator)} to get target entity acl context is created for.

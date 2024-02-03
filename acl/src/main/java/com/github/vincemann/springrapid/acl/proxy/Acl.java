@@ -1,19 +1,19 @@
 package com.github.vincemann.springrapid.acl.proxy;
 
-import com.github.vincemann.springrapid.core.service.ServiceBeanType;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.lang.annotation.*;
 
 /**
- * Service that does not have restrictions from {@link Secured}, realized with {@link com.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule}s,
- * but manages Acl information.
- * This is used for dependency setion purposes.
+ * Indicates, that {@link com.github.vincemann.springrapid.core.service.CrudService} annotated with this annotation is acl managing
+ * -> has some acl extensions applied
+ * For example a service proxy, created with {@link com.github.vincemann.springrapid.core.proxy.ExtensionProxy} might have an acl extension
+ * saving some acl permission on save.
+ * This is used as a qualifier for dependency injection
  */
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Qualifier("acl")
 @Inherited
-@ServiceBeanType
 public @interface Acl {
 }

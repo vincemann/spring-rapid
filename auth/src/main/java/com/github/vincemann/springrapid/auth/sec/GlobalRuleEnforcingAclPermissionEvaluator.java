@@ -66,27 +66,8 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
             return super.hasPermission(authentication,targetId,targetType,permission);
     }
 
-//    private IdentifiableEntity<?> resolveEntity(Serializable targetId, String targetType){
-//        try {
-//            Class<?> clazz = Class.forName(targetType);
-//            // Now 'clazz' contains the Class object for the specified class.
-//            Serializable id = idConverter.toId(String.valueOf(targetId));
-//            Optional byId = crudServiceLocator.find((Class<? extends IdentifiableEntity>) clazz).findById(id);
-//            VerifyEntity.isPresent(byId,id,clazz);
-//            return (IdentifiableEntity<?>) byId.get();
-//        } catch (ClassNotFoundException e) {
-//            // Handle the exception if the class is not found.
-//            throw new IllegalArgumentException("Cannot find class object of type string: " + targetType,e);
-//        } catch (BadEntityException e) {
-//            throw new IllegalArgumentException("invalid target id",e);
-//        } catch (EntityNotFoundException e) {
-//            throw new IllegalArgumentException(e);
-//        }
-//    }
 
 
-
-    //todo is this really the right place for those kind of checks?
     public Boolean performGlobalSecurityChecks(){
         for (GlobalSecurityRule globalSecurityRule : globalSecurityRules) {
             Boolean allowAccess = globalSecurityRule.checkAccess(securityContext.getAclContext());
@@ -95,29 +76,5 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
         }
 
         return null;
-//        //check if blocked or unverified
-//        LemonAuthenticatedPrincipal principal = securityContext.currentPrincipal();
-//        if(principal ==null){
-//            return;
-//        }
-        //todo pack das auch woanders hin, evtl gibt es für blocked user trotzdem endpunkte wo die report einreichen könnne zb
-//        String name = RapidSecurityContext.getName();
-//        boolean blocked = RapidSecurityContext.hasRole(AuthRoles.BLOCKED);
-//        log.debug("Checking if current User: " + name + " is blocked.");
-//
-//        if(blocked){
-//            throw new AccessDeniedException("User is Blocked");
-//        }
-        //todo check das lieber in LemonSecurityCheckerUtil. Es kann doch auch aktionen geben, die ein unverified admin darf evlt..
-//        if(principal.isAdmin() && principal.isUnverified()){
-//            throw new AccessDeniedException("Admin is Unverified");
-//        }
-//        log.debug("Current User is NOT blocked or an unverified admin.");
-
     }
-
-//    @Autowired
-//    public void setSecurityContext(RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext) {
-//        this.securityContext = securityContext;
-//    }
 }

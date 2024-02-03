@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.autobidir.controller.map.biDir.testEntit
 import com.github.vincemann.springrapid.autobidir.controller.map.biDir.testEntities.BiDirSecondEntityParent;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
+import com.github.vincemann.springrapid.core.service.CrudServiceLocator;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;

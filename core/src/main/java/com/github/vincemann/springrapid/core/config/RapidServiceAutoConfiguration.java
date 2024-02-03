@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.core.config;
 
 import com.github.vincemann.springrapid.core.service.context.*;
-import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
-import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocatorImpl;
+import com.github.vincemann.springrapid.core.service.CrudServiceLocator;
+import com.github.vincemann.springrapid.core.service.CrudServiceLocatorImpl;
 import org.springframework.context.annotation.Configuration;
 import com.github.vincemann.springrapid.core.util.EntityLocator;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
