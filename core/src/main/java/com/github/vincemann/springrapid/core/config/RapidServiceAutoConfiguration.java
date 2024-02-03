@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.core.config;
 import com.github.vincemann.springrapid.core.service.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.service.CrudServiceLocatorImpl;
 import com.github.vincemann.springrapid.core.util.EntityLocator;
+import com.github.vincemann.springrapid.core.util.EntityLocatorImpl;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -35,7 +36,7 @@ public class RapidServiceAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(EntityLocator.class)
     public EntityLocator entityLocator(){
-        return new EntityLocator();
+        return new EntityLocatorImpl();
     }
 
     @Autowired
