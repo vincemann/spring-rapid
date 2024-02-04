@@ -9,12 +9,12 @@ import com.github.vincemann.springrapid.sync.service.AuditLogService;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import static com.github.vincemann.springrapid.sync.util.AuditUtils.toId;
 
 @Aspect
 // should get executed within transaction of service, so when anything fails, the timestamp update is rolled back
@@ -38,7 +38,7 @@ public class AuditAdvice {
 
         assertTransactionActive();
 
-        auditLogService.updateAuditLog(update);
+        auditLogService.updateAuditLog(toId(update));
     }
 
     @Before(
@@ -53,7 +53,7 @@ public class AuditAdvice {
 
         assertTransactionActive();
 
-        auditLogService.updateAuditLog(update, Entity.findPartialUpdatedFields(update,fieldsToUpdate));
+        auditLogService.updateAuditLog(toId(update), Entity.findPartialUpdatedFields(update,fieldsToUpdate));
     }
 
 
@@ -70,7 +70,7 @@ public class AuditAdvice {
 
         assertTransactionActive();
 
-        auditLogService.updateAuditLog(entity);
+        auditLogService.updateAuditLog(toId(entity));
     }
 
     protected boolean skip(JoinPoint joinPoint) {

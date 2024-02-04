@@ -1,15 +1,20 @@
 package com.github.vincemann.springrapid.sync;
 
+import lombok.Getter;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class DtoClassRegistry {
 
-    private Map<String,Class<?>> registry = new HashMap<>();
+    @Getter
+    private Map<String,Class<?>> entries = new HashMap<>();
+
+    @Getter
     private Class<?> fallback;
 
     public void register(String key, Class<?> dtoClass){
-        registry.put(key,dtoClass);
+        entries.put(key,dtoClass);
     }
 
     public void registerFallback(Class<?> dtoClass){
@@ -17,6 +22,7 @@ public class DtoClassRegistry {
     }
 
     public Class<?> find(String key){
-        return registry.get(key);
+        return entries.get(key);
     }
+
 }

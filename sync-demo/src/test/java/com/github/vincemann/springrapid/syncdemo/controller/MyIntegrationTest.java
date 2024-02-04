@@ -1,11 +1,10 @@
 package com.github.vincemann.springrapid.syncdemo.controller;
 
-import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
 import com.github.vincemann.springrapid.syncdemo.controller.template.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.CreateOwnerDto;
-import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnOwnerDto;
+import com.github.vincemann.springrapid.syncdemo.dto.owner.own.ReadOwnOverviewOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.model.*;
 import com.github.vincemann.springrapid.syncdemo.repo.*;
 import com.github.vincemann.springrapid.syncdemo.service.*;
@@ -411,7 +410,7 @@ public class MyIntegrationTest extends AbstractMvcTest {
         createOwnerDto.getPetIds().addAll(Lists.newArrayList(petIds));
 
 
-        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(ownerController.create(createOwnerDto), ReadOwnOwnerDto.class);
+        ReadOwnOverviewOwnerDto readOwnOwnerDto = performDs2xx(ownerController.create(createOwnerDto), ReadOwnOverviewOwnerDto.class);
         Assertions.assertNotNull(readOwnOwnerDto.getId());
         Owner saved = fetchOwner(readOwnOwnerDto.getId());
         Assertions.assertNotNull(saved.getCreatedDate());
@@ -425,7 +424,7 @@ public class MyIntegrationTest extends AbstractMvcTest {
     protected Owner saveOwnerLinkedToClinicCard(Owner owner, ClinicCard clinicCard) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
         createOwnerDto.setClinicCardId(clinicCard.getId());
-        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(ownerController.create(createOwnerDto), ReadOwnOwnerDto.class);
+        ReadOwnOverviewOwnerDto readOwnOwnerDto = performDs2xx(ownerController.create(createOwnerDto), ReadOwnOverviewOwnerDto.class);
         Assertions.assertNotNull(readOwnOwnerDto.getId());
         Owner saved = fetchOwner(readOwnOwnerDto.getId());
         Assertions.assertNotNull(saved.getCreatedDate());
@@ -436,9 +435,9 @@ public class MyIntegrationTest extends AbstractMvcTest {
     }
 
 
-    protected ReadOwnOwnerDto saveOwner(Owner owner) throws Exception {
+    protected ReadOwnOverviewOwnerDto saveOwner(Owner owner) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
-        return performDs2xx(ownerController.create(createOwnerDto), ReadOwnOwnerDto.class);
+        return performDs2xx(ownerController.create(createOwnerDto), ReadOwnOverviewOwnerDto.class);
     }
 
 

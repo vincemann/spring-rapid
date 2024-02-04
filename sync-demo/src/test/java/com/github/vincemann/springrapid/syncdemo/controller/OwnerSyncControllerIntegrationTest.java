@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.syncdemo.controller;
 
 import com.github.vincemann.springrapid.core.util.Entity;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.util.TestPrincipal;
 import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
@@ -12,7 +11,7 @@ import com.github.vincemann.springrapid.syncdemo.controller.template.ClinicCardC
 import com.github.vincemann.springrapid.syncdemo.controller.template.OwnerSyncControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.controller.template.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.controller.template.PetSyncControllerTestTemplate;
-import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnOwnerDto;
+import com.github.vincemann.springrapid.syncdemo.dto.owner.own.ReadOwnOverviewOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.pet.PetDto;
 import com.github.vincemann.springrapid.syncdemo.model.ClinicCard;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
@@ -171,8 +170,8 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
         securityContext.login(TestPrincipal.withName(KAHN));
-        ReadOwnOwnerDto updatedEG = performDs2xx(ownerController.find(status.getId())
-                , ReadOwnOwnerDto.class);
+        ReadOwnOverviewOwnerDto updatedEG = performDs2xx(ownerController.find(status.getId())
+                , ReadOwnOverviewOwnerDto.class);
         RapidSecurityContext.logout();
 
         Assertions.assertEquals(updatedFirstName,updatedEG.getFirstName());
@@ -231,12 +230,12 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.logout();
 
-        Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json,ReadOwnOwnerDto.class);
+        Set<ReadOwnOverviewOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOverviewOwnerDto.class);
 
         Assertions.assertEquals(2,updatedOwners.size());
 
-        ReadOwnOwnerDto owner2Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner2.getId())).findFirst().get();
-        ReadOwnOwnerDto owner3Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner3.getId())).findFirst().get();
+        ReadOwnOverviewOwnerDto owner2Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner2.getId())).findFirst().get();
+        ReadOwnOverviewOwnerDto owner3Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner3.getId())).findFirst().get();
 
         Assertions.assertEquals(owner2Dto.getCity(),updateOwner2.getCity());
         Assertions.assertEquals(owner3Dto.getCity(),updateOwner3.getCity());
@@ -292,11 +291,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.logout();
 
-        Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json,ReadOwnOwnerDto.class);
+        Set<ReadOwnOverviewOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOverviewOwnerDto.class);
 
         Assertions.assertEquals(1,updatedOwners.size());
 
-        ReadOwnOwnerDto kahnDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedKahn.getId())).findFirst().get();
+        ReadOwnOverviewOwnerDto kahnDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedKahn.getId())).findFirst().get();
 
         Assertions.assertEquals(kahnDto.getCity(),updateKahn.getCity());
     }
@@ -356,11 +355,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.logout();
 
-        Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json,ReadOwnOwnerDto.class);
+        Set<ReadOwnOverviewOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOverviewOwnerDto.class);
 
         Assertions.assertEquals(1,updatedOwners.size());
 
-        ReadOwnOwnerDto owner2Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner2.getId())).findFirst().get();
+        ReadOwnOverviewOwnerDto owner2Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner2.getId())).findFirst().get();
 
         Assertions.assertEquals(owner2Dto.getCity(),updateOwner2.getCity());
     }
@@ -466,11 +465,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.logout();
 
-        Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json,ReadOwnOwnerDto.class);
+        Set<ReadOwnOverviewOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOverviewOwnerDto.class);
 
         Assertions.assertEquals(1,updatedOwners.size());
 
-        ReadOwnOwnerDto owner2Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner2.getId())).findFirst().get();
+        ReadOwnOverviewOwnerDto owner2Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner2.getId())).findFirst().get();
 
         Assertions.assertEquals(owner2Dto.getCity(),updateOwner2.getCity());
     }
@@ -525,11 +524,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.logout();
 
-        Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json,ReadOwnOwnerDto.class);
+        Set<ReadOwnOverviewOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOverviewOwnerDto.class);
 
         Assertions.assertEquals(1,updatedOwners.size());
 
-        ReadOwnOwnerDto owner3Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner3.getId())).findFirst().get();
+        ReadOwnOverviewOwnerDto owner3Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner3.getId())).findFirst().get();
         Assertions.assertEquals(owner3Dto.getCity(),updateOwner3.getCity());
     }
 
@@ -583,11 +582,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.logout();
 
-        Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json,ReadOwnOwnerDto.class);
+        Set<ReadOwnOverviewOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOverviewOwnerDto.class);
 
         Assertions.assertEquals(1,updatedOwners.size());
 
-        ReadOwnOwnerDto kahnDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedKahn.getId())).findFirst().get();
+        ReadOwnOverviewOwnerDto kahnDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedKahn.getId())).findFirst().get();
         Assertions.assertEquals(kahnDto.getCity(),updateKahn.getCity());
     }
 
@@ -710,11 +709,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.logout();
 
-        Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json,ReadOwnOwnerDto.class);
+        Set<ReadOwnOverviewOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOverviewOwnerDto.class);
 
         Assertions.assertEquals(1,updatedOwners.size());
 
-        ReadOwnOwnerDto ownerDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner.getId())).findFirst().get();
+        ReadOwnOverviewOwnerDto ownerDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner.getId())).findFirst().get();
         Assertions.assertEquals(1,ownerDto.getPetIds().size());
         Assertions.assertEquals(ownerDto.getPetIds().stream().findFirst().get(),savedKitty.getId());
     }
@@ -804,7 +803,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
         securityContext.login(TestPrincipal.withName(KAHN));
-        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(ownerController.find(status.getId()), ReadOwnOwnerDto.class);
+        ReadOwnOverviewOwnerDto readOwnOwnerDto = performDs2xx(ownerController.find(status.getId()), ReadOwnOverviewOwnerDto.class);
         RapidSecurityContext.logout();
 
         Assertions.assertEquals(updatedHobbies,readOwnOwnerDto.getHobbies());
@@ -852,7 +851,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
         securityContext.login(TestPrincipal.withName(KAHN));
-        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(ownerController.find(status.getId()), ReadOwnOwnerDto.class);
+        ReadOwnOverviewOwnerDto readOwnOwnerDto = performDs2xx(ownerController.find(status.getId()), ReadOwnOverviewOwnerDto.class);
         RapidSecurityContext.logout();
 
         Assertions.assertEquals(updatedHobbies,readOwnOwnerDto.getHobbies());
@@ -902,11 +901,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.logout();
 
-        Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json,ReadOwnOwnerDto.class);
+        Set<ReadOwnOverviewOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOverviewOwnerDto.class);
 
         Assertions.assertEquals(1,updatedOwners.size());
 
-        ReadOwnOwnerDto ownerDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner.getId())).findFirst().get();
+        ReadOwnOverviewOwnerDto ownerDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner.getId())).findFirst().get();
         Assertions.assertNull(ownerDto.getClinicCardId());
     }
 
@@ -956,11 +955,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.logout();
 
-        Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json,ReadOwnOwnerDto.class);
+        Set<ReadOwnOverviewOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOverviewOwnerDto.class);
 
         Assertions.assertEquals(1,updatedOwners.size());
 
-        ReadOwnOwnerDto ownerDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner.getId())).findFirst().get();
+        ReadOwnOverviewOwnerDto ownerDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner.getId())).findFirst().get();
         Assertions.assertNull(ownerDto.getClinicCardId());
     }
 

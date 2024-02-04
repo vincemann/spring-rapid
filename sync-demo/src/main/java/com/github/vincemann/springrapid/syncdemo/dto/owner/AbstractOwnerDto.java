@@ -14,7 +14,6 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-
 public abstract class AbstractOwnerDto extends MyIdDto<Long> {
 
     public AbstractOwnerDto(@Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Nullable @Size(min = 10, max = 10) String telephone,Set<String> hobbies) {
