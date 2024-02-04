@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetClass;
 
+
 @Slf4j
 public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerUtil {
 

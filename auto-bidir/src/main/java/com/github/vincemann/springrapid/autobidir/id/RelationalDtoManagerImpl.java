@@ -20,6 +20,7 @@ import java.util.*;
 
 import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetClass;
 
+
 @Slf4j
 public class RelationalDtoManagerImpl implements RelationalDtoManager {
 

@@ -6,9 +6,12 @@ import com.github.vincemann.springrapid.core.proxy.ExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
+import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.test.util.AopTestUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Proxy;
 
 public class ProxyUtils {
@@ -24,6 +27,19 @@ public class ProxyUtils {
             return o1.equals(o2);
         }
     }
+
+    // just use AopProxyUtils.getTargetClass -> CrudService implements TargetClassAware which is checked by this method
+//    /**
+//     * supports aop glibc proxies and libs jdk proxies -> {@link ExtensionProxy}.
+//
+//     */
+//    public static Class<?> getExtensionProxyTargetClass(Object proxy){
+//        if (isJDKProxy(proxy) && proxy instanceof CrudService){
+//            ExtensionProxy extensionProxy = getExtensionProxy(((CrudService<?, ?>) proxy));
+//            return extensionProxy.getProxied().getClass();
+//        }
+//        throw new IllegalArgumentException("not a spring rapid extension proxy");
+//    }
 
     public static <S extends CrudService> ExtensionProxy getExtensionProxy(S service){
         return (ExtensionProxy) Proxy.getInvocationHandler(AopTestUtils.getUltimateTargetObject(service));

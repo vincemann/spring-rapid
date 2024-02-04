@@ -34,9 +34,10 @@ public class MyServiceConfig {
 
     @Primary
     @Bean
-    public PetService petService(@Root PetService petService, ExampleAclExtension aclServiceExtension) {
+    public PetService petService(@Root PetService petService,
+                                 ExampleAclExtension exampleAclExtension) {
         return new ExtensionProxyBuilder<>(petService)
-                .addExtension(aclServiceExtension)
+                .addExtension(exampleAclExtension)
                 .build();
     }
 

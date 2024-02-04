@@ -1,32 +1,32 @@
 package com.github.vincemann.springrapid.autobidir.advice;
 
-import com.github.vincemann.springrapid.autobidir.util.AutoBiDirUtils;
+import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManager;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.service.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.service.CrudServiceLocator;
-import com.github.vincemann.springrapid.core.util.*;
+import com.github.vincemann.springrapid.core.util.JpaUtils;
+import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
+import com.github.vincemann.springrapid.core.util.ProxyUtils;
+import com.github.vincemann.springrapid.core.util.ReflectionUtils;
 import com.google.common.collect.Sets;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.test.util.AopTestUtils;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
 @Aspect
 @Slf4j
@@ -43,15 +43,12 @@ public class RelationalEntityAdvice {
 
     @Before(
             value =
-                    "com.github.vincemann.springrapid.autobidir.RapidAutoBiDirArchitecture.autoBiDirEnabled() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.deleteOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
                     "args(id)")
     public void beforeDeleteById(JoinPoint joinPoint, Serializable id) throws EntityNotFoundException, BadEntityException {
-        //        System.err.println("delete matches " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
-
         if (skip(joinPoint))
             return;
 
@@ -69,15 +66,12 @@ public class RelationalEntityAdvice {
 
     @Before(
             value =
-                    "com.github.vincemann.springrapid.autobidir.RapidAutoBiDirArchitecture.autoBiDirEnabled() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.fullUpdateOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
                     "args(update)")
     public void beforeFullUpdate(JoinPoint joinPoint, IdentifiableEntity update) throws EntityNotFoundException, BadEntityException {
-//        System.err.println("full update matches " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
-
         if (skip(joinPoint))
             return;
 
@@ -91,15 +85,12 @@ public class RelationalEntityAdvice {
 
     @Before(
             value =
-                    "com.github.vincemann.springrapid.autobidir.RapidAutoBiDirArchitecture.autoBiDirEnabled() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.partialUpdateOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
                     "args(update,fieldsToUpdate)")
     public void beforePartialUpdate(JoinPoint joinPoint, IdentifiableEntity update, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
-//        System.err.println("partial update without propertiesToUpdate matches " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
-
         if (skip(joinPoint))
             return;
 
@@ -122,14 +113,12 @@ public class RelationalEntityAdvice {
 
     @Before(
             value =
-                    "com.github.vincemann.springrapid.autobidir.RapidAutoBiDirArchitecture.autoBiDirEnabled() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.saveOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
                     "args(entity)")
     public void beforeCreate(JoinPoint joinPoint, IdentifiableEntity entity) {
-//        System.err.println("create matches " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
         if (skip(joinPoint))
             return;
 
@@ -142,7 +131,7 @@ public class RelationalEntityAdvice {
         // the ignore pointcuts sometimes dont work as expected
         if (!ProxyUtils.isRootService(joinPoint.getTarget()))
             return true;
-        if (AutoBiDirUtils.isDisabled(joinPoint)) {
+        if (AnnotationUtils.findAnnotation(AopProxyUtils.ultimateTargetClass(joinPoint.getTarget()), EnableAutoBiDir.class) == null) {
             return true;
         }
         return false;
