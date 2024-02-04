@@ -42,7 +42,6 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
     
     private ObjectMapper objectMapper;
 
-    @Cacheable(value = "patchInfo")
     @Override
     public PatchInfo createPatchInfo(String patchString) throws BadEntityException {
         try {

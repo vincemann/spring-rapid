@@ -29,7 +29,7 @@ import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetCla
 public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerUtil {
 
 
-    @Cacheable(value = "entityRelationTypes")
+    @Cacheable(value = "entityRelationTypesCache")
     @Override
     public Set<RelationalEntityType> inferTypes(Class<? extends IdentifiableEntity> entityClass) {
         Set<RelationalEntityType> relationalEntityTypes = new HashSet<>();

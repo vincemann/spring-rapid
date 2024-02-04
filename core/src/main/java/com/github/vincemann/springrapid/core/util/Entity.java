@@ -1,11 +1,13 @@
 package com.github.vincemann.springrapid.core.util;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.google.common.collect.Sets;
 import org.springframework.util.ReflectionUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.Set;
 
 public class Entity {
 
@@ -40,5 +42,12 @@ public class Entity {
 
     public static <T extends IdentifiableEntity> T createUpdate(T entity) {
         return createUpdate(ProxyUtils.getTargetClass(entity),entity.getId());
+    }
+
+    public static Set<String> findPartialUpdatedFields(IdentifiableEntity update, String... fieldsToUpdate){
+        if (fieldsToUpdate.length == 0)
+            return com.github.vincemann.springrapid.core.util.ReflectionUtils.findAllNonNullFieldNames(update);
+        else
+            return Sets.newHashSet(fieldsToUpdate);
     }
 }

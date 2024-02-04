@@ -24,7 +24,7 @@ public class AuditLog {
     @Column(name = "entity_id")
     private String entityId;
 
-    @OneToMany(mappedBy = "auditLog", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "auditLog",fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EntityDtoMapping> dtoMappings;
 
     @Override

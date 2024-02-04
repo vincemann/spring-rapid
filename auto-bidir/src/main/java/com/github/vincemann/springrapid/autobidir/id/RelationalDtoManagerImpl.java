@@ -24,7 +24,7 @@ import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetCla
 public class RelationalDtoManagerImpl implements RelationalDtoManager {
 
 
-    @Cacheable(value = "dtoRelationTypes")
+    @Cacheable(value = "dtoRelationTypesCache")
     @Override
     public Set<RelationalDtoType> inferTypes(Class<?> entityClass) {
         Set<RelationalDtoType> relationalEntityTypes = new HashSet<>();

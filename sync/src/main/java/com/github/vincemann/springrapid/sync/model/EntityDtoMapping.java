@@ -1,9 +1,6 @@
 package com.github.vincemann.springrapid.sync.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -12,6 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@Entity
 public class EntityDtoMapping {
 
     @Id
@@ -30,6 +28,13 @@ public class EntityDtoMapping {
 
     @Column(name = "last_update_time")
     private LocalDateTime lastUpdateTime;
+
+    @Builder
+    public EntityDtoMapping(AuditLog auditLog, String dtoClass, LocalDateTime lastUpdateTime) {
+        this.auditLog = auditLog;
+        this.dtoClass = dtoClass;
+        this.lastUpdateTime = lastUpdateTime;
+    }
 
     @Override
     public String toString() {

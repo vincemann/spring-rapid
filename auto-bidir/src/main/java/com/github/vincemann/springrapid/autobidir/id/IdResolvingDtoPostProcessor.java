@@ -60,8 +60,6 @@ public class IdResolvingDtoPostProcessor implements EntityDtoPostProcessor<Objec
         }
     }
 
-    // i assume there will be no additional resolvers added to system at runtime
-    @Cacheable("resolvers")
     public List<EntityIdResolver> findResolvers(Class<?> dstClass) {
         List<EntityIdResolver> resolvers = new ArrayList<>();
         Set<RelationalDtoType> relationalDtoTypes = relationalDtoManager.inferTypes(dstClass);
