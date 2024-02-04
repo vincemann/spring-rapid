@@ -1,37 +1,20 @@
-package com.github.vincemann.springrapid.sync;
+package com.github.vincemann.springrapid.sync.advice;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.CrudServiceLocator;
-import com.github.vincemann.springrapid.core.service.context.ServiceCallContextHolder;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.Entity;
-import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
-import com.github.vincemann.springrapid.core.util.ReflectionUtils;
-import com.github.vincemann.springrapid.sync.model.AuditId;
-import com.github.vincemann.springrapid.sync.model.AuditLog;
-import com.github.vincemann.springrapid.sync.model.EntityDtoMapping;
-import com.github.vincemann.springrapid.sync.repo.AuditLogRepository;
-import com.github.vincemann.springrapid.sync.repo.EntityDtoMappingRepository;
+import com.github.vincemann.springrapid.sync.EntityMappingCollector;
 import com.github.vincemann.springrapid.sync.service.AuditLogService;
-import com.github.vincemann.springrapid.sync.util.ReflectionPropertyMatcher;
-import com.google.common.collect.Sets;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
-import org.springframework.test.util.AopTestUtils;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Aspect
 // should get executed within transaction of service, so when anything fails, the timestamp update is rolled back
@@ -41,13 +24,15 @@ public class AuditAdvice {
 
     private AuditLogService auditLogService;
 
+    private EntityMappingCollector entityMappingCollector;
+
     @Before(
             value = "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.fullUpdateOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
                     "args(update)")
-    public void beforeFullUpdate(JoinPoint joinPoint, IdentifiableEntity update) throws EntityNotFoundException, BadEntityException {
+    public void beforeFullUpdate(JoinPoint joinPoint, IdentifiableEntity update) {
         if (skip(joinPoint))
             return;
 
@@ -92,10 +77,14 @@ public class AuditAdvice {
         // the ignore pointcuts sometimes dont work as expected
         if (!ProxyUtils.isRootService(joinPoint.getTarget()))
             return true;
-//        if (AutoBiDirUtils.isDisabled(joinPoint)) {
-//            return true;
-//        }
+        if (isDtoMappingConfiguredFor((CrudService) joinPoint.getTarget())) {
+            return true;
+        }
         return false;
+    }
+
+    protected boolean isDtoMappingConfiguredFor(CrudService service){
+        return entityMappingCollector.getEntityToDtoMappings().get(service.getEntityClass()) != null;
     }
 
     protected void assertTransactionActive() {
@@ -107,5 +96,10 @@ public class AuditAdvice {
     @Autowired
     public void setAuditLogService(AuditLogService auditLogService) {
         this.auditLogService = auditLogService;
+    }
+
+    @Autowired
+    public void setEntityMappingCollector(EntityMappingCollector entityMappingCollector) {
+        this.entityMappingCollector = entityMappingCollector;
     }
 }

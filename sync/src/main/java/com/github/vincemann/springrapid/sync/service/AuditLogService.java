@@ -10,4 +10,6 @@ public interface AuditLogService {
      * updates all mappings of auditlog to now
      */
     public void updateAuditLog(IdentifiableEntity entity);
+
+
 }

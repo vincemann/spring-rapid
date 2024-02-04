@@ -1,11 +1,9 @@
 package com.github.vincemann.springrapid.sync.config;
 
-import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.sync.AnnotationEntityMappingCollector;
-import com.github.vincemann.springrapid.sync.EntityMappingCollector;
-import com.github.vincemann.springrapid.sync.SyncProperties;
+import com.github.vincemann.springrapid.sync.*;
+import com.github.vincemann.springrapid.sync.advice.AuditAdvice;
 import com.github.vincemann.springrapid.sync.service.AuditLogService;
-import com.github.vincemann.springrapid.sync.service.AuditLogServiceImpl;
+import com.github.vincemann.springrapid.sync.service.JpaAuditLogService;
 import com.github.vincemann.springrapid.sync.util.ReflectionPropertyMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -47,9 +45,15 @@ public class RapidSyncAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(AuditLogFactory.class)
+    public AuditLogFactory auditLogFactory(){
+        return new AuditLogFactoryImpl();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(AuditLogService.class)
     public AuditLogService auditLogService(){
-        return new AuditLogServiceImpl();
+        return new JpaAuditLogService();
     }
 
     @Autowired
@@ -57,4 +61,9 @@ public class RapidSyncAutoConfiguration {
         entityMappingCollector.collectEntityToDtoMappings();
     }
 
+    @Bean
+    @ConditionalOnMissingBean(name = "auditAdvice")
+    public AuditAdvice auditAdvice(){
+        return new AuditAdvice();
+    }
 }

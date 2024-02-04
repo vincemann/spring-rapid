@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class AuditLogServiceImpl implements AuditLogService {
+public class JpaAuditLogService implements AuditLogService {
 
     private AuditLogRepository auditLogRepository;
     private ReflectionPropertyMatcher propertyMatcher;
