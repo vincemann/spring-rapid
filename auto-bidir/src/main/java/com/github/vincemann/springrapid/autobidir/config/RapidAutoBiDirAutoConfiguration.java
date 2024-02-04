@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.autobidir.config;
 
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerUtilImpl;
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerUtil;
+import com.github.vincemann.springrapid.core.util.CacheUtil;
 import com.github.vincemann.springrapid.core.util.Lists;
 import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -16,11 +17,10 @@ public class RapidAutoBiDirAutoConfiguration implements CacheManagerCustomizer<C
 
     @Override
     public void customize(ConcurrentMapCacheManager cacheManager) {
-        cacheManager.getCacheNames().addAll(Lists.newArrayList("entityRelationTypesCache", "dtoRelationTypesCache"));
+        CacheUtil.addCacheNames(cacheManager,"entityRelationTypesCache","dtoRelationTypesCache");
     }
 
 
-    // is needed for web and service profiles
     @Bean
     @ConditionalOnMissingBean(RelationalEntityManagerUtil.class)
     public RelationalEntityManagerUtil relationalEntityManagerUtil(){

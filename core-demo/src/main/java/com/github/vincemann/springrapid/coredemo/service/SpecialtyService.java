@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Component
 public interface SpecialtyService extends CrudService<Specialty,Long> {
     Optional<Specialty> findByDescription(String description);
 }

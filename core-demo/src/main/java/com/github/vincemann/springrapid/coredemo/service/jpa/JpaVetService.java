@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.service.jpa;
 
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
+import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
 import com.github.vincemann.springrapid.coredemo.repo.VetRepository;
 import com.github.vincemann.springrapid.coredemo.service.VetService;
@@ -15,7 +16,7 @@ import java.util.Optional;
 
 @Primary
 @Service
-@Component
+@EnableAutoBiDir
 public class JpaVetService
         extends JPACrudService<Vet,Long, VetRepository>
         implements VetService, TargetClassAware {

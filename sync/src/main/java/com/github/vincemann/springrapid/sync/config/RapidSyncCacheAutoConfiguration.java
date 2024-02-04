@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.sync.config;
 
+import com.github.vincemann.springrapid.core.util.CacheUtil;
 import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
@@ -11,7 +12,7 @@ public class RapidSyncCacheAutoConfiguration implements CacheManagerCustomizer<C
 
     @Override
     public void customize(ConcurrentMapCacheManager cacheManager) {
-        cacheManager.getCacheNames().add("matchingPropertiesCache");
+        CacheUtil.addCacheNames(cacheManager,"matchingPropertiesCache");
     }
 
 

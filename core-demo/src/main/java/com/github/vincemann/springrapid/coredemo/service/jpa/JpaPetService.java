@@ -1,20 +1,17 @@
 package com.github.vincemann.springrapid.coredemo.service.jpa;
 
+import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
+import com.github.vincemann.springrapid.core.service.JPACrudService;
+import com.github.vincemann.springrapid.coredemo.service.Root;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.repo.PetRepository;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
-import org.springframework.stereotype.Component;
-import com.github.vincemann.springrapid.core.service.JPACrudService;
-import com.github.vincemann.springrapid.coredemo.service.Root;
 import org.springframework.aop.TargetClassAware;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 
 @Root
 @Service
-@Component
+@EnableAutoBiDir
 public class JpaPetService extends JPACrudService<Pet, Long, PetRepository> implements PetService, TargetClassAware {
 
     @Override

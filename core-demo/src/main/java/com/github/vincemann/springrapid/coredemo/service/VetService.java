@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Component
 public interface VetService extends CrudService<Vet,Long> {
 
     public Optional<Vet> findByLastName(String lastName);

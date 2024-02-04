@@ -42,7 +42,9 @@ public class RelationalEntityAdvice {
 
 
     @Before(
-            value = "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
+            value =
+                    "com.github.vincemann.springrapid.autobidir.RapidAutoBiDirArchitecture.autoBiDirEnabled() && " +
+                    "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.deleteOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
@@ -66,7 +68,9 @@ public class RelationalEntityAdvice {
     }
 
     @Before(
-            value = "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
+            value =
+                    "com.github.vincemann.springrapid.autobidir.RapidAutoBiDirArchitecture.autoBiDirEnabled() && " +
+                    "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.fullUpdateOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
@@ -86,7 +90,9 @@ public class RelationalEntityAdvice {
     }
 
     @Before(
-            value = "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
+            value =
+                    "com.github.vincemann.springrapid.autobidir.RapidAutoBiDirArchitecture.autoBiDirEnabled() && " +
+                    "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.partialUpdateOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
@@ -115,7 +121,9 @@ public class RelationalEntityAdvice {
     }
 
     @Before(
-            value = "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
+            value =
+                    "com.github.vincemann.springrapid.autobidir.RapidAutoBiDirArchitecture.autoBiDirEnabled() && " +
+                    "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.saveOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +

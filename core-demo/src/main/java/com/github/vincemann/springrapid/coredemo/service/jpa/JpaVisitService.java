@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.service.jpa;
 
+import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.coredemo.model.Visit;
 import com.github.vincemann.springrapid.coredemo.repo.VisitRepository;
 import com.github.vincemann.springrapid.coredemo.service.VisitService;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Primary
 @Service
-@Component
+@EnableAutoBiDir
 public class JpaVisitService extends JPACrudService<Visit,Long, VisitRepository> implements VisitService, TargetClassAware {
     @Override
     public Class<?> getTargetClass() {
