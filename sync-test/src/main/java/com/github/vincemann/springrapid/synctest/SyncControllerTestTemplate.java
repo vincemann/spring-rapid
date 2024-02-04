@@ -126,6 +126,7 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
                 .andExpect(MockMvcResultMatchers.status().is(204))
                 .andExpect(MockMvcResultMatchers.content().string(""));
     }
+    
 
 
     public Set<EntitySyncStatus> fetchSyncStatusesSinceTs_assertUpdates(Timestamp clientUpdate,Class<?> dtoClass, UrlWebExtension... jpqlFilters) throws Exception {
