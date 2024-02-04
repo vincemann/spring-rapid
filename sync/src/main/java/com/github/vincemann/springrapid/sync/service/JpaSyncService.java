@@ -24,8 +24,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.github.vincemann.springrapid.core.util.FilterUtils.toSpec;
-// todo could create JpaSyncCrudService - but I prefer composition over inheritance
-// maybe remove id param?
 
 
 public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends Serializable>
@@ -72,7 +70,7 @@ public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends S
 
     @Transactional
     @Override
-    public Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch, List<QueryFilter<? super E>> jpqlFilters) {
+    public Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch,Class<?> dtoClass, List<QueryFilter<? super E>> jpqlFilters) {
         // server side update info
         Set<EntitySyncStatus> result = new HashSet<>();
         // cant find out about removed entities - what has been removed must be evaluated by client by comparing own set
@@ -92,7 +90,7 @@ public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends S
     // not very fast, but comfortable if ram filters are needed (EntityFilter)
     @Transactional
     @Override
-    public Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch, List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> entityFilters) {
+    public Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch,Class<?> dtoClass,  List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> entityFilters) {
         // server side update info
         Set<EntitySyncStatus> result = new HashSet<>();
         // cant find out about removed entities - what has been removed must be evaluated by client by comparing own set

@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.sync.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
-import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import lombok.*;
 
 import java.util.Date;
@@ -25,10 +24,12 @@ public class LastFetchInfo {
     private String id;
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private Date lastUpdate;
+    private Class<?> dtoClass;
 
     // constructor for jpa
-    public LastFetchInfo(Long id, Date lastUpdate) {
+    public LastFetchInfo(Long id, Date lastUpdate, Class<?> dtoClass) {
         this.id = String.valueOf(id);
         this.lastUpdate = lastUpdate;
+        this.dtoClass = dtoClass;
     }
 }

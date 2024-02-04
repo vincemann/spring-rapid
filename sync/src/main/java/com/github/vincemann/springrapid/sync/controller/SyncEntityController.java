@@ -1,10 +1,12 @@
 package com.github.vincemann.springrapid.sync.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.controller.AbstractEntityController;
 import com.github.vincemann.springrapid.core.controller.id.IdFetchingException;
 import com.github.vincemann.springrapid.core.controller.id.IdFetchingStrategy;
+import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.audit.IAuditingEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -12,6 +14,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
+import com.github.vincemann.springrapid.sync.DtoClassRegistry;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.LastFetchInfo;
@@ -47,11 +50,14 @@ import static com.github.vincemann.springrapid.core.controller.WebExtensionType.
  */
 @Slf4j
 @Getter
-public class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Serializable>
+public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Serializable>
         extends AbstractEntityController<E, Id>
         implements ApplicationContextAware {
 
+    public static final String DTO_CLASS_URL_PARAM_KEY = "dto";
+
     private IdFetchingStrategy<Id> idFetchingStrategy;
+
     private SyncService<E, Id> service;
     @Setter
     private String fetchEntitySyncStatusUrl;
@@ -59,6 +65,7 @@ public class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Seri
     private String fetchEntitySyncStatusesUrl;
     @Setter
     private String fetchEntitySyncStatusesSinceTsUrl;
+    private DtoClassRegistry dtoClassRegistry = new DtoClassRegistry();
 
     @SuppressWarnings("unchecked")
     public SyncEntityController() {
@@ -80,7 +87,8 @@ public class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Seri
             //            Date lastUpdateDate = DATE_FORMAT.parse(lastUpdateTimestampString);
             Timestamp lastUpdate = new Timestamp(lastUpdateTimestamp);
             VerifyEntity.isPresent(lastUpdateTimestamp, "need timestamp parameter 'ts'");
-            EntitySyncStatus syncStatus = serviceFindEntitySyncStatus(new LastFetchInfo(id.toString(), lastUpdate));
+            LastFetchInfo lastFetchInfo = new LastFetchInfo(id.toString(), lastUpdate, findDtoClass(request));
+            EntitySyncStatus syncStatus = findEntitySyncStatus(lastFetchInfo);
             boolean updated = syncStatus != null;
             if (updated)
                 return ResponseEntity.ok()
@@ -112,7 +120,7 @@ public class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Seri
 //            List<JPQLEntityFilter<E>> filters = HttpServletRequestUtils.extractFilters(request,applicationContext,"jpql-filter");
 
 
-            Set<EntitySyncStatus> syncStatuses = serviceFindEntitySyncStatuses(lastClientFetchInfos);
+            Set<EntitySyncStatus> syncStatuses = findEntitySyncStatuses(lastClientFetchInfos);
             if (syncStatuses.isEmpty())
                 return ResponseEntity.noContent().build();
             else
@@ -139,7 +147,9 @@ public class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Seri
         long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
         List<QueryFilter<? super E>> filters = extractExtensions(request, QUERY_FILTER);
         List<EntityFilter<? super E>> ramFilters = extractExtensions(request,ENTITY_FILTER);
-        Set<EntitySyncStatus> syncStatuses = serviceFindUpdatesSinceTimestamp(new Timestamp(lastUpdateTimestamp),filters,ramFilters);
+
+        Set<EntitySyncStatus> syncStatuses = findUpdatesSinceTimestamp(
+                new Timestamp(lastUpdateTimestamp),findDtoClass(request),filters,ramFilters);
         if (syncStatuses.isEmpty())
             return ResponseEntity.noContent().build();
         else
@@ -160,19 +170,19 @@ public class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Seri
     }
 
 
-    protected EntitySyncStatus serviceFindEntitySyncStatus(LastFetchInfo clientLastFetch) throws EntityNotFoundException {
+    protected EntitySyncStatus findEntitySyncStatus(LastFetchInfo clientLastFetch) throws EntityNotFoundException {
         return service.findEntitySyncStatus(clientLastFetch);
     }
 
-    protected Set<EntitySyncStatus> serviceFindEntitySyncStatuses(Set<LastFetchInfo> lastUpdateInfos) throws EntityNotFoundException {
+    protected Set<EntitySyncStatus> findEntitySyncStatuses(Set<LastFetchInfo> lastUpdateInfos) throws EntityNotFoundException {
         return service.findEntitySyncStatuses(lastUpdateInfos);
     }
 
-    protected Set<EntitySyncStatus> serviceFindUpdatesSinceTimestamp(Timestamp lastUpdate, List<QueryFilter<? super E>> filters, List<EntityFilter<? super E>> ramFilters) {
+    protected Set<EntitySyncStatus> findUpdatesSinceTimestamp(Timestamp lastUpdate, Class<?> dtoClass, List<QueryFilter<? super E>> filters, List<EntityFilter<? super E>> ramFilters) {
         if (ramFilters.isEmpty())
-            return service.findEntitySyncStatusesSinceTimestamp(lastUpdate,filters);
+            return service.findEntitySyncStatusesSinceTimestamp(lastUpdate,dtoClass,filters);
         else
-            return service.findEntitySyncStatusesSinceTimestamp(lastUpdate,filters,ramFilters);
+            return service.findEntitySyncStatusesSinceTimestamp(lastUpdate,dtoClass,filters,ramFilters);
     }
 
     protected RequestMappingInfo createFetchEntitySyncStatusRequestMappingInfo() {
@@ -198,6 +208,32 @@ public class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Seri
                 .consumes(MediaType.APPLICATION_JSON_VALUE)
                 .produces(MediaType.APPLICATION_JSON_VALUE)
                 .build();
+    }
+
+    protected abstract void configureDtoClassRegistry(DtoClassRegistry registry);
+
+    protected void registerDtoClass(String key, Class<?> dtoClass){
+        dtoClassRegistry.register(key,dtoClass);
+    }
+
+    protected void registerDtoClass(Class<?> dtoClass){
+        dtoClassRegistry.registerFallback(dtoClass);
+    }
+
+    protected void configureJsonMapper(JsonMapper jsonMapper){
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(Class.class, new DtoClassDeserializer(() -> dtoClassRegistry));
+        jsonMapper.getObjectMapper().registerModule(module);
+    }
+
+    protected Class<?> findDtoClass(HttpServletRequest request) throws BadEntityException {
+        String dtoClassParam = request.getParameter(DTO_CLASS_URL_PARAM_KEY);
+        if (dtoClassParam == null)
+            throw new BadEntityException("No dto class param present");
+        Class<?> dtoClass = dtoClassRegistry.find(dtoClassParam);
+        if (dtoClass == null)
+            throw new BadEntityException("No dto class mapped for dto param " + dtoClassParam);
+        return dtoClass;
     }
 
     protected void initUrls() {

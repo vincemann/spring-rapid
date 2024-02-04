@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.sync;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.sync.model.AuditId;
 import com.github.vincemann.springrapid.sync.model.AuditLog;
 import com.github.vincemann.springrapid.sync.model.EntityDtoMapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +16,13 @@ public class AuditLogFactoryImpl implements AuditLogFactory {
 
 
     @Override
-    public AuditLog create(IdentifiableEntity entity) {
-        AuditLog auditLog = new AuditLog();
-        auditLog.setEntityId(entity.getId().toString());
-        auditLog.setEntityClass(entity.getClass().getName());
+    public AuditLog create(AuditId id) {
+        AuditLog auditLog = new AuditLog(id);
 
         Set<EntityDtoMapping> dtoMappings = new HashSet<>();
 
 
-        for (Class<?> dtoClass : findMappingsForEntity(entity)) {
+        for (Class<?> dtoClass : findMappingsForEntity(id.getConvertedEntityClass())) {
             EntityDtoMapping mapping = EntityDtoMapping.builder()
                     .auditLog(auditLog)
                     .lastUpdateTime(LocalDateTime.now())
@@ -37,11 +35,11 @@ public class AuditLogFactoryImpl implements AuditLogFactory {
         return auditLog;
     }
 
-    protected Set<Class<?>> findMappingsForEntity(IdentifiableEntity entity){
+    protected Set<Class<?>> findMappingsForEntity(Class<?> entityClass){
         Map<Class<?>, Set<Class<?>>> entityDtoMappings = entityMappingCollector.getEntityToDtoMappings();
-        Set<Class<?>> dtoClasses = entityDtoMappings.get(entity.getClass());
+        Set<Class<?>> dtoClasses = entityDtoMappings.get(entityClass);
         if (dtoClasses == null){
-            throw new IllegalArgumentException("No dto classes for entity class: " + entity.getClass() + " found. \n " +
+            throw new IllegalArgumentException("No dto classes for entity class: " + entityClass + " found. \n " +
                     "Make sure to annotate dto classes of entity with @EntityMapping and configure basePackages in rapid-sync properties");
         }
         return dtoClasses;

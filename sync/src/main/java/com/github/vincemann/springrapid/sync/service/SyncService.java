@@ -25,14 +25,14 @@ public interface SyncService<E extends IAuditingEntity<Id>,Id extends Serializab
 
     @LogInteraction
     @Transactional
-    Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastUpdate, List<QueryFilter<? super E>> jpqlFilters);
+    Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp clientLastUpdate, Class<?> dtoClass, List<QueryFilter<? super E>> jpqlFilters);
 
 
     @LogInteraction
     @Transactional
-    Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch, List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> entityFilters);
+    Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp clientLastUpdate,Class<?> dtoClass, List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> entityFilters);
 
     @LogInteraction
     @Transactional
-    Set<EntitySyncStatus> findEntitySyncStatuses(Collection<LastFetchInfo> lastFetchInfo) throws EntityNotFoundException;
+    Set<EntitySyncStatus> findEntitySyncStatuses(Collection<LastFetchInfo> clientLastUpdates) throws EntityNotFoundException;
 }

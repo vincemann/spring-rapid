@@ -27,6 +27,11 @@ public class AuditLog {
     @OneToMany(mappedBy = "auditLog",fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EntityDtoMapping> dtoMappings;
 
+    public AuditLog(AuditId id) {
+        this.entityClass = id.getEntityClass();
+        this.entityId = id.getEntityId();
+    }
+
     @Override
     public String toString() {
         return "AuditLog{" +

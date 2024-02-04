@@ -15,6 +15,14 @@ public class AuditId implements Serializable {
         this.entityId = entityId;
     }
 
+    public Class<?> getConvertedEntityClass(){
+        try {
+            return Class.forName(entityClass);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // Getters and Setters
     public String getEntityClass() {
         return entityClass;

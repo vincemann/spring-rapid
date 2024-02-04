@@ -77,7 +77,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
 
         beforeFindAll(request, response,entityFilters,queryFilters,sorting);
         logSecurityContext();
-        Set<E> foundEntities = serviceFindAll(queryFilters, entityFilters,sorting);
+        Set<E> foundEntities = findAll(queryFilters, entityFilters,sorting);
         List<Object> dtos = new ArrayList<>();
         for (E e : foundEntities) {
             dtos.add(dtoMapper.mapToDto(e,
@@ -101,7 +101,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
 
         beforeFindSome(ids, request, response);
 
-        Set<E> foundEntities = serviceFindSome(ids);
+        Set<E> foundEntities = findSome(ids);
         List<Object> dtos = new ArrayList<>();
         for (E e : foundEntities) {
             dtos.add(dtoMapper.mapToDto(e,
@@ -118,7 +118,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
         Id id = fetchId(request);
         beforeFind(id, request, response);
         logSecurityContext();
-        Optional<E> optionalEntity = serviceFind(id);
+        Optional<E> optionalEntity = find(id);
         E found = VerifyEntity.isPresent(optionalEntity, id, getEntityClass());
         Object dto = dtoMapper.mapToDto(
                 found,
@@ -140,7 +140,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
         //i expect that dto has the right dto type -> callers responsibility
         E entity = mapToEntity(dto);
         logSecurityContext();
-        E savedEntity = serviceCreate(entity);
+        E savedEntity = create(entity);
         Object resultDto = dtoMapper.mapToDto(savedEntity,
                 createDtoClass(getCreateUrl(), Direction.RESPONSE,request, savedEntity));
         afterCreate(resultDto, entity, request, response);
@@ -204,7 +204,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
         Id id = fetchId(request);
         beforeDelete(id, request, response);
         logSecurityContext();
-        serviceDelete(id);
+        delete(id);
         afterDelete(id, request, response);
         return okNoContent();
     }
@@ -450,30 +450,26 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
         return service.partialUpdate(update, propertiesToDelete);
     }
 
-    protected E serviceCreate(E entity) throws BadEntityException {
+    protected E create(E entity) throws BadEntityException {
         return service.save(entity);
     }
 
-    protected void serviceDelete(Id id) throws EntityNotFoundException {
+    protected void delete(Id id) throws EntityNotFoundException {
         service.deleteById(id);
     }
 
-    protected Set<E> serviceFindAll() {
-        return service.findAll();
-    }
-
-    protected Set<E> serviceFindAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> filters, List<SortingExtension> sortingStrategies) {
+    protected Set<E> findAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> filters, List<SortingExtension> sortingStrategies) {
         if (filters.isEmpty() && jpqlFilters.isEmpty() && sortingStrategies.isEmpty())
             return service.findAll();
         else
             return service.findAll(jpqlFilters,filters,sortingStrategies);
     }
 
-    protected Set<E> serviceFindSome(Set<Id> ids) {
+    protected Set<E> findSome(Set<Id> ids) {
         return service.findSome(ids);
     }
 
-    protected Optional<E> serviceFind(Id id) {
+    protected Optional<E> find(Id id) {
         return service.findById(id);
     }
 

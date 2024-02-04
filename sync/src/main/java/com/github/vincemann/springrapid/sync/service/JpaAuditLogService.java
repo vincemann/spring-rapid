@@ -24,24 +24,26 @@ public class JpaAuditLogService implements AuditLogService {
 
     @Transactional
     @Override
-    public void updateAuditLog(IdentifiableEntity entity, Set<String> properties) {
-        AuditLog auditLog = findOrCreateAuditLog(entity);
+    public void updateAuditLog(AuditId id, Set<String> properties) {
+        AuditLog auditLog = findOrCreateAuditLog(id);
         Set<EntityDtoMapping> matchingMappings = findMatchingMappings(auditLog,properties);
         updateMappingsTimestamp(matchingMappings);
     }
 
     @Transactional
     @Override
-    public void updateAuditLog(IdentifiableEntity entity){
-        AuditLog auditLog = findOrCreateAuditLog(entity);
+    public void updateAuditLog(AuditId id){
+        AuditLog auditLog = findOrCreateAuditLog(id);
         updateMappingsTimestamp(auditLog.getDtoMappings());
     }
 
-    protected AuditLog findOrCreateAuditLog(IdentifiableEntity entity){
-        Optional<AuditLog> auditLogById = auditLogRepository.findById(getId(entity));
+
+    @Override
+    public AuditLog findOrCreateAuditLog(AuditId id){
+        Optional<AuditLog> auditLogById = auditLogRepository.findById(id);
         if (auditLogById.isEmpty()){
             // create
-            AuditLog auditLog = auditLogFactory.create(entity);
+            AuditLog auditLog = auditLogFactory.create(id);
             return auditLogRepository.save(auditLog);
         }else{
             return auditLogById.get();
