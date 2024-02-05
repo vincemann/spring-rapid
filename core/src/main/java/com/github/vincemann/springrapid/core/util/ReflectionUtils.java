@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.core.util;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -99,23 +100,14 @@ public class ReflectionUtils {
         return fields;
     }
 
-    public static Set<Field> findCollectionFieldsAnnotatedWith(Class<?> clazz){
+    public static Set<Field> findCollectionFieldsAnnotatedWith(Class<?> clazz, Class<? extends Annotation> annotationClass){
         Set<Field> cachedResult = collectionFieldsCache.get(clazz);
         if (cachedResult != null) {
             return cachedResult;
         }
 
         Set<Field> fields = new HashSet<>();
-        org.springframework.util.ReflectionUtils.doWithFields(clazz, fields::add,
-                field -> {
-                    // dont also check for these annotations, it is required to also check for collections that do not represent other entities
-//                    Annotation[] annotations = field.getDeclaredAnnotations();
-//                    boolean annotationMatch = Arrays.stream(annotations).sequential().anyMatch(a -> a.annotationType().equals(OneToMany.class) || a.annotationType().equals(ManyToMany.class));
-//                    if (!annotationMatch)
-//                        return false;
-//                    else
-                    return Collection.class.isAssignableFrom(field.getType());
-                });
+       EntityReflectionUtils.doWithAnnotatedFieldsOfType(Collection.class, annotationClass, clazz, fields::add);
 
         collectionFieldsCache.put(clazz, fields);
 

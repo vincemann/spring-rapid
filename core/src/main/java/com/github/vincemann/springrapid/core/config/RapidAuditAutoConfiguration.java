@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.core.config;
 
+import com.github.vincemann.springrapid.core.model.audit.AuditTemplate;
+import com.github.vincemann.springrapid.core.model.audit.AuditTemplateImpl;
 import com.github.vincemann.springrapid.core.model.audit.LongIdSecurityAuditorAware;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -15,5 +17,11 @@ public class RapidAuditAutoConfiguration {
     @Bean
     public AuditorAware<Long> auditorAware(){
         return new LongIdSecurityAuditorAware();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(AuditTemplate.class)
+    public AuditTemplate auditTemplate(){
+        return new AuditTemplateImpl();
     }
 }
