@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.limitsaves;
 
-import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,7 @@ import java.util.Map;
  * Only allows certain amount of service method invocations in specified time interval.
  */
 @Slf4j
-public abstract class LimitActionsExtension extends BasicServiceExtension<CrudService>
+public abstract class LimitActionsExtension extends ServiceExtension<CrudService>
 {
 
     private int maxAmountActions;

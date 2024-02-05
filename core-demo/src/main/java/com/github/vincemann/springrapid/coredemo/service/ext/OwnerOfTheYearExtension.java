@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.service.ext;
 
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
-import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
@@ -19,7 +19,7 @@ import java.util.Optional;
 //leaving the scope as singleton in this case, bc it is hard to verify interactions with prototype scopes in test
 //@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class OwnerOfTheYearExtension
-        extends BasicServiceExtension<OwnerService>
+        extends ServiceExtension<OwnerService>
             implements OwnerService, GenericCrudServiceExtension<OwnerService,Owner,Long> {
 
 

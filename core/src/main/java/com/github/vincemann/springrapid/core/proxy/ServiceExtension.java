@@ -15,7 +15,7 @@ import com.google.common.base.Objects;
  *
  * @param <T> Type of proxied Service, you are writing the Extension for.
  */
-public class BasicServiceExtension<T>
+public abstract class ServiceExtension<T>
         implements NextLinkAware<T>,AopLoggable, IBeanNameAware {
 
 
@@ -23,7 +23,7 @@ public class BasicServiceExtension<T>
     private Chain chain;
 
 
-    public BasicServiceExtension() {
+    public ServiceExtension() {
     }
 
     protected void setChain(Chain chain) {
@@ -60,7 +60,7 @@ public class BasicServiceExtension<T>
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BasicServiceExtension<?> that = (BasicServiceExtension<?>) o;
+        ServiceExtension<?> that = (ServiceExtension<?>) o;
         return Objects.equal(getChain(), that.getChain());
     }
 

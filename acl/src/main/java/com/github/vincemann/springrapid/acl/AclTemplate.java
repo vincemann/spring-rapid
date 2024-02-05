@@ -12,8 +12,6 @@ import java.util.Collection;
 
 /**
  * API for dynamic programmatic acl permission checking.
- * Always use this API to check acl permissions, if using this library.
- * All methods, except {@link this#checkExpression(String)} will create {@link AclEvaluationContext} that can be used downstream
  */
 
 @LogInteraction
@@ -24,11 +22,6 @@ public interface AclTemplate extends AopLoggable {
     /**
      * Filters a collection based on permission the authenticated User has.
      *
-     * @param toFilter
-     * @param permission
-     * @param <E>
-     * @param <C>
-     * @return
      */
     public <E extends IdentifiableEntity<? extends Serializable>, C extends Collection<E>>
     C filter(C toFilter, Permission permission);

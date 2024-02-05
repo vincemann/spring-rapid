@@ -1,17 +1,14 @@
 package com.github.vincemann.springrapid.core.util;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
-import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.support.AopUtils;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.test.util.AopTestUtils;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Proxy;
 
 public class ProxyUtils {
@@ -50,7 +47,7 @@ public class ProxyUtils {
                 Proxy.getInvocationHandler(obj) != null;
     }
     public static boolean isRootService(Object target) {
-        if (target instanceof BasicServiceExtension)
+        if (target instanceof ServiceExtension)
             return false;
         return !Proxy.isProxyClass(target.getClass()) || Proxy.getInvocationHandler(target) == null;
     }

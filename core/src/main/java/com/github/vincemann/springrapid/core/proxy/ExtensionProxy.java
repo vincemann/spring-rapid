@@ -26,7 +26,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
     private List<String> ignoredMethodNames = Lists.newArrayList("getEntityClass", "getRepository", "toString", "equals", "hashCode", "getClass", "clone", "notify", "notifyAll", "wait", "finalize", "setBeanName", "getBeanName", "getTargetClass");
     private List<MethodIdentifier> learnedIgnoredMethods = new ArrayList<>();
     private CrudService proxied;
-    private List<BasicServiceExtension<?>> extensions = new ArrayList<>();
+    private List<ServiceExtension<?>> extensions = new ArrayList<>();
     private ThreadLocal<State> state = new ThreadLocal<>();
     //caches
     private ConcurrentHashMap<ExtensionState, Object> next_cache = new ConcurrentHashMap<>();
@@ -34,23 +34,23 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
     private String beanName;
 
     private Boolean defaultExtensionsEnabled = Boolean.TRUE;
-    private Set<Class<? extends BasicServiceExtension>> defaultExtensionsIgnored = new HashSet<>();
+    private Set<Class<? extends ServiceExtension>> defaultExtensionsIgnored = new HashSet<>();
 
 
-    public ExtensionProxy(CrudService proxied, BasicServiceExtension<?>... extensions) {
+    public ExtensionProxy(CrudService proxied, ServiceExtension<?>... extensions) {
         for (Method method : proxied.getClass().getMethods()) {
             this.methods.put(new MethodIdentifier(method), method);
         }
         this.proxied = proxied;
-        for (BasicServiceExtension<?> extension : extensions) {
+        for (ServiceExtension<?> extension : extensions) {
             addExtension(extension);
         }
     }
 
 
-    public void ignoreExtension(Class<? extends BasicServiceExtension> clazz) {
+    public void ignoreExtension(Class<? extends ServiceExtension> clazz) {
         defaultExtensionsIgnored.add(clazz);
-        Optional<BasicServiceExtension<?>> added =
+        Optional<ServiceExtension<?>> added =
                 getExtensions().stream().filter(e -> e.getClass().equals(clazz)).findAny();
         if (added.isPresent()) {
             log.warn("extension that should get ignored was added to proxy, removing...: " + added.get());
@@ -58,7 +58,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
         }
     }
 
-    public boolean isIgnored(Class<? extends BasicServiceExtension> clazz) {
+    public boolean isIgnored(Class<? extends ServiceExtension> clazz) {
         return defaultExtensionsIgnored.contains(clazz);
     }
 
@@ -67,19 +67,19 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
         this.learnedIgnoredMethods.clear();
     }
 
-    public void addExtension(BasicServiceExtension<?> extension) {
+    public void addExtension(ServiceExtension<?> extension) {
         this.extensions.add(extension);
         //extension expects chainController<T>, gets ChainController<S>, T is always superclass of S -> so this is safe
         extension.setChain(this);
         resetLearnedIgnoredMethods();
     }
 
-    public void removeExtension(BasicServiceExtension<?> extension) {
+    public void removeExtension(ServiceExtension<?> extension) {
         this.extensions.remove(extension);
         extension.setChain(null);
     }
 
-    public void addExtension(BasicServiceExtension<?> extension, int index) {
+    public void addExtension(ServiceExtension<?> extension, int index) {
         this.extensions.add(index, extension);
         //extension expects chainController<T>, gets ChainController<S>, T is always superclass of S -> so this is safe
         extension.setChain(this);
@@ -141,7 +141,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
     }
 
     @Override
-    public Object getNext(BasicServiceExtension extension) {
+    public Object getNext(ServiceExtension extension) {
         State state = this.state.get();
         //is next object cached?
         ExtensionState extensionState = new ExtensionState(state, extension);
@@ -216,7 +216,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
             // each link of the chain also saves its declared method
             Map.Entry<MethodIdentifier, List<ExtensionHandle>> method_chain_entry = new HashMap.SimpleEntry<>(methodIdentifier, new ArrayList<>());
             for (int i = 0; i < extensions.size(); i++) {
-                BasicServiceExtension<?> extension = extensions.get(i);
+                ServiceExtension<?> extension = extensions.get(i);
                 try {
                     Method extensionsMethod = MethodUtils.findMethod(extension.getClass(), method.getName(), method.getParameterTypes());
                     method_chain_entry.getValue().add(new ExtensionHandle(extension, extensionsMethod));
@@ -274,7 +274,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
     @Getter
     @ToString
     protected class ExtensionHandle {
-        BasicServiceExtension<?> extension;
+        ServiceExtension<?> extension;
         Method method;
 
         Object invoke(Object... args) throws Throwable {
@@ -292,7 +292,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
     @EqualsAndHashCode
     private static class ExtensionState {
         private State state;
-        private BasicServiceExtension extension;
+        private ServiceExtension extension;
     }
 
     //    protected boolean isGetTargetClassMethod(Method method){

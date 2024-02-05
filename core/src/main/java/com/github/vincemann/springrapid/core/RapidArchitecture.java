@@ -31,7 +31,7 @@ public class RapidArchitecture {
     )
     public void ignoreHelperServiceMethods(){}
 
-    @Pointcut("!this(com.github.vincemann.springrapid.core.proxy.BasicServiceExtension+)")
+    @Pointcut("!this(com.github.vincemann.springrapid.core.proxy.ServiceExtension+)")
     public void ignoreExtensions(){}
 
     @Pointcut("!target(java.lang.reflect.Proxy)")

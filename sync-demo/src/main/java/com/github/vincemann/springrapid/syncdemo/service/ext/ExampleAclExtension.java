@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.syncdemo.service.ext;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -20,7 +20,7 @@ import java.io.Serializable;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ExampleAclExtension
-        extends BasicServiceExtension<CrudService>
+        extends ServiceExtension<CrudService>
             implements CrudServiceExtension<CrudService> {
 
 

@@ -2,17 +2,14 @@ package com.github.vincemann.springrapid.core.service;
 
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import com.github.vincemann.springrapid.core.util.Lists;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -48,7 +45,7 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationCo
     @Override
     public void loadPrimaryServices() {
         List<String> beanNames = Lists.newArrayList(beanFactory.getBeanNamesForType(CrudService.class));
-        List<String> extensionNames = Lists.newArrayList(beanFactory.getBeanNamesForType(BasicServiceExtension.class));
+        List<String> extensionNames = Lists.newArrayList(beanFactory.getBeanNamesForType(ServiceExtension.class));
 
         //skip extensions
         beanNames.removeAll(extensionNames);
