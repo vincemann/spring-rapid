@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 @Primary
 @Service
-
 public class JpaPetTypeService
         extends JpaCrudService<PetType,Long, PetTypeRepository>
             implements PetTypeService {

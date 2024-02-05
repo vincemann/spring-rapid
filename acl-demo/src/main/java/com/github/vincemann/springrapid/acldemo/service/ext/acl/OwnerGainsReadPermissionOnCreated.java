@@ -12,7 +12,7 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.security.acls.domain.BasePermission;
 
 @Component
-public class OwnerGainsReadPermissionForCreated extends AclExtension<VisitService>
+public class OwnerGainsReadPermissionOnCreated extends AclExtension<VisitService>
         implements GenericCrudServiceExtension<VisitService, Visit,Long>
 {
     @Override

@@ -13,7 +13,7 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.security.access.AccessDeniedException;
 
 @Component
-public class OwnerCanCreateSaveOwnPets extends SecurityExtension<PetService>
+public class OwnerCanOnlyCreateOwnPets extends SecurityExtension<PetService>
         implements GenericCrudServiceExtension<PetService, Pet,Long>
 {
 

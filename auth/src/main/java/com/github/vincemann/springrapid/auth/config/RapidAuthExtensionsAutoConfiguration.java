@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.config;
 
-import com.github.vincemann.springrapid.auth.service.extension.UserGainsAdminPermissionAboutSelfAclExtension;
+import com.github.vincemann.springrapid.auth.service.extension.UserGainsAdminPermissionOnCreated;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -14,7 +14,7 @@ public class RapidAuthExtensionsAutoConfiguration {
     @ConditionalOnMissingBean(name = "userGainsAdminPermissionAboutSelfAclExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
-    public UserGainsAdminPermissionAboutSelfAclExtension userGainsAdminPermissionAboutSelfAclExtension(){
-        return new UserGainsAdminPermissionAboutSelfAclExtension();
+    public UserGainsAdminPermissionOnCreated userGainsAdminPermissionAboutSelfAclExtension(){
+        return new UserGainsAdminPermissionOnCreated();
     }
 }

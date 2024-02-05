@@ -2,11 +2,10 @@ package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.acl.config.RapidAclExtensionsAutoConfiguration;
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
-import com.github.vincemann.springrapid.acl.service.ext.sec.CrudAclChecksSecurityExtension;
+import com.github.vincemann.springrapid.acl.service.ext.sec.CrudAclChecksExtension;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.extension.AclUserExtension;
 import com.github.vincemann.springrapid.auth.service.extension.UserServiceSecurityExtension;
-import com.github.vincemann.springrapid.acl.config.RapidAclAutoConfiguration;
 import com.github.vincemann.springrapid.acl.proxy.*;
 import com.github.vincemann.springrapid.acl.service.ext.acl.CleanUpAclExtension;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
@@ -76,13 +75,13 @@ public class RapidUserServiceSecurityAutoConfiguration {
     @Secured
     public UserService<?, ?> securedUserService(@Acl UserService<?, ?> service,
                                                 UserServiceSecurityExtension securityRule,
-                                                CrudAclChecksSecurityExtension crudAclChecksSecurityExtension
+                                                CrudAclChecksExtension crudAclChecksExtension
     ) {
         return new ExtensionProxyBuilder<>(service)
                 // dont work with default extensions to keep things safer for user related stuff
                 .setDefaultExtensionsEnabled(false)
                 .addExtension(securityRule)
-                .addExtension(crudAclChecksSecurityExtension)
+                .addExtension(crudAclChecksExtension)
                 .build();
     }
 

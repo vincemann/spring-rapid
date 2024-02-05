@@ -26,14 +26,14 @@ import java.util.Optional;
 
 
 @DefineProxy(name = "acl", extensions = {
-        "authenticatedGainsAdminPermissionAboutSavedAclExtension",
-        "vetsGainReadPermissionAboutSavedAclExtension",
-        "ownerGainsReadPermissionForSavedVisits"
+        "authenticatedGainsAdminPermissionOnCreated",
+        "vetsGainsReadPermissionOnCreated",
+        "ownerGainsReadPermissionOnCreate"
 })
 @DefineProxy(name = "secured", extensions = {
-        "onlyVetAndAdminCanCreateSecurityExtension",
-        "vetCanOnlySaveOwnVisitsSecurityExtension",
-        "needCreatePermissionForSubscribingSecurityExtension"
+        "onlyVetAndAdminCanCreate",
+        "vetCanOnlyCreateOwnVisits",
+        "needCreatePermissionForSubscribing"
 })
 @CreateProxy(qualifiers = Acl.class,proxies = "acl")
 @CreateProxy(qualifiers = Secured.class,proxies = {"acl","secured"})

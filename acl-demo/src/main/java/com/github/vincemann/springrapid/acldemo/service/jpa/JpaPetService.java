@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.repo.PetRepository;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
-import com.github.vincemann.springrapid.acldemo.service.ext.sec.OwnerCanCreateSaveOwnPets;
+import com.github.vincemann.springrapid.acldemo.service.ext.sec.OwnerCanOnlyCreateOwnPets;
 import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
 import com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy;
 import com.github.vincemann.springrapid.core.service.JpaCrudService;
@@ -14,12 +14,12 @@ import org.springframework.stereotype.Service;
 
 
 @DefineProxy(name = "acl", extensions = {
-        "authenticatedGainsAdminPermissionAboutSavedAclExtension",
-        "ownerGainsAdminPermissionAboutSavedAclExtension",
-        "vetHasFullPermissionAboutSavedAclExtension"
+        "authenticatedGainsAdminPermissionOnSave",
+        "ownerGainsAdminPermissionOnSave",
+        "vetGainsAdminPermissionOnSave"
 })
 @DefineProxy(name = "secured", extensionClasses = {
-        OwnerCanCreateSaveOwnPets.class
+        OwnerCanOnlyCreateOwnPets.class
 })
 @CreateProxy(qualifiers = Acl.class,proxies = "acl")
 @CreateProxy(qualifiers = Secured.class,proxies = {"acl","secured"})

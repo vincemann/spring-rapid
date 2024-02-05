@@ -15,13 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @LogInteraction(Severity.DEBUG)
-public class NeedRoleForSaveExtension
+public class NeedRoleForCreateExtension
         extends SecurityExtension<CrudService>
         implements CrudServiceExtension<CrudService> {
 
     private String role;
 
-    public NeedRoleForSaveExtension(String role) {
+    public NeedRoleForCreateExtension(String role) {
         this.role = role;
     }
 

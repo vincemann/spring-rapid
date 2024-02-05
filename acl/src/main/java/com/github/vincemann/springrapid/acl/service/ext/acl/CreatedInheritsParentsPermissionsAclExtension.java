@@ -19,7 +19,7 @@ import java.io.Serializable;
 
  */
 @Transactional
-public class SavedInheritsParentsPermissionsAclExtension<E extends IdentifiableEntity<Id> & AclParentAware,Id extends Serializable>
+public class CreatedInheritsParentsPermissionsAclExtension<E extends IdentifiableEntity<Id> & AclParentAware,Id extends Serializable>
                         extends AclExtension<CrudService<E,Id>>
                                  implements GenericCrudServiceExtension<CrudService<E,Id>,E,Id> {
 

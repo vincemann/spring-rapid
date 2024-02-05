@@ -12,7 +12,7 @@ import org.springframework.security.acls.model.Permission;
 import java.util.Optional;
 
 @Component
-public class OwnerGainsPermissionAboutSavedAclExtension
+public class OwnerGainsPermissionOnCreatedAclExtension
         extends AclExtension<CrudService>
         implements CrudServiceExtension<CrudService>
 {
@@ -20,7 +20,7 @@ public class OwnerGainsPermissionAboutSavedAclExtension
     private DelegatingOwnerLocatorImpl delegatingOwnerLocator;
     private Permission[] permissions;
 
-    public OwnerGainsPermissionAboutSavedAclExtension(Permission... permissions) {
+    public OwnerGainsPermissionOnCreatedAclExtension(Permission... permissions) {
         this.permissions = permissions;
     }
 

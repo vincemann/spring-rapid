@@ -11,7 +11,6 @@ import java.util.Optional;
 
 @Primary
 @Service
-
 public class JpaSpecialtyService
         extends JpaCrudService<Specialty,Long, SpecialtyRepository>
             implements SpecialtyService {

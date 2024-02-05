@@ -4,8 +4,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.security.acls.domain.BasePermission;
 
 @Component
-public class OwnerGainsAdminPermissionAboutSavedAclExtension extends OwnerGainsPermissionAboutSavedAclExtension {
-    public OwnerGainsAdminPermissionAboutSavedAclExtension() {
+public class OwnerGainsAdminPermissionOnCreatedAclExtension extends OwnerGainsPermissionOnCreatedAclExtension {
+    public OwnerGainsAdminPermissionOnCreatedAclExtension() {
         super(BasePermission.ADMINISTRATION);
     }
 
