@@ -15,4 +15,6 @@ public interface AuditLogService {
 
 
     AuditLog findOrCreateAuditLog(AuditId id);
+
+    void deleteById(AuditId id);
 }

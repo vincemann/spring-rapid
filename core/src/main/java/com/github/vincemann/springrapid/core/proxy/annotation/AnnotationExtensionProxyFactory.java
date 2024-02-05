@@ -136,6 +136,10 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         return bean;
     }
 
+    protected void registerProxy(CrudService proxy){
+
+    }
+
 
     protected Class resolveServiceInterface(Object bean, String beanName) {
         String entityName = ((CrudService) bean).getEntityClass().getSimpleName();

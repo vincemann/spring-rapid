@@ -6,12 +6,10 @@ import com.github.vincemann.springrapid.core.service.AbstractCrudService;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.util.FilterUtils;
-import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
-import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
-import com.github.vincemann.springrapid.sync.model.LastFetchInfo;
-import com.github.vincemann.springrapid.sync.model.SyncStatus;
+import com.github.vincemann.springrapid.sync.model.*;
 import com.github.vincemann.springrapid.sync.repo.AuditingRepository;
 import com.github.vincemann.springrapid.sync.repo.AuditingRepositoryImpl;
+import com.github.vincemann.springrapid.sync.util.AuditUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -20,10 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.github.vincemann.springrapid.core.util.FilterUtils.toSpec;
+import static com.github.vincemann.springrapid.sync.util.AuditUtils.toId;
 
 
 public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends Serializable>
@@ -36,28 +36,36 @@ public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends S
     protected AbstractCrudService<E, Id,?> crudService;
     protected EntityManager entityManager;
 
+
+    protected AuditLogService auditLogService;
     public JpaSyncService() {
 
     }
 
     @Transactional
     @Override
-    public EntitySyncStatus findEntitySyncStatus(LastFetchInfo clientLastUpdate) {
-        String id = clientLastUpdate.getId();
-        Id convertedId = idConverter.toId(id);
+    public EntitySyncStatus findEntitySyncStatus(LastFetchInfo lastClientFetch) {
+        String id = lastClientFetch.getId();
         // cant distinguish between removed and has never existed, so just say removed bc I guess the client knows
         // what he is doing
-        boolean exists = crudService.getRepository().existsById(convertedId);
+        boolean exists = crudService.getRepository().existsById(idConverter.toId(id));
         if (!exists) {
+            auditLogService.deleteById(toId(lastClientFetch));
             return EntitySyncStatus.builder()
                     .id(id)
                     .status(SyncStatus.REMOVED)
                     .build();
         }
-        EntityUpdateInfo lastServerUpdate = auditingRepository.findUpdateInfo(convertedId);
-        if (lastServerUpdate == null)
-            throw new IllegalArgumentException("Could not find EntityUpdateInfo for existing entity: " + id);
-        if (lastServerUpdate.getLastUpdate().after(clientLastUpdate.getLastUpdate())) {
+
+
+        AuditLog auditLog = auditLogService.findOrCreateAuditLog(toId(lastClientFetch));
+        EntityDtoMapping mapping = auditLog.findMapping(lastClientFetch.getDtoClass());
+
+
+        Date lastServerUpdate = mapping.getLastUpdateTime();
+
+
+        if (lastServerUpdate.after(lastClientFetch.getLastUpdate())) {
             return EntitySyncStatus.builder()
                     .id(id)
                     .status(SyncStatus.UPDATED)
@@ -72,6 +80,10 @@ public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends S
     @Override
     public Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch,Class<?> dtoClass, List<QueryFilter<? super E>> jpqlFilters) {
         // server side update info
+
+        auditLogService.find
+
+
         Set<EntitySyncStatus> result = new HashSet<>();
         // cant find out about removed entities - what has been removed must be evaluated by client by comparing own set
         // + its often not relevant that something was removed, for example if client didnt know about the entity in the first place

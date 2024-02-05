@@ -37,6 +37,10 @@ public class JpaAuditLogService implements AuditLogService {
         updateMappingsTimestamp(auditLog.getDtoMappings());
     }
 
+    @Override
+    public void deleteById(AuditId id) {
+        auditLogRepository.deleteById(id);
+    }
 
     @Override
     public AuditLog findOrCreateAuditLog(AuditId id){

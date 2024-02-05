@@ -3,7 +3,9 @@ package com.github.vincemann.springrapid.sync.model;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @AllArgsConstructor
 @Getter
@@ -21,16 +23,19 @@ public class EntityDtoMapping {
             @JoinColumn(name = "entity_class", referencedColumnName = "entityClass"),
             @JoinColumn(name = "entity_id", referencedColumnName = "entityId")
     })
+    @NotNull
     private AuditLog auditLog;
 
     @Column(name = "dto_class")
+    @NotNull
     private String dtoClass;
 
+    @NotNull
     @Column(name = "last_update_time")
-    private LocalDateTime lastUpdateTime;
+    private Date lastUpdateTime;
 
     @Builder
-    public EntityDtoMapping(AuditLog auditLog, String dtoClass, LocalDateTime lastUpdateTime) {
+    public EntityDtoMapping(AuditLog auditLog, String dtoClass, Date lastUpdateTime) {
         this.auditLog = auditLog;
         this.dtoClass = dtoClass;
         this.lastUpdateTime = lastUpdateTime;
