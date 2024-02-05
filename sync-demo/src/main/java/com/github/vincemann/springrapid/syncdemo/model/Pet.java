@@ -20,6 +20,9 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import static javax.persistence.CascadeType.*;
+import static javax.persistence.CascadeType.DETACH;
+
 @NoArgsConstructor
 @Getter
 @Setter

@@ -96,7 +96,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
 
 
     @Test
-    public void canSavePet_thusGetLinkedToOwner() throws Exception {
+    public void whenSavePetWithSetOwner_thenGetBiDirLinkedToOwner() throws Exception {
         Owner savedKahn = ownerRepository.save(kahn);
         PetDto responseDto = savePetLinkedToOwnerAndToys(bella, savedKahn.getId());
         Assertions.assertEquals(savedKahn.getId(),responseDto.getOwnerId());
@@ -107,7 +107,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
     }
 
     @Test
-    public void canSavePet_thusGetLinkedToToys() throws Exception {
+    public void whenSavePetWithSetToys_thenToysGetBiDirLinked() throws Exception {
         Owner savedKahn = ownerRepository.save(kahn);
         Toy savedBall = toyRepository.save(ball);
         Toy savedBone = toyRepository.save(bone);
@@ -128,7 +128,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
     }
 
     @Test
-    public void canSavePet_thusGetLinkedToOwnerAndToys() throws Exception {
+    public void whenSavePetWithSetOwnerAndToys_thenBiDirLinkedToBoth() throws Exception {
         Owner savedKahn = ownerRepository.save(kahn);
         Toy savedBall = toyRepository.save(ball);
         Toy savedBone = toyRepository.save(bone);
@@ -147,7 +147,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
     }
 
     @Test
-    public void canUnlinkPetsOwner_viaUpdate() throws Exception {
+    public void whenUnlinkOwnerOfPetViaUpdate_thenBiDirUnlinked() throws Exception {
         Owner savedKahn = ownerRepository.save(kahn);
         PetDto createdBellaDto = savePetLinkedToOwnerAndToys(bella, savedKahn.getId());
         String removeOwnerJson = createUpdateJsonRequest(createUpdateJsonLine("remove", "/ownerId"));
@@ -161,7 +161,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
     }
 
     @Test
-    public void canUnlinkPetsOwnerAndSomeToys_viaUpdate() throws Exception {
+    public void whenPetsOwnerAndSomeToysUnlinkedViaUpdate_thenBiDirUnlinked() throws Exception {
         // bella -> owner=kahn
         //       -> toys=[ball, bone, rubberDuck]
 
@@ -202,7 +202,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
 //    }
 
     @Test
-    public void canUnlinkPetsOwnerAndAddSomeToys_viaUpdate() throws Exception {
+    public void whenUnlinkingSomePetsAndOwnerViaUpdate_thenAllBiDirUnlinked() throws Exception {
         Owner savedKahn = ownerRepository.save(kahn);
         Toy savedBall = toyRepository.save(ball);
         Toy savedBone = toyRepository.save(bone);
@@ -232,7 +232,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
     }
 
     @Test
-    public void canUnlinkPetsPetType_viaUpdate() throws Exception {
+    public void whenUnlinkPetsPetTypeViaUpdate_thenBiDirUnlinked() throws Exception {
         PetDto createdBellaDto = savePetLinkedToOwnerAndToys(bella,null);
         String removePetTypeJson = createUpdateJsonRequest(createUpdateJsonLine("remove", "/petTypeId"));
 
@@ -246,7 +246,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
     }
 
     @Test
-    public void canLinkPetsOwner_viaUpdate() throws Exception {
+    public void whenAddOwnerToPetViaPetUpdate_thenBiDirLinked() throws Exception {
         Owner savedKahn = ownerRepository.save(kahn);
         PetDto createdBellaDto = savePetLinkedToOwnerAndToys(bella,null);
         String addOwnerJson = createUpdateJsonRequest(createUpdateJsonLine("add", "/ownerId",savedKahn.getId().toString()));
@@ -260,7 +260,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
     }
 
     @Test
-    public void canLinkPetsOwner_andSomeToys_viaUpdate() throws Exception {
+    public void whenAddOwnerAndToysToPetViaUpdate_thenAllBiDirLinked() throws Exception {
         Owner savedKahn = ownerRepository.save(kahn);
         Toy savedBall = toyRepository.save(ball);
         Toy savedBone = toyRepository.save(bone);
@@ -293,7 +293,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
     }
 
     @Test
-    public void canLinkPetsOwner_andRemoveSomeToys_viaUpdate() throws Exception {
+    public void whenAddOwnerAndRemovedToysFromPetViaUpdate_thenOwnerBiDirLinkedAndToysBiDirUnlinked() throws Exception {
         Owner savedKahn = ownerRepository.save(kahn);
         Toy savedBall = toyRepository.save(ball);
         Toy savedBone = toyRepository.save(bone);
@@ -325,7 +325,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
     }
 
     @Test
-    public void canLinkPetsPetType_viaUpdate() throws Exception {
+    public void whenAddPetTypeToPetViaUpdate_thenBiDirLinked() throws Exception {
         bella.setPetType(null);
         PetDto createdBellaDto = savePetLinkedToOwnerAndToys(bella,null);
         String addPetTypeJson = createUpdateJsonRequest(createUpdateJsonLine("add", "/petTypeId",savedCatPetType.getId().toString()));
@@ -341,7 +341,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
     }
 
     @Test
-    public void canChangePetsOwner_viaUpdateReplace() throws Exception {
+    public void whenPetsOwnerReplacedViaReplaceOpUpdate_thenOldOwnerBiDirUnlinkedAndNewOwnerBiDirLinked() throws Exception {
         Owner savedKahn = ownerRepository.save(kahn);
         Owner savedMeier = ownerRepository.save(meier);
 
@@ -361,7 +361,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
     }
 
     @Test
-    public void canChangePetsOwner_viaUpdateRemoveAdd() throws Exception {
+    public void whenPetsOwnerReplacedViaRemoveAndAddOpUpdate_thenOldOwnerBiDirUnlinkedAndNewOwnerBiDirLinked() throws Exception {
         // bellas owner was kahn
         // remove owner kahn from bella and add new owner meier
         Owner savedKahn = ownerRepository.save(kahn);
@@ -385,7 +385,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
     }
 
     @Test
-    public void canDeletePet_getUnlinkedFromOwner() throws Exception {
+    public void givenPetLinkedBiDirToOwner_whenRemovingPetViaRemove_thenBiDirUnlinked() throws Exception {
         Owner savedKahn = ownerRepository.save(kahn);
         PetDto createdBellaDto = savePetLinkedToOwnerAndToys(bella,savedKahn.getId());
 
@@ -397,7 +397,7 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest
     }
 
     @Test
-    public void canDeletePet_getUnlinkedFromOwnerAndToys() throws Exception {
+    public void givenPetBiDirLinkedToToysAndOwner_whenRemovePetViaRemove_thenAllBiDirUnlinked() throws Exception {
         Toy savedBall = toyRepository.save(ball);
         Toy savedBone = toyRepository.save(bone);
         Toy savedRubberDuck = toyRepository.save(rubberDuck);

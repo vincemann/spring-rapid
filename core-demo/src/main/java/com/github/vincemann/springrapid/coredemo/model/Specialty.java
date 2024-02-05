@@ -21,6 +21,9 @@ import java.util.Set;
 @Entity
 public class Specialty extends IdentifiableEntityImpl<Long>
 {
+    @Unique
+    @Column(name = "description")
+    private String description;
 
     @Builder
     public Specialty(String description, Set<Vet> vets) {
@@ -28,10 +31,6 @@ public class Specialty extends IdentifiableEntityImpl<Long>
         if (vets!=null)
             this.vets = vets;
     }
-
-    @Unique
-    @Column(name = "description")
-    private String description;
 
 
     @ManyToMany(mappedBy = "specialtys", fetch = FetchType.EAGER)

@@ -50,7 +50,7 @@ public class Owner extends Person {
 
     @BiDirChildEntity
     // dont use remove cascade to showcase unlink on remove owner
-    @OneToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH},fetch = FetchType.EAGER)
+    @OneToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH}, fetch = FetchType.EAGER)
     @JoinColumn(name = "clinic_card_id",referencedColumnName = "id")
     private ClinicCard clinicCard;
 

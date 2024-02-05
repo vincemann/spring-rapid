@@ -3,8 +3,10 @@ package com.github.vincemann.springrapid.syncdemo.controller;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
 import com.github.vincemann.springrapid.syncdemo.controller.template.OwnerControllerTestTemplate;
+import com.github.vincemann.springrapid.syncdemo.controller.template.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnOwnerDto;
+import com.github.vincemann.springrapid.syncdemo.dto.pet.PetDto;
 import com.github.vincemann.springrapid.syncdemo.model.*;
 import com.github.vincemann.springrapid.syncdemo.repo.*;
 import com.github.vincemann.springrapid.syncdemo.service.*;
@@ -19,10 +21,10 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class MyIntegrationTest extends AbstractMvcTest {
@@ -144,6 +146,9 @@ public class MyIntegrationTest extends AbstractMvcTest {
 
     @Autowired
     protected OwnerControllerTestTemplate ownerController;
+
+    @Autowired
+    protected PetControllerTestTemplate petController;
 
     @BeforeEach
     public void setupTestData() throws Exception {
@@ -438,6 +443,19 @@ public class MyIntegrationTest extends AbstractMvcTest {
     protected ReadOwnOwnerDto saveOwner(Owner owner) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
         return performDs2xx(ownerController.create(createOwnerDto), ReadOwnOwnerDto.class);
+    }
+
+    protected PetDto savePetLinkedToOwnerAndToys(Pet pet, Long ownerId, Toy... toys) throws Exception {
+        PetDto createPetDto = new PetDto(pet);
+        if (ownerId != null)
+            createPetDto.setOwnerId(ownerId);
+        if (toys.length > 0)
+            createPetDto.setToyIds(Arrays.stream(toys).map(Toy::getId).collect(Collectors.toSet()));
+
+        return deserialize(getMvc().perform(petController.create(createPetDto))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse().getContentAsString(), PetDto.class);
     }
 
 

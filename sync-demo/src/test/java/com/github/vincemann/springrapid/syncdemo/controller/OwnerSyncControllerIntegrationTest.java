@@ -640,7 +640,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
     @Test
     public void givenToyRemovedFromAuditedFieldToysOfPet_whenFetchSyncStatusOfPet_thenMarkedAsUpdated() throws Exception {
-        // create bello with ball and rubberduck toys
+        // create bello with ball and rubber-duck toys
         // update bello - remove ball toy
         // check sync status of bello -> marked as updated
         // verify update
@@ -648,8 +648,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Toy rubberDuck = toyRepository.save(this.rubberDuck);
         Toy ball = toyRepository.save(this.ball);
 
-        bello.setToys(Sets.newHashSet(rubberDuck,ball));
-        Pet savedBello = petService.save(bello);
+        PetDto belloDto = savePetLinkedToOwnerAndToys(bello, null, rubberDuck, ball);
 
         assertPetHasToys(BELLO,RUBBER_DUCK,BALL);
 
@@ -659,8 +658,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         ownerSyncController.fetchSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
 
         // update bello and bella
-        Pet removeToy = Entity.createUpdate(savedBello);
+        Pet removeToy = Entity.createUpdate(bello);
         removeToy.setToys(Sets.newHashSet(rubberDuck)); // no ball
+        removeToy.setId(belloDto.getId());
 
 
 
@@ -669,7 +669,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Assertions.assertTrue(updatedBello.getLastModifiedDate().after(clientUpdate));
 
 
-        EntitySyncStatus status = petSyncController.fetchSyncStatus_assertUpdate(savedBello.getId(), clientUpdate, SyncStatus.UPDATED);
+        EntitySyncStatus status = petSyncController.fetchSyncStatus_assertUpdate(belloDto.getId(), clientUpdate, SyncStatus.UPDATED);
 
         Set<String> idsToSync = Sets.newHashSet(status.getId());
 
@@ -683,9 +683,37 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Assertions.assertEquals(1,updatedPets.size());
 
-        PetDto belloDto = updatedPets.stream().filter(s -> s.getId().equals(savedBello.getId())).findFirst().get();
-        Assertions.assertEquals(1,belloDto.getToyIds().size());
-        Assertions.assertTrue(belloDto.getToyIds().stream().anyMatch(toyId -> toyId.equals(rubberDuck.getId())));
+        PetDto dto = updatedPets.stream().filter(s -> s.getId().equals(belloDto.getId())).findFirst().get();
+        Assertions.assertEquals(1,dto.getToyIds().size());
+        Assertions.assertTrue(dto.getToyIds().stream().anyMatch(toyId -> toyId.equals(rubberDuck.getId())));
+    }
+
+    @Test
+    public void givenToyRemovedViaRemove_whenFetchSyncStatusOfPet_thenNotMarkedAsUpdated() throws Exception {
+        // create bello with ball and rubber-duck toys
+        // update bello - remove ball toy
+        // check sync status of bello -> marked as updated
+        // verify update
+
+        Toy rubberDuck = toyRepository.save(this.rubberDuck);
+        Toy ball = toyRepository.save(this.ball);
+
+        PetDto belloDto = savePetLinkedToOwnerAndToys(bello, null, rubberDuck, ball);
+
+        assertPetHasToys(BELLO,RUBBER_DUCK,BALL);
+
+        // now
+        Timestamp clientUpdate = new Timestamp(new Date().getTime());
+
+        ownerSyncController.fetchSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
+
+
+        toyService.deleteById(ball.getId());
+
+        assertPetHasToys(BELLO,BALL);
+
+
+        petSyncController.fetchSyncStatus_assertNoUpdate(belloDto.getId(), clientUpdate);
     }
 
     // would be overkill to record change in foreignkey column as recorded update for sync
