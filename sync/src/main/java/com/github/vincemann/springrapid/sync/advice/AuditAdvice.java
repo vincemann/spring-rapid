@@ -16,7 +16,7 @@ import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.Set;
 
-import static com.github.vincemann.springrapid.core.util.ReflectionUtils.findCollectionFieldsAnnotatedWith;
+import static com.github.vincemann.springrapid.core.util.ReflectionUtils.findFieldsAnnotatedWith;
 
 /**
  * Implements logic related to {@link AuditField}.
@@ -39,7 +39,7 @@ public class AuditAdvice {
         if (skip(joinPoint))
             return;
 
-        Set<Field> auditedCollectionFields = findCollectionFieldsAnnotatedWith(update.getClass(), AuditField.class);
+        Set<Field> auditedCollectionFields = findFieldsAnnotatedWith(update.getClass(), AuditField.class);
         if (auditedCollectionFields.isEmpty())
             return;
 

@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.autobidir.entity.annotation.child.UniDir
 import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
+import com.github.vincemann.springrapid.sync.AuditField;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,6 +52,7 @@ public class Pet extends AuditingEntity<Long> {
     @JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pet")
     @BiDirChildCollection(Toy.class)
+    @AuditField
     private Set<Toy> toys = new HashSet<>();
 
     @JsonManagedReference

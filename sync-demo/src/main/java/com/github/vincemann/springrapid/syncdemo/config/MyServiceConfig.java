@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.syncdemo.config;
 
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
-import com.github.vincemann.springrapid.sync.service.ext.AuditCollectionsExtension;
 import com.github.vincemann.springrapid.syncdemo.service.OwnerService;
 import com.github.vincemann.springrapid.syncdemo.service.PetService;
 import com.github.vincemann.springrapid.syncdemo.service.Root;
@@ -46,14 +45,12 @@ public class MyServiceConfig {
     public OwnerService ownerService(@Root OwnerService ownerService,
                                      OwnerOfTheYearExtension ownerOfTheYearExtension,
                                      ExampleAclExtension aclServiceExtension,
-                                     SaveNameToWordPressDbExtension saveNameToWordPressDbExtension,
-                                     AuditCollectionsExtension auditCollectionsExtension
+                                     SaveNameToWordPressDbExtension saveNameToWordPressDbExtension
     ) {
         return new ExtensionProxyBuilder<>(ownerService)
                 .addGenericExtension(saveNameToWordPressDbExtension)
                 .addGenericExtension(ownerOfTheYearExtension)
                 .addExtension(aclServiceExtension)
-                .addGenericExtension(auditCollectionsExtension)
                 .build();
     }
 }

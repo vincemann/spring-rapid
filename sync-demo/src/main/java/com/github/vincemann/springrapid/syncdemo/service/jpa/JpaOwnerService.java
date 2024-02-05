@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.syncdemo.service.jpa;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
+import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 @Root
 @Service
+@EnableAutoBiDir
 public class JpaOwnerService
         extends JPACrudService<Owner,Long, OwnerRepository>
                 implements OwnerService, AopLoggable, TargetClassAware {

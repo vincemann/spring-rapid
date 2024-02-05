@@ -100,14 +100,14 @@ public class ReflectionUtils {
         return fields;
     }
 
-    public static Set<Field> findCollectionFieldsAnnotatedWith(Class<?> clazz, Class<? extends Annotation> annotationClass){
+    public static Set<Field> findFieldsAnnotatedWith(Class<?> clazz, Class<? extends Annotation> annotationClass){
         Set<Field> cachedResult = collectionFieldsCache.get(clazz);
         if (cachedResult != null) {
             return cachedResult;
         }
 
         Set<Field> fields = new HashSet<>();
-       EntityReflectionUtils.doWithAnnotatedFieldsOfType(Collection.class, annotationClass, clazz, fields::add);
+       EntityReflectionUtils.doWithAnnotatedFields(annotationClass,clazz, fields::add);
 
         collectionFieldsCache.put(clazz, fields);
 

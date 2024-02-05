@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.syncdemo.service.jpa;
 
+import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.syncdemo.model.ClinicCard;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@EnableAutoBiDir
 public class JpaClinicCardService
         extends JPACrudService<ClinicCard,Long, ClinicCardRepository>
             implements ClinicCardService

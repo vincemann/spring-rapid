@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.syncdemo.service.jpa;
 
+import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import java.util.Set;
 
 @Root
 @Service
+@EnableAutoBiDir
 public class JpaPetService extends JPACrudService<Pet, Long, PetRepository> implements PetService, TargetClassAware {
 
     @Override

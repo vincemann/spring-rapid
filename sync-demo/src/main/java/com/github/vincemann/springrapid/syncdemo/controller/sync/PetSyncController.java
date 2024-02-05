@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.syncdemo.controller.sync;
 
-import com.github.vincemann.springrapid.sync.DtoClassRegistry;
 import com.github.vincemann.springrapid.syncdemo.dto.pet.PetDto;
 import org.springframework.stereotype.Controller;
 import com.github.vincemann.springrapid.sync.controller.SyncEntityController;
@@ -16,8 +15,4 @@ public class PetSyncController extends SyncEntityController<Pet,Long> {
         registerExtensions(petsOfOwnerFilter);
     }
 
-    @Override
-    protected void configureDtoClassRegistry(DtoClassRegistry registry) {
-        registerDtoClass(PetDto.class);
-    }
 }

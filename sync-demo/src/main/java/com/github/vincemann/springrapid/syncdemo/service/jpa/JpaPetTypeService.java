@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.syncdemo.service.jpa;
 
+import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.syncdemo.model.PetType;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Primary
 @Service
-
+@EnableAutoBiDir
 public class JpaPetTypeService extends JPACrudService<PetType,Long, PetTypeRepository> implements PetTypeService, TargetClassAware {
 
     @Override

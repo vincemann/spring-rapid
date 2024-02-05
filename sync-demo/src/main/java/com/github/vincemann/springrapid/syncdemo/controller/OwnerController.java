@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuild
 import com.github.vincemann.springrapid.core.controller.dto.map.Principal;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadForeignOwnerDto;
-import com.github.vincemann.springrapid.syncdemo.dto.owner.own.ReadOwnOverviewOwnerDto;
+import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
 import org.springframework.stereotype.Controller;
 
@@ -21,13 +21,13 @@ public class OwnerController extends CrudController<Owner, Long> {
                         .thenReturn(CreateOwnerDto.class);
 
         builder.when(endpoint(getCreateUrl()).and(direction(Direction.RESPONSE)))
-                .thenReturn(ReadOwnOverviewOwnerDto.class);
+                .thenReturn(ReadOwnOwnerDto.class);
 
         builder.when(endpoint(getUpdateUrl()).and(direction(Direction.REQUEST)))
                 .thenReturn(CreateOwnerDto.class);
 
         builder.when(direction(Direction.RESPONSE).and(principal(Principal.OWN)))
-                        .thenReturn(ReadOwnOverviewOwnerDto.class);
+                        .thenReturn(ReadOwnOwnerDto.class);
 
         builder.when(direction(Direction.RESPONSE).and(principal(Principal.FOREIGN)))
                 .thenReturn(ReadForeignOwnerDto.class);

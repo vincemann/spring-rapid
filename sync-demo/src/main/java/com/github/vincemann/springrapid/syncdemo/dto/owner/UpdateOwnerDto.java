@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @NoArgsConstructor
-
 @Getter @Setter
 public class UpdateOwnerDto extends AbstractOwnerDto  {
 

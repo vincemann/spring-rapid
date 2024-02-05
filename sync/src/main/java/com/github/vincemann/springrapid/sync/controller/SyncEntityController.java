@@ -1,12 +1,10 @@
 package com.github.vincemann.springrapid.sync.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.controller.AbstractEntityController;
 import com.github.vincemann.springrapid.core.controller.id.IdFetchingException;
 import com.github.vincemann.springrapid.core.controller.id.IdFetchingStrategy;
-import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.audit.IAuditingEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -14,7 +12,6 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import com.github.vincemann.springrapid.sync.DtoClassRegistry;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.LastFetchInfo;
