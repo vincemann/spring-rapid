@@ -15,7 +15,7 @@ public class AuditTemplateImpl implements AuditTemplate {
     private AuditorAware auditorAware;
     private IdConverter idConverter;
     @Override
-    public void updateLastModified(AuditingEntity entity) {
+    public void updateLastModified(IAuditingEntity entity) {
         entity.setLastModifiedDate(new Date());
         Optional<Object> currentAuditor = auditorAware.getCurrentAuditor();
         if (currentAuditor.isPresent())
@@ -28,7 +28,7 @@ public class AuditTemplateImpl implements AuditTemplate {
 
 
     @Override
-    public void updateLastModified(AuditingEntity entity, Serializable auditorId){
+    public void updateLastModified(IAuditingEntity entity, Serializable auditorId){
         entity.setLastModifiedDate(new Date());
         entity.setLastModifiedById(auditorId);
     }

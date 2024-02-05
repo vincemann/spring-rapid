@@ -1,18 +1,10 @@
 package com.github.vincemann.springrapid.sync.advice;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.model.audit.AuditTemplate;
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
-import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.CrudServiceLocator;
-import com.github.vincemann.springrapid.core.service.id.IdConverter;
-import com.github.vincemann.springrapid.core.util.Lists;
+import com.github.vincemann.springrapid.core.util.Entity;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
-import com.github.vincemann.springrapid.core.util.ReflectionUtils;
-import com.github.vincemann.springrapid.sync.EntityMappingCollector;
-import com.github.vincemann.springrapid.sync.service.AuditLogService;
-import com.github.vincemann.springrapid.sync.service.ext.AuditCollection;
-import com.sun.xml.bind.v2.model.core.ID;
+import com.github.vincemann.springrapid.sync.AuditCollection;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -20,19 +12,16 @@ import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.data.domain.AuditorAware;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Optional;
 import java.util.Set;
 
 import static com.github.vincemann.springrapid.core.util.ReflectionUtils.findCollectionFieldsAnnotatedWith;
-import static com.github.vincemann.springrapid.sync.util.AuditUtils.toId;
 
+/**
+ * Implements logic related to {@link AuditCollection}.
+ */
 @Aspect
 // should get executed within transaction of service, so when anything fails, the timestamp update is rolled back
 @Order(Ordered.LOWEST_PRECEDENCE-1)
@@ -59,10 +48,10 @@ public class AuditCollectionsAdvice {
 
         assertTransactionActive();
 
-        ArrayList<String> fieldsUpdated = Lists.newArrayList(fieldsToUpdate);
+        Set<String> updatedFields = Entity.findPartialUpdatedFields(update, fieldsToUpdate);
 
         for (Field field : auditedCollectionFields) {
-            if (fieldsUpdated.contains(field.getName()))
+            if (updatedFields.contains(field.getName()))
                 auditTemplate.updateLastModified(update);
         }
     }

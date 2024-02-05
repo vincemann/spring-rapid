@@ -7,10 +7,7 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.JpaUtils;
-import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
-import com.github.vincemann.springrapid.core.util.ProxyUtils;
-import com.github.vincemann.springrapid.core.util.ReflectionUtils;
+import com.github.vincemann.springrapid.core.util.*;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -98,17 +95,13 @@ public class RelationalEntityAdvice {
 
         IdentifiableEntity old = findById(joinPoint, update.getId()).get();
 
-        Set<String> _fieldsToUpdate;
-        if (fieldsToUpdate.length == 0)
-            _fieldsToUpdate = ReflectionUtils.findAllNonNullFieldNames(update);
-        else
-            _fieldsToUpdate = Sets.newHashSet(fieldsToUpdate);
+        Set<String> updatedFields = Entity.findPartialUpdatedFields(update, fieldsToUpdate);
 
         // expects all collections to be initialized and not of Persistent Type
         IdentifiableEntity detachedOldEntity = ReflectionUtils.createInstance(ProxyUtils.getTargetClass(update));
-        NullAwareBeanUtils.copyProperties(detachedOldEntity, old, _fieldsToUpdate);
+        NullAwareBeanUtils.copyProperties(detachedOldEntity, old, updatedFields);
 
-        relationalEntityManager.partialUpdate(old, detachedOldEntity, update, _fieldsToUpdate.toArray(new String[0]));
+        relationalEntityManager.partialUpdate(old, detachedOldEntity, update, updatedFields.toArray(new String[0]));
     }
 
     @Before(

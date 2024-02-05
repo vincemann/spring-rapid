@@ -5,7 +5,7 @@ import java.io.Serializable;
 public interface AuditTemplate {
 
 
-    public void updateLastModified(AuditingEntity<?> entity);
+    public void updateLastModified(IAuditingEntity entity);
 
-    void updateLastModified(AuditingEntity entity, Serializable auditorId);
+    void updateLastModified(IAuditingEntity entity, Serializable auditorId);
 }
