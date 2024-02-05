@@ -24,12 +24,10 @@ public class LastFetchInfo {
     private String id;
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private Date lastUpdate;
-    private Class<?> dtoClass;
 
     // constructor for jpa
-    public LastFetchInfo(Long id, Date lastUpdate, Class<?> dtoClass) {
+    public LastFetchInfo(Long id, Date lastUpdate) {
         this.id = String.valueOf(id);
         this.lastUpdate = lastUpdate;
-        this.dtoClass = dtoClass;
     }
 }

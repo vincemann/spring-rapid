@@ -65,7 +65,6 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
     private String fetchEntitySyncStatusesUrl;
     @Setter
     private String fetchEntitySyncStatusesSinceTsUrl;
-    private DtoClassRegistry dtoClassRegistry = new DtoClassRegistry();
 
     @SuppressWarnings("unchecked")
     public SyncEntityController() {
@@ -87,7 +86,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
             //            Date lastUpdateDate = DATE_FORMAT.parse(lastUpdateTimestampString);
             Timestamp lastUpdate = new Timestamp(lastUpdateTimestamp);
             VerifyEntity.isPresent(lastUpdateTimestamp, "need timestamp parameter 'ts'");
-            LastFetchInfo lastFetchInfo = new LastFetchInfo(id.toString(), lastUpdate, findDtoClass(request));
+            LastFetchInfo lastFetchInfo = new LastFetchInfo(id.toString(), lastUpdate);
             EntitySyncStatus syncStatus = findEntitySyncStatus(lastFetchInfo);
             boolean updated = syncStatus != null;
             if (updated)
@@ -149,7 +148,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
         List<EntityFilter<? super E>> ramFilters = extractExtensions(request,ENTITY_FILTER);
 
         Set<EntitySyncStatus> syncStatuses = findUpdatesSinceTimestamp(
-                new Timestamp(lastUpdateTimestamp),findDtoClass(request),filters,ramFilters);
+                new Timestamp(lastUpdateTimestamp),filters,ramFilters);
         if (syncStatuses.isEmpty())
             return ResponseEntity.noContent().build();
         else
@@ -178,11 +177,11 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
         return service.findEntitySyncStatuses(lastUpdateInfos);
     }
 
-    protected Set<EntitySyncStatus> findUpdatesSinceTimestamp(Timestamp lastUpdate, Class<?> dtoClass, List<QueryFilter<? super E>> filters, List<EntityFilter<? super E>> ramFilters) {
+    protected Set<EntitySyncStatus> findUpdatesSinceTimestamp(Timestamp lastUpdate, List<QueryFilter<? super E>> filters, List<EntityFilter<? super E>> ramFilters) {
         if (ramFilters.isEmpty())
-            return service.findEntitySyncStatusesSinceTimestamp(lastUpdate,dtoClass,filters);
+            return service.findEntitySyncStatusesSinceTimestamp(lastUpdate,filters);
         else
-            return service.findEntitySyncStatusesSinceTimestamp(lastUpdate,dtoClass,filters,ramFilters);
+            return service.findEntitySyncStatusesSinceTimestamp(lastUpdate,filters,ramFilters);
     }
 
     protected RequestMappingInfo createFetchEntitySyncStatusRequestMappingInfo() {
@@ -208,32 +207,6 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
                 .consumes(MediaType.APPLICATION_JSON_VALUE)
                 .produces(MediaType.APPLICATION_JSON_VALUE)
                 .build();
-    }
-
-    protected abstract void configureDtoClassRegistry(DtoClassRegistry registry);
-
-    protected void registerDtoClass(String key, Class<?> dtoClass){
-        dtoClassRegistry.register(key,dtoClass);
-    }
-
-    protected void registerDtoClass(Class<?> dtoClass){
-        dtoClassRegistry.registerFallback(dtoClass);
-    }
-
-    protected void configureJsonMapper(JsonMapper jsonMapper){
-        SimpleModule module = new SimpleModule();
-        module.addDeserializer(Class.class, new DtoClassDeserializer(() -> dtoClassRegistry));
-        jsonMapper.getObjectMapper().registerModule(module);
-    }
-
-    protected Class<?> findDtoClass(HttpServletRequest request) throws BadEntityException {
-        String dtoClassParam = request.getParameter(DTO_CLASS_URL_PARAM_KEY);
-        if (dtoClassParam == null)
-            throw new BadEntityException("No dto class param present");
-        Class<?> dtoClass = dtoClassRegistry.find(dtoClassParam);
-        if (dtoClass == null)
-            throw new BadEntityException("No dto class mapped for dto param " + dtoClassParam);
-        return dtoClass;
     }
 
     protected void initUrls() {

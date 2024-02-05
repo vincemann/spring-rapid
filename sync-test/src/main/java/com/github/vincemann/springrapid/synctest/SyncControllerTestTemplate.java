@@ -38,25 +38,16 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
         this.applicationContext = applicationContext;
     }
 
-    public MockHttpServletRequestBuilder fetchSyncStatus(Long entityId, Date lastClientUpdate){
-        return fetchSyncStatus(entityId,lastClientUpdate,null);
-    }
 
-
-    public MockHttpServletRequestBuilder fetchSyncStatus(Long entityId, Date lastClientUpdate, Class<?> dtoClass) {
+    public MockHttpServletRequestBuilder fetchSyncStatus(Long entityId, Date lastClientUpdate) {
         return MockMvcRequestBuilders.get(controller.getFetchEntitySyncStatusUrl())
                 .param("id", entityId.toString())
-                .param(SyncEntityController.DTO_CLASS_URL_PARAM_KEY,findDtoClassKey(dtoClass))
                 .param("ts", String.valueOf(lastClientUpdate.getTime()));
     }
 
-    public MockHttpServletRequestBuilder fetchSyncStatusesSinceTs(Date clientUpdate, UrlWebExtension... filters){
-        return fetchSyncStatusesSinceTs(clientUpdate,null,filters);
-    }
 
-    public MockHttpServletRequestBuilder fetchSyncStatusesSinceTs(Date clientUpdate,Class<?> dtoClass, UrlWebExtension... filters) {
+    public MockHttpServletRequestBuilder fetchSyncStatusesSinceTs(Date clientUpdate, UrlWebExtension... filters) {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controller.getFetchEntitySyncStatusesSinceTsUrl())
-                .param(SyncEntityController.DTO_CLASS_URL_PARAM_KEY,findDtoClassKey(dtoClass))
                 .param("ts", String.valueOf(clientUpdate.getTime()));
         if (filters.length != 0){
             for (UrlWebExtension filter : filters) {
@@ -74,15 +65,10 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
                 .content(jsonUpdateInfos).contentType(MediaType.APPLICATION_JSON);
     }
 
-    public EntitySyncStatus fetchSyncStatus_assertUpdate(Long entityId, Date lastClientUpdate, SyncStatus expectedStatus) throws Exception{
-        return fetchSyncStatus_assertUpdate(entityId,lastClientUpdate,null,expectedStatus);
-    }
-
-    public EntitySyncStatus fetchSyncStatus_assertUpdate(Long entityId, Date lastClientUpdate,@Nullable Class<?> dtoClass, SyncStatus expectedStatus) throws Exception {
+    public EntitySyncStatus fetchSyncStatus_assertUpdate(Long entityId, Date lastClientUpdate, SyncStatus expectedStatus) throws Exception {
 
         String json = mvc.perform(MockMvcRequestBuilders.get(controller.getFetchEntitySyncStatusUrl())
                         .param("id", entityId.toString())
-                        .param(SyncEntityController.DTO_CLASS_URL_PARAM_KEY,findDtoClassKey(dtoClass))
                         .param("ts", String.valueOf(lastClientUpdate.getTime())))
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andReturn().getResponse().getContentAsString();
@@ -94,43 +80,23 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
         return status;
     }
 
-    protected String findDtoClassKey(@Nullable Class<?> dtoClass){
-        Class<?> fallback = getController().getDtoClassRegistry().getFallback();
-        if (dtoClass == null){
-            Assertions.assertNotNull(fallback,"dto class was null, but fallback was also null");
-            return null;
-        }
-        if (fallback.equals(dtoClass))
-            return null;
 
-
-        Optional<String> dtoClassKey = getController().getDtoClassRegistry().getEntries().entrySet().stream()
-                .filter(e -> e.getValue().equals(dtoClass))
-                .map(Map.Entry::getKey)
-                .findFirst();
-
-
-        Assertions.assertTrue(dtoClassKey.isPresent(),"did not find dto class key for dto class: " + dtoClass.getSimpleName());
-        return dtoClassKey.get();
-
-    }
-
-    public void fetchSyncStatus_assertNoUpdate(Long entityId, Date lastClientUpdate, Class<?> dtoClass) throws Exception {
-        mvc.perform(fetchSyncStatus(entityId,lastClientUpdate,dtoClass))
+    public void fetchSyncStatus_assertNoUpdate(Long entityId, Date lastClientUpdate) throws Exception {
+        mvc.perform(fetchSyncStatus(entityId,lastClientUpdate))
                 .andExpect(MockMvcResultMatchers.status().is(204))
                 .andExpect(MockMvcResultMatchers.content().string(""));
     }
 
-    public void fetchSyncStatusesSinceTs_assertNoUpdates(Date clientUpdate,Class<?> dtoClass, UrlWebExtension... jpqlFilters) throws Exception {
-        mvc.perform(fetchSyncStatusesSinceTs(clientUpdate,dtoClass,jpqlFilters))
+    public void fetchSyncStatusesSinceTs_assertNoUpdates(Date clientUpdate, UrlWebExtension... jpqlFilters) throws Exception {
+        mvc.perform(fetchSyncStatusesSinceTs(clientUpdate,jpqlFilters))
                 .andExpect(MockMvcResultMatchers.status().is(204))
                 .andExpect(MockMvcResultMatchers.content().string(""));
     }
     
 
 
-    public Set<EntitySyncStatus> fetchSyncStatusesSinceTs_assertUpdates(Timestamp clientUpdate,Class<?> dtoClass, UrlWebExtension... jpqlFilters) throws Exception {
-        String json = mvc.perform(fetchSyncStatusesSinceTs(clientUpdate,dtoClass,jpqlFilters))
+    public Set<EntitySyncStatus> fetchSyncStatusesSinceTs_assertUpdates(Timestamp clientUpdate, UrlWebExtension... jpqlFilters) throws Exception {
+        String json = mvc.perform(fetchSyncStatusesSinceTs(clientUpdate,jpqlFilters))
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andReturn().getResponse().getContentAsString();
 
