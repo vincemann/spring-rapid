@@ -14,7 +14,7 @@ import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.service.JPACrudService;
+import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.pass.RapidPasswordEncoder;
@@ -54,7 +54,7 @@ public abstract class JpaUserService
                 ID extends Serializable,
                 R extends AbstractUserRepository<U, ID>
                 >
-        extends JPACrudService<U, ID, R>
+        extends JpaCrudService<U, ID, R>
             implements UserService<U, ID>, ApplicationContextAware {
 
 
@@ -108,7 +108,7 @@ public abstract class JpaUserService
         }else user.getRoles().add(AuthRoles.USER);
         passwordValidator.validate(user.getPassword());
         checkUniqueContactInformation(user.getContactInformation());
-        U saved = service.save(user);
+        U saved = service.create(user);
         // is done in same transaction -> so applied directly, but message sent after transaction to make sure it
         // is not sent when transaction fails
         makeUnverified(saved);
@@ -120,10 +120,10 @@ public abstract class JpaUserService
 
     @Transactional
     @Override
-    public U save(U user) throws BadEntityException {
+    public U create(U user) throws BadEntityException {
         // no restrictions in save method, all restrictions and checks in more abstract methods such as signup and createAdmin
         encodePasswordIfNecessary(user);
-        return super.save(user);
+        return super.create(user);
     }
 
     @Transactional
@@ -519,7 +519,7 @@ public abstract class JpaUserService
     public U signupAdmin(U admin) throws AlreadyRegisteredException, BadEntityException {
         checkUniqueContactInformation(admin.getContactInformation());
         passwordValidator.validate(admin.getPassword());
-        return service.save(admin);
+        return service.create(admin);
     }
 
     /**

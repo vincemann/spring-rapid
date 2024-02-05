@@ -28,8 +28,8 @@ public class SavedInheritsPermissionExtension<E extends IdentifiableEntity<Id> &
 
     @LogInteraction
     @Override
-    public E save(E entity) throws BadEntityException {
-        E saved = getNext().save(entity);
+    public E create(E entity) throws BadEntityException {
+        E saved = getNext().create(entity);
         try {
             getRapidAclService().copyParentAces(saved, saved.getAclParent(),
                     AceFilter.builder()

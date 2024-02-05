@@ -17,9 +17,9 @@ public abstract class LimitSavesExtension
     }
 
     @Override
-    public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
+    public IdentifiableEntity create(IdentifiableEntity entity) throws BadEntityException {
         checkLimit();
-        IdentifiableEntity saved = getNext().save(entity);
+        IdentifiableEntity saved = getNext().create(entity);
         actionPerformed();
         return saved;
     }

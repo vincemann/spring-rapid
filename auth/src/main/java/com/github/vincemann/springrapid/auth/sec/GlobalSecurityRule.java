@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.auth.sec;
 
-import com.github.vincemann.springrapid.acl.AclEvaluationContext;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 

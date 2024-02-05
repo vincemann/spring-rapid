@@ -5,13 +5,10 @@ import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.repo.PetRepository;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
-import com.github.vincemann.springrapid.acldemo.service.Root;
-import com.github.vincemann.springrapid.acldemo.service.ext.OwnerCanOnlySaveOwnPetsSecurityExtension;
+import com.github.vincemann.springrapid.acldemo.service.ext.sec.OwnerCanCreateSaveOwnPets;
 import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
 import com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy;
-import com.github.vincemann.springrapid.core.service.JPACrudService;
-import org.springframework.stereotype.Component;
-import org.springframework.aop.TargetClassAware;
+import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -22,15 +19,15 @@ import org.springframework.stereotype.Service;
         "vetHasFullPermissionAboutSavedAclExtension"
 })
 @DefineProxy(name = "secured", extensionClasses = {
-        OwnerCanOnlySaveOwnPetsSecurityExtension.class
+        OwnerCanCreateSaveOwnPets.class
 })
 @CreateProxy(qualifiers = Acl.class,proxies = "acl")
 @CreateProxy(qualifiers = Secured.class,proxies = {"acl","secured"})
-@Root
 @Primary
 @Service
-midEgDuration()
-public class JpaPetService extends JPACrudService<Pet, Long, PetRepository> implements PetService, TargetClassAware {
+public class JpaPetService
+        extends JpaCrudService<Pet, Long, PetRepository>
+                implements PetService {
     @Override
     public Class<?> getTargetClass() {
         return JpaPetService.class;

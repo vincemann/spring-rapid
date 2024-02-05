@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
-import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coredemo.controller.template.OwnerControllerTestTemplate;
@@ -149,8 +148,8 @@ public class MyControllerIntegrationTest extends AbstractMvcTest
     @BeforeEach
     public void setupTestData() throws Exception {
 
-        savedDogPetType = petTypeService.save(new PetType("Dog"));
-        savedCatPetType = petTypeService.save(new PetType("Cat"));
+        savedDogPetType = petTypeService.create(new PetType("Dog"));
+        savedCatPetType = petTypeService.create(new PetType("Cat"));
 
 
         rubberDuck = Toy.builder()

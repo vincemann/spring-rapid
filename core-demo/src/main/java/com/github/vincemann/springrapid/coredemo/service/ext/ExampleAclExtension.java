@@ -25,9 +25,9 @@ public class ExampleAclExtension
 
 
     @Override
-    public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
+    public IdentifiableEntity create(IdentifiableEntity entity) throws BadEntityException {
         log.debug("creating acl list for Entity with class: " + getEntityClass());
-        return getNext().save(entity);
+        return getNext().create(entity);
     }
 
     @Override

@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 
 /**
- * On {@link com.github.vincemann.springrapid.core.service.AbstractCrudService#save(E)} the Permissions (@see {@link org.springframework.security.acls.domain.BasePermission})
+ * On {@link com.github.vincemann.springrapid.core.service.AbstractCrudService#create(E)} the Permissions (@see {@link org.springframework.security.acls.domain.BasePermission})
  * from the Acl-Parent, retrieved via {@link AclParentAware#getAclParent()}, will be inherited.
 
  */
@@ -25,8 +25,8 @@ public class SavedInheritsParentsPermissionsAclExtension<E extends IdentifiableE
 
     @LogInteraction
     @Override
-    public E save(E entity) throws BadEntityException {
-        E saved = getNext().save(entity);
+    public E create(E entity) throws BadEntityException {
+        E saved = getNext().create(entity);
         try {
             getRapidAclService().copyParentAces(saved,saved.getAclParent(), AceFilter.noFilter());
         } catch (AclNotFoundException e) {

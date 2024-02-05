@@ -10,7 +10,6 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
-import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.core.util.Lists;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,7 +59,7 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
         E fullUpdate(E entity) throws BadEntityException, EntityNotFoundException;
 
         @Transactional
-        E save(E entity) throws BadEntityException;
+        E create(E entity) throws BadEntityException;
 
         @Transactional
         Set<E> findSome(Set<Id> ids);

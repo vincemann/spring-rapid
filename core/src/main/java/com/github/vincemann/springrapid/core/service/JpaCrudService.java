@@ -10,13 +10,11 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
-import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.core.util.*;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +35,7 @@ import static com.github.vincemann.springrapid.core.util.FilterUtils.*;
  */
 
 @Slf4j
-public abstract class JPACrudService
+public abstract class JpaCrudService
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
@@ -49,7 +47,7 @@ public abstract class JPACrudService
     protected FilterRepository<E, Id> filterRepository;
     protected EntityManager entityManager;
 
-    public JPACrudService() {
+    public JpaCrudService() {
     }
 
     @Transactional
@@ -63,7 +61,8 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public E softUpdate(E update) throws EntityNotFoundException, BadEntityException {
-        VerifyEntity.isPresent(update.getId(), "No Id set for update");
+        if (update.getId() == null)
+            throw new IllegalArgumentException("id cannot be null for update operations");
         return getRepository().save(update);
     }
 
@@ -76,12 +75,9 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public E partialUpdate(E update, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
+        if (update.getId() == null)
+            throw new IllegalArgumentException("id cannot be null for update operations");
         E managedEntity = findOldEntity(update.getId());
-//            try {
-//                throw new IllegalArgumentException("test");
-//            }catch (Exception e){
-//                e.printStackTrace();
-//            }
         // never place breakpoint within this method, this triggers unexpected double execution of advices
         // always check logs to see if this method was executed twice
         // intellij idea says first breakpoint skipped because it happened in debugger evaluation, so the first execution never halts
@@ -106,14 +102,17 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public E fullUpdate(E update) throws BadEntityException, EntityNotFoundException {
-        VerifyEntity.isPresent(update.getId(), "No Id set for update");
+        if (update.getId() == null)
+            throw new IllegalArgumentException("id cannot be null for update operations");
         return getRepository().save(update);
     }
 
 
     @Transactional
     @Override
-    public E save(E entity) throws BadEntityException {
+    public E create(E entity) throws BadEntityException {
+        if (entity.getId() != null)
+            throw new IllegalArgumentException("dont use create method for update operations");
         return getRepository().save(entity);
     }
 

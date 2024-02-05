@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.core.repo.RapidJpaRepository;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.JPACrudService;
+import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
@@ -34,7 +34,7 @@ class ExtensionProxyTest {
         public void noExtensionKnowsMe();
     }
 
-    class ServiceImpl extends JPACrudService<Entity, Long, RapidJpaRepository<Entity, Long>>
+    class ServiceImpl extends JpaCrudService<Entity, Long, RapidJpaRepository<Entity, Long>>
             implements Service, TargetClassAware {
 
         @Override
@@ -136,9 +136,9 @@ class ExtensionProxyTest {
     @Test
     public void invokeServiceExtensionOnlyMethod() throws Throwable {
         InOrder inOrder = new InOrderImpl(Lists.newArrayList(service,serviceExtension));
-        proxy.save(entity);
-        inOrder.verify(serviceExtension).save(entity);
-        inOrder.verify(service).save(entity);
+        proxy.create(entity);
+        inOrder.verify(serviceExtension).create(entity);
+        inOrder.verify(service).create(entity);
     }
 
 

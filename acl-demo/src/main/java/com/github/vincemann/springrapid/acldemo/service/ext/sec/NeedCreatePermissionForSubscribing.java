@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acldemo.service.ext;
+package com.github.vincemann.springrapid.acldemo.service.ext.sec;
 
 import com.github.vincemann.springrapid.acl.service.ext.sec.SecurityExtension;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.security.acls.domain.BasePermission;
 
 @Component
-public class NeedCreatePermissionForSubscribingSecurityExtension extends SecurityExtension<VisitService>
+public class NeedCreatePermissionForSubscribing extends SecurityExtension<VisitService>
         implements GenericCrudServiceExtension<VisitService, Visit,Long>, VisitService
 {
     @Override

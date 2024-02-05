@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acldemo.service.ext;
+package com.github.vincemann.springrapid.acldemo.service.ext.acl;
 
 import com.github.vincemann.springrapid.acl.service.ext.acl.AclExtension;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
@@ -12,12 +12,12 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.security.acls.domain.BasePermission;
 
 @Component
-public class OwnerGainsReadPermissionForSavedVisitsAclExtension extends AclExtension<VisitService>
+public class OwnerGainsReadPermissionForCreated extends AclExtension<VisitService>
         implements GenericCrudServiceExtension<VisitService, Visit,Long>
 {
     @Override
-    public Visit save(Visit visit) throws BadEntityException {
-        Visit savedVisit = getNext().save(visit);
+    public Visit create(Visit visit) throws BadEntityException {
+        Visit savedVisit = getNext().create(visit);
         Owner owner = savedVisit.getOwner();
         try {
             VerifyEntity.isPresent(owner,"visit must have owner");

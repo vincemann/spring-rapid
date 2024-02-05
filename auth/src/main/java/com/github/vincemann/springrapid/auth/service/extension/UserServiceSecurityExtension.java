@@ -45,9 +45,9 @@ public class UserServiceSecurityExtension
 
     @LogInteraction
     @Override
-    public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
+    public IdentifiableEntity create(IdentifiableEntity entity) throws BadEntityException {
         AuthorizationTemplate.assertHasRoles(AuthRoles.ADMIN);
-        return getNext().save(entity);
+        return getNext().create(entity);
     }
 
     @Override

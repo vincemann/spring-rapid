@@ -32,8 +32,8 @@ public class OwnerGainsPermissionAboutSavedAclExtension
 
 
     @Override
-    public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
-        IdentifiableEntity saved = getNext().save(entity);
+    public IdentifiableEntity create(IdentifiableEntity entity) throws BadEntityException {
+        IdentifiableEntity saved = getNext().create(entity);
         Optional<String> optionalOwner = delegatingOwnerLocator.find(saved);
         if (optionalOwner.isEmpty()){
             throw new BadEntityException("Owner not found for entity: " + saved + " which is needed to give acl permission for");

@@ -5,7 +5,6 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import org.springframework.stereotype.Component;
 import org.springframework.security.acls.model.Permission;
 
 public class AuthenticatedGainsPermissionAboutSavedAclExtension extends AclExtension<CrudService>
@@ -19,8 +18,8 @@ public class AuthenticatedGainsPermissionAboutSavedAclExtension extends AclExten
 
     @LogInteraction
     @Override
-    public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
-        IdentifiableEntity saved = getNext().save(entity);
+    public IdentifiableEntity create(IdentifiableEntity entity) throws BadEntityException {
+        IdentifiableEntity saved = getNext().create(entity);
         rapidAclService.savePermissionForAuthenticatedOverEntity(saved, permissions);
         return saved;
     }

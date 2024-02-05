@@ -1,15 +1,12 @@
 package com.github.vincemann.springrapid.syncdemo.service.jpa;
 
-import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
-import com.github.vincemann.springrapid.core.service.JPACrudService;
-import org.springframework.stereotype.Component;
+import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
 import com.github.vincemann.springrapid.syncdemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.syncdemo.service.OwnerService;
 import com.github.vincemann.springrapid.syncdemo.service.Root;
-import org.springframework.aop.TargetClassAware;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +16,7 @@ import java.util.Optional;
 @Service
 @EnableAutoBiDir
 public class JpaOwnerService
-        extends JPACrudService<Owner,Long, OwnerRepository>
+        extends JpaCrudService<Owner,Long, OwnerRepository>
                 implements OwnerService  {
 
     public static final String OWNER_OF_THE_YEARS_NAME = "Chad";

@@ -451,7 +451,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
     }
 
     protected E create(E entity) throws BadEntityException {
-        return service.save(entity);
+        return service.create(entity);
     }
 
     protected void delete(Id id) throws EntityNotFoundException {

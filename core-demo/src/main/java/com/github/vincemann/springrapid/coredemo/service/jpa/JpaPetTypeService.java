@@ -5,16 +5,15 @@ import com.github.vincemann.springrapid.coredemo.repo.PetTypeRepository;
 import com.github.vincemann.springrapid.coredemo.model.PetType;
 import com.github.vincemann.springrapid.coredemo.service.PetTypeService;
 
-import org.springframework.stereotype.Component;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import com.github.vincemann.springrapid.core.service.JPACrudService;
+import com.github.vincemann.springrapid.core.service.JpaCrudService;
 
 @Primary
 @Service
 @EnableAutoBiDir
-public class JpaPetTypeService extends JPACrudService<PetType,Long, PetTypeRepository> implements PetTypeService, TargetClassAware {
+public class JpaPetTypeService extends JpaCrudService<PetType,Long, PetTypeRepository> implements PetTypeService, TargetClassAware {
 
     @Override
     public Class<?> getTargetClass() {

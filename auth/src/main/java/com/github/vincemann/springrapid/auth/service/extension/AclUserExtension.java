@@ -24,8 +24,8 @@ public class AclUserExtension
 
     @LogInteraction
     @Override
-    public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
-        AbstractUser saved = (AbstractUser) getNext().save(entity);
+    public IdentifiableEntity create(IdentifiableEntity entity) throws BadEntityException {
+        AbstractUser saved = (AbstractUser) getNext().create(entity);
         savePostSignupAclInfo(saved);
         return saved;
     }

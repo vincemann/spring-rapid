@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acldemo.service.ext;
+package com.github.vincemann.springrapid.acldemo.service.ext.sec;
 
 import com.github.vincemann.springrapid.acl.service.ext.sec.SecurityExtension;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
@@ -13,12 +13,12 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.security.access.AccessDeniedException;
 
 @Component
-public class OwnerCanOnlySaveOwnPetsSecurityExtension  extends SecurityExtension<PetService>
+public class OwnerCanCreateSaveOwnPets extends SecurityExtension<PetService>
         implements GenericCrudServiceExtension<PetService, Pet,Long>
 {
 
     @Override
-    public Pet save(Pet pet) throws BadEntityException {
+    public Pet create(Pet pet) throws BadEntityException {
         Owner owner = pet.getOwner();
         VerifyEntity.notNull(owner,"Owner for saved Pet must not be null");
         if (RapidSecurityContext.getRoles().contains(MyRoles.OWNER)){
@@ -28,7 +28,7 @@ public class OwnerCanOnlySaveOwnPetsSecurityExtension  extends SecurityExtension
                 throw new AccessDeniedException("Owner mapped to pet, that is about to get saved, does not match authenticated owner");
             }
         }
-        return getNext().save(pet);
+        return getNext().create(pet);
     }
 
 }

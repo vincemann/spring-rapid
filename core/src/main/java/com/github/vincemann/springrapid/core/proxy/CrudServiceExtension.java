@@ -50,8 +50,8 @@ public interface CrudServiceExtension<S extends CrudService>
     }
 
     @Override
-    default IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
-        return getNext().save(entity);
+    default IdentifiableEntity create(IdentifiableEntity entity) throws BadEntityException {
+        return getNext().create(entity);
     }
 
     @Override

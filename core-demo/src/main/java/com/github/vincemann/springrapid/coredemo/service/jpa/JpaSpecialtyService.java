@@ -4,9 +4,7 @@ import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.repo.SpecialtyRepository;
 import com.github.vincemann.springrapid.coredemo.service.SpecialtyService;
-import org.springframework.stereotype.Component;
-import com.github.vincemann.springrapid.core.service.JPACrudService;
-import org.springframework.aop.TargetClassAware;
+import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +14,7 @@ import java.util.Optional;
 @Service
 @EnableAutoBiDir
 public class JpaSpecialtyService
-        extends JPACrudService<Specialty,Long, SpecialtyRepository>
+        extends JpaCrudService<Specialty,Long, SpecialtyRepository>
         implements SpecialtyService
 {
 

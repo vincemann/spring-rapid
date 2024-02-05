@@ -53,8 +53,8 @@ public interface GenericCrudServiceExtension
     }
 
     @Override
-    default E save(E entity) throws BadEntityException {
-        return getNext().save(entity);
+    default E create(E entity) throws BadEntityException {
+        return getNext().create(entity);
     }
 
     @Override

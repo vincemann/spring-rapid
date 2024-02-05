@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acldemo.service.ext;
+package com.github.vincemann.springrapid.acldemo.service.ext.sec;
 
 import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
@@ -26,11 +26,11 @@ public class NeedRoleForSaveExtension
     }
 
     @Override
-    public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
+    public IdentifiableEntity create(IdentifiableEntity entity) throws BadEntityException {
         if (!RapidSecurityContext.getRoles().contains(role) &&
                 !RapidSecurityContext.getRoles().contains(Roles.ADMIN)){
             throw new AccessDeniedException("Need role: " + role + " to create entity of this type");
         }
-        return getNext().save(entity);
+        return getNext().create(entity);
     }
 }

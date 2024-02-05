@@ -11,14 +11,12 @@ import com.github.vincemann.springrapid.acldemo.repo.VisitRepository;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
 import com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy;
-import com.github.vincemann.springrapid.core.service.JPACrudService;
+import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
-import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.acls.domain.BasePermission;
@@ -30,7 +28,7 @@ import java.util.Optional;
 @DefineProxy(name = "acl", extensions = {
         "authenticatedGainsAdminPermissionAboutSavedAclExtension",
         "vetsGainReadPermissionAboutSavedAclExtension",
-        "ownerGainsReadPermissionForSavedVisitsAclExtension"
+        "ownerGainsReadPermissionForSavedVisits"
 })
 @DefineProxy(name = "secured", extensions = {
         "onlyVetAndAdminCanCreateSecurityExtension",
@@ -42,8 +40,9 @@ import java.util.Optional;
 @Primary
 @Service
 
-public class JpaVisitService extends JPACrudService<Visit,Long, VisitRepository>
-        implements VisitService, TargetClassAware {
+public class JpaVisitService
+        extends JpaCrudService<Visit,Long, VisitRepository>
+                implements VisitService {
 
 
     private RapidAclService rapidAclService;

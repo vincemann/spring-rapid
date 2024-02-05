@@ -6,17 +6,15 @@ import com.github.vincemann.springrapid.acl.proxy.Secured;
 
 import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.model.User;
-import com.github.vincemann.springrapid.acldemo.service.ext.UserGainsAdminPermissionAboutSavedContainedUserAclExtension;
+import com.github.vincemann.springrapid.acldemo.service.ext.acl.UserGainsAdminPermissionAboutContainedUser;
 import com.github.vincemann.springrapid.auth.service.extension.UserGainsAdminPermissionAboutSelfAclExtension;
 import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
 import com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy;
-import com.github.vincemann.springrapid.core.service.JPACrudService;
+import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.repo.VetRepository;
 import com.github.vincemann.springrapid.acldemo.service.VetService;
-import org.springframework.aop.TargetClassAware;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +27,7 @@ import java.util.Optional;
 
 @DefineProxy(name = "acl", extensionClasses = {
         UserGainsAdminPermissionAboutSelfAclExtension.class,
-        UserGainsAdminPermissionAboutSavedContainedUserAclExtension.class
+        UserGainsAdminPermissionAboutContainedUser.class
 })
 @DefineProxy(name = "secured")
 @CreateProxy(qualifiers = Acl.class,proxies = "acl")
@@ -38,8 +36,8 @@ import java.util.Optional;
 @Service
 
 public class JpaVetService
-        extends JPACrudService<Vet,Long, VetRepository>
-        implements VetService, TargetClassAware {
+        extends JpaCrudService<Vet,Long, VetRepository>
+                implements VetService {
 
 
 
@@ -57,13 +55,13 @@ public class JpaVetService
 
     @Transactional
     @Override
-    public Vet save(Vet entity) throws BadEntityException {
+    public Vet create(Vet entity) throws BadEntityException {
         User user = entity.getUser();
         if (user == null){
             throw new BadEntityException("Cant save vet without mapped user");
         }
         user.getRoles().add(MyRoles.NEW_VET);
-        return super.save(entity);
+        return super.create(entity);
     }
 
 }

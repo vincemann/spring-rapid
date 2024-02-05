@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acldemo.service.ext;
+package com.github.vincemann.springrapid.acldemo.service.ext.acl;
 
 //@Component
 //@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)

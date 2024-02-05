@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.acl.framework.VerboseAclPermissionEvalua
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.EntityLocator;
+import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.model.AclService;
@@ -23,6 +24,8 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
 
     private List<GlobalSecurityRule> globalSecurityRules = new ArrayList<>();
     private RapidSecurityContext securityContext;
+
+    private IdConverter idConverter;
 
     private EntityLocator entityLocator;
 
@@ -65,7 +68,7 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
     public boolean hasPermission(Authentication authentication,
                                  Serializable targetId, String targetType, Object permission) {
         try {
-            Optional<IdentifiableEntity> entity = entityLocator.findEntity(Class.forName(targetType), targetId);
+            Optional<IdentifiableEntity> entity = entityLocator.findEntity(Class.forName(targetType), idConverter.toId(targetId.toString()));
             if (entity.isEmpty())
                 throw new IllegalArgumentException("entity permission gets checked for does not exist, check before checking acl info");
             Boolean allowAccess = performGlobalSecurityChecks(entity.get(),permission);
@@ -93,5 +96,10 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
     @Autowired
     public void setEntityLocator(EntityLocator entityLocator) {
         this.entityLocator = entityLocator;
+    }
+
+    @Autowired
+    public void setIdConverter(IdConverter idConverter) {
+        this.idConverter = idConverter;
     }
 }

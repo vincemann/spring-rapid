@@ -27,8 +27,8 @@ public class VetControllerIntegrationTest extends MyControllerIntegrationTest {
     VetControllerTestTemplate controller;
     @Test
     public void canSaveVet_getLinkedToSpecialties() throws Exception {
-        Specialty savedDentism = specialtyService.save(dentism);
-        Specialty savedGastro = specialtyService.save(gastro);
+        Specialty savedDentism = specialtyService.create(dentism);
+        Specialty savedGastro = specialtyService.create(gastro);
 
         VetDto createPoldiDto = new VetDto(vetPoldi);
         createPoldiDto.setSpecialtyIds(new HashSet<>(Lists.newArrayList(savedDentism.getId(),savedGastro.getId())));
@@ -72,9 +72,9 @@ public class VetControllerIntegrationTest extends MyControllerIntegrationTest {
         // todo run class tests and stop here with debugger, check db state to find why fails run launched with other tests
         // poldi -> dentism, gastro, heart
         // max -> dentism, heart
-        Specialty savedDentism = specialtyService.save(dentism);
-        Specialty savedGastro = specialtyService.save(gastro);
-        Specialty savedHeart = specialtyService.save(heart);
+        Specialty savedDentism = specialtyService.create(dentism);
+        Specialty savedGastro = specialtyService.create(gastro);
+        Specialty savedHeart = specialtyService.create(heart);
         VetDto createdPoldiDto = createVetLinkedToSpecialties(vetPoldi,savedDentism,savedGastro,savedHeart);
         VetDto createdMaxDto = createVetLinkedToSpecialties(vetMax,savedDentism,savedHeart);
 
@@ -99,9 +99,9 @@ public class VetControllerIntegrationTest extends MyControllerIntegrationTest {
     public void canAddSingleSpecialtyToVet_viaUpdate() throws Exception {
         // poldi -> dentism
         // max -> dentism, heart
-        Specialty savedDentism = specialtyService.save(dentism);
-        Specialty savedGastro = specialtyService.save(gastro);
-        Specialty savedHeart = specialtyService.save(heart);
+        Specialty savedDentism = specialtyService.create(dentism);
+        Specialty savedGastro = specialtyService.create(gastro);
+        Specialty savedHeart = specialtyService.create(heart);
         VetDto createdPoldiDto = createVetLinkedToSpecialties(vetPoldi,savedDentism);
         VetDto createdMaxDto = createVetLinkedToSpecialties(vetMax,savedDentism,savedHeart);
 
@@ -125,9 +125,9 @@ public class VetControllerIntegrationTest extends MyControllerIntegrationTest {
     public void canAddMultipleSpecialtiesToVet_viaUpdate() throws Exception {
         // poldi -> dentism
         // max -> dentism, heart
-        Specialty savedDentism = specialtyService.save(dentism);
-        Specialty savedGastro = specialtyService.save(gastro);
-        Specialty savedHeart = specialtyService.save(heart);
+        Specialty savedDentism = specialtyService.create(dentism);
+        Specialty savedGastro = specialtyService.create(gastro);
+        Specialty savedHeart = specialtyService.create(heart);
         VetDto createdPoldiDto = createVetLinkedToSpecialties(vetPoldi,savedDentism);
         VetDto createdMaxDto = createVetLinkedToSpecialties(vetMax,savedDentism,savedHeart);
 
@@ -154,9 +154,9 @@ public class VetControllerIntegrationTest extends MyControllerIntegrationTest {
     public void canRemoveAllSpecialtiesFromVet_viaUpdate() throws Exception {
         // poldi -> dentism, heart
         // max -> dentism, heart
-        Specialty savedDentism = specialtyService.save(dentism);
-        Specialty savedGastro = specialtyService.save(gastro);
-        Specialty savedHeart = specialtyService.save(heart);
+        Specialty savedDentism = specialtyService.create(dentism);
+        Specialty savedGastro = specialtyService.create(gastro);
+        Specialty savedHeart = specialtyService.create(heart);
         VetDto createdPoldiDto = createVetLinkedToSpecialties(vetPoldi,savedDentism,savedHeart);
         VetDto createdMaxDto = createVetLinkedToSpecialties(vetMax,savedDentism,savedHeart);
 
@@ -178,9 +178,9 @@ public class VetControllerIntegrationTest extends MyControllerIntegrationTest {
     public void canRemoveAllAndAddOneSpecialtyToVet_viaUpdate() throws Exception {
         // poldi -> dentism, heart
         // max -> dentism, heart
-        Specialty savedDentism = specialtyService.save(dentism);
-        Specialty savedGastro = specialtyService.save(gastro);
-        Specialty savedHeart = specialtyService.save(heart);
+        Specialty savedDentism = specialtyService.create(dentism);
+        Specialty savedGastro = specialtyService.create(gastro);
+        Specialty savedHeart = specialtyService.create(heart);
         VetDto createdPoldiDto = createVetLinkedToSpecialties(vetPoldi,savedDentism,savedHeart);
         VetDto createdMaxDto = createVetLinkedToSpecialties(vetMax,savedDentism,savedHeart);
 
@@ -204,9 +204,9 @@ public class VetControllerIntegrationTest extends MyControllerIntegrationTest {
     public void canRemoveSpecificSpeciality_andAddDiffSpecialtyToVet_viaUpdate() throws Exception {
         // poldi -> dentism, heart
         // max -> dentism, heart
-        Specialty savedDentism = specialtyService.save(dentism);
-        Specialty savedGastro = specialtyService.save(gastro);
-        Specialty savedHeart = specialtyService.save(heart);
+        Specialty savedDentism = specialtyService.create(dentism);
+        Specialty savedGastro = specialtyService.create(gastro);
+        Specialty savedHeart = specialtyService.create(heart);
         VetDto createdPoldiDto = createVetLinkedToSpecialties(vetPoldi,savedDentism,savedHeart);
         VetDto createdMaxDto = createVetLinkedToSpecialties(vetMax,savedDentism,savedHeart);
 
@@ -233,10 +233,10 @@ public class VetControllerIntegrationTest extends MyControllerIntegrationTest {
     public void canRemoveAllAndAddMultipleSpecialtiesInNextRequestToVet_viaUpdate() throws Exception {
         // poldi -> dentism, heart
         // max -> dentism, heart
-        Specialty savedDentism = specialtyService.save(dentism);
-        Specialty savedGastro = specialtyService.save(gastro);
-        Specialty savedHeart = specialtyService.save(heart);
-        Specialty savedMuscle = specialtyService.save(muscle);
+        Specialty savedDentism = specialtyService.create(dentism);
+        Specialty savedGastro = specialtyService.create(gastro);
+        Specialty savedHeart = specialtyService.create(heart);
+        Specialty savedMuscle = specialtyService.create(muscle);
         VetDto createdPoldiDto = createVetLinkedToSpecialties(vetPoldi,savedDentism,savedHeart);
         VetDto createdMaxDto = createVetLinkedToSpecialties(vetMax,savedDentism,savedHeart);
 

@@ -16,7 +16,7 @@ public class NeedCreatePermissionOnParentForSaveExtension
 
 
     @Override
-    public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
+    public IdentifiableEntity create(IdentifiableEntity entity) throws BadEntityException {
         if (entity instanceof AclParentAware){
             IdentifiableEntity<? extends Serializable> aclParent = ((AclParentAware) entity).getAclParent();
             if (aclParent == null){
@@ -25,6 +25,6 @@ public class NeedCreatePermissionOnParentForSaveExtension
                 getSecurityChecker().checkPermission(aclParent, BasePermission.CREATE);
             }
         }
-        return getNext().save(entity);
+        return getNext().create(entity);
     }
 }

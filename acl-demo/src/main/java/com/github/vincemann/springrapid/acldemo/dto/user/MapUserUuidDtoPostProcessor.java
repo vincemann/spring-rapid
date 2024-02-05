@@ -3,7 +3,6 @@ package com.github.vincemann.springrapid.acldemo.dto.user;
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.model.abs.UserAwareEntity;
 import com.github.vincemann.springrapid.acldemo.service.MyUserService;
-import com.github.vincemann.springrapid.acldemo.service.jpa.MyJpaUserService;
 import com.github.vincemann.springrapid.core.controller.dto.EntityPostProcessor;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;

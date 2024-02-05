@@ -201,8 +201,8 @@ public class MyIntegrationTest extends AclMvcTest
     @BeforeEach
     public void setupTestData() throws Exception {
 
-        savedDogPetType = petTypeService.save(new PetType("Dog"));
-        savedCatPetType = petTypeService.save(new PetType("Cat"));
+        savedDogPetType = petTypeService.create(new PetType("Dog"));
+        savedCatPetType = petTypeService.create(new PetType("Cat"));
 
 
         gastritis = Illness.builder()

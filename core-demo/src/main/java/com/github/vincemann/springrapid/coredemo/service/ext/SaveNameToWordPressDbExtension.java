@@ -21,9 +21,9 @@ public class SaveNameToWordPressDbExtension extends ServiceExtension<CrudService
 
 
     @Override
-    public Person save(Person entity) throws BadEntityException {
+    public Person create(Person entity) throws BadEntityException {
         if(entity!=null)
             log.debug("saving Persons name: "+ entity.getFirstName() + " into wordpress database");
-        return getNext().save(entity);
+        return getNext().create(entity);
     }
 }

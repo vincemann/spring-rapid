@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acldemo.service.ext;
+package com.github.vincemann.springrapid.acldemo.service.ext.acl;
 
 import com.github.vincemann.springrapid.acl.service.ext.acl.AclExtension;
 import com.github.vincemann.springrapid.acldemo.model.User;
@@ -17,14 +17,14 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class UserGainsAdminPermissionAboutSavedContainedUserAclExtension
+public class UserGainsAdminPermissionAboutContainedUser
         extends AclExtension<CrudService<UserAwareEntity,Long>>
                 implements GenericCrudServiceExtension<CrudService<UserAwareEntity,Long>, UserAwareEntity,Long> {
 
     @Transactional
     @Override
-    public UserAwareEntity save(UserAwareEntity entity) throws BadEntityException {
-        UserAwareEntity saved = getNext().save(entity);
+    public UserAwareEntity create(UserAwareEntity entity) throws BadEntityException {
+        UserAwareEntity saved = getNext().create(entity);
         String user = saved.getAuthenticationName();
         User containedUser = saved.getUser();
         rapidAclService.savePermissionForUserOverEntity(user,containedUser, BasePermission.ADMINISTRATION);

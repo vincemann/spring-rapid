@@ -1,8 +1,7 @@
 package com.github.vincemann.springrapid.syncdemo.service.jpa;
 
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
-import com.github.vincemann.springrapid.core.service.JPACrudService;
-import org.springframework.stereotype.Component;
+import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.syncdemo.model.Toy;
 import com.github.vincemann.springrapid.syncdemo.repo.ToyRepository;
 import com.github.vincemann.springrapid.syncdemo.service.ToyService;
@@ -15,7 +14,7 @@ import java.util.Optional;
 @Service
 @EnableAutoBiDir
 public class JpaToyService
-        extends JPACrudService<Toy,Long, ToyRepository>
+        extends JpaCrudService<Toy,Long, ToyRepository>
                 implements ToyService {
 
     @Override
