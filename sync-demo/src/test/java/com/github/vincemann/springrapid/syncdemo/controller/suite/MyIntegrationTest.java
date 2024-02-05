@@ -1,31 +1,33 @@
-package com.github.vincemann.springrapid.coredemo.controller;
+package com.github.vincemann.springrapid.syncdemo.controller.suite;
 
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.util.Lists;
-import com.github.vincemann.springrapid.coredemo.controller.template.OwnerControllerTestTemplate;
-import com.github.vincemann.springrapid.coredemo.dto.owner.CreateOwnerDto;
-import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
-import com.github.vincemann.springrapid.coredemo.model.*;
-import com.github.vincemann.springrapid.coredemo.repo.*;
-import com.github.vincemann.springrapid.coredemo.service.*;
-import com.github.vincemann.springrapid.coredemo.service.ext.OwnerOfTheYearExtension;
 import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
+import com.github.vincemann.springrapid.syncdemo.controller.suite.template.OwnerControllerTestTemplate;
+import com.github.vincemann.springrapid.syncdemo.controller.suite.template.PetControllerTestTemplate;
+import com.github.vincemann.springrapid.syncdemo.dto.owner.CreateOwnerDto;
+import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnOwnerDto;
+import com.github.vincemann.springrapid.syncdemo.dto.pet.PetDto;
+import com.github.vincemann.springrapid.syncdemo.model.*;
+import com.github.vincemann.springrapid.syncdemo.repo.*;
+import com.github.vincemann.springrapid.syncdemo.service.*;
+import com.github.vincemann.springrapid.syncdemo.service.ext.OwnerOfTheYearExtension;
+import com.google.common.collect.Lists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class MyControllerIntegrationTest extends AbstractMvcTest
-{
+public class MyIntegrationTest extends AbstractMvcTest {
 
     //Types
     protected final Vet VetType = new Vet();
@@ -57,7 +59,6 @@ public class MyControllerIntegrationTest extends AbstractMvcTest
     protected static final String RUBBER_DUCK = "rubberDuck";
 
 
-
     protected Vet vetMax;
     protected Vet vetPoldi;
     protected Vet vetDiCaprio;
@@ -69,6 +70,7 @@ public class MyControllerIntegrationTest extends AbstractMvcTest
 
     protected Owner meier;
     protected Owner kahn;
+
     protected Owner gil;
 
     protected Pet bello;
@@ -109,6 +111,7 @@ public class MyControllerIntegrationTest extends AbstractMvcTest
 
 
     @Autowired
+    @Lazy
     protected ClinicCardService clinicCardService;
     @Autowired
     protected ClinicCardRepository clinicCardRepository;
@@ -141,9 +144,11 @@ public class MyControllerIntegrationTest extends AbstractMvcTest
     @Autowired
     protected TransactionTemplate transactionTemplate;
 
-
     @Autowired
     protected OwnerControllerTestTemplate ownerController;
+
+    @Autowired
+    protected PetControllerTestTemplate petController;
 
     @BeforeEach
     public void setupTestData() throws Exception {
@@ -263,6 +268,7 @@ public class MyControllerIntegrationTest extends AbstractMvcTest
                 .build();
     }
 
+
     protected void assertVetHasSpecialties(String vetName, String... descriptions) {
         transactionTemplate.executeWithoutResult(transactionStatus -> {
             Optional<Vet> vetOptional = vetRepository.findByLastName(vetName);
@@ -299,6 +305,7 @@ public class MyControllerIntegrationTest extends AbstractMvcTest
 
     }
 
+    //    @Transactional
     public void assertPetHasToys(String petName, String... toyNames) {
         transactionTemplate.executeWithoutResult(transactionStatus -> {
             Optional<Pet> petOptional = petRepository.findByName(petName);
@@ -397,29 +404,58 @@ public class MyControllerIntegrationTest extends AbstractMvcTest
         });
     }
 
-    // HELPERS
+    protected Owner fetchOwner(Long id) {
+        Optional<Owner> byId = ownerRepository.findById(id);
+        Assertions.assertTrue(byId.isPresent());
+        return byId.get();
+    }
 
-    protected ReadOwnOwnerDto saveOwnerLinkedToPets(Owner owner, Long... petIds) throws Exception {
+    protected Owner saveOwnerLinkedToPets(Owner owner, Long... petIds) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
         createOwnerDto.getPetIds().addAll(Lists.newArrayList(petIds));
 
 
-        return performDs2xx(ownerController.create(createOwnerDto),ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(ownerController.create(createOwnerDto), ReadOwnOwnerDto.class);
+        Assertions.assertNotNull(readOwnOwnerDto.getId());
+        Owner saved = fetchOwner(readOwnOwnerDto.getId());
+        Assertions.assertNotNull(saved.getCreatedDate());
+//        Assertions.assertNotNull(saved.getCreatedById());
+        Assertions.assertNotNull(saved.getLastModifiedDate());
+//        Assertions.assertNotNull(saved.getLastModifiedById());
+        return saved;
     }
 
 
-    protected ReadOwnOwnerDto saveOwnerLinkedToClinicCard(Owner owner,ClinicCard clinicCard) throws Exception {
+    protected Owner saveOwnerLinkedToClinicCard(Owner owner, ClinicCard clinicCard) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
         createOwnerDto.setClinicCardId(clinicCard.getId());
-
-
-        return performDs2xx(ownerController.create(createOwnerDto),ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(ownerController.create(createOwnerDto), ReadOwnOwnerDto.class);
+        Assertions.assertNotNull(readOwnOwnerDto.getId());
+        Owner saved = fetchOwner(readOwnOwnerDto.getId());
+        Assertions.assertNotNull(saved.getCreatedDate());
+//        Assertions.assertNotNull(saved.getCreatedById());
+        Assertions.assertNotNull(saved.getLastModifiedDate());
+//        Assertions.assertNotNull(saved.getLastModifiedById());
+        return saved;
     }
 
 
     protected ReadOwnOwnerDto saveOwner(Owner owner) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
-        return performDs2xx(ownerController.create(createOwnerDto),ReadOwnOwnerDto.class);
+        return performDs2xx(ownerController.create(createOwnerDto), ReadOwnOwnerDto.class);
+    }
+
+    protected PetDto savePetLinkedToOwnerAndToys(Pet pet, Long ownerId, Toy... toys) throws Exception {
+        PetDto createPetDto = new PetDto(pet);
+        if (ownerId != null)
+            createPetDto.setOwnerId(ownerId);
+        if (toys.length > 0)
+            createPetDto.setToyIds(Arrays.stream(toys).map(Toy::getId).collect(Collectors.toSet()));
+
+        return deserialize(getMvc().perform(petController.create(createPetDto))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse().getContentAsString(), PetDto.class);
     }
 
 

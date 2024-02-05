@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
-import com.github.vincemann.springrapid.coredemo.controller.template.ClinicCardControllerTestTemplate;
+import com.github.vincemann.springrapid.coredemo.controller.suite.MyControllerIntegrationTest;
+import com.github.vincemann.springrapid.coredemo.controller.suite.template.ClinicCardControllerTestTemplate;
 import com.github.vincemann.springrapid.coredemo.dto.ClinicCardDto;
 import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
 import com.github.vincemann.springrapid.coredemo.model.Owner;

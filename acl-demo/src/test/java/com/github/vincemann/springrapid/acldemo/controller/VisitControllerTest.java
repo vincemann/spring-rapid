@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
+import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTest;
 import com.github.vincemann.springrapid.acldemo.dto.VisitDto;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;

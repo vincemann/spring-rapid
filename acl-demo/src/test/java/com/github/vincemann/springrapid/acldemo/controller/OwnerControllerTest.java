@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acldemo.MyRoles;
+import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTest;
 import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.FullOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;

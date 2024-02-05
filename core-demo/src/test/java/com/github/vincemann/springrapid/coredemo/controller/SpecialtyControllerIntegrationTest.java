@@ -2,11 +2,11 @@ package com.github.vincemann.springrapid.coredemo.controller;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.util.Lists;
-import com.github.vincemann.springrapid.coredemo.controller.template.SpecialtyControllerTestTemplate;
+import com.github.vincemann.springrapid.coredemo.controller.suite.MyControllerIntegrationTest;
+import com.github.vincemann.springrapid.coredemo.controller.suite.template.SpecialtyControllerTestTemplate;
 import com.github.vincemann.springrapid.coredemo.dto.SpecialtyDto;
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
-import com.github.vincemann.springrapid.coredemo.service.SpecialtyService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,11 +1,11 @@
-package com.github.vincemann.springrapid.acldemo.controller;
+package com.github.vincemann.springrapid.acldemo.controller.suite;
 
 import com.github.vincemann.acltest.AclMvcTest;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
-import com.github.vincemann.springrapid.acldemo.controller.templates.OwnerControllerTestTemplate;
-import com.github.vincemann.springrapid.acldemo.controller.templates.PetControllerTestTemplate;
-import com.github.vincemann.springrapid.acldemo.controller.templates.VetControllerTestTemplate;
-import com.github.vincemann.springrapid.acldemo.controller.templates.VisitControllerTestTemplate;
+import com.github.vincemann.springrapid.acldemo.controller.suite.templates.OwnerControllerTestTemplate;
+import com.github.vincemann.springrapid.acldemo.controller.suite.templates.PetControllerTestTemplate;
+import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VetControllerTestTemplate;
+import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VisitControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.dto.VisitDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.FullOwnerDto;

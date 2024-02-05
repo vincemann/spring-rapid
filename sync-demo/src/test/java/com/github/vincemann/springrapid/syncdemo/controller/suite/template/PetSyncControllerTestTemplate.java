@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.syncdemo.controller.template;
+package com.github.vincemann.springrapid.syncdemo.controller.suite.template;
 
 import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.syncdemo.controller.sync.PetSyncController;

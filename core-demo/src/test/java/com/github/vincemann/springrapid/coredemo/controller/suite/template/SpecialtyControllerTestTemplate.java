@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coredemo.controller.template;
+package com.github.vincemann.springrapid.coredemo.controller.suite.template;
 
 import com.github.vincemann.springrapid.coredemo.controller.SpecialtyController;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;

@@ -2,7 +2,8 @@ package com.github.vincemann.springrapid.coredemo.controller;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.util.Lists;
-import com.github.vincemann.springrapid.coredemo.controller.template.VetControllerTestTemplate;
+import com.github.vincemann.springrapid.coredemo.controller.suite.MyControllerIntegrationTest;
+import com.github.vincemann.springrapid.coredemo.controller.suite.template.VetControllerTestTemplate;
 import com.github.vincemann.springrapid.coredemo.dto.VetDto;
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;

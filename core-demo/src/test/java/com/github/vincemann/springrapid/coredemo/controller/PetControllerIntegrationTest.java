@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
-import com.github.vincemann.springrapid.coredemo.controller.template.PetControllerTestTemplate;
+import com.github.vincemann.springrapid.coredemo.controller.suite.MyControllerIntegrationTest;
+import com.github.vincemann.springrapid.coredemo.controller.suite.template.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.pet.PetDto;
 import com.github.vincemann.springrapid.coredemo.model.Owner;

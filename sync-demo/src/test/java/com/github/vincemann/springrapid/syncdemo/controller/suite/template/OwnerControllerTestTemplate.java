@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.syncdemo.controller.template;
+package com.github.vincemann.springrapid.syncdemo.controller.suite.template;
 
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import org.springframework.stereotype.Component;
