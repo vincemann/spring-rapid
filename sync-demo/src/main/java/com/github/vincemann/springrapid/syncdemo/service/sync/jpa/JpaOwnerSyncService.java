@@ -8,5 +8,7 @@ import com.github.vincemann.springrapid.syncdemo.service.sync.OwnerSyncService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class JpaOwnerSyncService extends JpaSyncService<Owner,Long> implements OwnerSyncService {
+public class JpaOwnerSyncService
+        extends JpaSyncService<Owner,Long>
+                implements OwnerSyncService {
 }

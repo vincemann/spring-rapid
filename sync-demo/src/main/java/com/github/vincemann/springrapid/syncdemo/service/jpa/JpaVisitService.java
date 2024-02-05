@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 @Primary
 @Service
 @EnableAutoBiDir
-public class JpaVisitService extends JPACrudService<Visit,Long, VisitRepository> implements VisitService, TargetClassAware {
+public class JpaVisitService
+        extends JPACrudService<Visit,Long, VisitRepository>
+                implements VisitService {
     @Override
     public Class<?> getTargetClass() {
         return JpaVisitService.class;

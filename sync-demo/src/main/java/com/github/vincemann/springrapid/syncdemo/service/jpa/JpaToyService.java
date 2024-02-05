@@ -14,7 +14,9 @@ import java.util.Optional;
 @Primary
 @Service
 @EnableAutoBiDir
-public class JpaToyService extends JPACrudService<Toy,Long, ToyRepository> implements ToyService {
+public class JpaToyService
+        extends JPACrudService<Toy,Long, ToyRepository>
+                implements ToyService {
 
     @Override
     public Optional<Toy> findByName(String name) {

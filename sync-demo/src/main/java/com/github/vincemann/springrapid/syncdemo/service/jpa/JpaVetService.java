@@ -19,7 +19,7 @@ import java.util.Optional;
 @EnableAutoBiDir
 public class JpaVetService
         extends JPACrudService<Vet,Long, VetRepository>
-        implements VetService, TargetClassAware {
+                implements VetService {
 
     @Override
     public Class<?> getTargetClass() {

@@ -20,7 +20,7 @@ import java.util.Optional;
 @EnableAutoBiDir
 public class JpaOwnerService
         extends JPACrudService<Owner,Long, OwnerRepository>
-                implements OwnerService, AopLoggable, TargetClassAware {
+                implements OwnerService  {
 
     public static final String OWNER_OF_THE_YEARS_NAME = "Chad";
 

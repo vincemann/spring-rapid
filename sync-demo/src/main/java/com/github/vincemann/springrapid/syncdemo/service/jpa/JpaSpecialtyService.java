@@ -15,7 +15,9 @@ import java.util.Optional;
 @Primary
 @Service
 @EnableAutoBiDir
-public class JpaSpecialtyService extends JPACrudService<Specialty,Long, SpecialtyRepository> implements SpecialtyService, TargetClassAware {
+public class JpaSpecialtyService
+        extends JPACrudService<Specialty,Long, SpecialtyRepository>
+                implements SpecialtyService {
 
     @Override
     public Optional<Specialty> findByDescription(String description) {

@@ -4,7 +4,6 @@ import com.github.vincemann.springrapid.core.util.Entity;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.coretest.util.TestPrincipal;
 import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
-import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.LastFetchInfo;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
@@ -17,6 +16,7 @@ import com.github.vincemann.springrapid.syncdemo.dto.pet.PetDto;
 import com.github.vincemann.springrapid.syncdemo.model.ClinicCard;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
+import com.github.vincemann.springrapid.syncdemo.model.Toy;
 import com.github.vincemann.springrapid.syncdemo.service.filter.OwnerTelNumberFilter;
 import com.github.vincemann.springrapid.syncdemo.service.filter.PetParentFilter;
 import com.google.common.collect.Sets;
@@ -54,7 +54,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
 
     @Test
-    public void checkSyncStatus_whenLastClientUpdateBeforeEntityUpdate() throws Exception {
+    public void givenClientTimestampWasRecordedBeforeCreating_whenFindSyncStatus_thenMarkedAsUpdated() throws Exception {
         // create owner
         // record client ts as now - 1 hour -> far before creation of owner
         // check if owner was updated -> yes
@@ -75,7 +75,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
-    public void checkSyncStatus_whenLastClientUpdateAfterEntityUpdate() throws Exception {
+    public void givenClientTimestampWasRecordedAfterCreating_whenFindSyncStatus_thenMarkedAsUpdated() throws Exception {
         // create owner
         // record client ts as now + 1 hour -> far after creation of owner
         // check if owner was updated -> no
@@ -83,7 +83,6 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Timestamp lastServerUpdate = new Timestamp(owner.getLastModifiedDate().getTime());
 
-        // Subtract one hour (3600,000 milliseconds) from the current timestamp
         long oneHourInMillis = 3600_000;
         long newTimestampInMillis = lastServerUpdate.getTime() + oneHourInMillis;
 
@@ -95,25 +94,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(),oneHourAfterServerUpdate);
     }
 
-    @Test
-    public void lastUpdateNow_checkSyncStatus_noUpdateRequired() throws Exception {
-        // create owner
-        // record client ts as now
-        // check if owner was updated -> no
-        Owner owner = fetchOwner(saveOwnerLinkedToPets(kahn).getId());
-
-        Timestamp lastServerUpdate = new Timestamp(owner.getLastModifiedDate().getTime());
-
-        // now
-        Timestamp now = new Timestamp(new Date().getTime());
-
-        Assertions.assertTrue(now.after(lastServerUpdate));
-
-        ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(),now);
-    }
 
     @Test
-    public void checkSyncStatus_afterEntityDeleted() throws Exception {
+    public void givenEntityWasDeleted_whenFindSyncStatus_thenMarkedAsRemoved() throws Exception {
         // create owner
         // record client ts as now
         // check if owner was updated -> no
@@ -138,7 +121,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
-    public void checkSyncStatus_noSyncNeeded_updateEntity_checkSyncStatus_updateRequired_fetchUpdate() throws Exception {
+    public void givenOwnersNameUpdate_whenFindSyncStatus_thenMarkedAsUpdated() throws Exception {
         // create owner
         // record client ts as now
         // check if owner was updated -> no
@@ -180,7 +163,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
 
     @Test
-    public void checkSyncStatusForAllOwners_sinceTimestamp_findUpdates() throws Exception {
+    public void givenSomeEntitiesUpdated_whenFindAllUpdatesSinceTs_thenUpdatedEntitiesMarkedAsUpdated() throws Exception {
         // create 3 owners
         // record client ts
         // modify 2
@@ -244,7 +227,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
     // cant find removed entities
     @Test
-    public void checkSyncStatusForAllOwners_sinceTimestamp_findOnlyUpdates() throws Exception {
+    public void givenSomeEntitiesUpdatedAndOneRemoved_whenFindAllUpdatesSinceTs_thenOnlyUpdatedEntitiesMarkedAsUpdatedAndRemovedNotReturned() throws Exception {
         // create 3 owners kahn, meier & gil
         // record client ts
         // modify kahn and remove gil
@@ -305,7 +288,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
 
     @Test
-    public void checkSyncStatusForSomeOwners_withGivenLastFetchInfos() throws Exception {
+    public void givenOneOfTwoOwnersUpdated_whenFindSyncStatusOfThoseTwo_thenUpdatedOwnerMarkedAsUpdated() throws Exception {
         // create 3 owners
         // record client ts
         // modify owner2 and owner3
@@ -366,7 +349,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
-    public void checkSyncStatusForSomeOwners_withGivenLastFetchInfos_someRemoved() throws Exception {
+    public void givenOneOfThreeOwnersUpdatedAndOneRemoved_whenFindSyncStatusOfThoseThree_thenUpdatedOwnerMarkedAsUpdatedAndRemovedMarkedAsRemoved() throws Exception {
         // create 3 owners kahn, meier & gil
         // record client ts
         // modify kahn & remove gil
@@ -410,7 +393,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
-    public void checkSyncStatusForSomeOwners_withGivenLastFetchInfos_withDifferentLastUpdateTimestamps() throws Exception {
+    public void givenTwoOwnersOfThreeUpdated_whenFindSyncStatusesOfThoseThreeWithDifferentLastClientUpdateTimestamps_thenTakeDiffTimestampsIntoAccount() throws Exception {
         // create 3 owners
         // record client ts1
         // modify owner2 and owner3
@@ -476,7 +459,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
-    public void checkSyncStatusForFilteredOwners_sinceTimestamp() throws Exception {
+    public void givenSomeOwnersUpdated_whenCheckSyncStatusForFilteredOwnersSinceTimestamp_thenReturnFilteredUpdatedStatusesOfOwners() throws Exception {
         // create 3 owners
         // record client ts
         // modify owner2 and owner3
@@ -535,7 +518,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
 
     @Test
-    public void checkSyncStatusForFilteredOwners_sinceTimestamp_someRemoved() throws Exception {
+    public void givenTwoOwnersUpdatedAndOneRemoved_whenCheckSyncStatusForFilteredOwnersSinceTimestamp_thenReturnOnlyFilteredUpdatedAndNotRemoved() throws Exception {
         // create 3 owners kahn, meier & gil
         // record client ts
         // modify meier and kahn & remove gil
@@ -655,10 +638,60 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Assertions.assertEquals(belloDto.getBirthDate(),updateBello.getBirthDate());
     }
 
+    @Test
+    public void givenToyRemovedFromAuditedFieldToysOfPet_whenFetchSyncStatusOfPet_thenMarkedAsUpdated() throws Exception {
+        // create bello with ball and rubberduck toys
+        // update bello - remove ball toy
+        // check sync status of bello -> marked as updated
+        // verify update
+
+        Toy rubberDuck = toyRepository.save(this.rubberDuck);
+        Toy ball = toyRepository.save(this.ball);
+
+        bello.setToys(Sets.newHashSet(rubberDuck,ball));
+        Pet savedBello = petService.save(bello);
+
+        assertPetHasToys(BELLO,RUBBER_DUCK,BALL);
+
+        // now
+        Timestamp clientUpdate = new Timestamp(new Date().getTime());
+
+        ownerSyncController.fetchSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
+
+        // update bello and bella
+        Pet removeToy = Entity.createUpdate(savedBello);
+        removeToy.setToys(Sets.newHashSet(rubberDuck)); // no ball
+
+
+
+        Pet updatedBello = petService.partialUpdate(removeToy);
+
+        Assertions.assertTrue(updatedBello.getLastModifiedDate().after(clientUpdate));
+
+
+        EntitySyncStatus status = petSyncController.fetchSyncStatus_assertUpdate(savedBello.getId(), clientUpdate, SyncStatus.UPDATED);
+
+        Set<String> idsToSync = Sets.newHashSet(status.getId());
+
+        securityContext.login(TestPrincipal.withName(KAHN));
+        String json = perform(petController.findSome(idsToSync))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn().getResponse().getContentAsString();
+        RapidSecurityContext.logout();
+
+        Set<PetDto> updatedPets = deserializeToSet(json,PetDto.class);
+
+        Assertions.assertEquals(1,updatedPets.size());
+
+        PetDto belloDto = updatedPets.stream().filter(s -> s.getId().equals(savedBello.getId())).findFirst().get();
+        Assertions.assertEquals(1,belloDto.getToyIds().size());
+        Assertions.assertTrue(belloDto.getToyIds().stream().anyMatch(toyId -> toyId.equals(rubberDuck.getId())));
+    }
+
     // would be overkill to record change in foreignkey column as recorded update for sync
     // just check child set controller for updates with parentId filter
     @Test
-    public void checkSyncStatusForOwner_afterUnlinkingPetFromCollection_shouldNOTFindUpdate() throws Exception {
+    public void givenPetUnlinkedFromOwner_whenFindSyncStatusOfOwner_thenNotMarkedAsUpdated() throws Exception {
         // create owner linked to pet bello and kitty
         // record client ts
         // unlink owners pet bello via update
@@ -720,7 +753,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
-    public void checkSyncStatusForOwner_afterUnlinkingAllPetsFromCollection_shouldNOTFindUpdate() throws Exception {
+    public void givenAllPetsUnlinkedFromOwner_whenFindSyncStatusOfOwner_thenNotMarkedAsUpdated() throws Exception {
         // create owner linked to pet bello and kitty
         // record client ts
         // unlink all owners pets
@@ -765,7 +798,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
     // collection is annotated with AuditCollection so changes will trigger lastModified change
     // implemented in AuditCollectionsExtension
     @Test
-    public void checkSyncStatusForOwner_afterUnlinkingOneHobby_fromAnnotatedAuditCollection_shouldFindUpdate() throws Exception {
+    public void givenAuditedFieldHobbiesRemovedOneElement_whenFindSyncStatusOfOwner_thenMarkedAsUpdated() throws Exception {
         // create owner with hobbies
         // record client ts
         // unlink one hobby from owner
@@ -810,56 +843,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Assertions.assertEquals(updatedHobbies,readOwnOwnerDto.getHobbies());
     }
 
-    // collection is annotated with AuditCollection so changes will trigger lastModified change
-    // implemented in AuditCollectionsExtension
-    @Test
-    public void checkSyncStatusForOwner_after_fromAnnotatedAuditCollection_shouldFindUpdate() throws Exception {
-        // create owner with hobbies
-        // record client ts
-        // unlink one hobby from owner
-        // check owner sync info
-        // server tells client, owner was updated
-        // fetch update and validate
-
-        String bodybuilding = "bodybuilding";
-        Set<String> hobbies = new HashSet<>(Arrays.asList("swimming","biking",bodybuilding,"jogging","eating"));
-        kahn.setHobbies(hobbies);
-        Owner owner = saveOwnerLinkedToPets(kahn);
-
-        Assertions.assertEquals(hobbies,owner.getHobbies());
-
-        Timestamp lastServerUpdate = new Timestamp(owner.getLastModifiedDate().getTime());
-
-        // now
-        Timestamp clientUpdate = new Timestamp(new Date().getTime());
-        Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
-
-        ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
-
-        // update owner by unlinking all pets
-        Owner removeHobby = Entity.createUpdate(owner);
-        Set<String> updatedHobbies = new HashSet<>(hobbies);
-        updatedHobbies.remove(bodybuilding);
-        removeHobby.setHobbies(updatedHobbies);
-
-        Owner updatedOwner = ownerService.partialUpdate(removeHobby,"hobbies");
-
-
-        // has changed
-        Assertions.assertTrue(lastServerUpdate.before(updatedOwner.getLastModifiedDate()));
-
-//        EntitySyncStatus status = fetchOwnerSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
-        EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
-
-        securityContext.login(TestPrincipal.withName(KAHN));
-        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(ownerController.find(status.getId()), ReadOwnOwnerDto.class);
-        RapidSecurityContext.logout();
-
-        Assertions.assertEquals(updatedHobbies,readOwnOwnerDto.getHobbies());
-    }
 
     @Test
-    public void checkSyncStatusForOwner_afterUnlinkingClinicCard_shouldFindUpdate() throws Exception {
+    public void givenSingleEntityFieldRemovedViaDirectOwnerUpdate_whenFindSyncInfoOfOwner_thenMarkedAsUpdated() throws Exception {
         // create owner linked to single entity clinic card
         // record client ts
         // unlink clinic card from owner
@@ -911,7 +897,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
-    public void checkSyncStatusForOwner_afterUnlinkingClinicCard_viaRemovingClinicCard_shouldFindUpdate() throws Exception {
+    public void givenSingleEntityFieldRemovedViaIndirectOwnerUpdateByRemovingClinicCardItself_whenFindSyncInfoOfOwner_thenMarkedAsUpdated() throws Exception {
         // create owner linked to single entity clinic card
         // record client ts
         // remove clinicCard -> auto bidir removes card from owner as well

@@ -16,7 +16,9 @@ import java.util.Set;
 @Root
 @Service
 @EnableAutoBiDir
-public class JpaPetService extends JPACrudService<Pet, Long, PetRepository> implements PetService, TargetClassAware {
+public class JpaPetService
+        extends JPACrudService<Pet, Long, PetRepository>
+                implements PetService {
 
     @Override
     public Class<?> getTargetClass() {

@@ -8,5 +8,7 @@ import com.github.vincemann.springrapid.syncdemo.service.sync.PetSyncService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class JpaPetSyncService extends JpaSyncService<Pet,Long> implements PetSyncService {
+public class JpaPetSyncService
+        extends JpaSyncService<Pet,Long>
+                implements PetSyncService {
 }
