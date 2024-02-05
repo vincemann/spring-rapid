@@ -10,7 +10,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 
-//@Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 @Slf4j
 public class MultiErrorExceptionHandler extends AbstractExceptionHandler<MultiErrorException> {

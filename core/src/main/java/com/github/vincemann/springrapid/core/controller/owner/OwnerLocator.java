@@ -12,7 +12,7 @@ import java.util.Optional;
  * Find the {@link Authentication#getName()} of Owner of given Entity.
  */
 
-@Component
+
 public interface OwnerLocator<E extends IdentifiableEntity> extends AopLoggable {
 
     public boolean supports(Class clazz);

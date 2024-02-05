@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Primary
 @Service
-@Component
+
 public class JpaToyService extends JPACrudService<Toy,Long, ToyRepository> implements ToyService {
 
     @Override

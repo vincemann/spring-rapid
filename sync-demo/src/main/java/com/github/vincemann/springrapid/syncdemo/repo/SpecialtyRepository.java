@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-@Component
+
 public interface SpecialtyRepository extends RapidJpaRepository<Specialty,Long> {
     Optional<Specialty> findByDescription(String description);
 }

@@ -15,7 +15,6 @@ import org.springframework.web.bind.support.WebExchangeBindException;
 
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
-//@Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 @Slf4j
 public class WebExchangeBindExceptionHandler extends AbstractExceptionHandler<WebExchangeBindException> {

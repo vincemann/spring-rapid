@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.syncdemo.model.Toy;
 
 import java.util.Optional;
 
-@Component
+
 public interface ToyService extends CrudService<Toy,Long> {
     Optional<Toy> findByName(String name);
 }

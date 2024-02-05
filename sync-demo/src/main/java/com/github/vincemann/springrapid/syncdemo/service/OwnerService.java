@@ -8,7 +8,7 @@ import java.util.Optional;
 
 
 
-@Component
+
 public interface OwnerService extends CrudService<Owner,Long> {
     Optional<Owner> findByLastName(String lastName);
     public Optional<Owner> findOwnerOfTheYear();

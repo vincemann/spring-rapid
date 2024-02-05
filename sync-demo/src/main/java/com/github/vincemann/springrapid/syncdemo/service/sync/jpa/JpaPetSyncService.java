@@ -5,7 +5,8 @@ import com.github.vincemann.springrapid.sync.service.JpaSyncService;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
 import com.github.vincemann.springrapid.syncdemo.repo.PetRepository;
 import com.github.vincemann.springrapid.syncdemo.service.sync.PetSyncService;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class JpaPetSyncService extends JpaSyncService<Pet,Long> implements PetSyncService {
 }

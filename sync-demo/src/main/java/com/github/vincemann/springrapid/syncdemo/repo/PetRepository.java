@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Repository
-@Component
+
 public interface PetRepository extends RapidJpaRepository<Pet,Long> {
     public Optional<Pet> findByName(String name);
     public Set<Pet> findAllByOwnerId(Long ownerId);

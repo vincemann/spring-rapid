@@ -5,6 +5,6 @@ import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.syncdemo.model.ClinicCard;
 
 
-@Component
+
 public interface ClinicCardService extends CrudService<ClinicCard,Long> {
 }

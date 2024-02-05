@@ -16,7 +16,7 @@ import java.util.Optional;
  * @author Sanjay Patel
  */
 @NoRepositoryBean
-@Component
+
 public interface AbstractUserRepository<U extends AbstractUser<ID>, ID extends Serializable>
 		extends RapidJpaRepository<U, ID> {
 

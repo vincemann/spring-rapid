@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 @Root
 @Primary
 @Service
-@Component
+midEgDuration()
 public class JpaPetService extends JPACrudService<Pet, Long, PetRepository> implements PetService, TargetClassAware {
     @Override
     public Class<?> getTargetClass() {

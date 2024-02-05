@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Primary
 @Service
-@Component
+
 public class JpaVetService
         extends JPACrudService<Vet,Long, VetRepository>
         implements VetService, TargetClassAware {

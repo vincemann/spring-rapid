@@ -8,7 +8,6 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import org.springframework.stereotype.Component;
 import org.springframework.security.acls.model.Permission;
 
-@Component
 public class AuthenticatedGainsPermissionAboutSavedAclExtension extends AclExtension<CrudService>
         implements CrudServiceExtension<CrudService> {
 

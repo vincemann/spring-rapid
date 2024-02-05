@@ -5,6 +5,6 @@ import org.springframework.stereotype.Component;
 /**
  * encrypts and decrypts jwt's
  */
-@Component
+
 public interface JweTokenService extends JwtService {
 }

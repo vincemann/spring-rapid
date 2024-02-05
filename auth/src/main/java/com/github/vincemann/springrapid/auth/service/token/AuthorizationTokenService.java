@@ -9,7 +9,7 @@ import org.springframework.security.authentication.BadCredentialsException;
  * Convert token to {@link RapidPrincipal} and vice versa.
  */
 @LogInteraction
-@Component
+
 public interface AuthorizationTokenService {
 
     public String createToken(RapidPrincipal principal);

@@ -6,7 +6,7 @@ import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.stereotype.Component;
 
-@Component
+
 @LogInteraction(Severity.TRACE)
 public interface JwtService extends AopLoggable {
 

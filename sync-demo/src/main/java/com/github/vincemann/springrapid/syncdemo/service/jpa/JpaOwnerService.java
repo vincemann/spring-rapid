@@ -9,12 +9,13 @@ import com.github.vincemann.springrapid.syncdemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.syncdemo.service.OwnerService;
 import com.github.vincemann.springrapid.syncdemo.service.Root;
 import org.springframework.aop.TargetClassAware;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Root
-@Component
+@Service
 public class JpaOwnerService
         extends JPACrudService<Owner,Long, OwnerRepository>
                 implements OwnerService, AopLoggable, TargetClassAware {

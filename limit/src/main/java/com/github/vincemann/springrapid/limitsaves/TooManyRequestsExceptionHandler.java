@@ -6,7 +6,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-@Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class TooManyRequestsExceptionHandler extends AbstractExceptionHandler<TooManyRequestsException> {
     public TooManyRequestsExceptionHandler() {

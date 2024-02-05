@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-@Component
+
 @Slf4j
 public class JwtAuthorizationTokenServiceImpl extends AbstractJwtAuthorizationTokenService {
 

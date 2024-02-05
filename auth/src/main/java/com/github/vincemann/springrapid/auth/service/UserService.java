@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Validated
-@Component
+
 public interface UserService<U extends AbstractUser<ID>, ID extends Serializable>
         extends AopLoggable, CrudService<U,ID>
 {

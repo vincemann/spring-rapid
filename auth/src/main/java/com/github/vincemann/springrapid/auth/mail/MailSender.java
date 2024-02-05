@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 /**
  * The mail sender interface for sending mail
  */
-@Component
+
 @LogInteraction
 public interface MailSender<MailData> extends AopLoggable {
 

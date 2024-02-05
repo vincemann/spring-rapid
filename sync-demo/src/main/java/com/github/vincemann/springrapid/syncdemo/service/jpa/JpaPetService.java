@@ -14,7 +14,6 @@ import java.util.Set;
 
 @Root
 @Service
-@Component
 public class JpaPetService extends JPACrudService<Pet, Long, PetRepository> implements PetService, TargetClassAware {
 
     @Override

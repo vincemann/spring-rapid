@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.syncdemo.model.Vet;
 
 import java.util.Optional;
 
-@Component
+
 public interface VetService extends CrudService<Vet,Long> {
 
     public Optional<Vet> findByLastName(String lastName);

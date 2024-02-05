@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
 
 
-@Component
+
 public interface PetService extends CrudService<Pet,Long> {
 
 }

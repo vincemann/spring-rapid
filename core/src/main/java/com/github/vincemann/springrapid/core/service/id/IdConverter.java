@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
-@Component
 public interface IdConverter<ID extends Serializable> {
 
 	ID toId(String id);

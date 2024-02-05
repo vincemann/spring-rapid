@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Primary
 @Service
-@Component
+midEgDuration()
 public class JpaIllnessService extends JPACrudService<Illness,Long, IllnessRepository> implements IllnessService {
 
     @Override

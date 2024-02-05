@@ -36,7 +36,7 @@ import java.util.Optional;
 @CreateProxy(qualifiers = Secured.class,proxies = {"acl","secured"})
 @Primary
 @Service
-@Component
+
 public class JpaVetService
         extends JPACrudService<Vet,Long, VetRepository>
         implements VetService, TargetClassAware {

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-@Component
+
 public interface PetRepository extends RapidJpaRepository<Pet,Long> {
     public Optional<Pet> findByName(String name);
 }

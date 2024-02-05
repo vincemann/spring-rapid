@@ -41,7 +41,7 @@ import java.util.Optional;
 @CreateProxy(qualifiers = Secured.class,proxies = {"acl","secured"})
 @Primary
 @Service
-@Component
+
 public class JpaVisitService extends JPACrudService<Visit,Long, VisitRepository>
         implements VisitService, TargetClassAware {
 

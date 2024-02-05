@@ -8,7 +8,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 
 import com.github.vincemann.springrapid.exceptionsapi.AbstractExceptionHandler;
 
-//@Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 @Slf4j
 public class BadCredentialsExceptionHandler extends AbstractExceptionHandler<BadCredentialsException> {

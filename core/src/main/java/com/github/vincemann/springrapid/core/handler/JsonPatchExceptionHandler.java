@@ -7,7 +7,6 @@ import org.springframework.core.annotation.Order;
 
 import com.github.fge.jsonpatch.JsonPatchException;
 
-//@Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 @Slf4j
 public class JsonPatchExceptionHandler extends AbstractBadRequestExceptionHandler<JsonPatchException> {

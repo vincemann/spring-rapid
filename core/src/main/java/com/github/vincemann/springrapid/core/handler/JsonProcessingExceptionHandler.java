@@ -7,7 +7,6 @@ import org.springframework.core.annotation.Order;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-//@Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 @Slf4j
 public class JsonProcessingExceptionHandler extends AbstractBadRequestExceptionHandler<JsonProcessingException> {

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-@Component
+
 public interface OwnerRepository extends RapidJpaRepository<Owner,Long> {
     Optional<Owner> findByLastName(String lastName);
 }

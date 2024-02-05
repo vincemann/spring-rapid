@@ -16,7 +16,6 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
 
-@Component
 public abstract class AbstractCrudService
         <
                 E extends IdentifiableEntity<Id>,

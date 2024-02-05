@@ -15,7 +15,7 @@ import java.util.Collection;
  * Always use this API to check acl permissions, if using this library.
  * All methods, except {@link this#checkExpression(String)} will create {@link AclEvaluationContext} that can be used downstream
  */
-@Component
+
 @LogInteraction
 public interface AclTemplate extends AopLoggable {
 

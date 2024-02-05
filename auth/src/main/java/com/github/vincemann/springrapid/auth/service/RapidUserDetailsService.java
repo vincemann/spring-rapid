@@ -24,7 +24,7 @@ import java.util.Optional;
  * UserDetailsService, as required by Spring Security.
  * 
  */
-@Component
+
 @Slf4j
 public class RapidUserDetailsService
 		implements UserDetailsService, AopLoggable {

@@ -9,7 +9,7 @@ import java.lang.annotation.Annotation;
  * API for finding specific {@link CrudService}s, that are in the current Spring Container.
  * you can use qualifier annotations to differentiate between service versions of same type.
  */
-@Component
+
 public interface CrudServiceLocator {
 
     public CrudService find(Class<? extends IdentifiableEntity> entityClass, Class<? extends Annotation> annotation);

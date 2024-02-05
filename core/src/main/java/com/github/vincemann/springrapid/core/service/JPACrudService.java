@@ -35,7 +35,7 @@ import static com.github.vincemann.springrapid.core.util.FilterUtils.*;
  * @param <Id> Id type of E
  * @param <R>  {@link JpaRepository} Type
  */
-@Component
+
 @Slf4j
 public abstract class JPACrudService
         <
