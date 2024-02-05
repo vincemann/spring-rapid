@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.sync.config;
 
-import com.github.vincemann.springrapid.sync.*;
-import com.github.vincemann.springrapid.sync.advice.AuditCollectionsAdvice;
+import com.github.vincemann.springrapid.sync.advice.AuditAdvice;
 import com.github.vincemann.springrapid.sync.service.AuditLogService;
 import com.github.vincemann.springrapid.sync.service.JpaAuditLogService;
 import com.github.vincemann.springrapid.sync.util.ReflectionPropertyMatcher;
@@ -63,7 +62,7 @@ public class RapidSyncAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "auditAdvice")
-    public AuditCollectionsAdvice auditAdvice(){
-        return new AuditCollectionsAdvice();
+    public AuditAdvice auditAdvice(){
+        return new AuditAdvice();
     }
 }

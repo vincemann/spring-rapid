@@ -9,14 +9,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 
-//
 /**
- * annotate collection fields of entities for which, when changed, the {@link AuditingEntity#getLastModifiedDate()}
- * and {@link AuditingEntity#getLastModifiedById()} should be updated.
+ * annotate fields of entity x, that are normally not detected by springs auditing, that when changed, trigger the update of {@link AuditingEntity#getLastModifiedDate()}
+ * and {@link AuditingEntity#getLastModifiedById()} .
+ * This could be foreign relationships with entities or other collections
  *
  * Only works for direct updates via {@link com.github.vincemann.springrapid.core.service.CrudService#partialUpdate(IdentifiableEntity, String...)}
  * example:
  * class EntityX{
+ *     @AuditField
  *     private Set<EntityY> subEntities;
  * }
  *
@@ -26,7 +27,7 @@ import java.lang.annotation.Target;
  * entityYService.partialUpdate(entityY) -> does not update timestamp of entityX even with annotation present, bc no direct update on EntityX
  *
  */
-@Retention(RetentionPolicy.RUNTIME) // This determines when the annotation is accessible.
+@Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.METHOD})
-public @interface AuditCollection {
+public @interface AuditField {
 }

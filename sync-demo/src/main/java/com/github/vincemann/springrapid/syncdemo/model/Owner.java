@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildEntity;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
-import com.github.vincemann.springrapid.sync.AuditCollection;
+import com.github.vincemann.springrapid.sync.AuditField;
 import com.github.vincemann.springrapid.syncdemo.model.abs.Person;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,6 +46,7 @@ public class Owner extends Person {
     @OneToMany(cascade = {PERSIST, MERGE, REFRESH, DETACH}, mappedBy = "owner",fetch = FetchType.EAGER)
     @JsonManagedReference
     @BiDirChildCollection(Pet.class)
+    @AuditField
     private Set<Pet> pets = new HashSet<>();
 
     @BiDirChildEntity
@@ -56,7 +57,7 @@ public class Owner extends Person {
 
 
     @ElementCollection(targetClass = String.class,fetch = FetchType.EAGER)
-    @AuditCollection
+    @AuditField
     private Set<String> hobbies = new HashSet<>();
 
 
