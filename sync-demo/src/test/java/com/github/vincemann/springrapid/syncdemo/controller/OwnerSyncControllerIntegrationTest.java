@@ -20,16 +20,19 @@ import com.github.vincemann.springrapid.syncdemo.model.Toy;
 import com.github.vincemann.springrapid.syncdemo.service.filter.OwnerTelNumberFilter;
 import com.github.vincemann.springrapid.syncdemo.service.filter.PetParentFilter;
 import com.google.common.collect.Sets;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.transaction.TransactionStatus;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -577,7 +580,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
 
     @Test
-    public void checkSyncStatusForAllPetsOfOwner_sinceTimestamp() throws Exception {
+    public void givenPetsOutsideAndInsideOfFilterUpdated_whenFindUpdatesSinceTsOfPetsWithFilter_thenOnlyReturnUpdatedPetsWithinFilter() throws Exception {
         // create 2 owners
         // owner 1 has bello and kitty
         // owner 2 has bella
@@ -691,9 +694,8 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
     @Test
     public void givenToyRemovedViaRemove_whenFetchSyncStatusOfPet_thenNotMarkedAsUpdated() throws Exception {
         // create bello with ball and rubber-duck toys
-        // update bello - remove ball toy
-        // check sync status of bello -> marked as updated
-        // verify update
+        // remove ball toy via toyService.remove
+        // check sync status of bello -> not marked as updated
 
         Toy rubberDuck = toyRepository.save(this.rubberDuck);
         Toy ball = toyRepository.save(this.ball);
@@ -708,9 +710,16 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         ownerSyncController.fetchSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
 
 
-        toyService.deleteById(ball.getId());
+        transactionTemplate.executeWithoutResult(new Consumer<>() {
+            @SneakyThrows
+            @Override
+            public void accept(TransactionStatus transactionStatus) {
+                toyService.deleteById(ball.getId());
+            }
+        });
 
-        assertPetHasToys(BELLO,BALL);
+
+        assertPetHasToys(BELLO,RUBBER_DUCK);
 
 
         petSyncController.fetchSyncStatus_assertNoUpdate(belloDto.getId(), clientUpdate);

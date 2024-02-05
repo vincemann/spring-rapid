@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.sync.advice;
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.core.util.Entity;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
-import com.github.vincemann.springrapid.sync.AuditField;
+import com.github.vincemann.springrapid.sync.AuditCollection;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -19,13 +19,13 @@ import java.util.Set;
 import static com.github.vincemann.springrapid.core.util.ReflectionUtils.findFieldsAnnotatedWith;
 
 /**
- * Implements logic related to {@link AuditField}.
+ * Implements logic related to {@link AuditCollection}.
  */
 @Aspect
 // should get executed within transaction of service, so when anything fails, the timestamp update is rolled back
 @Order(Ordered.LOWEST_PRECEDENCE-1)
 @Slf4j
-public class AuditAdvice {
+public class AuditCollectionAdvice {
 
 
 
@@ -39,7 +39,7 @@ public class AuditAdvice {
         if (skip(joinPoint))
             return;
 
-        Set<Field> auditedCollectionFields = findFieldsAnnotatedWith(update.getClass(), AuditField.class);
+        Set<Field> auditedCollectionFields = findFieldsAnnotatedWith(update.getClass(), AuditCollection.class);
         if (auditedCollectionFields.isEmpty())
             return;
 

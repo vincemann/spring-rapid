@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildEntity;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
-import com.github.vincemann.springrapid.sync.AuditField;
+import com.github.vincemann.springrapid.sync.AuditCollection;
 import com.github.vincemann.springrapid.syncdemo.model.abs.Person;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,8 +14,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
-import static javax.persistence.CascadeType.*;
 
 @Setter
 @Getter
@@ -42,21 +40,19 @@ public class Owner extends Person {
         this.telephone = telephone;
     }
 
-    // dont use remove cascade to showcase unlink on remove owner,
-    @OneToMany(cascade = {PERSIST, MERGE, REFRESH, DETACH}, mappedBy = "owner",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "owner",fetch = FetchType.EAGER)
     @JsonManagedReference
     @BiDirChildCollection(Pet.class)
     private Set<Pet> pets = new HashSet<>();
 
     @BiDirChildEntity
-    // dont use remove cascade to showcase unlink on remove owner
-    @OneToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH}, fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "clinic_card_id",referencedColumnName = "id")
     private ClinicCard clinicCard;
 
 
     @ElementCollection(targetClass = String.class,fetch = FetchType.EAGER)
-    @AuditField
+    @AuditCollection
     private Set<String> hobbies = new HashSet<>();
 
 
