@@ -4,9 +4,6 @@ import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.annotation.CustomToString;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -20,18 +17,23 @@ import java.util.function.Supplier;
 public interface RapidSecurityContext
         extends AopLoggable {
 
-    String SYSTEM_USERNAME = "system";
+    /**
+     * this method is ment to be called when user should be set as authenticated.
+     * It should not be called when actually logging in, rather when token is parsed and authenticated user is set.
+     */
+    @LogInteraction(Severity.DEBUG)
+    @CustomToString(key = "arg1", toStringMethod = "shortToString")
+    RapidPrincipal setAuthenticated(RapidPrincipal principal);
 
     @LogInteraction(Severity.DEBUG)
     @CustomToString(key = "arg1", toStringMethod = "shortToString")
-    RapidPrincipal login(RapidPrincipal principal);
-
+    void setAnonAuthenticated();
 
     @LogInteraction(Severity.DEBUG)
     @CustomToString(key = "ret", toStringMethod = "shortToString")
     RapidPrincipal currentPrincipal();
 
-    public static void logout(){
+    public static void unsetAuthenticated(){
         SecurityContextHolder.clearContext();
     }
 

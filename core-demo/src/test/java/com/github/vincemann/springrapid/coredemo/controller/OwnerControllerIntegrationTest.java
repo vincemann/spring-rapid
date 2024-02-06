@@ -361,7 +361,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
     // FIND TESTS
     @Test
     public void canFindOwnOwner() throws Exception {
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         ReadOwnOwnerDto kahn = saveOwnerLinkedToPets(this.kahn);
         ReadOwnOwnerDto responseDto = deserialize(getMvc().perform(ownerController.find(kahn.getId()))
                 .andExpect(status().is2xxSuccessful())
@@ -373,7 +373,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
                 .assertEqual();
         Assertions.assertEquals(Owner.DIRTY_SECRET,responseDto.getDirtySecret());
 
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
     }
 
     @Test
@@ -396,13 +396,13 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         Assertions.assertEquals(3,ownerRepository.findAll().size());
 
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
         Set<ReadOwnOwnerDto> responseDtos = deserializeToSet(
                 perform(ownerController.findAll(new UrlWebExtension(HasPetsFilter.class)))
                         .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(2,responseDtos.size());
@@ -433,7 +433,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         Assertions.assertEquals(3,ownerRepository.findAll().size());
 
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
         UrlWebExtension sortByNameDesc = new UrlWebExtension(LastNameDescSorting.class);
@@ -441,7 +441,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
                 perform(ownerController.findAll(hasPetsFilter,sortByNameDesc))
                         .andExpect(status().is2xxSuccessful())
                         .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(2,responseDtos.size());
@@ -458,12 +458,12 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
         // diff sorting
         UrlWebExtension sortByNameAsc = new UrlWebExtension(LastNameAscSorting.class);
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         responseDtos = deserializeToList(
                 perform(ownerController.findAll(hasPetsFilter,sortByNameAsc))
                         .andExpect(status().is2xxSuccessful())
                         .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(2,responseDtos.size());
@@ -503,14 +503,14 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         Assertions.assertFalse(savedMeier.getTelephone().startsWith(telnrPrefix));
 
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
         UrlWebExtension telNrPrefixFilter = new UrlWebExtension(OwnerTelNumberFilter.class,telnrPrefix);
         Set<ReadOwnOwnerDto> responseDtos = deserializeToSet(getMvc().perform(ownerController.findAll(telNrPrefixFilter,hasPetsFilter))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(1,responseDtos.size());
@@ -545,7 +545,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         Assertions.assertFalse(savedMeier.getTelephone().startsWith(telnrPrefix));
 
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
         UrlWebExtension petNameEndsWithAFilter = new UrlWebExtension(PetNameEndsWithFilter.class,"a");
@@ -554,7 +554,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         Set<ReadForeignOwnerDto> responseDtos = deserializeToSet(getMvc().perform(ownerController.findAll(telNrPrefixFilter,hasPetsFilter,petNameEndsWithAFilter))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), ReadForeignOwnerDto.class);
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(1,responseDtos.size());
@@ -596,7 +596,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         Assertions.assertTrue(savedKahn.getCity().startsWith(niceCityPrefix));
         Assertions.assertFalse(savedGil.getCity().startsWith(niceCityPrefix));
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
         // jpql filters (always come first)
@@ -605,7 +605,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         Set<ReadOwnOwnerDto> responseDtos = deserializeToSet(getMvc().perform(ownerController.findAll(telNrPrefixFilter,cityPrefixFilter,hasPetsFilter))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(1,responseDtos.size());
@@ -625,14 +625,14 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         Pet savedBello = petRepository.save(bello);
         Pet savedKitty = petRepository.save(kitty);
         ReadOwnOwnerDto savedKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         ReadOwnOwnerDto responseDto = deserialize(getMvc().perform(ownerController.find(savedKahnDto.getId()))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
         Assertions.assertEquals(2,responseDto.getPetIds().size());
         Assertions.assertTrue(responseDto.getPetIds().contains(savedBello.getId()));
         Assertions.assertTrue(responseDto.getPetIds().contains(savedKitty.getId()));
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
     }
 
     @Test
@@ -642,18 +642,18 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.lastName").doesNotExist())
                 .andExpect(jsonPath("$.city").value(kahn.getCity()));
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
     }
 
     @Test
     public void userCanFindForeignOwnOwner() throws Exception {
         ReadOwnOwnerDto savedKahnDto = saveOwnerLinkedToPets(kahn);
-        securityContext.login(TestPrincipal.withName(MEIER));
+        securityContext.setAuthenticated(TestPrincipal.withName(MEIER));
         getMvc().perform(ownerController.find(savedKahnDto.getId()))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.lastName").doesNotExist())
                 .andExpect(jsonPath("$.city").value(kahn.getCity()));
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
     }
 
 

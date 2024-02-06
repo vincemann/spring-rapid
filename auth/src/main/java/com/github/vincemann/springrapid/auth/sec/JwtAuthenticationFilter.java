@@ -1,13 +1,11 @@
 package com.github.vincemann.springrapid.auth.sec;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
 import com.github.vincemann.springrapid.auth.service.token.JwtService;
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import com.google.common.collect.Sets;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -60,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             try {
                 RapidPrincipal principal = authorizationTokenService.parseToken(token);
-                securityContext.login(principal);
+                securityContext.setAuthenticated(principal);
                 log.debug("Token authentication successful");
                 log.debug("Principal: " + principal + " logged in");
 
@@ -76,16 +74,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         } else {
             // no token found -> let downstream filters log user in or block this request
-            log.debug("No token found in request -> anon user");
-            loginAnon();
+            log.debug("No token found in request -> authenticate as anon user");
+            securityContext.setAnonAuthenticated();
         }
         filterChain.doFilter(request, response);
     }
 
-    protected void loginAnon() {
-        RapidPrincipal anon = new RapidPrincipal("anon",null, Sets.newHashSet(AuthRoles.ANON),null);
-        securityContext.login(anon);
-    }
 
 //	////@LogInteraction(level = LogInteraction.Level.TRACE)
 //	public Authentication createAuthToken(String token) {

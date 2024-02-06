@@ -157,10 +157,10 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         // now should need update
         EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         ReadOwnOwnerDto updatedEG = performDs2xx(ownerController.find(status.getId())
                 , ReadOwnOwnerDto.class);
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         Assertions.assertEquals(updatedFirstName,updatedEG.getFirstName());
     }
@@ -212,11 +212,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(owner2SyncStatus.getId(),owner3SyncStatus.getId());
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         String json = perform(ownerController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOwnerDto.class);
 
@@ -273,11 +273,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(kahnSyncStatus.getId());
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         String json = perform(ownerController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOwnerDto.class);
 
@@ -337,11 +337,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(owner2SyncStatus.getId());
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         String json = perform(ownerController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOwnerDto.class);
 
@@ -447,11 +447,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(owner2SyncStatus.getId());
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         String json = perform(ownerController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOwnerDto.class);
 
@@ -506,11 +506,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(owner3SyncStatus.getId());
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         String json = perform(ownerController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOwnerDto.class);
 
@@ -564,11 +564,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(kahnSyncStatus.getId());
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         String json = perform(ownerController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOwnerDto.class);
 
@@ -628,11 +628,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(belloSyncStatus.getId());
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         String json = perform(petController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         Set<PetDto> updatedPets = deserializeToSet(json,PetDto.class);
 
@@ -677,11 +677,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(status.getId());
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         String json = perform(petController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         Set<PetDto> updatedPets = deserializeToSet(json,PetDto.class);
 
@@ -775,11 +775,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(owner.getId().toString());
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         String json = perform(ownerController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOwnerDto.class);
 
@@ -874,9 +874,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 //        EntitySyncStatus status = fetchOwnerSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
         EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(ownerController.find(status.getId()), ReadOwnOwnerDto.class);
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         Assertions.assertEquals(updatedHobbies,readOwnOwnerDto.getHobbies());
     }
@@ -920,11 +920,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(status.getId());
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         String json = perform(ownerController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOwnerDto.class);
 
@@ -974,11 +974,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(status.getId());
 
-        securityContext.login(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         String json = perform(ownerController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
-        RapidSecurityContext.logout();
+        RapidSecurityContext.unsetAuthenticated();
 
         Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOwnerDto.class);
 

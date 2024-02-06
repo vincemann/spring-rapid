@@ -255,9 +255,6 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return login2xx(user.getContactInformation(), user.getPassword());
     }
 
-    public void mockLogin(AbstractUser user) {
-        rapidSecurityContext.login(authenticatedPrincipalFactory.create(user));
-    }
 
     @Autowired
     public void setAuthenticatedPrincipalFactory(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {

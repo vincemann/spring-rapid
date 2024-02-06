@@ -3,22 +3,16 @@ package com.github.vincemann.springrapid.core.sec;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 // use springs authentication.getDetails to store more info then already given in RapidAuthenticatedPrincipal
 @Slf4j
@@ -26,23 +20,23 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
 {
 
 
-    private AuthenticationManager authenticationManager;
-
-
 
     @Override
-    public RapidPrincipal login(RapidPrincipal principal) {
+    public RapidPrincipal setAuthenticated(RapidPrincipal principal) {
         RapidPrincipal old = currentPrincipal();
         if (old != null) {
             if (log.isWarnEnabled())
                 log.warn("Principal: " + old + " was already logged in. This login will override authenticated user");
         }
-        Authentication auth = createToken(principal);
-        Authentication authenticated = authenticationManager.authenticate(auth);
-        SecurityContextHolder.getContext().setAuthentication(authenticated);
+        SecurityContextHolder.getContext().setAuthentication(createToken(principal));
         return old;
     }
 
+
+    @Override
+    public void setAnonAuthenticated() {
+        setAuthenticated(getAnonUser());
+    }
 
     @Override
     public RapidPrincipal currentPrincipal() {
@@ -65,7 +59,7 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
         }
         Authentication originalAuth = SecurityContextHolder.getContext().getAuthentication();
         try {
-            SecurityContextHolder.getContext().setAuthentication(getSystemUser());
+            setAuthenticated(getSystemUser());
             runnable.run();
         } finally {
             SecurityContextHolder.getContext().setAuthentication(originalAuth);
@@ -79,7 +73,7 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
         Authentication originalAuth = SecurityContextHolder.getContext().getAuthentication();
         try {
             // dont go through authentication manager, bc system only exists in ram
-            SecurityContextHolder.getContext().setAuthentication(getSystemUser());
+            setAuthenticated(getSystemUser());
             return supplier.get();
         } finally {
             SecurityContextHolder.getContext().setAuthentication(originalAuth);
@@ -98,9 +92,20 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
         return false;
     }
 
-    protected Authentication getSystemUser() {
-        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(Roles.SYSTEM);
-        return new UsernamePasswordAuthenticationToken("system", null, authorities);
+    protected RapidPrincipal getAnonUser(){
+        RapidPrincipal principal = new RapidPrincipal();
+        principal.setName("anon");
+        principal.setRoles(Sets.newHashSet(Roles.ANON));
+        return principal;
+    }
+
+
+
+    protected RapidPrincipal getSystemUser() {
+        RapidPrincipal principal = new RapidPrincipal();
+        principal.setName("system");
+        principal.setRoles(Sets.newHashSet(Roles.SYSTEM));
+        return principal;
     }
 
     protected Authentication createToken(RapidPrincipal principal) {
@@ -112,9 +117,4 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
         return new SimpleGrantedAuthority(role);
     }
 
-
-    @Autowired
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
 }
