@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.controller.dto.map;
 
 import com.github.vincemann.springrapid.core.controller.UrlParamWebExtensionParser;
 import com.github.vincemann.springrapid.core.controller.WebExtensionType;
+import com.github.vincemann.springrapid.core.service.filter.WebExtension;
 import com.github.vincemann.springrapid.core.util.Lists;
 
 import java.util.Arrays;
@@ -47,6 +48,10 @@ public class DtoMappingConditions {
                 return dtoRequestInfo.getDirection().equals(direction);
             }
         };
+    }
+
+    public static Predicate<DtoRequestInfo> urlWebExtension(WebExtension<?> extension){
+        return urlWebExtension(extension.getName(), WebExtensionType.get(extension));
     }
 
     public static Predicate<DtoRequestInfo> urlWebExtension(String extensionName, WebExtensionType type){

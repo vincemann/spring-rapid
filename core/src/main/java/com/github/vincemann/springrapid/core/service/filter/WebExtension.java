@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.core.service.filter;
 
+import com.github.vincemann.springrapid.core.controller.WebExtensionType;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 
@@ -30,4 +31,5 @@ public interface WebExtension<E> {
         if (args.length != amount)
             throw new BadEntityException("Need exactly " + amount + " args, supplied " + args.length);
     }
+
 }

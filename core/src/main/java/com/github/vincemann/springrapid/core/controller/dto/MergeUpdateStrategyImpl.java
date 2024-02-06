@@ -22,18 +22,17 @@ public class MergeUpdateStrategyImpl implements MergeUpdateStrategy {
     ////@LogInteraction
     @Override
     public <E extends IdentifiableEntity<?>> E merge(E patch, E saved, Class<?> dtoClass) throws BadEntityException {
-        try{
-            ReflectionUtils.doWithFields(dtoClass,dtoField -> {
-                if (!com.github.vincemann.springrapid.core.util.ReflectionUtils.isStaticOrInnerField(dtoField)) {
-                    Class<? extends IdentifiableEntity> entityClass = patch.getClass();
-                    String propertyName = transform(dtoField.getName());
+        try {
+            ReflectionUtils.doWithFields(dtoClass, dtoField -> {
+                Class<? extends IdentifiableEntity> entityClass = patch.getClass();
+                String propertyName = transform(dtoField.getName());
 
-                    Field entityField = ReflectionUtils.findField(entityClass, propertyName);
-                    // managed by Controller, cant happen
-                    if (entityField == null){
-                        // cant happen
-                        throw new IllegalArgumentException("Unknown Update Property: " + propertyName);
-                    }
+                Field entityField = ReflectionUtils.findField(entityClass, propertyName);
+                // managed by Controller, cant happen
+                if (entityField == null) {
+                    // cant happen
+                    throw new IllegalArgumentException("Unknown Update Property: " + propertyName);
+                }
 //                    if (entityField == null) {
 //                        if (coreProperties.getController().isStrictUpdateMerge()) {
 //                            //gets translated to checked exception below
@@ -43,20 +42,20 @@ public class MergeUpdateStrategyImpl implements MergeUpdateStrategy {
 //                            return;
 //                        }
 //                    }
-                    ReflectionUtils.makeAccessible(entityField);
-                    Object patchedValue = entityField.get(patch);
-                    entityField.set(saved, patchedValue);
-                }
-            });
+                ReflectionUtils.makeAccessible(entityField);
+                Object patchedValue = entityField.get(patch);
+                entityField.set(saved, patchedValue);
+
+            }, ReflectionUtils.COPYABLE_FIELDS);
             //I have to do this exception disaster bc i cant throw checked exceptions in lambda expressions
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw new BadEntityException(e);
         }
 
         return saved;
     }
 
-    protected String transform(String propertyName){
+    protected String transform(String propertyName) {
         return propertyName;
     }
 

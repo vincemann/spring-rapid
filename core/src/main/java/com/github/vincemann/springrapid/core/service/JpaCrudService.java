@@ -55,7 +55,8 @@ public abstract class JpaCrudService
     public Optional<E> findById(Id id) {
         if (id == null)
             throw new IllegalArgumentException("Id cannot be null");
-        return getRepository().findById(id);
+        Optional<E> byId = getRepository().findById(id);
+        return byId;
     }
 
     @Transactional

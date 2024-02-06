@@ -35,7 +35,7 @@ public class AuditCollectionAdvice {
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
                     "args(update,fieldsToUpdate)", returning = "result")
-    public void afterPartialUpdate(JoinPoint joinPoint,AuditingEntity result, AuditingEntity update, String... fieldsToUpdate) {
+    public void afterPartialUpdate(JoinPoint joinPoint, AuditingEntity result, AuditingEntity update, String... fieldsToUpdate) {
         if (skip(joinPoint))
             return;
 
