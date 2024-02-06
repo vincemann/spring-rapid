@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
 import com.github.vincemann.springrapid.coredemo.dto.pet.UpdatePetDto;
+import com.github.vincemann.springrapid.coredemo.service.PetService;
 import org.springframework.stereotype.Controller;
 import com.github.vincemann.springrapid.coredemo.dto.ClinicCardDto;
 import com.github.vincemann.springrapid.coredemo.dto.pet.PetDto;
@@ -15,7 +16,7 @@ import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappin
 
 
 @Controller
-public class PetController extends CrudController<Pet, Long> {
+public class PetController extends CrudController<Pet, Long, PetService> {
 
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {

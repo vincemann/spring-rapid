@@ -8,12 +8,13 @@ import com.github.vincemann.springrapid.syncdemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadForeignOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
+import com.github.vincemann.springrapid.syncdemo.service.OwnerService;
 import org.springframework.stereotype.Controller;
 
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
 
 @Controller
-public class OwnerController extends CrudController<Owner, Long> {
+public class OwnerController extends CrudController<Owner, Long, OwnerService> {
 
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {

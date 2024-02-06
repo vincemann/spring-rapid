@@ -6,13 +6,14 @@ import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuild
 import com.github.vincemann.springrapid.syncdemo.dto.pet.PetDto;
 import com.github.vincemann.springrapid.syncdemo.dto.pet.UpdatePetDto;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
+import com.github.vincemann.springrapid.syncdemo.service.PetService;
 import org.springframework.stereotype.Controller;
 
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
 
 
 @Controller
-public class PetController extends CrudController<Pet, Long> {
+public class PetController extends CrudController<Pet, Long, PetService> {
 
 
     @Override

@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.coredemo.controller;
 
 import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
+import com.github.vincemann.springrapid.coredemo.service.VisitService;
 import org.springframework.stereotype.Controller;
 import com.github.vincemann.springrapid.coredemo.dto.VisitDto;
 import com.github.vincemann.springrapid.coredemo.model.Visit;
@@ -10,7 +11,7 @@ import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappin
 
 @Controller
 public class VisitController
-        extends CrudController<Visit, Long>
+        extends CrudController<Visit, Long, VisitService>
 {
 
     @Override

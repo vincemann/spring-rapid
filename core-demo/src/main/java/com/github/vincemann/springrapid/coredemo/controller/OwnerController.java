@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.coredemo.dto.owner.ReadForeignOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.UpdateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
+import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import org.springframework.stereotype.Controller;
 import com.github.vincemann.springrapid.coredemo.service.filter.CityPrefixFilter;
 import com.github.vincemann.springrapid.coredemo.service.filter.HasPetsFilter;
@@ -24,7 +25,7 @@ import java.util.function.Predicate;
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
 
 @Controller
-public class OwnerController extends CrudController<Owner, Long> {
+public class OwnerController extends CrudController<Owner, Long, OwnerService> {
 
 
     @Override

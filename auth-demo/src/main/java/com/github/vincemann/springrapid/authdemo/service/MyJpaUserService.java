@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 // dont mark with primary, is done internally
 //@Primary
 @Transactional
-public class MyJpaUserService extends JpaUserService<User, Long, UserRepository> {
+public class MyJpaUserService extends JpaUserService<User, Long, UserRepository> implements MyUserService{
 
 	@Override
     public User newUser() {

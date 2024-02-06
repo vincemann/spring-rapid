@@ -20,7 +20,6 @@ import com.github.vincemann.springrapid.auth.util.UrlParamUtil;
 import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.map.*;
 import com.github.vincemann.springrapid.core.controller.id.IdFetchingException;
-import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
@@ -38,7 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -47,13 +45,12 @@ import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappin
 
 @Slf4j
 @Getter
-public abstract class AbstractUserController<U extends AbstractUser<Id>, Id extends Serializable>
-			extends CrudController<U, Id> {
+public abstract class AbstractUserController<U extends AbstractUser<Id>, Id extends Serializable, S extends UserService<U,Id>>
+			extends CrudController<U, Id,S> {
 
 
 
-	private UserService<U, Id> userService;
-	private UserService<U, Id> securedService;
+	private S unsecuredService;
 
 	private HttpTokenService httpTokenService;
 	private AuthProperties authProperties;
@@ -107,7 +104,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	public ResponseEntity<String> context(HttpServletRequest request,HttpServletResponse response) throws JsonProcessingException {
 
 		log.debug("Getting context ");
-		Map<String, Object> context = getSecuredService().getContext();
+		Map<String, Object> context = getService().getContext();
 		log.debug("Returning context: " + context);
 		return ok(getJsonMapper().writeDto(context));
 	}
@@ -125,7 +122,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		getDtoValidationStrategy().validate(signupDto);
 		log.debug("Signing up: " + signupDto);
 		U user = getDtoMapper().mapToEntity(signupDto, getEntityClass());
-  		U saved = getSecuredService().signup(user);
+  		U saved = getService().signup(user);
 		log.debug("Signed up: " + signupDto);
 
 		appendFreshTokenOf(saved,response);
@@ -138,9 +135,9 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	public ResponseEntity<?> resendVerificationMail(HttpServletRequest request,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException {
 		String contactInformation = readRequestParam(request, "contactInformation");
 		log.debug("Resending verification mail for user with contactInformation " + contactInformation);
-		Optional<U> byContactInformation = getUserService().findByContactInformation(contactInformation);
+		Optional<U> byContactInformation = getUnsecuredService().findByContactInformation(contactInformation);
 		VerifyEntity.isPresent(byContactInformation,"no user found with contactInformation: "+ contactInformation);
-		getSecuredService().resendVerificationMessage(byContactInformation.get());
+		getService().resendVerificationMessage(byContactInformation.get());
 		return okNoContent();
 	}
 
@@ -157,7 +154,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 //		log.debug("Verifying user with id: " + id);
 //		U user = fetchUser(id);
-		U saved = getSecuredService().verifyUser(code);
+		U saved = getService().verifyUser(code);
 
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
@@ -172,7 +169,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	public ResponseEntity<?> forgotPassword(HttpServletRequest request,HttpServletResponse response/*@RequestParam String contactInformation*/) throws EntityNotFoundException, BadEntityException {
 		String contactInformation = readRequestParam(request, "contactInformation");
 		log.debug("Received forgot password request for: " + contactInformation);
-		getSecuredService().forgotPassword(contactInformation);
+		getService().forgotPassword(contactInformation);
 		return okNoContent();
 	}
 
@@ -201,7 +198,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		getDtoValidationStrategy().validate(resetPasswordDto);
 
 		log.debug("Resetting password ... ");
-		U saved = getSecuredService().resetPassword(password, code);
+		U saved = getService().resetPassword(password, code);
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(resetPasswordUrl, Direction.RESPONSE,request, saved));
@@ -224,7 +221,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 		String contactInformation = readRequestParam(request, "contactInformation");
 		log.debug("Fetching user by contactInformation: " + contactInformation);
-		Optional<U> byContactInformation = getSecuredService().findByContactInformation(contactInformation);
+		Optional<U> byContactInformation = getService().findByContactInformation(contactInformation);
 		VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+contactInformation+" not found");
 		U user = byContactInformation.get();
 		Object responseDto = getDtoMapper().mapToDto(user,
@@ -245,7 +242,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		getDtoValidationStrategy().validate(changePasswordDto);
 
 		log.debug("Changing password of user with id: " + id);
-		getSecuredService().changePassword(user, changePasswordDto.getOldPassword(),changePasswordDto.getNewPassword(),changePasswordDto.getRetypeNewPassword());
+		getService().changePassword(user, changePasswordDto.getOldPassword(),changePasswordDto.getNewPassword(),changePasswordDto.getRetypeNewPassword());
 		appendFreshTokenOf(user,response);
 		return okNoContent();
 	}
@@ -261,14 +258,14 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		RequestContactInformationChangeDto dto = (RequestContactInformationChangeDto) getJsonMapper().readDto(body, dtoClass);
 		getDtoValidationStrategy().validate(dto);
 		log.debug("Requesting contactInformation change for user: " + user);
-		getSecuredService().requestContactInformationChange(user, dto.getNewContactInformation());
+		getService().requestContactInformationChange(user, dto.getNewContactInformation());
 		return okNoContent();
 	}
 
 
 	public ResponseEntity<?> changeContactInformation(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, AlreadyRegisteredException {
 		String code = readRequestParam(request, "code");
-		U saved = getSecuredService().changeContactInformation(code);
+		U saved = getService().changeContactInformation(code);
 		appendFreshTokenOf(saved,response);
 		return okNoContent();
 	}
@@ -301,10 +298,10 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		String token;
 		if (contactInformation.isEmpty()){
 			// for logged in user, if he is not logged in this will fail
-			token = getSecuredService().createNewAuthToken();
+			token = getService().createNewAuthToken();
 		}else {
 			// for foreign user
-			token = getSecuredService().createNewAuthToken(contactInformation.get());
+			token = getService().createNewAuthToken(contactInformation.get());
 		}
 		// result = {token:asfsdfjsdjfnd}
 		return ok(
@@ -610,7 +607,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	 * Adds an Authorization header to the response for certain user
 	 */
 	protected void appendFreshTokenOf(U user, HttpServletResponse response) throws EntityNotFoundException {
-		String token = getUserService().createNewAuthToken(user.getContactInformation());
+		String token = getUnsecuredService().createNewAuthToken(user.getContactInformation());
 		httpTokenService.appendToken(token,response);
 //		response.addHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME, JwtService.TOKEN_PREFIX + token);
 	}
@@ -626,7 +623,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 //	}
 
 	protected U fetchUser(Id userId) throws EntityNotFoundException {
-		Optional<U> byId =  getUserService().findById(userId);
+		Optional<U> byId =  getUnsecuredService().findById(userId);
 		VerifyEntity.isPresent(byId,"User with id: "+userId+" not found");
 		return byId.get();
 	}
@@ -642,25 +639,18 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		this.httpTokenService = httpTokenService;
 	}
 
-	// overwrite autowired annotation
+
+	@Secured
+	@Lazy
 	@Override
-	public void setCrudService(CrudService<U, Id> crudService) {
+	public void setCrudService(S crudService) {
 		super.setCrudService(crudService);
 	}
 
-//	@Root
 	@Lazy
 	@Autowired
-	public void setUserService(UserService<U, Id> Service) {
-		this.userService = Service;
-	}
-
-	@Autowired
-	@Secured
-	@Lazy
-	public void setSecuredService(UserService<U, Id> securedService) {
-		this.securedService = securedService;
-		this.setCrudService(securedService);
+	public void setUnsecuredService(S Service) {
+		this.unsecuredService = Service;
 	}
 
 

@@ -48,13 +48,13 @@ import static com.github.vincemann.springrapid.core.controller.WebExtensionType.
 
 @Slf4j
 @Getter
-public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extends Serializable>
+public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extends Serializable, S extends CrudService<E,Id>>
         extends AbstractEntityController<E, Id>
 {
 
 
     private IdFetchingStrategy<Id> idFetchingStrategy;
-    private CrudService<E, Id> service;
+    private S service;
     private DelegatingDtoMapper dtoMapper;
     private DelegatingOwnerLocator ownerLocator;
     private DtoClassLocator dtoClassLocator;
@@ -520,7 +520,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
 
     @Autowired
     @Lazy
-    public void setCrudService(CrudService<E, Id> crudService) {
+    public void setCrudService(S crudService) {
         this.service = crudService;
     }
 
