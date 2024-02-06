@@ -18,7 +18,11 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * API for managing acl data.
+ * Api for managing acl data.
+ * All methods executed as system user with role {@link Roles#SYSTEM}
+ * -> make sure only called by trusted code internally
+ *
+ * Adds some features for conditional inheritance and provides api for simple use cases
  */
 @Service
 @Transactional

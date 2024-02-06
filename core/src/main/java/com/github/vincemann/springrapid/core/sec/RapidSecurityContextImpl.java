@@ -43,7 +43,7 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
         RapidPrincipal old = currentPrincipal();
         if (old != null) {
             if (log.isWarnEnabled())
-                log.warn("Principal: " + old + " was already logged in. This login will override old principals session");
+                log.warn("Principal: " + old + " was already logged in. This login will override authenticated user");
         }
         Authentication auth = createToken(principal);
         Authentication authenticated = authenticationManager.authenticate(auth);
@@ -67,11 +67,11 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
 
     @Override
     public void executeAsSystemUser(Runnable runnable) {
-        Authentication originalAuth = SecurityContextHolder.getContext().getAuthentication();
-        if (originalAuth.getAuthorities().contains(new SimpleGrantedAuthority(Roles.SYSTEM))){
+        if (systemUserAuthenticated()){
             runnable.run();
             return;
         }
+        Authentication originalAuth = SecurityContextHolder.getContext().getAuthentication();
         try {
             SecurityContextHolder.getContext().setAuthentication(getSystemUser());
             runnable.run();
@@ -82,9 +82,9 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
 
     @Override
     public <T> T executeAsSystemUser(Supplier<T> supplier) {
-        Authentication originalAuth = SecurityContextHolder.getContext().getAuthentication();
-        if (originalAuth.getAuthorities().contains(new SimpleGrantedAuthority(Roles.SYSTEM)))
+        if (systemUserAuthenticated())
             return supplier.get();
+        Authentication originalAuth = SecurityContextHolder.getContext().getAuthentication();
         try {
             // dont go through authentication manager, bc system only exists in ram
             SecurityContextHolder.getContext().setAuthentication(getSystemUser());
@@ -94,7 +94,19 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
         }
     }
 
-    private Authentication getSystemUser() {
+    protected boolean systemUserAuthenticated(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null)
+            return false;
+        if (authentication.getAuthorities() == null)
+            return false;
+        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(Roles.SYSTEM))){
+            return true;
+        }
+        return false;
+    }
+
+    protected Authentication getSystemUser() {
         List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(Roles.SYSTEM);
         return new UsernamePasswordAuthenticationToken("system", null, authorities);
     }
