@@ -13,7 +13,9 @@ import com.github.vincemann.springrapid.core.service.JpaCrudService;
 @Primary
 @Service
 @EnableAutoBiDir
-public class JpaPetTypeService extends JpaCrudService<PetType,Long, PetTypeRepository> implements PetTypeService, TargetClassAware {
+public class JpaPetTypeService
+        extends JpaCrudService<PetType,Long, PetTypeRepository>
+                implements PetTypeService {
 
     @Override
     public Class<?> getTargetClass() {

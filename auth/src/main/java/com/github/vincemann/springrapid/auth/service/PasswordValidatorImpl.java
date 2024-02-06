@@ -6,7 +6,7 @@ import org.passay.*;
 import java.util.Arrays;
 import java.util.List;
 
-public class RapidPasswordValidator implements PasswordValidator {
+public class PasswordValidatorImpl implements PasswordValidator {
     @Override
     public void validate(String password) throws BadEntityException {
         final org.passay.PasswordValidator validator = new org.passay.PasswordValidator(Arrays.asList(

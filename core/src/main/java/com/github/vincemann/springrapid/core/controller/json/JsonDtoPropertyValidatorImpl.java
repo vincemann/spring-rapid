@@ -3,9 +3,14 @@ package com.github.vincemann.springrapid.core.controller.json;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.vincemann.springrapid.core.util.ValidationUtil;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.validation.ValidationUtils;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.nio.file.AccessDeniedException;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -13,16 +18,23 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-// todo maybe create similar solution with mask of allowed properties for user on service level
-// acl could not be entity wide but entity.property wide
-// otherwise security business logic will be partly in controller layer
+
+/**
+ * makes sure fields from patch exist as fieldnames in dto
+ */
 @Setter
 public class JsonDtoPropertyValidatorImpl implements JsonDtoPropertyValidator {
 
     private ObjectMapper objectMapper;
+    private Validator validator;
 
     public JsonDtoPropertyValidatorImpl() {
         this.objectMapper = new ObjectMapper();
+    }
+
+    @Autowired
+    public void setValidator(Validator validator) {
+        this.validator = validator;
     }
 
     @Override
@@ -42,6 +54,8 @@ public class JsonDtoPropertyValidatorImpl implements JsonDtoPropertyValidator {
         checkPropertyNames(propertyNameIterator, dtoClass/*,entityClass*/);
     }
 
+
+
     protected String sanitizePatchStringPathProperty(String path) {
         path = path.replace("/", "");
         path = path.replace("-", "");
@@ -49,17 +63,8 @@ public class JsonDtoPropertyValidatorImpl implements JsonDtoPropertyValidator {
     }
 
     protected void checkPropertyNames(Iterator<String> propertyNameIterator, Class dtoClass/*, Class entityClass*/) {
-//        Set<String> entityClassFieldNames = new HashSet<>();
         Set<String> dtoClassFieldNames = new HashSet<>();
-        // do like this bc spring chaches
-//        ReflectionUtils.doWithFields(entityClass, field -> {
-//            entityClassFieldNames.add(field.getName());
-//        });
-        ReflectionUtils.doWithFields(dtoClass, field -> {
-            dtoClassFieldNames.add(field.getName());
-        });
-//         = Arrays.stream(entityClass.getDeclaredFields()).map(Field::getName).collect(Collectors.toSet());
-//        = Arrays.stream(dtoClass.getDeclaredFields()).map(Field::getName).collect(Collectors.toSet());
+        ReflectionUtils.doWithFields(dtoClass, field -> dtoClassFieldNames.add(field.getName()), ReflectionUtils.COPYABLE_FIELDS);
         while (propertyNameIterator.hasNext()) {
             String dtoProperty = propertyNameIterator.next();
 

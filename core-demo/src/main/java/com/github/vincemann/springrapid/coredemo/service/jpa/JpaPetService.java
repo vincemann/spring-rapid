@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 @Root
 @Service
 @EnableAutoBiDir
-public class JpaPetService extends JpaCrudService<Pet, Long, PetRepository> implements PetService, TargetClassAware {
+public class JpaPetService
+        extends JpaCrudService<Pet, Long, PetRepository>
+                implements PetService {
 
     @Override
     public Class<?> getTargetClass() {

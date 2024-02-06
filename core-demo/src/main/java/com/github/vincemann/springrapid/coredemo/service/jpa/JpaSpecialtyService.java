@@ -15,7 +15,7 @@ import java.util.Optional;
 @EnableAutoBiDir
 public class JpaSpecialtyService
         extends JpaCrudService<Specialty,Long, SpecialtyRepository>
-        implements SpecialtyService
+                implements SpecialtyService
 {
 
     @Override

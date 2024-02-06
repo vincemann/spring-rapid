@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,7 +22,7 @@ public class AbstractUser<Id extends Serializable>
 {
 	public static final int CONTACT_INFORMATION_MAX = 250;
 
-	// contactInformation can be email or phone number ... dont hardcode to email!
+	// contactInformation can be email or phone number - dont hardcode to email
 	@Column(nullable = false, unique = true, length = CONTACT_INFORMATION_MAX)
 	protected String contactInformation;
 
@@ -29,21 +31,22 @@ public class AbstractUser<Id extends Serializable>
 	protected String newContactInformation;
 
 	// password
-	// @NotBlank gets checked by PasswordChecker
+	@NotBlank
 	@Column(nullable = false) // no length because it will be encrypted
 	protected String password;
 
 	// roles collection
 	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
+	@CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id", nullable = false))
 	@Column(name = "role")
+	@NotEmpty
+	// probably a good idea to create a @ValidRole annotation here
 	protected Set<String> roles = new HashSet<>();
 
 
 
 	// A JWT issued before this won't be valid
 	@Column(nullable = false)
-	@JsonIgnore
 	protected Long credentialsUpdatedMillis = System.currentTimeMillis();
 
 

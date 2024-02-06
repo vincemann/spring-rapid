@@ -643,6 +643,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	@Secured
 	@Lazy
 	@Override
+	@Autowired
 	public void setCrudService(S crudService) {
 		super.setCrudService(crudService);
 	}

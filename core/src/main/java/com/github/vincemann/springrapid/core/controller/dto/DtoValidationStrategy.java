@@ -6,6 +6,7 @@ import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
+import java.util.Set;
 
 
 public interface DtoValidationStrategy extends AopLoggable {
@@ -16,7 +17,9 @@ public interface DtoValidationStrategy extends AopLoggable {
      * @throws ConstraintViolationException     is thrown, when Dto Entity {@param dto} is not valid
      */
     @LogInteraction(Severity.TRACE)
-    public abstract void validate(Object dto) throws ConstraintViolationException;
+    void validate(Object dto) throws ConstraintViolationException;
 
 
+    @LogInteraction(Severity.TRACE)
+    void validatePartly(Object patchDto, Set<String> updatedFields);
 }

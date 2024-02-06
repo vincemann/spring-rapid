@@ -22,8 +22,6 @@ public class UrlParamWebExtensionParser implements WebExtensionParser, Applicati
         this.applicationContext = applicationContext;
     }
 
-
-
     @Override
     public List<WebExtension<?>> parse(HttpServletRequest request, Set<WebExtension> extensions, WebExtensionType type) throws BadEntityException {
         String extensionParam = request.getParameter(getUrlParamKey(type));

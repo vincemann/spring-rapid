@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.core.controller.dto.map;
 
 import com.github.vincemann.springrapid.core.controller.dto.DtoValidationStrategy;
+import com.github.vincemann.springrapid.core.util.ValidationUtil;
 
 import javax.validation.*;
 import java.util.Set;
@@ -13,8 +14,6 @@ public class JavaXDtoValidationStrategy implements DtoValidationStrategy {
     private final Validator validator;
 
     public JavaXDtoValidationStrategy(Validator validator) {
-//        ValidatorFactory factory=Validation.buildDefaultValidatorFactory();
-//        this.validator=factory.getValidator();
         this.validator = validator;
     }
 
@@ -23,6 +22,18 @@ public class JavaXDtoValidationStrategy implements DtoValidationStrategy {
         Set<ConstraintViolation<Object>> constraintViolations = validator.validate(dto);
         if(!constraintViolations.isEmpty())
             throw new ConstraintViolationException(constraintViolations);
+    }
+
+    @Override
+    public void validatePartly(Object dto, Set<String> fields) {
+        for (String field : fields) {
+            Set<ConstraintViolation<Object>> violations = validator.validateProperty(dto, field);
+
+            if (!violations.isEmpty()) {
+                // Throw an exception with the violations
+                throw new ConstraintViolationException(violations);
+            }
+        }
     }
 
 }

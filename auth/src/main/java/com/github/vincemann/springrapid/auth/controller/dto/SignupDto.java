@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.Set;
 public class SignupDto implements Serializable {
 
     @NotBlank
+    @Email
     private String contactInformation;
 
     @NotBlank

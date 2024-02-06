@@ -19,15 +19,12 @@ import java.util.Optional;
 import java.util.Set;
 
 @Validated
-
 public interface UserService<U extends AbstractUser<ID>, ID extends Serializable>
-        extends AopLoggable, CrudService<U,ID>
+        extends CrudService<U,ID>, AopLoggable
 {
 
     public Map<String, Object> getContext();
 
-//    @Validated(UserVerifyUtils.SignUpValidation.class)
-    // todo do captcha validation programatically in service witch mockable captcha validator for tests
     public U signup( U user) throws BadEntityException, AlreadyRegisteredException;
 
     public void resendVerificationMessage(U user) throws EntityNotFoundException, BadEntityException;
@@ -64,10 +61,6 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
     public U signupAdmin(U admin) throws AlreadyRegisteredException, BadEntityException;
 
-//    @LogInteraction(Severity.TRACE)
-//    public abstract ID toId(String id);
-
-//    @Validated(UserVerifyUtils.UpdateValidation.class)
 
 
     // keep it like that, otherwise the AbstractUser type wont be in impl methods

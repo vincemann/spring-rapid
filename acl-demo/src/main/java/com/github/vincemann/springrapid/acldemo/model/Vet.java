@@ -43,7 +43,7 @@ public class Vet extends Person implements UserAwareEntity {
     private Set<Specialty> specialtys = new HashSet<>();
 
     @UniDirChildEntity
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(cascade = CascadeType.ALL)
     private User user;
 
     @Override

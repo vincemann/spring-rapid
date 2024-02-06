@@ -165,6 +165,8 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
         PatchInfo patchInfo = jsonPatchStrategy.createPatchInfo(patchString);
         Object patchDto = dtoMapper.mapToDto(saved, dtoClass, patchInfo.getUpdatedFields().toArray(new String[0]));
         patchDto = jsonPatchStrategy.applyPatch(patchDto, patchString);
+        // only fields updated are validated
+        dtoValidationStrategy.validatePartly(patchDto,patchInfo.getUpdatedFields());
         // map to dto mapped schon nur die updated properties, also muss es bei mapToEntity nicht erneut limited werden auf mapped properties
         E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());
         // some dtos might not have id set, so we add it here

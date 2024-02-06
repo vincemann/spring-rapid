@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 
 @NoArgsConstructor
-
 public class PetDto extends AbstractPetDto {
 
 
