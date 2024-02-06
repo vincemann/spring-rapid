@@ -30,8 +30,8 @@ public class ExtensionProxyBuilder<S extends CrudService<E,Id>,E extends Identif
 //        this.proxy = proxy;
 //    }
 
-    //diese aufsplittung muss ich machen weil ich nicht sagen kann <T super S | T extends SimpleCrudService<? super E, ? super Id>>
-    //das 'oder' wird durch 2 seperate methoden realisiert
+    // diese aufsplittung muss ich machen weil ich nicht sagen kann <T super S | T extends CrudService<? super E, ? super Id>>
+    // das 'oder' wird durch 2 seperate methoden realisiert
 
     // this method is used to add SimpleService implementing extensions, to ensure down casting works
     // service extension can either be superclass, same class or child class of S, the only thing that matters, is that I can cast

@@ -30,7 +30,6 @@ public class MergeUpdateStrategyImpl implements MergeUpdateStrategy {
                 Field entityField = ReflectionUtils.findField(entityClass, propertyName);
                 // managed by Controller, cant happen
                 if (entityField == null) {
-                    // cant happen
                     throw new IllegalArgumentException("Unknown Update Property: " + propertyName);
                 }
 //                    if (entityField == null) {

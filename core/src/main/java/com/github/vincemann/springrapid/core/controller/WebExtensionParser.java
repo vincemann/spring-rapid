@@ -5,10 +5,9 @@ import com.github.vincemann.springrapid.core.service.filter.WebExtension;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Set;
 
 public interface WebExtensionParser {
 
-    void registerExtensions(WebExtension<?>... extensions);
-
-    List<WebExtension<?>> parse(HttpServletRequest request, WebExtensionType type) throws BadEntityException;
+    List<WebExtension<?>> parse(HttpServletRequest request, Set<WebExtension> extensions, WebExtensionType type) throws BadEntityException;
 }

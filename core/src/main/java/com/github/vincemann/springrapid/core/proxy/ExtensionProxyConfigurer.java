@@ -21,8 +21,8 @@ public abstract class ExtensionProxyConfigurer<S extends CrudService> implements
 
     public abstract void configureProxy(ExtensionProxy proxy);
 
-    /** you can overwrite this method to autowire diff version of service
-       with i.E.:
+    /** you can overwrite this method to autowire version/proxy of service that should be configured
+       i.E.:
 
     @Overwrite
     @Autowired

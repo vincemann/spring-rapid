@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.filter.WebExtension;
 import com.github.vincemann.springrapid.core.util.Lists;
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -51,7 +52,9 @@ public abstract class AbstractEntityController
     protected EndpointService endpointService;
     protected JsonMapper jsonMapper;
     protected WebExtensionParser extensionParser;
-    private List<String> ignoredEndPoints = new ArrayList<>();
+
+    protected List<String> ignoredEndPoints = new ArrayList<>();
+    protected Set<WebExtension> extensions = new HashSet<>();
 
     protected ApplicationContext applicationContext;
 
@@ -98,13 +101,13 @@ public abstract class AbstractEntityController
      *     registerExtensions(new ModuleParentFilter());
      * }
      */
-    protected void registerExtensions(WebExtension<? super E>... extensions){
-        extensionParser.registerExtensions(extensions);
+    protected final void registerExtensions(WebExtension<? super E>... extensions){
+        this.extensions.addAll(Sets.newHashSet(extensions));
     }
 
 
     protected  <Ext extends WebExtension<? super E>> List<Ext> extractExtensions(HttpServletRequest request, WebExtensionType type) throws BadEntityException {
-        return (List<Ext>) extensionParser.parse(request,type);
+        return (List<Ext>) extensionParser.parse(request,extensions,type);
     }
 
 
@@ -149,6 +152,7 @@ public abstract class AbstractEntityController
             throw new IllegalArgumentException("could not register endpoints, method not found",e);
         }
     }
+
 
     @Autowired
     public void setJsonMapper(JsonMapper mapper) {

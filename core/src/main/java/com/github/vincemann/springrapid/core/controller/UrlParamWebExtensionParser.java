@@ -9,7 +9,6 @@ import org.springframework.context.ApplicationContextAware;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,7 +16,6 @@ import java.util.stream.Collectors;
 public class UrlParamWebExtensionParser implements WebExtensionParser, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
-    protected Set<WebExtension> extensions = new HashSet<>();
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
@@ -27,12 +25,7 @@ public class UrlParamWebExtensionParser implements WebExtensionParser, Applicati
 
 
     @Override
-    public void registerExtensions(WebExtension<?>... extensions) {
-        this.extensions.addAll(Lists.newArrayList(extensions));
-    }
-
-    @Override
-    public List<WebExtension<?>> parse(HttpServletRequest request, WebExtensionType type) throws BadEntityException {
+    public List<WebExtension<?>> parse(HttpServletRequest request, Set<WebExtension> extensions, WebExtensionType type) throws BadEntityException {
         String extensionParam = request.getParameter(getUrlParamKey(type));
         List<WebExtension<?>> result = new ArrayList<>();
 
