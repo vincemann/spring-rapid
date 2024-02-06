@@ -32,18 +32,11 @@ public class AdminInitializer implements CommandLineRunner {
     @Transactional
     @Override
     public void run(String... args) throws Exception {
-        securityContext.runAsAdmin(
-                () -> {
-                    try {
-                        addAdmins();
-                    } catch (BadEntityException | AlreadyRegisteredException | EntityNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+        signupAdmins();
     }
 
 
-    protected void addAdmins() throws BadEntityException, AlreadyRegisteredException, EntityNotFoundException {
+    protected void signupAdmins() throws BadEntityException, AlreadyRegisteredException, EntityNotFoundException {
         List<AuthProperties.Admin> admins = authProperties.getAdmins();
         for (AuthProperties.Admin admin : admins) {
             log.debug("registering admin:: " + admin.getContactInformation());
@@ -78,7 +71,7 @@ public class AdminInitializer implements CommandLineRunner {
     }
 
     @Autowired
-    public void setLemonProperties(AuthProperties authProperties) {
+    public void setAuthProperties(AuthProperties authProperties) {
         this.authProperties = authProperties;
     }
 

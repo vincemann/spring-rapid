@@ -16,7 +16,7 @@ public class TestPrincipal {
     public static RapidPrincipal create(String name, String... roles){
         RapidPrincipal principal = new RapidPrincipal();
         principal.setName(name);
-        principal.setPassword(RapidSecurityContextImpl.TEMP_USER_PASSWORD);
+        principal.setPassword("password");
         principal.setRoles(Sets.newHashSet(Arrays.asList(roles)));
         return principal;
     }
@@ -24,15 +24,15 @@ public class TestPrincipal {
     public static RapidPrincipal withName(String name){
         RapidPrincipal principal = new RapidPrincipal();
         principal.setName(name);
-        principal.setPassword(RapidSecurityContextImpl.TEMP_USER_PASSWORD);
+        principal.setPassword("password");
         principal.setRoles(new HashSet<>());
         return principal;
     }
 
     public static RapidPrincipal withRoles(String... roles){
         RapidPrincipal principal = new RapidPrincipal();
-        principal.setName(RapidSecurityContextImpl.TEMP_USER_NAME);
-        principal.setPassword(RapidSecurityContextImpl.TEMP_USER_PASSWORD);
+        principal.setName("test user");
+        principal.setPassword("password");
         principal.setRoles(Sets.newHashSet(Arrays.asList(roles)));
         return principal;
     }

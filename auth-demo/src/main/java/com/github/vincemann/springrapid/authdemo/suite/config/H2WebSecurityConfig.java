@@ -1,7 +1,6 @@
-package com.github.vincemann.springrapid.authdemo.config;
+package com.github.vincemann.springrapid.authdemo.suite.config;
 
 import com.github.vincemann.springrapid.auth.config.RapidWebSecurityConfig;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;

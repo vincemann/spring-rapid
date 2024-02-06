@@ -10,4 +10,7 @@ public interface Roles {
 
     String ANON = "ROLE_ANONYMOUS";
     String ANON_RAW = "ANONYMOUS";
+
+    String SYSTEM = "ROLE_SYSTEM";
+    String SYSTEM_RAW = "SYSTEM";
 }

@@ -2,16 +2,22 @@ package com.github.vincemann.springrapid.core.sec;
 
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -27,14 +33,10 @@ import java.util.stream.Collectors;
 public class RapidSecurityContextImpl implements RapidSecurityContext
 {
 
-    public static final String TEMP_USER_NAME = "tempUserName@RapidSecurityContextImpl.com";
-    public static final String TEMP_USER_PASSWORD = "tempUserPassword123@";
 
-    public static final String TEMP_ADMIN_NAME = "tempAdminName@RapidSecurityContextImpl.com";
-    public static final String TEMP_ADMIN_PASSWORD = "tempAdminPassword123@";
+    private AuthenticationManager authenticationManager;
 
-    //is always invalid
-    private static final String TEMP_ID = "-1";
+
 
     @Override
     public RapidPrincipal login(RapidPrincipal principal) {
@@ -44,7 +46,8 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
                 log.warn("Principal: " + old + " was already logged in. This login will override old principals session");
         }
         Authentication auth = createToken(principal);
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        Authentication authenticated = authenticationManager.authenticate(auth);
+        SecurityContextHolder.getContext().setAuthentication(authenticated);
         return old;
     }
 
@@ -62,71 +65,52 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
         }
     }
 
+    @Override
+    public void executeAsSystemUser(Runnable runnable) {
+        Authentication originalAuth = SecurityContextHolder.getContext().getAuthentication();
+        if (originalAuth.getAuthorities().contains(new SimpleGrantedAuthority(Roles.SYSTEM))){
+            runnable.run();
+            return;
+        }
+        try {
+            SecurityContextHolder.getContext().setAuthentication(getSystemUser());
+            runnable.run();
+        } finally {
+            SecurityContextHolder.getContext().setAuthentication(originalAuth);
+        }
+    }
+
+    @Override
+    public <T> T executeAsSystemUser(Supplier<T> supplier) {
+        Authentication originalAuth = SecurityContextHolder.getContext().getAuthentication();
+        if (originalAuth.getAuthorities().contains(new SimpleGrantedAuthority(Roles.SYSTEM)))
+            return supplier.get();
+        try {
+            // dont go through authentication manager, bc system only exists in ram
+            SecurityContextHolder.getContext().setAuthentication(getSystemUser());
+            return supplier.get();
+        } finally {
+            SecurityContextHolder.getContext().setAuthentication(originalAuth);
+        }
+    }
+
+    private Authentication getSystemUser() {
+        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(Roles.SYSTEM);
+        return new UsernamePasswordAuthenticationToken("system", null, authorities);
+    }
+
     protected Authentication createToken(RapidPrincipal principal) {
         return new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities());
     }
 
-    protected Authentication createToken(String name, String password, Set<String> roles) {
-        RapidPrincipal principal = new RapidPrincipal(name, password, roles, TEMP_ID);
-        return new UsernamePasswordAuthenticationToken(
-                principal,
-                password,
-                roles.stream().map(this::map).collect(Collectors.toSet()));
-    }
 
     protected GrantedAuthority map(String role) {
         return new SimpleGrantedAuthority(role);
     }
 
-    @Transactional
-    @Override
-    public void runAs(RapidPrincipal principal, Runnable runnable) {
-        runAs(createToken(principal), runnable);
-    }
 
-    @Transactional
-    public void runWithRoles(Set<String> roles, Runnable runnable) {
-        runAs(createToken(
-                TEMP_USER_NAME,
-                TEMP_USER_PASSWORD,
-                roles
-        ), runnable);
-    }
-
-    @Transactional
-    public void runAuthenticated(Runnable runnable) {
-        runAs(createToken(
-                TEMP_USER_NAME,
-                TEMP_USER_PASSWORD,
-                new HashSet<>()
-        ), runnable);
-    }
-
-    @Transactional
-    public void runAsAdmin(Runnable privRunnable) {
-        runAs(createToken(TEMP_ADMIN_NAME,
-                TEMP_ADMIN_PASSWORD,
-                Sets.newHashSet(Roles.ADMIN)
-        ), privRunnable);
-    }
-
-    @Transactional
-    public void runWithName(String name, Runnable runnable) {
-        runAs(createToken(
-                name,
-                TEMP_USER_PASSWORD,
-                new HashSet<>()
-        ), runnable);
-    }
-
-    protected void runAs(Authentication token, Runnable runnable) {
-        Authentication old = SecurityContextHolder.getContext().getAuthentication();
-//        log.debug("saving old security context authentication: " + old);
-        SecurityContextHolder.getContext().setAuthentication(token);
-        runnable.run();
-        //restore
-//        log.debug("restoring old security context authentication: " + old);
-        SecurityContextHolder.getContext().setAuthentication(old);
-
+    @Autowired
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
     }
 }

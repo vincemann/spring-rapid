@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.authdemo.config;
+package com.github.vincemann.springrapid.authdemo.suite.config;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.controller.dto.SignupDto;
@@ -7,7 +7,6 @@ import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.authdemo.model.User;
 import com.github.vincemann.springrapid.core.sec.Roles;
 import com.google.common.collect.Sets;
-import org.springframework.stereotype.Component;
 
 public class MyAuthTestAdapter extends AuthTestAdapter {
 

@@ -1,8 +1,7 @@
-package com.github.vincemann.springrapid.authdemo.config;
+package com.github.vincemann.springrapid.authdemo.suite.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 @Configuration

@@ -4,6 +4,9 @@ import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.annotation.CustomToString;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -11,10 +14,13 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 @LogInteraction(Severity.TRACE)
 public interface RapidSecurityContext
         extends AopLoggable {
+
+    String SYSTEM_USERNAME = "system";
 
     @LogInteraction(Severity.DEBUG)
     @CustomToString(key = "arg1", toStringMethod = "shortToString")
@@ -29,12 +35,9 @@ public interface RapidSecurityContext
         SecurityContextHolder.clearContext();
     }
 
-    //Convenience methods that could all be realized by using login
-    void runAs(RapidPrincipal principal, Runnable runnable);
-    public void runWithRoles(Set<String> roles, Runnable runnable);
-    public void runAuthenticated(Runnable runnable);
-    public void runAsAdmin(Runnable privRunnable);
-    public void runWithName(String name, Runnable runnable);
+
+    public void executeAsSystemUser(Runnable aclOperation);
+    public <T> T executeAsSystemUser(Supplier<T> supplier);
 
 
     // i hardcode these methods as static, because this information is retrieved like that in the whole framework

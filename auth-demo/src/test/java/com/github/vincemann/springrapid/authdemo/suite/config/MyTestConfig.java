@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.authdemo.config;
+package com.github.vincemann.springrapid.authdemo.suite.config;
 
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import org.springframework.context.annotation.Bean;

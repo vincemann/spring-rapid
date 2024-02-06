@@ -8,7 +8,6 @@ import com.github.vincemann.springrapid.acl.service.RapidAclServiceImpl;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverterImpl;
 import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.sec.Roles;
-import com.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
 import com.github.vincemann.springrapid.acl.framework.VerboseAclPermissionEvaluator;
 import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +23,7 @@ import org.springframework.security.access.expression.method.DefaultMethodSecuri
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.acls.AclPermissionCacheOptimizer;
 import org.springframework.security.acls.domain.AclAuthorizationStrategy;
+import org.springframework.security.acls.domain.AclAuthorizationStrategyImpl;
 import org.springframework.security.acls.domain.ConsoleAuditLogger;
 import org.springframework.security.acls.domain.EhCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
@@ -120,11 +120,8 @@ public class RapidAclAutoConfiguration {
     @ConditionalOnMissingBean(AclAuthorizationStrategy.class)
     @Bean
     public AclAuthorizationStrategy aclAuthorizationStrategy() {
-        //admin is allowed to change all acl db tables, but he is not automatically allowed to do anything acl restricted bc of this statement
-        //return new AclAuthorizationStrategyImpl(new SimpleGrantedAuthority(AuthorityName.ROLE_ADMIN.toString()));
-        return new NoModSecurityCheckAclAuthorizationStrategy(
-                new SimpleGrantedAuthority(Roles.ADMIN)
-        );
+        // only system user can change acl information, user RapidSecurityContext.executeAsSystemUser() for acl altering code
+        return new AclAuthorizationStrategyImpl(new SimpleGrantedAuthority(Roles.SYSTEM));
     }
 
     @ConditionalOnMissingBean(MethodSecurityExpressionHandler.class)

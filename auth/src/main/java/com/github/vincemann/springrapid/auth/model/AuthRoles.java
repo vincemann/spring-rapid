@@ -8,4 +8,5 @@ public interface AuthRoles extends Roles {
 
     String BLOCKED = "ROLE_BLOCKED";
     String BLOCKED_RAW = "BLOCKED";
+
 }

@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.authdemo.config;
+package com.github.vincemann.springrapid.authdemo.suite.config;
 
 //@Configuration
 //public class DbIdentityFixConfig {

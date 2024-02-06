@@ -16,13 +16,13 @@ import java.io.Serializable;
 
 @Transactional
 @Getter
-public class CreatedInheritsPermissionExtension<E extends IdentifiableEntity<Id> & AclParentAware, Id extends Serializable>
+public class CreatedInheritsPermissionsExtension<E extends IdentifiableEntity<Id> & AclParentAware, Id extends Serializable>
         extends AclExtension<CrudService<E, Id>>
         implements GenericCrudServiceExtension<CrudService<E, Id>, E, Id> {
 
     private Permission[] permissionsToInherit;
 
-    public CreatedInheritsPermissionExtension(Permission... permissions) {
+    public CreatedInheritsPermissionsExtension(Permission... permissions) {
         this.permissionsToInherit = permissions;
     }
 
