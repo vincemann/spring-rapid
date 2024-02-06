@@ -20,24 +20,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 public class RapidAuthenticationAutoConfiguration {
 
 
-    @Bean
-    @ConditionalOnMissingBean(name = "loginAttemptService")
-    public LoginAttemptService loginAttemptService(){
-        return new LoginAttemptServiceImpl();
-    }
 
-
-    @ConditionalOnMissingBean(name = "bruteForceAuthenticationFailureListener")
-    @Bean
-    public BruteForceAuthenticationFailureListener bruteForceAuthenticationFailureListener(){
-        return new BruteForceAuthenticationFailureListener();
-    }
-
-    @ConditionalOnMissingBean(name = "bruteForceAuthenticationSuccessEventListener")
-    @Bean
-    public BruteForceAuthenticationSuccessEventListener bruteForceAuthenticationSuccessEventListener(){
-        return new BruteForceAuthenticationSuccessEventListener();
-    }
     /**
      * Configures AuthenticationSuccessHandler if missing
      */

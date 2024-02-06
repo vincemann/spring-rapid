@@ -34,7 +34,6 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected AuthorizationTokenService authorizationTokenService;
 	protected RapidSecurityContext securityContext;
 	protected RapidAuthenticationSuccessHandler authenticationSuccessHandler;
-	protected LoginAttemptService loginAttemptService;
 
 	public RapidWebSecurityConfig() {
 
@@ -56,7 +55,6 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 		logout(http); // logout related configuration
 		exceptionHandling(http); // exception handling
 		tokenAuthentication(http); // configure token authentication filter
-		bruteForceFilter(http);
 		csrf(http); // CSRF configuration
 		authorizeRequests(http); // authorize requests
 		otherConfigurations(http); // override this to add more configurations
@@ -157,10 +155,6 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 				UsernamePasswordAuthenticationFilter.class);
 	}
 
-	protected void bruteForceFilter(HttpSecurity http){
-		http.addFilterBefore(new LoginBruteForceFilter(loginAttemptService,properties),
-				UsernamePasswordAuthenticationFilter.class);
-	}
 
 
 	/**
@@ -218,10 +212,6 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	public void setAuthenticationSuccessHandler(RapidAuthenticationSuccessHandler authenticationSuccessHandler) {
 		this.authenticationSuccessHandler = authenticationSuccessHandler;
-	}
-	@Autowired
-	public void setLoginAttemptService(LoginAttemptService loginAttemptService) {
-		this.loginAttemptService = loginAttemptService;
 	}
 
 }

@@ -43,7 +43,7 @@ public class LoginAttemptServiceImpl implements LoginAttemptService{
     }
 
     public boolean isBlocked(String key) {
-        if (!authProperties.isLoginBruteforceProtection()){
+        if (!authProperties.isBruteForceProtection()){
             return false;
         }
         try {

@@ -3,7 +3,6 @@ package com.github.vincemann.springrapid.auth;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
@@ -59,7 +58,7 @@ public class AuthProperties {
 
 	public int maxLoginAttempts = 25;
 
-	public boolean loginBruteforceProtection = true;
+	public boolean bruteForceProtection = false;
 
 
 	/**

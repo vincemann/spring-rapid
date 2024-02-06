@@ -20,15 +20,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-/**
- * Type-safe Wrapper for Springs {@link SecurityContext#getAuthentication()}, with focus of putting all info into the {@link Authentication#getContactInformation()}.
- *
- *
- *
- * Implementation Details:
- * Hardcode use of UsernamePasswordToken and force to have all info regarding logged in user (also {@link Authentication#getDetails()}) in typed Principal.
- * Since all info is encapsulated there, there is no gain in giving control about different Authentication impls (realized via AuthenticationFactories for example)
- **/
+// use springs authentication.getDetails to store more info then already given in RapidAuthenticatedPrincipal
 @Slf4j
 public class RapidSecurityContextImpl implements RapidSecurityContext
 {
