@@ -35,14 +35,21 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
 
     // get user from contactInformation from code
-    public U verifyUser(@NotBlank String verificationCode) throws EntityNotFoundException,  BadEntityException;
+    public U verifyUser(@NotBlank String verificationCode) throws EntityNotFoundException, BadEntityException, BadTokenException;
 
     public void forgotPassword(@NotBlank String contactInformation) throws EntityNotFoundException;
 
     // use newPassword here so https encrypts new password which is not possible via url param
     // target contactInformation gets extracted from code
-    public U resetPassword(@NotBlank String newPassword,@NotBlank String code) throws EntityNotFoundException,  BadEntityException;
-    public void changePassword(U user,@NotBlank String oldPassword,@NotBlank String newPassword,@NotBlank String retypeNewPassword) throws EntityNotFoundException, BadEntityException;
+    public U resetPassword(@NotBlank String newPassword,@NotBlank String code) throws EntityNotFoundException, BadEntityException, BadTokenException;
+
+    void addRole(ID userId, String role) throws EntityNotFoundException, BadEntityException;
+
+    void removeRole(ID userId, String role) throws EntityNotFoundException, BadEntityException;
+
+    void updatePassword(ID userId, String password) throws EntityNotFoundException, BadEntityException;
+
+    public void changePassword(U user, @NotBlank String oldPassword, @NotBlank String newPassword, @NotBlank String retypeNewPassword) throws EntityNotFoundException, BadEntityException;
 
     // get user from contactInformation from code
     public U changeContactInformation(@NotBlank String changeContactInformationCode) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException;
@@ -73,4 +80,7 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
     @Override
     U softUpdate(U entity) throws EntityNotFoundException, BadEntityException;
+
+    U createUser();
+
 }

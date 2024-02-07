@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,6 +24,7 @@ public class SignupDto implements Serializable {
     @NotBlank
     private String password;
 
+    @NotNull
     private Set<String> roles = new HashSet<>();
 
     public SignupDto(String contactInformation, String password, Set<String> roles) {

@@ -4,15 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.controller.dto.*;
+import com.github.vincemann.springrapid.auth.controller.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.auth.controller.dto.user.FindForeignUserDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.controller.dto.user.FindOwnUserDto;
 import com.github.vincemann.springrapid.auth.controller.dto.user.FullUserDto;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
-import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
-import com.github.vincemann.springrapid.auth.service.PasswordService;
-import com.github.vincemann.springrapid.auth.service.ResetPasswordDto;
-import com.github.vincemann.springrapid.auth.service.UserService;
+import com.github.vincemann.springrapid.auth.service.*;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
@@ -55,6 +53,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	private S unsecuredService;
 
 	private PasswordService passwordService;
+	private SignupService<U,? extends SignupDto> signupService;
 
 	private HttpTokenService httpTokenService;
 	private AuthProperties authProperties;
@@ -124,10 +123,8 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		Class<?> dtoClass = createDtoClass(getSignupUrl(),Direction.REQUEST,request,null);
 		Object signupDto = getJsonMapper().readDto(jsonDto, dtoClass);
 		getDtoValidationStrategy().validate(signupDto);
-		log.debug("Signing up: " + signupDto);
 		U user = getDtoMapper().mapToEntity(signupDto, getEntityClass());
   		U saved = getService().signup(user);
-		log.debug("Signed up: " + signupDto);
 
 		appendFreshToken(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,

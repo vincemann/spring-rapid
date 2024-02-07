@@ -18,9 +18,7 @@ import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.pass.RapidPasswordEncoder;
-import com.github.vincemann.springrapid.core.util.Message;
-import com.github.vincemann.springrapid.core.util.VerifyAccess;
-import com.github.vincemann.springrapid.core.util.VerifyEntity;
+import com.github.vincemann.springrapid.core.util.*;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +42,6 @@ import static com.github.vincemann.springrapid.auth.util.PrincipalUtils.isAnon;
  * Note:
  * If you extend from this class and annotate with @{@link org.springframework.stereotype.Service} or @{@link org.springframework.stereotype.Component}
  * make sure to not also add {@link org.springframework.context.annotation.Primary}
- *
  */
 @Validated
 @Slf4j
@@ -55,7 +52,7 @@ public abstract class JpaUserService
                 R extends AbstractUserRepository<U, ID>
                 >
         extends JpaCrudService<U, ID, R>
-            implements UserService<U, ID>, ApplicationContextAware {
+        implements UserService<U, ID>, ApplicationContextAware {
 
 
     public static final String CHANGE_CONTACT_INFORMATION_AUDIENCE = "change-contactInformation";
@@ -103,9 +100,9 @@ public abstract class JpaUserService
     @Transactional
     public U signup(U user) throws BadEntityException, AlreadyRegisteredException {
         //admins get created with createAdminMethod
-        if (user.getRoles() == null){
+        if (user.getRoles() == null) {
             user.setRoles(new HashSet<>());
-        }else user.getRoles().add(AuthRoles.USER);
+        } else user.getRoles().add(AuthRoles.USER);
         passwordValidator.validate(user.getPassword());
         checkUniqueContactInformation(user.getContactInformation());
         U saved = service.create(user);
@@ -146,9 +143,7 @@ public abstract class JpaUserService
         if (password == null) {
             return;
         }
-        if (!passwordEncoder.isEncrypted(password)) {
-            user.setPassword(passwordEncoder.encode(password));
-        }
+
     }
 
     /**
@@ -174,24 +169,22 @@ public abstract class JpaUserService
      * @return
      */
     @Transactional
-    public U verifyUser(String verificationCode) throws EntityNotFoundException, BadEntityException {
-        try {
-            JWTClaimsSet claims = jweTokenService.parseToken(verificationCode);
-            U user = extractUserFromClaims(claims);
-            RapidJwt.validate(claims, VERIFY_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
+    public U verifyUser(String verificationCode) throws EntityNotFoundException, BadEntityException, BadTokenException {
+
+        JWTClaimsSet claims = jweTokenService.parseToken(verificationCode);
+        U user = extractUserFromClaims(claims);
+        RapidJwt.validate(claims, VERIFY_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
 
 
-            // ensure that he is unverified
-            // this makes sense to do here not in security plugin
-            VerifyEntity.is(user.hasRole(AuthRoles.UNVERIFIED), "Already Verified");
-            //verificationCode is jwtToken
+        // ensure that he is unverified
+        // this makes sense to do here not in security plugin
+        VerifyEntity.is(user.hasRole(AuthRoles.UNVERIFIED), "Already Verified");
+        //verificationCode is jwtToken
 
-            //no login needed bc token of user is appended in controller -> we avoid dynamic logins in a stateless env
-            //also to be able to use read-only security test -> generic principal type does not need to be passed into this class
-            return verifyUser(user);
-        } catch (BadTokenException e) {
-            throw new BadEntityException(Message.get("com.github.vincemann.wrong.verificationCode"), e);
-        }
+        //no login needed bc token of user is appended in controller -> we avoid dynamic logins in a stateless env
+        //also to be able to use read-only security test -> generic principal type does not need to be passed into this class
+        return verifyUser(user);
+
 
     }
 
@@ -217,9 +210,7 @@ public abstract class JpaUserService
     }
 
 
-
-
-        /**
+    /**
      * Sends the forgot password link.
      *
      * @param user
@@ -241,7 +232,7 @@ public abstract class JpaUserService
                 .toUriString();
         log.info("forgotPasswordLink: " + forgotPasswordLink);
 
-        messageSender.sendMessage(forgotPasswordLink,FORGOT_PASSWORD_AUDIENCE,forgotPasswordCode,user.getContactInformation());
+        messageSender.sendMessage(forgotPasswordLink, FORGOT_PASSWORD_AUDIENCE, forgotPasswordCode, user.getContactInformation());
 
 
         log.debug("Forgot password link mail queued.");
@@ -253,64 +244,89 @@ public abstract class JpaUserService
      * @return
      */
     @Transactional
-    public U resetPassword(String newPassword, String code) throws EntityNotFoundException, BadEntityException {
+    public U resetPassword(String newPassword, String code) throws EntityNotFoundException, BadEntityException, BadTokenException {
 
-        try {
-            JWTClaimsSet claims = jweTokenService.parseToken(code);
-            RapidJwt.validate(claims, FORGOT_PASSWORD_AUDIENCE);
+        JWTClaimsSet claims = jweTokenService.parseToken(code);
+        RapidJwt.validate(claims, FORGOT_PASSWORD_AUDIENCE);
 
-            passwordValidator.validate(newPassword);
-            U user = extractUserFromClaims(claims);
-            RapidJwt.validateIssuedAfter(claims, user.getCredentialsUpdatedMillis());
+        passwordValidator.validate(newPassword);
+        U user = extractUserFromClaims(claims);
+        RapidJwt.validateIssuedAfter(claims, user.getCredentialsUpdatedMillis());
 
-            // sets the password
-            user.setPassword(passwordEncoder.encode(newPassword));
-            user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-            try {
-                return service.softUpdate(user);
-            } catch (NonTransientDataAccessException e) {
-                throw new RuntimeException("Could not reset users password", e);
-            }
-        } catch (BadTokenException e) {
-            throw new BadEntityException(Message.get("com.github.vincemann.wrong.verificationCode"), e);
+        // sets the password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setCredentialsUpdatedMillis(System.currentTimeMillis());
+        return service.softUpdate(user);
+    }
+
+
+    // helper methods for special updates that enforce basic database rules but not more complex stuff like sending msges to user
+
+    @Override
+    public void addRole(ID userId, String role) throws EntityNotFoundException, BadEntityException {
+        U oldEntity = findOldEntity(userId);
+        Set<String> newRoles = new HashSet<>(oldEntity.getRoles());
+        newRoles.add(role);
+        U update = Entity.createUpdate(oldEntity);
+        update.setRoles(newRoles);
+        update.setCredentialsUpdatedMillis(System.currentTimeMillis());
+        service.partialUpdate(update);
+    }
+
+    @Override
+    public void removeRole(ID userId, String role) throws EntityNotFoundException, BadEntityException {
+        U oldEntity = findOldEntity(userId);
+        Set<String> newRoles = new HashSet<>(oldEntity.getRoles());
+        newRoles.remove(role);
+        U update = Entity.createUpdate(oldEntity);
+        update.setRoles(newRoles);
+        update.setCredentialsUpdatedMillis(System.currentTimeMillis());
+        service.partialUpdate(update);
+
+    }
+
+
+    @Override
+    public void updatePassword(ID userId, String password) throws EntityNotFoundException, BadEntityException {
+        String encoded;
+        if (!passwordEncoder.isEncrypted(password)) {
+            encoded = passwordEncoder.encode(password);
+        } else {
+            encoded = password;
         }
+        U update = Entity.createUpdate(getEntityClass(), userId);
+        update.setPassword(encoded);
+        update.setCredentialsUpdatedMillis(System.currentTimeMillis());
+        service.partialUpdate(update);
     }
 
-    @Transactional
-    @Override
-    public U partialUpdate(U update, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
-        updateSpecialUserFields(update);
-        return super.partialUpdate(update, fieldsToUpdate);
-    }
 
-    @Transactional
-    @Override
-    public U fullUpdate(U update) throws BadEntityException, EntityNotFoundException {
-        updateSpecialUserFields(update);
-        return super.fullUpdate(update);
-    }
+//    protected boolean rolesUpdated(U update) throws EntityNotFoundException {
+//        U old = findOldEntity(update.getId());
+//        if (!old.getRoles().equals(update))
+//            return true;
+//        else
+//            return false;
+//    }
 
-    @Transactional
-    @Override
-    public U softUpdate(U update) throws EntityNotFoundException, BadEntityException {
-        updateSpecialUserFields(update);
-        return super.softUpdate(update);
-    }
+//    protected void checkForBlacklistedProperties(String... properties){
+//        ArrayList<String> updatedProperties = Lists.newArrayList(properties);
+//        if (updatedProperties.contains(propertyNameOf(new AbstractUser()::getRoles))
+//            || updatedProperties.contains(propertyNameOf(new AbstractUser()::getContactInformation))
+//            || updatedProperties.contains(propertyNameOf(new AbstractUser()::getPassword)){
+//            throw new IllegalArgumentException("user specialized methods for updating fields like: roles, contactInformation or password");
+//        }
+//    }
+//
+//    protected boolean rolesPartialUpdated(U update, String... fieldsToUpdate){
+//        Set<String> updatedFields = Entity.findPartialUpdatedFields(update, fieldsToUpdate);
+//        if (Lists.newArrayList(updatedFields).contains()){
+//            return true;
+//        }else{
+//            return false;
+//        }
+//    }
 
-    protected void updateSpecialUserFields(U update) throws BadEntityException, EntityNotFoundException {
-        Optional<U> old = findById(update.getId());
-        VerifyEntity.isPresent(old, "Entity to update with id: " + update.getId() + " not found");
-        //update roles works in transaction -> changes are applied on the fly
-        updateRoles(old.get(), update);
-        update.setRoles(old.get().getRoles());
-        String password = update.getPassword();
-        if (password != null) {
-            if (!getPasswordEncoder().isEncrypted(password)) {
-                passwordValidator.validate(password);
-            }
-        }
-        encodePasswordIfNecessary(update);
-    }
 
     /**
      * Changes the password.
@@ -343,30 +359,12 @@ public abstract class JpaUserService
 
 
     protected void updateRoles(U old, U newUser) {
-        log.debug("Updating user fields for user: " + old);
-
         // no role updates has been made, keep old roles
         if (newUser.getRoles() == null) {
             return;
         }
-
-        // after this if statement passed it is obvious that roles have changed / will change
-        // just a matter of how
         if (old.getRoles().equals(newUser.getRoles())) // roles are same
             return;
-
-
-        if (newUser.hasRole(AuthRoles.UNVERIFIED)) {
-
-            if (!old.hasRole(AuthRoles.UNVERIFIED)) {
-                makeUnverified(old); // make user unverified
-            }
-        } else {
-
-            if (old.hasRole(AuthRoles.UNVERIFIED)) {
-                old.getRoles().remove(AuthRoles.UNVERIFIED); // make user verified
-            }
-        }
 
 
         old.setRoles(newUser.getRoles());
@@ -377,7 +375,6 @@ public abstract class JpaUserService
 
     /**
      * Requests for contactInformation change.
-     *
      */
     @Transactional
     public void requestContactInformationChange(U user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException, BadEntityException {
@@ -398,9 +395,8 @@ public abstract class JpaUserService
         log.debug("Requested contactInformation change: " + user);
         // needs to be done bc validation exceptions are thrown after transaction ends, otherwise validation fails but
         // message is still sent
-        TransactionalUtils.afterCommit( () -> sendChangeContactInformationMessage(saved));
+        TransactionalUtils.afterCommit(() -> sendChangeContactInformationMessage(saved));
     }
-
 
 
     /**
@@ -425,7 +421,7 @@ public abstract class JpaUserService
                     .queryParam("code", changeContactInformationCode)
                     .toUriString();
             log.info("change contactInformation link: " + changeContactInformationLink);
-            messageSender.sendMessage(changeContactInformationLink,CHANGE_CONTACT_INFORMATION_AUDIENCE,changeContactInformationCode,user.getContactInformation());
+            messageSender.sendMessage(changeContactInformationLink, CHANGE_CONTACT_INFORMATION_AUDIENCE, changeContactInformationCode, user.getContactInformation());
 
             log.debug("Change contactInformation link mail queued.");
 
@@ -543,14 +539,11 @@ public abstract class JpaUserService
                 .queryParam("code", verificationCode)
                 .toUriString();
         log.info("verify link: " + verifyLink);
-        messageSender.sendMessage(verifyLink,VERIFY_CONTACT_INFORMATION_AUDIENCE,verificationCode, user.getContactInformation());
+        messageSender.sendMessage(verifyLink, VERIFY_CONTACT_INFORMATION_AUDIENCE, verificationCode, user.getContactInformation());
 
 
         log.debug("Verification mail to " + user.getContactInformation() + " queued.");
     }
-
-
-
 
 
     protected AuthorizationTokenService getAuthorizationTokenService() {
