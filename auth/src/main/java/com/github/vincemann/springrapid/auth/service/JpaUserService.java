@@ -118,8 +118,10 @@ public abstract class JpaUserService
     @Transactional
     @Override
     public U create(U user) throws BadEntityException {
-        // no restrictions in save method, all restrictions and checks in more abstract methods such as signup and createAdmin
-        encodePasswordIfNecessary(user);
+        // only enforce very basic stuff
+        user.setPassword(encodedPasswordIfNeeded(user.getPassword()));
+        if (user.getPassword() != null)
+            passwordValidator.validate(user.getPassword());
         return super.create(user);
     }
 
@@ -135,16 +137,6 @@ public abstract class JpaUserService
         TransactionalUtils.afterCommit(() -> sendVerificationMessage(user));
     }
 
-    /**
-     * Only encrypts password, if it is not already encrypted.
-     */
-    protected void encodePasswordIfNecessary(U user) {
-        String password = user.getPassword();
-        if (password == null) {
-            return;
-        }
-
-    }
 
     /**
      * Resends verification mail to the user.
@@ -196,6 +188,15 @@ public abstract class JpaUserService
         return saved;
     }
 
+
+    @Override
+    public U extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException {
+        ID id = idConverter.toId(claims.getSubject());
+        // fetch the user
+        Optional<U> byId = findById(id);
+        VerifyEntity.isPresent(byId, "User with id: " + id + " not found");
+        return byId.get();
+    }
 
     /**
      * Forgot password.
@@ -263,41 +264,42 @@ public abstract class JpaUserService
     // helper methods for special updates that enforce basic database rules but not more complex stuff like sending msges to user
 
     @Override
-    public void addRole(ID userId, String role) throws EntityNotFoundException, BadEntityException {
+    public U addRole(ID userId, String role) throws EntityNotFoundException, BadEntityException {
         U oldEntity = findOldEntity(userId);
         Set<String> newRoles = new HashSet<>(oldEntity.getRoles());
         newRoles.add(role);
         U update = Entity.createUpdate(oldEntity);
         update.setRoles(newRoles);
         update.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        service.partialUpdate(update);
+        return service.partialUpdate(update);
     }
 
     @Override
-    public void removeRole(ID userId, String role) throws EntityNotFoundException, BadEntityException {
+    public U removeRole(ID userId, String role) throws EntityNotFoundException, BadEntityException {
         U oldEntity = findOldEntity(userId);
         Set<String> newRoles = new HashSet<>(oldEntity.getRoles());
         newRoles.remove(role);
         U update = Entity.createUpdate(oldEntity);
         update.setRoles(newRoles);
         update.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        service.partialUpdate(update);
-
+        return service.partialUpdate(update);
     }
 
 
     @Override
     public void updatePassword(ID userId, String password) throws EntityNotFoundException, BadEntityException {
-        String encoded;
-        if (!passwordEncoder.isEncrypted(password)) {
-            encoded = passwordEncoder.encode(password);
-        } else {
-            encoded = password;
-        }
         U update = Entity.createUpdate(getEntityClass(), userId);
-        update.setPassword(encoded);
+        update.setPassword(encodedPasswordIfNeeded(password));
         update.setCredentialsUpdatedMillis(System.currentTimeMillis());
         service.partialUpdate(update);
+    }
+    
+    protected String encodedPasswordIfNeeded(String password){
+        if (!passwordEncoder.isEncrypted(password)) {
+            return passwordEncoder.encode(password);
+        } else {
+            return password;
+        }
     }
 
 
@@ -474,13 +476,6 @@ public abstract class JpaUserService
         }
     }
 
-    protected U extractUserFromClaims(JWTClaimsSet claims) throws BadEntityException, EntityNotFoundException {
-        ID id = idConverter.toId(claims.getSubject());
-        // fetch the user
-        Optional<U> byId = findById(id);
-        VerifyEntity.isPresent(byId, "User with id: " + id + " not found");
-        return byId.get();
-    }
 
 
     /**

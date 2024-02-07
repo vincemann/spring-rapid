@@ -53,7 +53,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	private S unsecuredService;
 
 	private PasswordService passwordService;
-	private SignupService<U,? extends SignupDto> signupService;
+	private SignupService<U,SignupDto> signupService;
 
 	private HttpTokenService httpTokenService;
 	private AuthProperties authProperties;
@@ -121,10 +121,11 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 		String jsonDto = readBody(request);
 		Class<?> dtoClass = createDtoClass(getSignupUrl(),Direction.REQUEST,request,null);
-		Object signupDto = getJsonMapper().readDto(jsonDto, dtoClass);
+		SignupDto signupDto = (SignupDto) getJsonMapper().readDto(jsonDto, dtoClass);
 		getDtoValidationStrategy().validate(signupDto);
+  		U saved = signupService.signup(signupDto);
+
 		U user = getDtoMapper().mapToEntity(signupDto, getEntityClass());
-  		U saved = getService().signup(user);
 
 		appendFreshToken(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,

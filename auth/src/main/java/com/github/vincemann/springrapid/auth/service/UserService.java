@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import org.springframework.stereotype.Component;
+import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
@@ -17,7 +17,6 @@ import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 @Validated
 public interface UserService<U extends AbstractUser<ID>, ID extends Serializable>
@@ -37,15 +36,17 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     // get user from contactInformation from code
     public U verifyUser(@NotBlank String verificationCode) throws EntityNotFoundException, BadEntityException, BadTokenException;
 
+    U extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException;
+
     public void forgotPassword(@NotBlank String contactInformation) throws EntityNotFoundException;
 
     // use newPassword here so https encrypts new password which is not possible via url param
     // target contactInformation gets extracted from code
     public U resetPassword(@NotBlank String newPassword,@NotBlank String code) throws EntityNotFoundException, BadEntityException, BadTokenException;
 
-    void addRole(ID userId, String role) throws EntityNotFoundException, BadEntityException;
+    U addRole(ID userId, String role) throws EntityNotFoundException, BadEntityException;
 
-    void removeRole(ID userId, String role) throws EntityNotFoundException, BadEntityException;
+    U removeRole(ID userId, String role) throws EntityNotFoundException, BadEntityException;
 
     void updatePassword(ID userId, String password) throws EntityNotFoundException, BadEntityException;
 
@@ -57,8 +58,6 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     public void requestContactInformationChange(U user,@NotBlank String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException, BadEntityException;
 
 
-    @LogInteraction(Severity.TRACE)
-    public String createNewAuthToken(@NotBlank String targetUserContactInformation) throws EntityNotFoundException;
 
     public String createNewAuthToken() throws EntityNotFoundException;
 

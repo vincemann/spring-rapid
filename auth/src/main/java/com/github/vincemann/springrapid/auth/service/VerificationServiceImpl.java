@@ -4,24 +4,21 @@ import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.MessageSender;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
+import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.Entity;
-import com.google.common.collect.Sets;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Slf4j
-public class VerificationServiceImpl<U extends AbstractUser> implements VerificationService<U> {
+public class VerificationServiceImpl implements VerificationService {
 
     public static final String VERIFY_CONTACT_INFORMATION_AUDIENCE = "verify";
 
@@ -33,44 +30,30 @@ public class VerificationServiceImpl<U extends AbstractUser> implements Verifica
 
     private UserService userService;
 
+    private VerificationService verificationService;
+
     @Transactional
     @Override
-    public void makeUnverified(U user) throws BadEntityException, EntityNotFoundException {
+    public AbstractUser makeUnverified(AbstractUser user) throws BadEntityException, EntityNotFoundException {
         if (user.getRoles().contains(AuthRoles.UNVERIFIED)){
             throw new BadEntityException("Already unverified");
         }
-        addRole(user,AuthRoles.UNVERIFIED);
-        TransactionalUtils.afterCommit(() -> sendVerificationMessage(user));
+        AbstractUser updated = userService.addRole(user, AuthRoles.UNVERIFIED);
+        TransactionalUtils.afterCommit(() -> verificationService.sendVerificationMessage(updated));
+        return updated;
     }
 
-    protected void addRole(U user, String role) throws EntityNotFoundException, BadEntityException {
-        Set<String> newRoles = new HashSet<>(user.getRoles());
-        newRoles.add(role);
-        U updateRole = Entity.createUpdate(user);
-        updateRole.setRoles(newRoles);
-        userService.partialUpdate(updateRole);
-    }
-
-    protected void removeRole(U user, String role) throws EntityNotFoundException, BadEntityException {
-        Set<String> newRoles = new HashSet<>(user.getRoles());
-        newRoles.add(role);
-        U updateRole = Entity.createUpdate(user);
-        updateRole.setRoles(newRoles);
-        userService.partialUpdate(updateRole);
-    }
 
     @Override
-    public void makeVerified(U user) throws BadEntityException, EntityNotFoundException {
+    public AbstractUser makeVerified(AbstractUser user) throws BadEntityException, EntityNotFoundException {
         if (!user.getRoles().contains(AuthRoles.UNVERIFIED)){
             throw new BadEntityException("Already verified");
         }
 
-        removeRole(user,AuthRoles.UNVERIFIED);
-        TransactionalUtils.afterCommit(() -> sendVerificationMessage(user));
+        return userService.removeRole(user,AuthRoles.UNVERIFIED);
     }
 
-    @Override
-    public void sendVerificationMessage(U user) {
+    protected void sendVerificationMessage(AbstractUser user) {
         log.debug("Sending verification mail to: " + user);
         JWTClaimsSet claims = RapidJwt.create(VERIFY_CONTACT_INFORMATION_AUDIENCE,
                 user.getId().toString(),
@@ -94,12 +77,34 @@ public class VerificationServiceImpl<U extends AbstractUser> implements Verifica
     }
 
     @Override
-    public void resendVerificationMessage() {
+    public void resendVerificationMessage(AbstractUser user) throws EntityNotFoundException, BadEntityException {
+        VerifyEntity.isPresent(user, "User not found");
+        // must be unverified
+        VerifyEntity.is(user.getRoles().contains(AuthRoles.UNVERIFIED), " Already verified");
 
+        TransactionalUtils.afterCommit(() -> sendVerificationMessage(user));
     }
 
+
+
+
+    @Transactional
     @Override
-    public U verifyUser(String code) {
-        return null;
+    public AbstractUser verifyUser(String code) throws EntityNotFoundException, BadTokenException, BadEntityException {
+        JWTClaimsSet claims = jweTokenService.parseToken(code);
+        AbstractUser user = userService.extractUserFromClaims(claims);
+        RapidJwt.validate(claims, VERIFY_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
+
+
+        // ensure that user is unverified
+        // this makes sense to do here not in security plugin
+        VerifyEntity.is(user.hasRole(AuthRoles.UNVERIFIED), "Already Verified");
+        //verificationCode is jwtToken
+
+        //no login needed bc token of user is appended in controller -> we avoid dynamic logins in a stateless env
+        //also to be able to use read-only security test -> generic principal type does not need to be passed into this class
+        AbstractUser updated = verificationService.makeVerified(user);
+        log.debug("Verified user: " + updated.getContactInformation());
+        return updated;
     }
 }

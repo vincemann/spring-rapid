@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -23,10 +24,12 @@ public class AbstractUser<Id extends Serializable>
 	public static final int CONTACT_INFORMATION_MAX = 250;
 
 	// contactInformation can be email or phone number - dont hardcode to email
+	@NotBlank
 	@Column(nullable = false, unique = true, length = CONTACT_INFORMATION_MAX)
 	protected String contactInformation;
 
 	// in the contactInformation-change process, temporarily stores the new contactInformation
+	@Nullable
 	@Column(length = CONTACT_INFORMATION_MAX)
 	protected String newContactInformation;
 
