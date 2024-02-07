@@ -26,15 +26,9 @@ import java.util.stream.Collectors;
 public class JsonDtoPropertyValidatorImpl implements JsonDtoPropertyValidator {
 
     private ObjectMapper objectMapper;
-    private Validator validator;
 
     public JsonDtoPropertyValidatorImpl() {
         this.objectMapper = new ObjectMapper();
-    }
-
-    @Autowired
-    public void setValidator(Validator validator) {
-        this.validator = validator;
     }
 
     @Override

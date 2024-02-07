@@ -12,6 +12,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Map;
@@ -25,7 +26,7 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
     public Map<String, Object> getContext();
 
-    public U signup( U user) throws BadEntityException, AlreadyRegisteredException;
+
 
     public void resendVerificationMessage(U user) throws EntityNotFoundException, BadEntityException;
 
@@ -34,30 +35,30 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
 
     // get user from contactInformation from code
-    public U verifyUser(/*U user,*/@NotBlank String verificationCode) throws EntityNotFoundException,  BadEntityException;
+    public U verifyUser(@NotBlank String verificationCode) throws EntityNotFoundException,  BadEntityException;
 
     public void forgotPassword(@NotBlank String contactInformation) throws EntityNotFoundException;
 
     // use newPassword here so https encrypts new password which is not possible via url param
     // target contactInformation gets extracted from code
-    public U resetPassword(String newPassword, String code) throws EntityNotFoundException,  BadEntityException;
-    public void changePassword(U user, String oldPassword, String newPassword, String retypeNewPassword) throws EntityNotFoundException, BadEntityException;
+    public U resetPassword(@NotBlank String newPassword,@NotBlank String code) throws EntityNotFoundException,  BadEntityException;
+    public void changePassword(U user,@NotBlank String oldPassword,@NotBlank String newPassword,@NotBlank String retypeNewPassword) throws EntityNotFoundException, BadEntityException;
 
     // get user from contactInformation from code
-    public U changeContactInformation(/*U user,*/  @NotBlank String changeContactInformationCode) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException;
+    public U changeContactInformation(@NotBlank String changeContactInformationCode) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException;
 
-    public void requestContactInformationChange(U user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException, BadEntityException;
+    public void requestContactInformationChange(U user,@NotBlank String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException, BadEntityException;
 
 
     @LogInteraction(Severity.TRACE)
-    public String createNewAuthToken(String targetUserContactInformation) throws EntityNotFoundException;
+    public String createNewAuthToken(@NotBlank String targetUserContactInformation) throws EntityNotFoundException;
 
     public String createNewAuthToken() throws EntityNotFoundException;
 
 //    @LogInteraction(Severity.TRACE)
 //    public Map<String, String> fetchFullToken(String authHeader);
 
-    public U newAdmin(AuthProperties.Admin admin);
+    public U newAdmin(@Valid AuthProperties.Admin admin);
 
     public U signupAdmin(U admin) throws AlreadyRegisteredException, BadEntityException;
 

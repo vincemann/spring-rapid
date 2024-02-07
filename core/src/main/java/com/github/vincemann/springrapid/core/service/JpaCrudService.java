@@ -85,10 +85,6 @@ public abstract class JpaCrudService
         // the second invocation (that should never occur in the first place) halts then
 //            System.err.println("managed entity: " + managedEntity);
         E detachedUpdateEntity = JpaUtils.deepDetachOrGet(update);
-        // copy non null values from update to entityToUpdate
-        // also copy null values from explicitly given fieldsToRemove
-        // updates are applied on the go by hibernate bc entityToUpdate is managed in current session
-//            System.err.println("start with copy properties");
         Set<String> whiteList;
         if (fieldsToUpdate.length == 0)
             whiteList = ReflectionUtils.findAllNonNullFieldNames(update);

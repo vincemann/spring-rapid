@@ -18,7 +18,6 @@ import java.util.Set;
 public class SignupDto implements Serializable {
 
     @NotBlank
-    @Email
     private String contactInformation;
 
     @NotBlank

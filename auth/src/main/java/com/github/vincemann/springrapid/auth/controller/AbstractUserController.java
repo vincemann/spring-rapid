@@ -10,6 +10,8 @@ import com.github.vincemann.springrapid.auth.controller.dto.user.FindOwnUserDto;
 import com.github.vincemann.springrapid.auth.controller.dto.user.FullUserDto;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
+import com.github.vincemann.springrapid.auth.service.PasswordService;
+import com.github.vincemann.springrapid.auth.service.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
@@ -51,6 +53,8 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 
 	private S unsecuredService;
+
+	private PasswordService passwordService;
 
 	private HttpTokenService httpTokenService;
 	private AuthProperties authProperties;
@@ -125,7 +129,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
   		U saved = getService().signup(user);
 		log.debug("Signed up: " + signupDto);
 
-		appendFreshTokenOf(saved,response);
+		appendFreshToken(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(getSignupUrl(), Direction.RESPONSE,request, saved));
 		return ok(getJsonMapper().writeDto(dto));
@@ -156,7 +160,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 //		U user = fetchUser(id);
 		U saved = getService().verifyUser(code);
 
-		appendFreshTokenOf(saved,response);
+		appendFreshToken(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(getVerifyUserUrl(), Direction.RESPONSE,request, saved));
 		return ok(getJsonMapper().writeDto(dto));
@@ -176,33 +180,23 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	/**
 	 * Resets password after it's forgotten
 	 */
-	public ResponseEntity<String> resetPassword(
-//			@RequestBody ResetPasswordForm form,
-			HttpServletRequest request,HttpServletResponse response) throws IOException, BadEntityException, EntityNotFoundException, BadTokenException {
+	public ResponseEntity<?> resetPassword(HttpServletRequest request,HttpServletResponse response) throws IOException, BadEntityException, EntityNotFoundException, BadTokenException {
 
 		String body = readBody(request);
-		// todo terrible, fix this, check for equality in inline js in html file
-		// and send propert json in body not url param encoded in body
-		Map<String, String> queryParams = UrlParamUtil.splitQuery(body);
-		String code = readRequestParam(request, "code");
-		String password = queryParams.get("password");
-		String matchPassword = queryParams.get("matchPassword");
-		if (password==null || matchPassword == null){
-			throw new BadEntityException("Insufficient Password data");
-		}
-		if (!password.equals(matchPassword)){
-			throw new BadEntityException("Passwords do not match");
-		}
-		ResetPasswordDto resetPasswordDto = new ResetPasswordDto(password);
-//		ResetPasswordDto resetPasswordDto = getJsonMapper().readDto(body, ResetPasswordDto.class);
+		// change this, so information is transported as dto via json body
+		// also add inline js/html check for second time password provided
+//		Map<String, String> queryParams = UrlParamUtil.splitQuery(body);
+//		String code = readRequestParam(request, "code");
+//		String newPassword = queryParams.get("password");
+		//		ResetPasswordDto resetPasswordDto = new ResetPasswordDto(newPassword,code);
+
+
+		ResetPasswordDto resetPasswordDto = jsonMapper.readDto(body, ResetPasswordDto.class);
 		getDtoValidationStrategy().validate(resetPasswordDto);
 
-		log.debug("Resetting password ... ");
-		U saved = getService().resetPassword(password, code);
-		appendFreshTokenOf(saved,response);
-		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(resetPasswordUrl, Direction.RESPONSE,request, saved));
-		return ok(getJsonMapper().writeDto(dto));
+		passwordService.resetPassword(resetPasswordDto);
+		appendFreshToken(response);
+		return okNoContent();
 	}
 
 	// use gui here bc someone could issue many forgot password requests for foreign contactInformations with his new password set in forntend
@@ -243,7 +237,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 		log.debug("Changing password of user with id: " + id);
 		getService().changePassword(user, changePasswordDto.getOldPassword(),changePasswordDto.getNewPassword(),changePasswordDto.getRetypeNewPassword());
-		appendFreshTokenOf(user,response);
+		appendFreshToken(user,response);
 		return okNoContent();
 	}
 
@@ -266,7 +260,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	public ResponseEntity<?> changeContactInformation(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, AlreadyRegisteredException {
 		String code = readRequestParam(request, "code");
 		U saved = getService().changeContactInformation(code);
-		appendFreshTokenOf(saved,response);
+		appendFreshToken(saved,response);
 		return okNoContent();
 	}
 
@@ -604,12 +598,11 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 
 	/**
-	 * Adds an Authorization header to the response for certain user
+	 * Adds an Authorization header to the response for authenticated user
 	 */
-	protected void appendFreshTokenOf(U user, HttpServletResponse response) throws EntityNotFoundException {
-		String token = getUnsecuredService().createNewAuthToken(user.getContactInformation());
+	protected void appendFreshToken(HttpServletResponse response) throws EntityNotFoundException {
+		String token = getUnsecuredService().createNewAuthToken();
 		httpTokenService.appendToken(token,response);
-//		response.addHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME, JwtService.TOKEN_PREFIX + token);
 	}
 
 

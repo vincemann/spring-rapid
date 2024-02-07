@@ -13,6 +13,4 @@ public interface JsonDtoPropertyValidator {
 
     void validateDto(String json, Class dtoClass/*, Class entityClass*/) throws AccessDeniedException, JsonProcessingException;
     void validatePatch(String json, Class dtoClass/*, Class entityClass*/) throws AccessDeniedException, JsonProcessingException;
-
-    void validateDtoPartly(Object patchDto, Set<String> updatedFields);
 }

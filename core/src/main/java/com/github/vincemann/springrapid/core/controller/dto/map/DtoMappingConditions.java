@@ -4,6 +4,8 @@ import com.github.vincemann.springrapid.core.controller.UrlParamWebExtensionPars
 import com.github.vincemann.springrapid.core.controller.WebExtensionType;
 import com.github.vincemann.springrapid.core.service.filter.WebExtension;
 import com.github.vincemann.springrapid.core.util.Lists;
+import org.hamcrest.Matcher;
+import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -18,6 +20,15 @@ public class DtoMappingConditions {
             @Override
             public boolean test(DtoRequestInfo dtoRequestInfo) {
                 return dtoRequestInfo.getEndpoint().equals(endpoint);
+            }
+        };
+    }
+
+    public static Predicate<DtoRequestInfo> endpoint(Matcher<String> endpointMatcher){
+        return new DescribablePredicate<>("endpoint: " + endpointMatcher) {
+            @Override
+            public boolean test(DtoRequestInfo dtoRequestInfo) {
+                return endpointMatcher.matches(dtoRequestInfo.getEndpoint());
             }
         };
     }

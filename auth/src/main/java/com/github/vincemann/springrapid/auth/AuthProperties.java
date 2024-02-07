@@ -5,6 +5,9 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -91,11 +94,14 @@ public class AuthProperties {
 		/**
 		 * Login ID of the initial Admin user to be created 
 		 */
+		@NotBlank
+		@Email
 		public String contactInformation;
 		
 		/**
 		 * Password of the initial Admin user to be created 
-		 */		
+		 */
+		@NotBlank
 		public String password;
 
 		public Admin(String contactInformation, String password) {
