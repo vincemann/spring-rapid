@@ -3,14 +3,13 @@ package com.github.vincemann.springrapid.auth;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Validated
 @Slf4j
@@ -19,11 +18,11 @@ import java.util.Map;
 public class AuthProperties {
 
 
-	private static CoreProperties coreProperties;
+	private CoreProperties coreProperties;
 
 	public AuthProperties(CoreProperties coreProperties) {
-		AuthProperties.coreProperties = coreProperties;
-		this.controller = new Controller();
+		this.coreProperties = coreProperties;
+		this.controller = new Controller(coreProperties);
 	}
 
 	public Controller controller;
@@ -33,25 +32,84 @@ public class AuthProperties {
 	@Setter
 	public static class Controller {
 
+		private CoreProperties coreProperties;
+
+		public Controller(CoreProperties coreProperties) {
+			this.coreProperties = coreProperties;
+		}
+
 		public String userBaseUrl = coreProperties.baseUrl+"/user";
 
 		public String loginUrl = coreProperties.baseUrl+"/login";
-		public String pingUrl = coreProperties.baseUrl+"/ping";
-		public String contextUrl = coreProperties.baseUrl+"/context";
 
-		public String signupUrl = userBaseUrl +"/signup";
-		public String resetPasswordUrl = userBaseUrl +"/reset-password";
-		public String resetPasswordViewUrl = userBaseUrl +"/reset-password-view";
-		public String fetchByContactInformationUrl = userBaseUrl +"/fetch-by-contactInformation";
-		public String changeContactInformationUrl = userBaseUrl +"/change-contactInformation";
-		public String changeContactInformationViewUrl = userBaseUrl +"/change-contactInformation-view";
-		public String verifyUserUrl = userBaseUrl +"/verify";
-		public String resendVerifyContactInformationMsgUrl = userBaseUrl +"/resend-verify-contactInformation-msg";
-		public String forgotPasswordUrl = userBaseUrl +"/forgot-password";
-		public String changePasswordUrl = userBaseUrl +"/change-password";
-		public String requestContactInformationChangeUrl = userBaseUrl +"/request-contactInformation-change";
-		public String fetchNewAuthTokenUrl = userBaseUrl +"/fetch-new-auth-token";
+		public String signupUrl;
+		public String resetPasswordUrl;
+		public String resetPasswordViewUrl;
+		public String findByContactInformationUrl;
+		public String changeContactInformationUrl;
+		public String changeContactInformationViewUrl;
+		public String verifyUserUrl;
+		public String resendVerifyContactInformationMsgUrl;
+		public String forgotPasswordUrl;
+		public String changePasswordUrl;
+		public String requestContactInformationChangeUrl;
+		public String fetchNewAuthTokenUrl;
 
+		public String getUserBaseUrl() {
+			return coreProperties.getBaseUrl()+"/user";
+		}
+
+		public String getLoginUrl() {
+			return coreProperties.getBaseUrl()+"/login";
+		}
+
+		public String getSignupUrl() {
+			return getUserBaseUrl() +"/signup";
+		}
+
+		public String getResetPasswordUrl() {
+			return getUserBaseUrl() +"/reset-password";
+		}
+
+		public String getResetPasswordViewUrl() {
+			return getUserBaseUrl() +"/reset-password-view";
+		}
+
+		public String getFindByContactInformationUrl() {
+			return getUserBaseUrl() +"/find-by-ci";
+		}
+
+		public String getChangeContactInformationUrl() {
+			return getUserBaseUrl() +"/change-ci";
+		}
+
+		public String getChangeContactInformationViewUrl() {
+			return getUserBaseUrl() +"/change-ci";
+		}
+
+		public String getVerifyUserUrl() {
+			return getUserBaseUrl() +"/verify";
+		}
+
+		public String getResendVerifyContactInformationMsgUrl() {
+			return getUserBaseUrl() +"/resend-verify";
+		}
+
+		public String getForgotPasswordUrl() {
+			return getUserBaseUrl() +"/forgot-password";
+		}
+
+		public String getChangePasswordUrl() {
+			return getUserBaseUrl() +"/change-password";
+		}
+
+		public String getRequestContactInformationChangeUrl() {
+			return getUserBaseUrl() +"/request-change-ci";
+		}
+
+		public String getFetchNewAuthTokenUrl() {
+			return getUserBaseUrl() +"/new-token";
+		}
 	}
 
 	public CoreProperties getCoreProperties() {

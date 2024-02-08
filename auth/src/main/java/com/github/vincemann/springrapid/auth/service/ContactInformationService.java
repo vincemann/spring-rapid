@@ -10,9 +10,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
 @Validated
-public interface ChangeContactInformationService {
+public interface ContactInformationService {
 
     public AbstractUser changeContactInformation(@NotBlank String code) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException, BadTokenException;
 
-    public void requestContactInformationChange(@Valid RequestContactInformationChangeDto dto) throws EntityNotFoundException, AlreadyRegisteredException, BadEntityException;
+    public void requestContactInformationChange(@Valid RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException;
 }

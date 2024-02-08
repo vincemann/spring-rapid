@@ -268,7 +268,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
 
 
 
-    protected ResponseEntity<?> okNoContent() {
+    protected ResponseEntity<Void> okNoContent() {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

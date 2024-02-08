@@ -12,6 +12,7 @@ public class ChangePasswordDto {
 
     @NotBlank
     String contactInformation;
+
     @NotBlank
     String oldPassword;
 

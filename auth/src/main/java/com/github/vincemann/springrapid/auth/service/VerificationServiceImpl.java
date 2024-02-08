@@ -34,6 +34,7 @@ public class VerificationServiceImpl implements VerificationService {
 
     private UserService userService;
 
+
     private VerificationService verificationService;
 
     private IdConverter idConverter;
@@ -83,12 +84,14 @@ public class VerificationServiceImpl implements VerificationService {
     }
 
     @Override
-    public void resendVerificationMessage(AbstractUser user) throws EntityNotFoundException, BadEntityException {
-        VerifyEntity.isPresent(user, "User not found");
-        // must be unverified
-        VerifyEntity.is(user.getRoles().contains(AuthRoles.UNVERIFIED), " Already verified");
+    public void resendVerificationMessage(String contactInformation) throws EntityNotFoundException, BadEntityException {
 
-        TransactionalUtils.afterCommit(() -> sendVerificationMessage(user));
+        Optional<AbstractUser> user = userService.findByContactInformation(contactInformation);
+        VerifyEntity.isPresent(user,"no user found with contactInformation: "+ contactInformation);
+        // must be unverified
+        VerifyEntity.is(user.get().getRoles().contains(AuthRoles.UNVERIFIED), " Already verified");
+
+        TransactionalUtils.afterCommit(() -> sendVerificationMessage(user.get()));
     }
 
 
@@ -96,7 +99,7 @@ public class VerificationServiceImpl implements VerificationService {
 
     @Transactional
     @Override
-    public AbstractUser verifyUser(String code) throws EntityNotFoundException, BadTokenException, BadEntityException {
+    public void verifyUser(String code) throws EntityNotFoundException, BadTokenException, BadEntityException {
         JWTClaimsSet claims = jweTokenService.parseToken(code);
         AbstractUser user = extractUserFromClaims(claims);
         RapidJwt.validate(claims, VERIFY_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
@@ -111,7 +114,6 @@ public class VerificationServiceImpl implements VerificationService {
         //also to be able to use read-only security test -> generic principal type does not need to be passed into this class
         AbstractUser updated = verificationService.makeVerified(user);
         log.debug("Verified user: " + updated.getContactInformation());
-        return updated;
     }
 
     protected AbstractUser extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException {

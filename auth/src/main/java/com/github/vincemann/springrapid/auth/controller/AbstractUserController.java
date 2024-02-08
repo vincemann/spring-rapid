@@ -20,7 +20,6 @@ import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
 import com.github.vincemann.springrapid.core.controller.dto.map.Principal;
-import com.github.vincemann.springrapid.core.controller.id.IdFetchingException;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
@@ -32,14 +31,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
@@ -54,47 +53,27 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	private AuthProperties authProperties;
 
 
-	private S unsecuredService;
+	private S unsecuredService;	// getService() to get secured
 	private UserUtils userUtils;
 
 	private PasswordService passwordService;
 	private SignupService signupService;
-	private ChangeContactInformationService changeContactInformationService;
+	private ContactInformationService contactInformationService;
 	private VerificationService verificationService;
-
 
 	//              CONTROLLER METHODS
 
-	/**
-	 * Returns public shared context properties needed at the client side,
-	 */
-	public ResponseEntity<String> context(HttpServletRequest request,HttpServletResponse response) throws JsonProcessingException {
 
-		log.debug("Getting context ");
-		Map<String, Object> context = getService().getContext();
-		log.debug("Returning context: " + context);
-		return ok(getJsonMapper().writeDto(context));
-	}
-
-
-
-	public ResponseEntity<String> signup(HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
-
-
+	@PostMapping(path = "/api/core/user/signup",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<FindOwnUserDto> signup(@Valid @RequestBody SignupDto signupDto) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
   		AbstractUser saved = signupService.signup(signupDto);
-		appendFreshToken(response);
-		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(getSignupUrl(), Direction.RESPONSE,request, saved));
-		return ok(getJsonMapper().writeDto(dto));
+		FindOwnUserDto dto = getDtoMapper().mapToDto(saved, FindOwnUserDto.class);
+		return okWithAuthToken(dto);
 	}
 
-	// todo add limit actions extension ect so nobody can spam contactInformations
-	public ResponseEntity<?> resendVerificationMail(HttpServletRequest request,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException {
-		String contactInformation = readRequestParam(request, "contactInformation");
-		log.debug("Resending verification mail for user with contactInformation " + contactInformation);
-		Optional<U> byContactInformation = getUnsecuredService().findByContactInformation(contactInformation);
-		VerifyEntity.isPresent(byContactInformation,"no user found with contactInformation: "+ contactInformation);
-		getService().resendVerificationMessage(byContactInformation.get());
+	@GetMapping(path = "/api/core/user/resend-verification")
+	public ResponseEntity<Void> resendVerificationMail(@RequestParam(value = "ci") String contactInformation) throws BadEntityException, EntityNotFoundException {
+		verificationService.resendVerificationMessage(contactInformation);
 		return okNoContent();
 	}
 
@@ -102,166 +81,91 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	/**
 	 * Verifies current-user -> send code per contactInformation
 	 */
-	public ResponseEntity<String> verifyUser(
-			HttpServletRequest request,
-//			@RequestParam String code,
-			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException, IdFetchingException {
-
-		String code = readRequestParam(request, "code");
-
-//		log.debug("Verifying user with id: " + id);
-//		U user = fetchUser(id);
-		U saved = getService().verifyUser(code);
-
-		appendFreshToken(saved,response);
-		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(getVerifyUserUrl(), Direction.RESPONSE,request, saved));
-		return ok(getJsonMapper().writeDto(dto));
+	@GetMapping(path = "/api/core/user/verify")
+	public ResponseEntity<Void> verifyUser(@RequestParam(value = "code") String code) throws BadEntityException, EntityNotFoundException, BadTokenException {
+		verificationService.verifyUser(code);
+		return okWithAuthToken();
 	}
 
 
 	/**
 	 * The forgot Password feature -> mail new password to contactInformation
 	 */
-	public ResponseEntity<?> forgotPassword(HttpServletRequest request,HttpServletResponse response/*@RequestParam String contactInformation*/) throws EntityNotFoundException, BadEntityException {
-		String contactInformation = readRequestParam(request, "contactInformation");
-		log.debug("Received forgot password request for: " + contactInformation);
-		getService().forgotPassword(contactInformation);
+	@GetMapping(path = "/api/core/user/forgot-password")
+	public ResponseEntity<Void> forgotPassword(@RequestParam(value = "contactInformation") String contactInformation) throws EntityNotFoundException, BadEntityException {
+		passwordService.forgotPassword(contactInformation);
 		return okNoContent();
 	}
 
 	/**
 	 * Resets password after it's forgotten
 	 */
-	public ResponseEntity<?> resetPassword(HttpServletRequest request,HttpServletResponse response) throws IOException, BadEntityException, EntityNotFoundException, BadTokenException {
-
-		String body = readBody(request);
-		// change this, so information is transported as dto via json body
-		// also add inline js/html check for second time password provided
-//		Map<String, String> queryParams = UrlParamUtil.splitQuery(body);
-//		String code = readRequestParam(request, "code");
-//		String newPassword = queryParams.get("password");
-		//		ResetPasswordDto resetPasswordDto = new ResetPasswordDto(newPassword,code);
-
-
-		ResetPasswordDto resetPasswordDto = jsonMapper.readDto(body, ResetPasswordDto.class);
-		getDtoValidationStrategy().validate(resetPasswordDto);
-
-		passwordService.resetPassword(resetPasswordDto);
-		appendFreshToken(response);
-		return okNoContent();
+	@PostMapping(path = "/api/core/user/reset-password",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordDto dto) throws  BadEntityException, EntityNotFoundException, BadTokenException {
+		passwordService.resetPassword(dto);
+		return okWithAuthToken();
 	}
 
-	// use gui here bc someone could issue many forgot password requests for foreign contactInformations with his new password set in forntend
-	// and if the user just clicks the link, his pw would be reset to attackers pw
-	// -> better to show view at backend, to make sure user can enter his password
-	public String showResetPassword(HttpServletRequest request, HttpServletResponse response, Model model) throws IOException, BadEntityException, EntityNotFoundException, BadTokenException {
-		String code = readRequestParam(request, "code");
-		model.addAttribute("code",code);
-		model.addAttribute("resetPasswordUrl",getResetPasswordUrl());
-		model.addAttribute("resetPasswordDto",new ResetPasswordView());
+	@GetMapping("/api/core/user/show-reset-password")
+	public String showResetPassword(@RequestParam("code") String code, Model model) {
+		// Add the "code" attribute to the model, received from the request parameter
+		model.addAttribute("code", code);
+		// Add the "resetPasswordUrl" attribute to the model
+		model.addAttribute("resetPasswordUrl", getResetPasswordUrl());
+		// Add a new "resetPasswordDto" attribute to the model
+		model.addAttribute("resetPasswordDto", new ResetPasswordView());
+		// Return the view name
 		return "reset-password";
 	}
 
 
-	public ResponseEntity<String> fetchByContactInformation(HttpServletRequest request,HttpServletResponse response/*,@RequestParam String contactInformation*/) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
+	@GetMapping("/api/core/user/change-password")
+	public ResponseEntity<?> changePassword(@RequestParam String id, @Valid @RequestBody ChangePasswordDto dto) throws BadEntityException, EntityNotFoundException, IOException {
+		passwordService.changePassword(dto);
+		return okWithAuthToken();
+	}
 
+
+	@GetMapping("/api/core/user/request-change-ci")
+	public ResponseEntity<Void> requestChangeContactInformation(@Valid @RequestBody RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException {
+		contactInformationService.requestContactInformationChange(dto);
+		return okNoContent();
+	}
+
+
+	@GetMapping("/api/core/user/change-ci")
+	public ResponseEntity<Void> changeContactInformation(@RequestParam String code) throws EntityNotFoundException, BadTokenException, AlreadyRegisteredException, BadEntityException {
+		contactInformationService.changeContactInformation(code);
+		return okWithAuthToken();
+	}
+
+	/**
+	 * Fetch a new token - for session sliding, switch user etc.
+	 *
+	 */
+	@GetMapping("/api/core/user/new-token")
+	public ResponseEntity<String> createNewAuthToken(@RequestParam Optional<String> contactInformation) throws BadEntityException, JsonProcessingException, EntityNotFoundException {
+
+		String token;
+		if (contactInformation.isEmpty()){
+			token = userUtils.createNewAuthToken();
+		}else {
+			token = userUtils.createNewAuthToken(contactInformation.get());
+		}
+		// result = {token:asfsdfjsdjfnd}
+		return ok(getJsonMapper().writeDto(MapUtils.mapOf("token", token)));
+	}
+
+
+	public ResponseEntity<String> findByContactInformation(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
 		String contactInformation = readRequestParam(request, "contactInformation");
 		log.debug("Fetching user by contactInformation: " + contactInformation);
 		Optional<U> byContactInformation = getService().findByContactInformation(contactInformation);
 		VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+contactInformation+" not found");
 		U user = byContactInformation.get();
 		Object responseDto = getDtoMapper().mapToDto(user,
-				createDtoClass(getFetchByContactInformationUrl(), Direction.RESPONSE,request, user));
+				createDtoClass(getFindByContactInformationUrl(), Direction.RESPONSE,request, user));
 		return ok(getJsonMapper().writeDto(responseDto));
-	}
-
-
-	public ResponseEntity<?> changePassword(HttpServletRequest request,
-//			@RequestBody ChangePasswordForm changePasswordForm,
-			HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
-
-		Id id = fetchId(request);
-		String body = readBody(request);
-		U user = fetchUser(id);
-		Class<?> dtoClass = createDtoClass(getChangePasswordUrl(),Direction.REQUEST,request,user);
-		ChangePasswordDto changePasswordDto = (ChangePasswordDto) getJsonMapper().readDto(body, dtoClass);
-		getDtoValidationStrategy().validate(changePasswordDto);
-
-		log.debug("Changing password of user with id: " + id);
-		getService().changePassword(user, changePasswordDto.getOldPassword(),changePasswordDto.getNewPassword(),changePasswordDto.getRetypeNewPassword());
-		appendFreshToken(user,response);
-		return okNoContent();
-	}
-
-
-	public ResponseEntity<?> requestContactInformationChange(HttpServletRequest request
-								   /*@RequestBody RequestContactInformationChangeForm contactInformationChangeForm*/,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException, IOException, AlreadyRegisteredException {
-
-		Id id = fetchId(request);
-		String body = readBody(request);
-		U user = fetchUser(id);
-		Class<?> dtoClass = createDtoClass(getRequestContactInformationChangeUrl(),Direction.REQUEST,request,user);
-		RequestContactInformationChangeDto dto = (RequestContactInformationChangeDto) getJsonMapper().readDto(body, dtoClass);
-		getDtoValidationStrategy().validate(dto);
-		log.debug("Requesting contactInformation change for user: " + user);
-		getService().requestContactInformationChange(user, dto.getNewContactInformation());
-		return okNoContent();
-	}
-
-
-	public ResponseEntity<?> changeContactInformation(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, AlreadyRegisteredException {
-		String code = readRequestParam(request, "code");
-		U saved = getService().changeContactInformation(code);
-		appendFreshToken(saved,response);
-		return okNoContent();
-	}
-
-
-	// does not need view page bc contactInformation is encapsulated in code and you can only
-	// request contactInformation change if logged in (as opposed to forgotpassword)
-
-//	public String showChangeContactInformation(
-//			HttpServletRequest request,
-//			HttpServletResponse response,
-//			Model model) throws BadEntityException {
-//		String code = readRequestParam(request, "code");
-//		model.addAttribute("code",code);
-//		model.addAttribute("changeContactInformationUrl",getChangeContactInformationUrl());
-//		model.addAttribute("changeContactInformationDto",new ChangeContactInformationView());
-//		return "change-contactInformation";
-//	}
-
-	/**
-	 * Fetch a new token - for session sliding, switch user etc.
-	 *
-	 */
-	public ResponseEntity<String> createNewAuthToken(
-			/*@RequestParam Optional<String> contactInformation,*/HttpServletRequest request,
-			HttpServletResponse response) throws BadEntityException, JsonProcessingException, EntityNotFoundException {
-
-		log.debug("Fetching a new auth token ... ");
-		Optional<String> contactInformation = readOptionalRequestParam(request, "contactInformation");
-		String token;
-		if (contactInformation.isEmpty()){
-			// for logged in user, if he is not logged in this will fail
-			token = getService().createNewAuthToken();
-		}else {
-			// for foreign user
-			token = getService().createNewAuthToken(contactInformation.get());
-		}
-		// result = {token:asfsdfjsdjfnd}
-		return ok(
-				getJsonMapper().writeDto(
-						MapUtils.mapOf("token", token)));
-	}
-
-	/**
-	 * A simple function for pinging this server.
-	 */
-	public ResponseEntity<?> ping(HttpServletRequest request,HttpServletResponse response) {
-		log.debug("Received a ping");
-		return okNoContent();
 	}
 
 
@@ -306,7 +210,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 						.and(direction(Direction.RESPONSE)))
 				.thenReturn(FindOwnUserDto.class);
 
-		builder.when(endpoint(getFetchByContactInformationUrl())
+		builder.when(endpoint(getFindByContactInformationUrl())
 						.and(direction(Direction.RESPONSE))
 						.and(roles(AuthRoles.ANON)))
 				.thenReturn(FindForeignUserDto.class);
@@ -330,7 +234,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	public String resetPasswordUrl;
 	public String resetPasswordViewUrl;
-	public String fetchByContactInformationUrl;
+	public String findByContactInformationUrl;
 	public String changeContactInformationUrl;
 	public String changeContactInformationViewUrl;
 	public String verifyUserUrl;
@@ -344,22 +248,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	@Override
 	protected void initUrls() {
 		super.initUrls();
-		pingUrl = getAuthProperties().getController().getPingUrl();
-		loginUrl = getAuthProperties().getController().getLoginUrl();
-		contextUrl = getAuthProperties().getController().getContextUrl();
-		signupUrl = getAuthProperties().getController().getSignupUrl();
-
-		resetPasswordUrl = getAuthProperties().getController().getResetPasswordUrl();
-		resetPasswordViewUrl = getAuthProperties().getController().getResetPasswordViewUrl();
-		fetchByContactInformationUrl = getAuthProperties().getController().getFetchByContactInformationUrl();
-		changeContactInformationUrl = getAuthProperties().getController().getChangeContactInformationUrl();
-		changeContactInformationViewUrl = getAuthProperties().getController().getChangeContactInformationViewUrl();
-		verifyUserUrl = getAuthProperties().getController().getVerifyUserUrl();
-		resendVerificationContactInformationUrl = getAuthProperties().getController().getResendVerifyContactInformationMsgUrl();
-		forgotPasswordUrl = getAuthProperties().getController().getForgotPasswordUrl();
-		changePasswordUrl = getAuthProperties().getController().getChangePasswordUrl();
-		requestContactInformationChangeUrl = getAuthProperties().getController().getRequestContactInformationChangeUrl();
-		fetchNewAuthTokenUrl = getAuthProperties().getController().getFetchNewAuthTokenUrl();
+		findByContactInformationUrl = getAuthProperties().getController().getFindByContactInformationUrl();
 	}
 
 
@@ -369,172 +258,18 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	protected void registerEndpoints() throws NoSuchMethodException {
 		super.registerEndpoints();
 
-		if (!getIgnoredEndPoints().contains(getContextUrl())){
-			registerEndpoint(createContextRequestMappingInfo(),"context");
-		}
-		if (!getIgnoredEndPoints().contains(getSignupUrl())){
-			registerEndpoint(createSignupRequestMappingInfo(),"signup");
-		}
-		if (!getIgnoredEndPoints().contains(getResendVerificationContactInformationUrl())){
-			registerEndpoint(createResendVerificationContactInformationRequestMappingInfo(),"resendVerificationMail");
-		}
-		if (!getIgnoredEndPoints().contains(getVerifyUserUrl())){
-			registerEndpoint(createVerifyUserRequestMappingInfo(),"verifyUser");
-		}
-		if (!getIgnoredEndPoints().contains(getForgotPasswordUrl())){
-			registerEndpoint(createForgotPasswordRequestMappingInfo(),"forgotPassword");
-		}
-		if (!getIgnoredEndPoints().contains(getResetPasswordViewUrl())){
-			registerViewEndpoint(createResetPasswordViewRequestMappingInfo(),"showResetPassword");
-		}
-		if (!getIgnoredEndPoints().contains(getResetPasswordUrl())){
-			registerEndpoint(createResetPasswordRequestMappingInfo(),"resetPassword");
-		}
-		if (!getIgnoredEndPoints().contains(getFetchByContactInformationUrl())){
+		if (!getIgnoredEndPoints().contains(getFindByContactInformationUrl())){
 			registerEndpoint(createFetchByContactInformationRequestMappingInfo(),"fetchByContactInformation");
 		}
-		if (!getIgnoredEndPoints().contains(getChangePasswordUrl())){
-			registerEndpoint(createChangePasswordRequestMappingInfo(),"changePassword");
-		}
-		if (!getIgnoredEndPoints().contains(getRequestContactInformationChangeUrl())){
-			registerEndpoint(createRequestContactInformationChangeRequestMappingInfo(),"requestContactInformationChange");
-		}
-		if (!getIgnoredEndPoints().contains(getChangeContactInformationUrl())){
-			registerEndpoint(createChangeContactInformationRequestMappingInfo(),"changeContactInformation");
-		}
-
-//		if (getEndpointInfo().isExposeChangeContactInformationView()){
-//			registerViewEndpoint(createChangeContactInformationRequestViewMappingInfo(),"showChangeContactInformation");
-//		}
-		if (!getIgnoredEndPoints().contains(getFetchNewAuthTokenUrl())){
-			registerEndpoint(createNewAuthTokenRequestMappingInfo(),"createNewAuthToken");
-		}
-		if (!getIgnoredEndPoints().contains(getPingUrl())){
-			registerEndpoint(createPingRequestMappingInfo(),"ping");
-		}
-	}
-
-	protected RequestMappingInfo createContextRequestMappingInfo() {
-		return RequestMappingInfo
-				.paths(getContextUrl())
-				.methods(RequestMethod.GET)
-				.produces(getMediaType())
-				.build();
-	}
-
-	protected RequestMappingInfo createSignupRequestMappingInfo() {
-		return RequestMappingInfo
-				.paths(getSignupUrl())
-				.methods(RequestMethod.POST)
-				.consumes(getMediaType())
-				.produces(getMediaType())
-				.build();
-	}
-
-	protected RequestMappingInfo createResendVerificationContactInformationRequestMappingInfo() {
-		return RequestMappingInfo
-				.paths(getResendVerificationContactInformationUrl())
-				.methods(RequestMethod.POST)
-				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-				.build();
-	}
-
-	protected RequestMappingInfo createVerifyUserRequestMappingInfo() {
-		return RequestMappingInfo
-				.paths(getVerifyUserUrl())
-				.methods(RequestMethod.GET)
-				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-				.produces(getMediaType())
-				.build();
-	}
-
-	protected RequestMappingInfo createForgotPasswordRequestMappingInfo() {
-		return RequestMappingInfo
-				.paths(getForgotPasswordUrl())
-				.methods(RequestMethod.POST)
-				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-				.build();
-	}
-
-	protected RequestMappingInfo createResetPasswordViewRequestMappingInfo() {
-		return RequestMappingInfo
-				.paths(getResetPasswordViewUrl())
-				.methods(RequestMethod.GET)
-//				.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-				.build();
-	}
-
-	protected RequestMappingInfo createResetPasswordRequestMappingInfo() {
-		return RequestMappingInfo
-				.paths(getResetPasswordUrl())
-				.methods(RequestMethod.POST)
-				.produces(getMediaType())
-//				.consumes(getMediaType())
-				// todo terrible, fix this, check for equality in inline js in html file
-				.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-				.build();
 	}
 
 
 	protected RequestMappingInfo createFetchByContactInformationRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getFetchByContactInformationUrl())
+				.paths(getFindByContactInformationUrl())
 				.methods(RequestMethod.GET)
 				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(getMediaType())
-				.build();
-	}
-
-
-
-	protected RequestMappingInfo createChangePasswordRequestMappingInfo() {
-		return RequestMappingInfo
-				.paths(getChangePasswordUrl())
-				.methods(RequestMethod.POST)
-				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-				.build();
-	}
-
-
-
-	protected RequestMappingInfo createRequestContactInformationChangeRequestMappingInfo() {
-		return RequestMappingInfo
-				.paths(getRequestContactInformationChangeUrl())
-				.methods(RequestMethod.POST)
-				.consumes(getMediaType())
-				.build();
-	}
-
-	protected RequestMappingInfo createChangeContactInformationRequestMappingInfo() {
-		return RequestMappingInfo
-				.paths(getChangeContactInformationUrl())
-				.methods(RequestMethod.POST)
-//				.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-				.produces(getMediaType())
-				.build();
-	}
-
-//	protected RequestMappingInfo createChangeContactInformationRequestViewMappingInfo() {
-//		return RequestMappingInfo
-//				.paths(getChangeContactInformationViewUrl())
-//				.methods(RequestMethod.GET)
-//				.produces(getMediaType())
-//				.build();
-//	}
-
-	protected RequestMappingInfo createNewAuthTokenRequestMappingInfo() {
-		return RequestMappingInfo
-				.paths(getFetchNewAuthTokenUrl())
-				.methods(RequestMethod.POST)
-				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-				.produces(getMediaType())
-				.build();
-	}
-
-	protected RequestMappingInfo createPingRequestMappingInfo() {
-		return RequestMappingInfo
-				.paths(getPingUrl())
-				.methods(RequestMethod.GET)
 				.build();
 	}
 
@@ -543,22 +278,19 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	//				HELPERS
 
 
-
-	/**
-	 * Adds an Authorization header to the response for authenticated user
-	 */
-	protected void appendFreshToken(HttpServletResponse response) throws EntityNotFoundException {
+	protected ResponseEntity<Void> okWithAuthToken() throws EntityNotFoundException {
+		HttpHeaders headers = new HttpHeaders();
 		String token = userUtils.createNewAuthToken();
-		response.addHeader(HttpHeaders.AUTHORIZATION, token);
+		headers.add(HttpHeaders.AUTHORIZATION,token);
+		return ResponseEntity.status(204).headers(headers).build();
 	}
 
-
-	protected U fetchUser(Id userId) throws EntityNotFoundException {
-		Optional<U> byId =  getUnsecuredService().findById(userId);
-		VerifyEntity.isPresent(byId,"User with id: "+userId+" not found");
-		return byId.get();
+	protected <T> ResponseEntity<T> okWithAuthToken(T body) throws EntityNotFoundException {
+		HttpHeaders headers = new HttpHeaders();
+		String token = userUtils.createNewAuthToken();
+		headers.add(HttpHeaders.AUTHORIZATION,token);
+		return ResponseEntity.status(200).headers(headers).body(body);
 	}
-
 
 
 

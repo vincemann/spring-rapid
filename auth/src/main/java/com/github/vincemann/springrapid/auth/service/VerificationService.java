@@ -14,7 +14,7 @@ public interface VerificationService {
 
     AbstractUser makeVerified(AbstractUser user) throws BadEntityException, EntityNotFoundException;
 
-    void resendVerificationMessage(AbstractUser user) throws EntityNotFoundException, BadEntityException;
+    void resendVerificationMessage(String contactInformation) throws EntityNotFoundException, BadEntityException;
 
-    AbstractUser verifyUser(String code) throws EntityNotFoundException, BadTokenException, BadEntityException;
+    void verifyUser(String code) throws EntityNotFoundException, BadTokenException, BadEntityException;
 }

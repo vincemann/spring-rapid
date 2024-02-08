@@ -19,15 +19,13 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
 import java.util.Optional;
 
 @Slf4j
-public class ChangeContactInformationServiceImpl implements ChangeContactInformationService {
+public class ContactInformationServiceImpl implements ContactInformationService {
 
     public static final String CHANGE_CONTACT_INFORMATION_AUDIENCE = "change-contactInformation";
 
@@ -84,7 +82,7 @@ public class ChangeContactInformationServiceImpl implements ChangeContactInforma
     }
 
     @Override
-    public void requestContactInformationChange(RequestContactInformationChangeDto dto) throws EntityNotFoundException, AlreadyRegisteredException, BadEntityException {
+    public void requestContactInformationChange(RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException {
         Optional<AbstractUser> oldUser = userService.findByContactInformation(dto.getOldContactInformation());
         VerifyEntity.isPresent(oldUser, dto.getOldContactInformation(), userService.getEntityClass());
 

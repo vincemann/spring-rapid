@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.dto;
 
+import com.github.vincemann.springrapid.auth.service.val.ValidPassword;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class SignupDto implements Serializable {
     private String contactInformation;
 
     @NotBlank
+    @ValidPassword
     private String password;
 
     @NotNull
