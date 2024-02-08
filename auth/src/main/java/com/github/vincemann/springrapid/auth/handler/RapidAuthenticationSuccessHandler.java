@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
@@ -47,7 +48,7 @@ public class RapidAuthenticationSuccessHandler
 		} catch (EntityNotFoundException e) {
 			throw new RuntimeException("No authenticated Principal found",e);
 		}
-		httpTokenService.appendToken(token,response);
+		response.addHeader(HttpHeaders.AUTHORIZATION, token);
 
 //    	// write current-user data to the response
 //    	response.getOutputStream().print(

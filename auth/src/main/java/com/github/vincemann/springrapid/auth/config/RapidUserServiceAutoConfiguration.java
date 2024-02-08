@@ -2,8 +2,8 @@ package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.auth.service.JpaUserService;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.auth.service.PasswordValidator;
-import com.github.vincemann.springrapid.auth.service.PasswordValidatorImpl;
+import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
+import com.github.vincemann.springrapid.auth.service.val.PasswordValidatorImpl;
 import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.auth.service.RapidUserDetailsService;
 

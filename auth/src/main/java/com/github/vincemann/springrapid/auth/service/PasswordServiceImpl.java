@@ -15,6 +15,7 @@ import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,12 +33,12 @@ public class PasswordServiceImpl implements PasswordService {
     private UserService<AbstractUser<Serializable>,Serializable> userService;
     private AuthProperties properties;
     private JweTokenService jweTokenService;
-
     private MessageSender messageSender;
-
     private IdConverter idConverter;
-
     private PasswordEncoder passwordEncoder;
+
+
+
 
     @Transactional(readOnly = true)
     @Override
@@ -66,13 +67,7 @@ public class PasswordServiceImpl implements PasswordService {
         // which is not even his own -> just always return own token in header
     }
 
-    protected AbstractUser extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException {
-        Serializable id = idConverter.toId(claims.getSubject());
-        // fetch the user
-        Optional<AbstractUser<Serializable>> byId = userService.findById(id);
-        VerifyEntity.isPresent(byId, "User with id: " + id + " not found");
-        return byId.get();
-    }
+
 
     @Transactional
     @Override
@@ -121,5 +116,42 @@ public class PasswordServiceImpl implements PasswordService {
     }
 
 
+    protected AbstractUser extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException {
+        Serializable id = idConverter.toId(claims.getSubject());
+        // fetch the user
+        Optional<AbstractUser<Serializable>> byId = userService.findById(id);
+        VerifyEntity.isPresent(byId, "User with id: " + id + " not found");
+        return byId.get();
+    }
 
+
+    @Autowired
+    public void setUserService(UserService<AbstractUser<Serializable>, Serializable> userService) {
+        this.userService = userService;
+    }
+
+    @Autowired
+    public void setProperties(AuthProperties properties) {
+        this.properties = properties;
+    }
+
+    @Autowired
+    public void setJweTokenService(JweTokenService jweTokenService) {
+        this.jweTokenService = jweTokenService;
+    }
+
+    @Autowired
+    public void setMessageSender(MessageSender messageSender) {
+        this.messageSender = messageSender;
+    }
+
+    @Autowired
+    public void setIdConverter(IdConverter idConverter) {
+        this.idConverter = idConverter;
+    }
+
+    @Autowired
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 }

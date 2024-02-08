@@ -9,7 +9,7 @@ public class BcryptRapidPasswordEncoder extends BCryptPasswordEncoder implements
             .compile("\\A\\$2(a|y|b)?\\$(\\d\\d)\\$[./0-9A-Za-z]{53}");
 
     @Override
-    public boolean isEncrypted(String password) {
+    public boolean isEncoded(String password) {
         return BCRYPT_PATTERN.matcher(password).matches();
     }
 

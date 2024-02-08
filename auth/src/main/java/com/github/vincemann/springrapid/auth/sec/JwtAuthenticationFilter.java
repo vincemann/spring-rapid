@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -44,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         log.debug("Inside TokenAuthenticationFilter ...");
 
-        String rawToken = httpTokenService.extractToken(request);
+        String rawToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 //		String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (rawToken != null) { // token present

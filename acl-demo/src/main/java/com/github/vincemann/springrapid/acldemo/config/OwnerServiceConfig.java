@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.acldemo.service.Root;
 import com.github.vincemann.springrapid.acldemo.service.ext.acl.UserGainsAdminPermissionOnContainedUserOnCreate;
-import com.github.vincemann.springrapid.auth.service.extension.UserGainsAdminPermissionOnCreated;
+import com.github.vincemann.springrapid.auth.service.ext.acl.UserGainsAdminPermissionOnCreated;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.service.extension;
+package com.github.vincemann.springrapid.auth.service.ext.sec;
 
 import com.github.vincemann.springrapid.core.util.HttpServletRequestUtils;
 import com.github.vincemann.springrapid.limitsaves.LimitActionsExtension;

@@ -19,6 +19,7 @@ import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 
+import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.map.*;
 import com.github.vincemann.springrapid.core.controller.id.IdFetchingException;
@@ -29,6 +30,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -37,6 +39,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
@@ -55,10 +58,12 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	private S unsecuredService;
 
 	private PasswordService passwordService;
-	private SignupService<U, SignupDto> signupService;
+	private SignupService signupService;
 
 	private HttpTokenService httpTokenService;
 	private AuthProperties authProperties;
+
+	private UserUtils userUtils;
 
 
 	public String loginUrl;
@@ -81,7 +86,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	@Override
 	protected void initUrls() {
 		super.initUrls();
-
 		pingUrl = getAuthProperties().getController().getPingUrl();
 		loginUrl = getAuthProperties().getController().getLoginUrl();
 		contextUrl = getAuthProperties().getController().getContextUrl();
@@ -116,20 +120,11 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 
 
-	public ResponseEntity<String> signup(
-			HttpServletRequest request,
-			HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
+	public ResponseEntity<String> signup(HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
 		
 
-		String jsonDto = readBody(request);
-		Class<?> dtoClass = createDtoClass(getSignupUrl(),Direction.REQUEST,request,null);
-		SignupDto signupDto = (SignupDto) getJsonMapper().readDto(jsonDto, dtoClass);
-		getDtoValidationStrategy().validate(signupDto);
-  		U saved = signupService.signup(signupDto);
-
-		U user = getDtoMapper().mapToEntity(signupDto, getEntityClass());
-
-		appendFreshToken(saved,response);
+  		AbstractUser saved = signupService.signup(signupDto);
+		appendFreshToken(response);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(getSignupUrl(), Direction.RESPONSE,request, saved));
 		return ok(getJsonMapper().writeDto(dto));
@@ -601,8 +596,8 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	 * Adds an Authorization header to the response for authenticated user
 	 */
 	protected void appendFreshToken(HttpServletResponse response) throws EntityNotFoundException {
-		String token = getUnsecuredService().createNewAuthToken();
-		httpTokenService.appendToken(token,response);
+		String token = userUtils.createNewAuthToken();
+		response.addHeader(HttpHeaders.AUTHORIZATION, token);
 	}
 
 

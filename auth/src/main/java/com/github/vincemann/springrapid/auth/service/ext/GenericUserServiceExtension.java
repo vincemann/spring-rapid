@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.service.extension;
+package com.github.vincemann.springrapid.auth.service.ext;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;

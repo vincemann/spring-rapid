@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.service.extension;
+package com.github.vincemann.springrapid.auth.service.ext.acl;
 
 import com.github.vincemann.springrapid.acl.service.ext.acl.AclExtension;
 import com.github.vincemann.springrapid.auth.model.AuthenticatingEntity;

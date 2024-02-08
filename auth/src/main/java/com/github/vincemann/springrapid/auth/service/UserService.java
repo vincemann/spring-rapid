@@ -23,11 +23,7 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
         extends CrudService<U,ID>, AopLoggable
 {
 
-    public Map<String, Object> getContext();
-
     public Optional<U> findByContactInformation( @NotBlank String contactInformation);
-
-    U extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException;
 
     U addRole(ID userId, String role) throws EntityNotFoundException, BadEntityException;
 
@@ -38,10 +34,6 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     U updateContactInformation(ID userId, String contactInformation) throws EntityNotFoundException, BadEntityException;
 
     U updateContactInformation(U update, String contactInformation) throws EntityNotFoundException, BadEntityException;
-
-    String createNewAuthToken(String contactInformation) throws EntityNotFoundException;
-
-    String createNewAuthToken() throws EntityNotFoundException;
 
 
     // keep it like that, otherwise the AbstractUser type wont be in impl methods

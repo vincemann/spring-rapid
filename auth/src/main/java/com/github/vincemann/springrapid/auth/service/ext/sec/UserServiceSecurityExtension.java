@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.service.extension;
+package com.github.vincemann.springrapid.auth.service.ext.sec;
 
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.acl.service.ext.sec.SecurityExtension;
@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
+import com.github.vincemann.springrapid.auth.service.ext.UserServiceExtension;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;

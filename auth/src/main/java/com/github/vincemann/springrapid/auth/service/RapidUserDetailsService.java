@@ -51,14 +51,10 @@ public class RapidUserDetailsService
 		return authenticatedPrincipalFactory.create(user);
 	}
 
-
-
-
 	@Autowired
 	public void setPrincipalUserConverter(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {
 		this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
 	}
-
 
 	@Autowired
 	public void setUserService(UserService userService) {

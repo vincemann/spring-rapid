@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.MediaType;
 
+import java.util.Map;
+
 @Getter
 @Setter
 public class CoreProperties {
@@ -20,6 +22,7 @@ public class CoreProperties {
     public String applicationUrl = "http://localhost:9000";
 
 
+    public Map<String, Object> shared;
 
     @Getter
     @Setter

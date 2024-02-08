@@ -69,12 +69,7 @@ public class AuthProperties {
 	 */
 	public List<Admin> admins = new ArrayList<>();
 	
-	
-	/**
-     * Any shared properties you want to pass to the 
-     * client should begin with lemon.shared.
-     */
-	public Map<String, Object> shared;
+
 
 	/**
 	 * JWT token generation related properties

@@ -2,35 +2,21 @@ package com.github.vincemann.springrapid.auth.service;
 
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.MessageSender;
 import com.github.vincemann.springrapid.auth.model.*;
-import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
-import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
-import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
-import com.github.vincemann.springrapid.auth.util.MapUtils;
-import com.github.vincemann.springrapid.auth.util.RapidJwt;
-import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
+import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
-import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.pass.RapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.util.*;
-import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.util.*;
 
@@ -52,39 +38,24 @@ public abstract class JpaUserService
         extends JpaCrudService<U, Id, R>
         implements UserService<U, Id>, ApplicationContextAware {
 
-
-    private AuthorizationTokenService authorizationTokenService;
-    private RapidSecurityContext securityContext;
-    private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
     private RapidPasswordEncoder passwordEncoder;
-    private AuthProperties properties;
     private PasswordValidator passwordValidator;
 
     public abstract U newUser();
 
-
-    @Override
-    public Map<String, Object> getContext() {
-        Map<String, Object> context = new HashMap<String, Object>(2);
-        context.put("shared", properties.getShared());
-        RapidPrincipal principal = securityContext.currentPrincipal();
-        if (principal != null) {
-            if (!isAnon(principal)) {
-                RapidPrincipal withoutPw = new RapidPrincipal(principal);
-                withoutPw.setPassword(null);
-                context.put("user", withoutPw);
-            }
-        }
-
-        return context;
+    @Transactional
+    //only called internally
+    public U createAdmin(AuthProperties.Admin admin) {
+        // create the adminUser
+        U adminUser = newUser();
+        adminUser.setContactInformation(admin.getContactInformation());
+        adminUser.setPassword(admin.getPassword());
+        adminUser.getRoles().add(AuthRoles.ADMIN);
+        return adminUser;
     }
 
-    protected void checkUniqueContactInformation(String contactInformation) throws AlreadyRegisteredException {
-        Optional<U> byContactInformation = findByContactInformation(contactInformation);
-        if (byContactInformation.isPresent()) {
-            throw new AlreadyRegisteredException("ContactInformation: " + contactInformation + " is already taken");
-        }
-    }
+
+
 
 
     @Transactional
@@ -92,15 +63,9 @@ public abstract class JpaUserService
     public U create(U user) throws BadEntityException {
         // only enforce very basic stuff
         user.setPassword(encodedPasswordIfNeeded(user.getPassword()));
-        if (user.getPassword() != null)
+        if (user.getPassword() != null && !passwordEncoder.isEncoded(user.getPassword()))
             passwordValidator.validate(user.getPassword());
         return super.create(user);
-    }
-
-    @Transactional
-    @Override
-    public void deleteById(Id id) throws EntityNotFoundException {
-        super.deleteById(id);
     }
 
 
@@ -117,6 +82,7 @@ public abstract class JpaUserService
         update.setCredentialsUpdatedMillis(System.currentTimeMillis());
         return service.partialUpdate(update);
     }
+
 
     @Override
     public U removeRole(Id userId, String role) throws EntityNotFoundException, BadEntityException {
@@ -139,40 +105,11 @@ public abstract class JpaUserService
     }
     
     protected String encodedPasswordIfNeeded(String password){
-        if (!passwordEncoder.isEncrypted(password)) {
+        if (!passwordEncoder.isEncoded(password)) {
             return passwordEncoder.encode(password);
         } else {
             return password;
         }
-    }
-
-    /**
-     * Changes the password.
-     */
-    @Transactional
-    public void changePassword(U user, String givenOldPassword, String newPassword, String retypeNewPassword) throws EntityNotFoundException, BadEntityException {
-        VerifyEntity.isPresent(user, "User not found");
-        String oldPassword = user.getPassword();
-
-        if (!newPassword.equals(retypeNewPassword)) {
-            throw new BadEntityException("Password does not match retype password");
-        }
-        passwordValidator.validate(newPassword);
-        // checks
-        VerifyEntity.is(
-                passwordEncoder.matches(givenOldPassword,
-                        oldPassword), "Wrong password");
-
-        // sets the password
-        user.setPassword(passwordEncoder.encode(newPassword));
-        user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        log.debug("changed pw of user: " + user.getContactInformation());
-        try {
-            service.softUpdate(user);
-        } catch (NonTransientDataAccessException e) {
-            throw new RuntimeException("Could not change users password", e);
-        }
-
     }
 
     @Override
@@ -188,59 +125,11 @@ public abstract class JpaUserService
         return service.partialUpdate(update);
     }
 
-    /**
-     * Fetches a new token
-     *
-     * @return
-     */
-    @Override
-    public String createNewAuthToken(String contactInformation) throws EntityNotFoundException {
-        Optional<U> byContactInformation = findByContactInformation(contactInformation);
-        VerifyEntity.isPresent(byContactInformation, "user with contactInformation: " + contactInformation + " not found");
-        return authorizationTokenService.createToken(authenticatedPrincipalFactory.create(byContactInformation.get()));
-    }
-
-    @Override
-    public String createNewAuthToken() throws EntityNotFoundException {
-        return createNewAuthToken(securityContext.currentPrincipal().getName());
-    }
-
-    @Transactional
-    //only called internally
-    public U createAdmin(AuthProperties.Admin admin) {
-        // create the adminUser
-        U adminUser = newUser();
-        adminUser.setContactInformation(admin.getContactInformation());
-        adminUser.setPassword(admin.getPassword());
-        adminUser.getRoles().add(AuthRoles.ADMIN);
-        return adminUser;
-    }
-
-
-    @Autowired
-    public void setAuthorizationTokenService(AuthorizationTokenService authorizationTokenService) {
-        this.authorizationTokenService = authorizationTokenService;
-    }
-
-    @Autowired
-    public void setSecurityContext(RapidSecurityContext securityContext) {
-        this.securityContext = securityContext;
-    }
-
     @Autowired
     public void setPasswordEncoder(RapidPasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Autowired
-    public void setProperties(AuthProperties properties) {
-        this.properties = properties;
-    }
-
-    @Autowired
-    public void setPrincipalUserConverter(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {
-        this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
-    }
 
     @Autowired
     public void setPasswordValidator(PasswordValidator passwordValidator) {

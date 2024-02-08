@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.service.ext.acl.UserGainsAdminPermissionOnContainedUserOnCreate;
-import com.github.vincemann.springrapid.auth.service.extension.UserGainsAdminPermissionOnCreated;
+import com.github.vincemann.springrapid.auth.service.ext.acl.UserGainsAdminPermissionOnCreated;
 import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
 import com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy;
 import com.github.vincemann.springrapid.core.service.JpaCrudService;

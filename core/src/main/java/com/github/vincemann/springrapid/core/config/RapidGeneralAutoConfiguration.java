@@ -3,6 +3,8 @@ package com.github.vincemann.springrapid.core.config;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.controller.UrlParamWebExtensionParser;
 import com.github.vincemann.springrapid.core.controller.WebExtensionParser;
+import com.github.vincemann.springrapid.core.service.ctx.ContextService;
+import com.github.vincemann.springrapid.core.service.ctx.CoreContextService;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.service.id.LongIdConverter;
 import com.github.vincemann.springrapid.core.util.*;
@@ -31,6 +33,8 @@ public class RapidGeneralAutoConfiguration {
     public javax.validation.Validator localValidatorFactoryBean() {
         return new LocalValidatorFactoryBean();
     }
+
+
 
     // is already autodefined by spring, dont override by redefining
 //    @Bean
@@ -67,6 +71,12 @@ public class RapidGeneralAutoConfiguration {
     @ConditionalOnMissingBean(WebExtensionParser.class)
     public WebExtensionParser webExtensionParser(){
         return new UrlParamWebExtensionParser();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ContextService.class)
+    public ContextService contextService(){
+        return new CoreContextService();
     }
 
 }

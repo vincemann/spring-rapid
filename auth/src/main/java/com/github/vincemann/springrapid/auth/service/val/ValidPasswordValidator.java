@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.auth.service.val;
 
-import com.github.vincemann.springrapid.auth.service.PasswordValidator;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.springframework.beans.factory.annotation.Autowired;
 
