@@ -1,27 +1,25 @@
 package com.github.vincemann.springrapid.auth.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-
+import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.controller.dto.*;
 import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.dto.ResetPasswordView;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.dto.user.FindForeignUserDto;
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.dto.user.FindOwnUserDto;
 import com.github.vincemann.springrapid.auth.dto.user.FullUserDto;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.*;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
-import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
-import com.github.vincemann.springrapid.acl.proxy.Secured;
-
 import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.controller.CrudController;
-import com.github.vincemann.springrapid.core.controller.dto.map.*;
+import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
+import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
+import com.github.vincemann.springrapid.core.controller.dto.map.Principal;
 import com.github.vincemann.springrapid.core.controller.id.IdFetchingException;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -34,12 +32,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
@@ -54,55 +51,16 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 			extends CrudController<U, Id,S> {
 
 
+	private AuthProperties authProperties;
+
 
 	private S unsecuredService;
+	private UserUtils userUtils;
 
 	private PasswordService passwordService;
 	private SignupService signupService;
-
-	private HttpTokenService httpTokenService;
-	private AuthProperties authProperties;
-
-	private UserUtils userUtils;
-
-
-	public String loginUrl;
-	public String pingUrl;
-	public String contextUrl;
-	public String signupUrl;
-
-	public String resetPasswordUrl;
-	public String resetPasswordViewUrl;
-	public String fetchByContactInformationUrl;
-	public String changeContactInformationUrl;
-	public String changeContactInformationViewUrl;
-	public String verifyUserUrl;
-	public String resendVerificationContactInformationUrl;
-	public String forgotPasswordUrl;
-	public String changePasswordUrl;
-	public String requestContactInformationChangeUrl;
-	public String fetchNewAuthTokenUrl;
-
-	@Override
-	protected void initUrls() {
-		super.initUrls();
-		pingUrl = getAuthProperties().getController().getPingUrl();
-		loginUrl = getAuthProperties().getController().getLoginUrl();
-		contextUrl = getAuthProperties().getController().getContextUrl();
-		signupUrl = getAuthProperties().getController().getSignupUrl();
-
-		resetPasswordUrl = getAuthProperties().getController().getResetPasswordUrl();
-		resetPasswordViewUrl = getAuthProperties().getController().getResetPasswordViewUrl();
-		fetchByContactInformationUrl = getAuthProperties().getController().getFetchByContactInformationUrl();
-		changeContactInformationUrl = getAuthProperties().getController().getChangeContactInformationUrl();
-		changeContactInformationViewUrl = getAuthProperties().getController().getChangeContactInformationViewUrl();
-		verifyUserUrl = getAuthProperties().getController().getVerifyUserUrl();
-		resendVerificationContactInformationUrl = getAuthProperties().getController().getResendVerifyContactInformationMsgUrl();
-		forgotPasswordUrl = getAuthProperties().getController().getForgotPasswordUrl();
-		changePasswordUrl = getAuthProperties().getController().getChangePasswordUrl();
-		requestContactInformationChangeUrl = getAuthProperties().getController().getRequestContactInformationChangeUrl();
-		fetchNewAuthTokenUrl = getAuthProperties().getController().getFetchNewAuthTokenUrl();
-	}
+	private ChangeContactInformationService changeContactInformationService;
+	private VerificationService verificationService;
 
 
 	//              CONTROLLER METHODS
@@ -121,7 +79,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 
 	public ResponseEntity<String> signup(HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
-		
+
 
   		AbstractUser saved = signupService.signup(signupDto);
 		appendFreshToken(response);
@@ -301,8 +259,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	/**
 	 * A simple function for pinging this server.
 	 */
-//	@GetMapping("${lemon.userController.pingUrl}")
-//	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<?> ping(HttpServletRequest request,HttpServletResponse response) {
 		log.debug("Received a ping");
 		return okNoContent();
@@ -365,50 +321,46 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 				.thenReturn(FindForeignUserDto.class);
 	}
 
-//	/**
-//	 * Preconfigured UserDtoMappingContextBuilder.
-//	 * To extend configuration override {@link this#provideDtoMappingContext(UserDtoMappingContextBuilder)} and continue configuring.
-//	 * To remove pre-configuration, override this method with empty impl and then override {@link this#provideDtoMappingContext(UserDtoMappingContextBuilder)}.
-//	 */
-//	@Override
-//	protected void preconfigureDtoMappingContextBuilder(UserDtoMappingContextBuilder builder) {
-//		super.preconfigureDtoMappings(builder);
-//		builder
-//
-//				.withAllPrincipals()
-//				.withAllRoles()
-//				.forResponse(RapidFindForeignUserDto.class)
-//
-//				.withAllPrincipals()
-//				.withAllRoles()
-//				.forEndpoint(getSignupUrl(), Direction.REQUEST, SignupDto.class)
-//				.forEndpoint(getSignupUrl(), Direction.RESPONSE, RapidFindOwnUserDto.class)
-//
-//				.withAllPrincipals()
-//				.withAllRoles()
-//				.forEndpoint(getRequestContactInformationChangeUrl(), Direction.REQUEST, RequestContactInformationChangeDto.class)
-//
-//				.withAllPrincipals()
-//				.withAllRoles()
-//				.forEndpoint(getChangePasswordUrl(), Direction.REQUEST, ChangePasswordDto.class)
-//
-//
-//				.withAllPrincipals()
-//				.withAllRoles()
-//				.forEndpoint(getVerifyUserUrl(),Direction.RESPONSE, RapidFindOwnUserDto.class)
-//
-//				.withAllRoles()
-//				.withPrincipal(DtoRequestInfo.Principal.OWN)
-//				.forResponse(RapidFindOwnUserDto.class)
-//
-//				.withAllPrincipals()
-//				.withRoles(Roles.ADMIN)
-//				.forAll(RapidFullUserDto.class)
-//
-//				.withAllRoles()
-//				.withAllPrincipals();
-//	}
+	// URLS
 
+	public String loginUrl;
+	public String pingUrl;
+	public String contextUrl;
+	public String signupUrl;
+
+	public String resetPasswordUrl;
+	public String resetPasswordViewUrl;
+	public String fetchByContactInformationUrl;
+	public String changeContactInformationUrl;
+	public String changeContactInformationViewUrl;
+	public String verifyUserUrl;
+	public String resendVerificationContactInformationUrl;
+	public String forgotPasswordUrl;
+	public String changePasswordUrl;
+	public String requestContactInformationChangeUrl;
+	public String fetchNewAuthTokenUrl;
+
+
+	@Override
+	protected void initUrls() {
+		super.initUrls();
+		pingUrl = getAuthProperties().getController().getPingUrl();
+		loginUrl = getAuthProperties().getController().getLoginUrl();
+		contextUrl = getAuthProperties().getController().getContextUrl();
+		signupUrl = getAuthProperties().getController().getSignupUrl();
+
+		resetPasswordUrl = getAuthProperties().getController().getResetPasswordUrl();
+		resetPasswordViewUrl = getAuthProperties().getController().getResetPasswordViewUrl();
+		fetchByContactInformationUrl = getAuthProperties().getController().getFetchByContactInformationUrl();
+		changeContactInformationUrl = getAuthProperties().getController().getChangeContactInformationUrl();
+		changeContactInformationViewUrl = getAuthProperties().getController().getChangeContactInformationViewUrl();
+		verifyUserUrl = getAuthProperties().getController().getVerifyUserUrl();
+		resendVerificationContactInformationUrl = getAuthProperties().getController().getResendVerifyContactInformationMsgUrl();
+		forgotPasswordUrl = getAuthProperties().getController().getForgotPasswordUrl();
+		changePasswordUrl = getAuthProperties().getController().getChangePasswordUrl();
+		requestContactInformationChangeUrl = getAuthProperties().getController().getRequestContactInformationChangeUrl();
+		fetchNewAuthTokenUrl = getAuthProperties().getController().getFetchNewAuthTokenUrl();
+	}
 
 
 	//              REGISTER ENDPOINTS
@@ -601,15 +553,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	}
 
 
-	// nobody should be logged in anymore at controller level!
-//	/**
-//	 * Adds an Authorization header to the response for logged in user
-//	 */
-//	protected void appendFreshToken(HttpServletResponse response) throws EntityNotFoundException {
-//		String token = getUserService().createNewAuthToken();
-//		httpTokenService.appendToken(token,response);
-//	}
-
 	protected U fetchUser(Id userId) throws EntityNotFoundException {
 		Optional<U> byId =  getUnsecuredService().findById(userId);
 		VerifyEntity.isPresent(byId,"User with id: "+userId+" not found");
@@ -620,13 +563,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 
 	//              INJECT DEPENDENCIES
-
-
-	@Autowired
-	public void setHttpTokenService(HttpTokenService httpTokenService) {
-		this.httpTokenService = httpTokenService;
-	}
-
 
 	@Secured
 	@Lazy
@@ -649,56 +585,4 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		this.authProperties = authProperties;
 	}
 
-
-	//	@Override
-//	public void afterUpdate(Object dto, U updated, HttpServletRequest httpServletRequest, HttpServletResponse response) {
-//		super.afterUpdate(dto, updated, httpServletRequest, response);
-//		appendFreshToken(response);
-//	}
-
-
-	//	/**
-//	 * Fetch a self-sufficient token with embedded UserDto - for interservice communications
-//	 */
-//	@GetMapping("/fetch-full-token")
-//	@ResponseBody
-//	public Map<String, String> fetchFullToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
-//		log.debug("Fetching a micro token");
-//		return getService().fetchFullToken(authHeader);
-//	}
-
-//	@Override
-//	protected U serviceUpdate(U update, boolean full) throws BadEntityException, EntityNotFoundException {
-//		U updated = super.serviceUpdate(update, full);
-//		//set password should not trigger immediate update
-//		updated.setPassword(null);
-//		return updated;
-//	}
-
-	
-//	/**
-//	 * Updates a user
-//	 */
-//	@PatchMapping("/users/{id}")
-//	@ResponseBody
-//	public LemonUserDto authUpdate(
-//			@PathVariable("id") ID userId,
-//			@RequestBody String patch,
-//			HttpServletResponse response)
-//			throws IOException, JsonPatchException, BadEntityException, EntityNotFoundException, DtoMappingException {
-//
-//		log.debug("Updating user ... ");
-//
-//		// ensure that the user exists
-//		LexUtils.ensureFound(userId);
-//		Optional<U> byId = getCrudService().findById(userId);
-//		U updateUser = LmapUtils.applyPatch(byId.get(), patch); // create a patched form
-//		//default security Rule checks for write permission
-//		U updated = getCrudService().updateUser(byId.get(), updateUser);
-//		LemonUserDto dto = updated.toUserDto();
-//		dto.setPassword(null);
-//		// Send a new token for logged in user in the response
-//
-//		return dto;
-//	}
 }
