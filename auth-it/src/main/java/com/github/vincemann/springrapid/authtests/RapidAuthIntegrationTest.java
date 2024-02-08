@@ -45,7 +45,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-
 //see application-dev.yml config for expected database config
 //@Sql({"/test-data/resetTestData.sql"})
 
@@ -53,9 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Creates All Test Users.
  * Fills tokens Map in an integration test manner by creating and logging all users in.
  */
-@SpringBootTest({
-        "lemon.recaptcha.sitekey="
-})
+@SpringBootTest
 @ImportAutoConfiguration(exclude = RapidAdminAutoConfiguration.class)
 @Getter
 @Slf4j
@@ -64,15 +61,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public abstract class RapidAuthIntegrationTest extends AclMvcTest {
 
 
-
     @Autowired
     @Acl
     @Lazy
-    private UserService<AbstractUser<Serializable>,Serializable> aclUserService;
+    private UserService<AbstractUser<Serializable>, Serializable> aclUserService;
 
     @Autowired
     @Lazy
-    private UserService<AbstractUser<Serializable>,Serializable> userService;
+    private UserService<AbstractUser<Serializable>, Serializable> userService;
 
     @MockBean
     protected MailSender<?> mailSender;
@@ -92,7 +88,6 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
     @Autowired
     protected JweTokenService jweTokenService;
 
-//    protected Map<Serializable, String> tokens = new HashMap<>(6);
 
     protected AbstractUser<Serializable> admin;
     protected AbstractUser<Serializable> secondAdmin;
@@ -127,7 +122,7 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
         System.err.println("TEST STARTS HERE -----------------------------------------------------------------------------------------------------------------");
     }
 
-    protected void setupSpies(){
+    protected void setupSpies() {
         jwt = Mockito.spy(properties.getJwt());
         Mockito.doReturn(jwt).when(aopUnproxy(properties)).getJwt();
     }
@@ -141,71 +136,54 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
     }
 
 
-
     protected void createTestUsers() throws Exception {
         admin = aclUserService.create(testAdapter.createTestUser(ADMIN_CONTACT_INFORMATION,/*"Admin",*/ ADMIN_PASSWORD, AuthRoles.ADMIN));
-        secondAdmin =  aclUserService.create(testAdapter.createTestUser(SECOND_ADMIN_CONTACT_INFORMATION,/*"Second Admin",*/ SECOND_ADMIN_PASSWORD, AuthRoles.ADMIN));
-        blockedAdmin =  aclUserService.create(testAdapter.createTestUser(BLOCKED_ADMIN_CONTACT_INFORMATION,/*"Blocked Admin",*/ BLOCKED_ADMIN_PASSWORD, AuthRoles.ADMIN, AuthRoles.BLOCKED));
+        secondAdmin = aclUserService.create(testAdapter.createTestUser(SECOND_ADMIN_CONTACT_INFORMATION,/*"Second Admin",*/ SECOND_ADMIN_PASSWORD, AuthRoles.ADMIN));
+        blockedAdmin = aclUserService.create(testAdapter.createTestUser(BLOCKED_ADMIN_CONTACT_INFORMATION,/*"Blocked Admin",*/ BLOCKED_ADMIN_PASSWORD, AuthRoles.ADMIN, AuthRoles.BLOCKED));
 
-        user =  aclUserService.create(testAdapter.createTestUser(USER_CONTACT_INFORMATION,/*"User",*/ USER_PASSWORD, AuthRoles.USER));
-        secondUser =  aclUserService.create(testAdapter.createTestUser(SECOND_USER_CONTACT_INFORMATION,/*"User",*/ SECOND_USER_PASSWORD, AuthRoles.USER));
-        unverifiedUser =  aclUserService.create(testAdapter.createTestUser(UNVERIFIED_USER_CONTACT_INFORMATION,/*"Unverified User",*/ UNVERIFIED_USER_PASSWORD, AuthRoles.USER, AuthRoles.UNVERIFIED));
-        blockedUser =  aclUserService.create(testAdapter.createTestUser(BLOCKED_USER_CONTACT_INFORMATION,/*"Blocked User",*/ BLOCKED_USER_PASSWORD, AuthRoles.USER, AuthRoles.BLOCKED));
-        // sleep so login shortly after wont result in obsolete token
-//        Thread.sleep(400);
+        user = aclUserService.create(testAdapter.createTestUser(USER_CONTACT_INFORMATION,/*"User",*/ USER_PASSWORD, AuthRoles.USER));
+        secondUser = aclUserService.create(testAdapter.createTestUser(SECOND_USER_CONTACT_INFORMATION,/*"User",*/ SECOND_USER_PASSWORD, AuthRoles.USER));
+        unverifiedUser = aclUserService.create(testAdapter.createTestUser(UNVERIFIED_USER_CONTACT_INFORMATION,/*"Unverified User",*/ UNVERIFIED_USER_PASSWORD, AuthRoles.USER, AuthRoles.UNVERIFIED));
+        blockedUser = aclUserService.create(testAdapter.createTestUser(BLOCKED_USER_CONTACT_INFORMATION,/*"Blocked User",*/ BLOCKED_USER_PASSWORD, AuthRoles.USER, AuthRoles.BLOCKED));
     }
 
-
-
-//    protected void loginTestUsers() throws Exception {
-//        tokens.put(getAdmin().getId(), login2xx(ADMIN_CONTACT_INFORMATION, ADMIN_PASSWORD));
-//        tokens.put(getSecondAdmin().getId(), login2xx(SECOND_ADMIN_CONTACT_INFORMATION, SECOND_ADMIN_PASSWORD));
-//        tokens.put(getBlockedAdmin().getId(), login2xx(BLOCKED_ADMIN_CONTACT_INFORMATION, BLOCKED_ADMIN_PASSWORD));
-//
-//        tokens.put(getUser().getId(), login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD));
-//        tokens.put(getUnverifiedUser().getId(), login2xx(UNVERIFIED_USER_CONTACT_INFORMATION, UNVERIFIED_USER_PASSWORD));
-//        tokens.put(getBlockedUser().getId(), login2xx(BLOCKED_USER_CONTACT_INFORMATION, BLOCKED_USER_PASSWORD));
-//    }
-
-    protected void mockJwtExpirationTime(long expirationMillis){
+    protected void mockJwtExpirationTime(long expirationMillis) {
         Mockito.doReturn(expirationMillis).when(jwt).getExpirationMillis();
     }
 
     protected String login2xx(String username, String password, long expirationMillis) throws Exception {
         mockJwtExpirationTime(expirationMillis);
-        return userController.login2xx(username,password);
+        return userController.login2xx(username, password);
     }
 
     protected String login2xx(String username, String password) throws Exception {
-        return userController.login2xx(username,password);
+        return userController.login2xx(username, password);
     }
 
-    protected void ensureTokenWorks(String token, Serializable id) throws Exception {
-        mvc.perform(get(authProperties.getController().getContextUrl())
-                .header(HttpHeaders.AUTHORIZATION, token))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.user.id").value(id.toString()));
+    protected void assertTokenWorks(String token, Serializable id) throws Exception {
+        mvc.perform(get(authProperties.getController().getTestTokenUrl())
+                        .header(HttpHeaders.AUTHORIZATION, token))
+                .andExpect(status().is2xxSuccessful());
     }
 
     protected void assertTokenDoesNotWork(String token) throws Exception {
-        mvc.perform(get(authProperties.getController().getContextUrl())
-                .header(HttpHeaders.AUTHORIZATION, token))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.user.id").doesNotExist());
+        mvc.perform(get(authProperties.getController().getTestTokenUrl())
+                        .header(HttpHeaders.AUTHORIZATION, token))
+                .andExpect(status().isUnauthorized());
     }
 
-    protected SignupDto createValidSignupDto(){
+    protected SignupDto createValidSignupDto() {
         return testAdapter.createValidSignupDto();
     }
 
 
-    protected SignupDto createInvalidSignupDto(){
+    protected SignupDto createInvalidSignupDto() {
         return testAdapter.createInvalidSignupDto();
     }
 
-    protected String modifyCode(String code, String aud, String subject, Long expirationMillis, Long issuedAt, Map<String,Object> otherClaims) throws BadTokenException, ParseException {
+    protected String modifyCode(String code, String aud, String subject, Long expirationMillis, Long issuedAt, Map<String, Object> otherClaims) throws BadTokenException, ParseException {
         JWTClaimsSet claims = jweTokenService.parseToken(code);
-        claims = RapidJwt.mod(claims,aud,subject,expirationMillis,issuedAt,otherClaims);
+        claims = RapidJwt.mod(claims, aud, subject, expirationMillis, issuedAt, otherClaims);
         return jweTokenService.createToken(claims);
     }
 
@@ -217,7 +195,7 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
         System.err.println("deleting users");
         clearAclCache();
         // done via sql script
-        TransactionalTestUtil.clear(aclUserService,transactionTemplate);
+        TransactionalTestUtil.clear(aclUserService, transactionTemplate);
         System.err.println("deleted users");
         System.err.println("test data cleared");
 
@@ -229,7 +207,6 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
 //        Mockito.reset(coreProperties);
 //        Mockito.reset(jwt);
     }
-
 
 
 }

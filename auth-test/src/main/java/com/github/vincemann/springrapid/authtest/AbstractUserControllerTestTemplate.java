@@ -137,13 +137,13 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
     public RequestBuilder forgotPassword(String contactInformation) throws Exception {
         return post(getController().getForgotPasswordUrl())
-                .param("contactInformation", contactInformation)
+                .param("ci", contactInformation)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
     public MailData forgotPassword2xx(String contactInformation) throws Exception {
         mvc.perform(post(getController().getForgotPasswordUrl())
-                .param("contactInformation", contactInformation)
+                .param("ci", contactInformation)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is2xxSuccessful());
         return verifyMailWasSend();
@@ -178,7 +178,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     public RequestBuilder fetchNewToken(String token, String contactInformation) throws Exception {
         return post(getController().getFetchNewAuthTokenUrl())
                 .header(HttpHeaders.AUTHORIZATION, token)
-                .param("contactInformation", contactInformation)
+                .param("ci", contactInformation)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
@@ -202,9 +202,9 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
-    public RequestBuilder fetchByContactInformation(String contactInformation) throws Exception {
+    public RequestBuilder findByContactInformation(String contactInformation) throws Exception {
         return get(getController().getFindByContactInformationUrl())
-                .param("contactInformation", contactInformation)
+                .param("ci", contactInformation)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 

@@ -32,7 +32,7 @@ public class LoginTest extends RapidAuthIntegrationTest {
 				.andExpect(jsonPath("$.password").doesNotExist())
 				.andReturn().getResponse().getHeader(HttpHeaders.AUTHORIZATION);
 
-		ensureTokenWorks(token,getUser().getId());
+		assertTokenWorks(token,getUser().getId());
 	}
 
 	@Test

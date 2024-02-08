@@ -13,7 +13,9 @@ import com.github.vincemann.springrapid.auth.dto.user.FullUserDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.*;
+import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
+import com.github.vincemann.springrapid.auth.service.token.JwtAuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.controller.CrudController;
@@ -28,8 +30,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.token.TokenService;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -60,6 +64,9 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	private SignupService signupService;
 	private ContactInformationService contactInformationService;
 	private VerificationService verificationService;
+	private AuthorizationTokenService authorizationTokenService;
+
+
 
 	//              CONTROLLER METHODS
 
@@ -92,7 +99,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	 * The forgot Password feature -> mail new password to contactInformation
 	 */
 	@GetMapping(path = "/api/core/user/forgot-password")
-	public ResponseEntity<Void> forgotPassword(@RequestParam(value = "contactInformation") String contactInformation) throws EntityNotFoundException, BadEntityException {
+	public ResponseEntity<Void> forgotPassword(@RequestParam(value = "ci") String contactInformation) throws EntityNotFoundException, BadEntityException {
 		passwordService.forgotPassword(contactInformation);
 		return okNoContent();
 	}
@@ -100,7 +107,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	/**
 	 * Resets password after it's forgotten
 	 */
-	@PostMapping(path = "/api/core/user/reset-password",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/api/core/user/reset-password",consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordDto dto) throws  BadEntityException, EntityNotFoundException, BadTokenException {
 		passwordService.resetPassword(dto);
 		return okWithAuthToken();
@@ -120,7 +127,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 
 	@GetMapping("/api/core/user/change-password")
-	public ResponseEntity<?> changePassword(@RequestParam String id, @Valid @RequestBody ChangePasswordDto dto) throws BadEntityException, EntityNotFoundException, IOException {
+	public ResponseEntity<Void> changePassword(@RequestParam String id, @Valid @RequestBody ChangePasswordDto dto) throws BadEntityException, EntityNotFoundException, IOException {
 		passwordService.changePassword(dto);
 		return okWithAuthToken();
 	}
@@ -143,7 +150,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	 * Fetch a new token - for session sliding, switch user etc.
 	 *
 	 */
-	@GetMapping("/api/core/user/new-token")
+	@GetMapping(value = "/api/core/user/new-token", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> createNewAuthToken(@RequestParam Optional<String> contactInformation) throws BadEntityException, JsonProcessingException, EntityNotFoundException {
 
 		String token;
@@ -156,10 +163,19 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return ok(getJsonMapper().writeDto(MapUtils.mapOf("token", token)));
 	}
 
+	@GetMapping("/api/core/user/test-token")
+	public ResponseEntity<Void> testToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+		try {
+			authorizationTokenService.parseToken(token);
+			return okNoContent();
+		} catch (BadTokenException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+	}
+
 
 	public ResponseEntity<String> findByContactInformation(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
 		String contactInformation = readRequestParam(request, "contactInformation");
-		log.debug("Fetching user by contactInformation: " + contactInformation);
 		Optional<U> byContactInformation = getService().findByContactInformation(contactInformation);
 		VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+contactInformation+" not found");
 		U user = byContactInformation.get();
@@ -179,37 +195,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 						.and(roles(AuthRoles.ADMIN)))
 				.thenReturn(FullUserDto.class);
 
-
-		builder.when(endpoint(getSignupUrl())
-						.and(direction(Direction.REQUEST)))
-				.thenReturn(SignupDto.class);
-
-		builder.when(endpoint(getSignupUrl())
-						.and(direction(Direction.RESPONSE)))
-				.thenReturn(FindOwnUserDto.class);
-
-		builder.when(endpoint(getRequestContactInformationChangeUrl())
-						.and(direction(Direction.REQUEST)))
-				.thenReturn(RequestContactInformationChangeDto.class);
-
-
-
-		builder.when(endpoint(getChangePasswordUrl())
-						.and(direction(Direction.REQUEST)))
-				.thenReturn(ChangePasswordDto.class);
-
-		builder.when(endpoint(getVerifyUserUrl())
-						.and(direction(Direction.RESPONSE)))
-				.thenReturn(FindOwnUserDto.class);
-
-		builder.when(endpoint(getResetPasswordUrl())
-						.and(direction(Direction.REQUEST)))
-				.thenReturn(ResetPasswordDto.class);
-
-		builder.when(endpoint(getResetPasswordUrl())
-						.and(direction(Direction.RESPONSE)))
-				.thenReturn(FindOwnUserDto.class);
-
+		// anon can find id by email of diff user
 		builder.when(endpoint(getFindByContactInformationUrl())
 						.and(direction(Direction.RESPONSE))
 						.and(roles(AuthRoles.ANON)))
@@ -227,28 +213,42 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	// URLS
 
-	public String loginUrl;
-	public String pingUrl;
-	public String contextUrl;
-	public String signupUrl;
+	private String loginUrl;
+	private String signupUrl;
 
-	public String resetPasswordUrl;
-	public String resetPasswordViewUrl;
-	public String findByContactInformationUrl;
-	public String changeContactInformationUrl;
-	public String changeContactInformationViewUrl;
-	public String verifyUserUrl;
-	public String resendVerificationContactInformationUrl;
-	public String forgotPasswordUrl;
-	public String changePasswordUrl;
-	public String requestContactInformationChangeUrl;
-	public String fetchNewAuthTokenUrl;
+	private String resetPasswordUrl;
+	private String resetPasswordViewUrl;
+	private String findByContactInformationUrl;
+	private String changeContactInformationUrl;
+	private String changeContactInformationViewUrl;
+	private String verifyUserUrl;
+	private String resendVerificationContactInformationUrl;
+	private String forgotPasswordUrl;
+	private String changePasswordUrl;
+	private String requestContactInformationChangeUrl;
+	private String fetchNewAuthTokenUrl;
+	private String testTokenUrl;
 
 
 	@Override
 	protected void initUrls() {
 		super.initUrls();
 		findByContactInformationUrl = getAuthProperties().getController().getFindByContactInformationUrl();
+
+		loginUrl = getAuthProperties().getController().getLoginUrl();
+		signupUrl = getAuthProperties().getController().getSignupUrl();
+
+		resetPasswordUrl = getAuthProperties().getController().getResetPasswordUrl();
+		resetPasswordViewUrl = getAuthProperties().getController().getResetPasswordViewUrl();
+		changeContactInformationUrl = getAuthProperties().getController().getChangeContactInformationUrl();
+		changeContactInformationViewUrl = getAuthProperties().getController().getChangeContactInformationViewUrl();
+		verifyUserUrl = getAuthProperties().getController().getVerifyUserUrl();
+		resendVerificationContactInformationUrl = getAuthProperties().getController().getResendVerifyContactInformationMsgUrl();
+		forgotPasswordUrl = getAuthProperties().getController().getForgotPasswordUrl();
+		changePasswordUrl = getAuthProperties().getController().getChangePasswordUrl();
+		requestContactInformationChangeUrl = getAuthProperties().getController().getRequestContactInformationChangeUrl();
+		fetchNewAuthTokenUrl = getAuthProperties().getController().getFetchNewAuthTokenUrl();
+		testTokenUrl = getAuthProperties().getController().getTestTokenUrl();
 	}
 
 
@@ -303,18 +303,30 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	public void setCrudService(S crudService) {
 		super.setCrudService(crudService);
 	}
-
 	@Lazy
 	@Autowired
 	public void setUnsecuredService(S Service) {
 		this.unsecuredService = Service;
 	}
-
-
-
-	@Autowired
-	public void setAuthProperties(AuthProperties authProperties) {
+	@Autowired public void setAuthProperties(AuthProperties authProperties) {
 		this.authProperties = authProperties;
 	}
-
+	@Autowired public void setUserUtils(UserUtils userUtils) {
+		this.userUtils = userUtils;
+	}
+	@Autowired public void setPasswordService(PasswordService passwordService) {
+		this.passwordService = passwordService;
+	}
+	@Autowired public void setSignupService(SignupService signupService) {
+		this.signupService = signupService;
+	}
+	@Autowired public void setContactInformationService(ContactInformationService contactInformationService) {
+		this.contactInformationService = contactInformationService;
+	}
+	@Autowired public void setVerificationService(VerificationService verificationService) {
+		this.verificationService = verificationService;
+	}
+	@Autowired public void setAuthorizationTokenService(AuthorizationTokenService authorizationTokenService) {
+		this.authorizationTokenService = authorizationTokenService;
+	}
 }

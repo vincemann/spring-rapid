@@ -3,6 +3,8 @@ package com.github.vincemann.springrapid.authtests;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
 import com.github.vincemann.springrapid.auth.mail.MailData;
+import com.github.vincemann.springrapid.auth.service.ContactInformationService;
+import com.github.vincemann.springrapid.auth.service.ContactInformationServiceImpl;
 import com.github.vincemann.springrapid.auth.service.JpaUserService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
@@ -217,7 +219,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 	protected String createChangeContactInformationToken(AbstractUser targetUser, String newContactInformation, Long expiration){
 		return jweTokenService.createToken(
 				RapidJwt.create(
-						JpaUserService.CHANGE_CONTACT_INFORMATION_AUDIENCE,
+						ContactInformationServiceImpl.CHANGE_CONTACT_INFORMATION_AUDIENCE,
 						targetUser.getId().toString(),
 						expiration,
 						MapUtils.mapOf("newContactInformation", newContactInformation)));

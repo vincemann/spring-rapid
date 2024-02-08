@@ -25,7 +25,7 @@ public class FetchNewTokenTest extends RapidAuthIntegrationTest {
 
 
 		AbstractUserControllerTestTemplate.ResponseToken response =deserialize(result.getResponse().getContentAsString(), AbstractUserControllerTestTemplate.ResponseToken.class);
-		ensureTokenWorks(response.getToken(),getUser().getId());
+		assertTokenWorks(response.getToken(),getUser().getId());
 	}
 	
 	@Test
@@ -52,7 +52,7 @@ public class FetchNewTokenTest extends RapidAuthIntegrationTest {
 
 
 		AbstractUserControllerTestTemplate.ResponseToken response =deserialize(result.getResponse().getContentAsString(), AbstractUserControllerTestTemplate.ResponseToken.class);
-		ensureTokenWorks(response.getToken(),getUser().getId());
+		assertTokenWorks(response.getToken(),getUser().getId());
 	}
 	
 	@Test

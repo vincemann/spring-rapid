@@ -54,6 +54,7 @@ public class AuthProperties {
 		public String changePasswordUrl;
 		public String requestContactInformationChangeUrl;
 		public String fetchNewAuthTokenUrl;
+		public String testTokenUrl;
 
 		public String getUserBaseUrl() {
 			return coreProperties.getBaseUrl()+"/user";
@@ -109,6 +110,10 @@ public class AuthProperties {
 
 		public String getFetchNewAuthTokenUrl() {
 			return getUserBaseUrl() +"/new-token";
+		}
+
+		public String getTestTokenUrl() {
+			return getUserBaseUrl() + "test-token";
 		}
 	}
 
