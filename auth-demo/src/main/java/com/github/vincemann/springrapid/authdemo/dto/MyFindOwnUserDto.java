@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.authdemo.dto;
 
-import com.github.vincemann.springrapid.auth.controller.dto.user.FindOwnUserDto;
+import com.github.vincemann.springrapid.auth.dto.user.FindOwnUserDto;
 import lombok.*;
 
 import java.util.Set;

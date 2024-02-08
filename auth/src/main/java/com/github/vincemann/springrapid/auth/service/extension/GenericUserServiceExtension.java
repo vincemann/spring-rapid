@@ -83,8 +83,8 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     }
 
     @Override
-    default U newAdmin(AuthProperties.Admin admin) {
-        return getNext().newAdmin(admin);
+    default U createAdmin(AuthProperties.Admin admin) {
+        return getNext().createAdmin(admin);
     }
 
 //    @Override

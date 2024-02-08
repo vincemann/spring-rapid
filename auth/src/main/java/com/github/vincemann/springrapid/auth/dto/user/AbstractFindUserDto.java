@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.controller.dto.user;
+package com.github.vincemann.springrapid.auth.dto.user;
 
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.core.sec.Roles;

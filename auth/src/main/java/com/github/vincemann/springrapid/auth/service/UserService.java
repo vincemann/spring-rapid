@@ -25,24 +25,9 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
     public Map<String, Object> getContext();
 
-
-
-    public void resendVerificationMessage(U user) throws EntityNotFoundException, BadEntityException;
-
-    @LogInteraction(Severity.TRACE)
     public Optional<U> findByContactInformation( @NotBlank String contactInformation);
 
-
-    // get user from contactInformation from code
-    public U verifyUser(@NotBlank String verificationCode) throws EntityNotFoundException, BadEntityException, BadTokenException;
-
     U extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException;
-
-    public void forgotPassword(@NotBlank String contactInformation) throws EntityNotFoundException;
-
-    // use newPassword here so https encrypts new password which is not possible via url param
-    // target contactInformation gets extracted from code
-    public U resetPassword(@NotBlank String newPassword,@NotBlank String code) throws EntityNotFoundException, BadEntityException, BadTokenException;
 
     U addRole(ID userId, String role) throws EntityNotFoundException, BadEntityException;
 
@@ -50,24 +35,13 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
     void updatePassword(ID userId, String password) throws EntityNotFoundException, BadEntityException;
 
-    public void changePassword(U user, @NotBlank String oldPassword, @NotBlank String newPassword, @NotBlank String retypeNewPassword) throws EntityNotFoundException, BadEntityException;
+    U updateContactInformation(ID userId, String contactInformation) throws EntityNotFoundException, BadEntityException;
 
-    // get user from contactInformation from code
-    public U changeContactInformation(@NotBlank String changeContactInformationCode) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException;
+    U updateContactInformation(U update, String contactInformation) throws EntityNotFoundException, BadEntityException;
 
-    public void requestContactInformationChange(U user,@NotBlank String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException, BadEntityException;
+    String createNewAuthToken(String contactInformation) throws EntityNotFoundException;
 
-
-
-    public String createNewAuthToken() throws EntityNotFoundException;
-
-//    @LogInteraction(Severity.TRACE)
-//    public Map<String, String> fetchFullToken(String authHeader);
-
-    public U newAdmin(@Valid AuthProperties.Admin admin);
-
-    public U signupAdmin(U admin) throws AlreadyRegisteredException, BadEntityException;
-
+    String createNewAuthToken() throws EntityNotFoundException;
 
 
     // keep it like that, otherwise the AbstractUser type wont be in impl methods
@@ -81,5 +55,7 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     U softUpdate(U entity) throws EntityNotFoundException, BadEntityException;
 
     U createUser();
+
+    U createAdmin(@Valid AuthProperties.Admin admin);
 
 }

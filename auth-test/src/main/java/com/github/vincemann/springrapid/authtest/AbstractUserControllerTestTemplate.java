@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authtest;
 
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
-import com.github.vincemann.springrapid.auth.controller.dto.ResetPasswordView;
+import com.github.vincemann.springrapid.auth.dto.ResetPasswordView;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;

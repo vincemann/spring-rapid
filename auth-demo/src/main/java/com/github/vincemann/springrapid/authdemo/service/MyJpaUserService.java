@@ -4,7 +4,6 @@ import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.service.JpaUserService;
 import com.github.vincemann.springrapid.authdemo.model.User;
 import com.github.vincemann.springrapid.authdemo.repository.UserRepository;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,8 +27,8 @@ public class MyJpaUserService extends JpaUserService<User, Long, UserRepository>
 
 
 	@Override
-	public User newAdmin(AuthProperties.Admin admin) {
-		User createdAdmin = super.newAdmin(admin);
+	public User createAdmin(AuthProperties.Admin admin) {
+		User createdAdmin = super.createAdmin(admin);
 		createdAdmin.setName(admin.getContactInformation()+"name");
 		return createdAdmin;
 	}

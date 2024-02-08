@@ -11,11 +11,15 @@ import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.io.Serializable;
+import java.util.Optional;
 
 @Slf4j
 public class VerificationServiceImpl implements VerificationService {
@@ -32,6 +36,8 @@ public class VerificationServiceImpl implements VerificationService {
 
     private VerificationService verificationService;
 
+    private IdConverter idConverter;
+
     @Transactional
     @Override
     public AbstractUser makeUnverified(AbstractUser user) throws BadEntityException, EntityNotFoundException {
@@ -39,7 +45,7 @@ public class VerificationServiceImpl implements VerificationService {
             throw new BadEntityException("Already unverified");
         }
         AbstractUser updated = userService.addRole(user, AuthRoles.UNVERIFIED);
-        TransactionalUtils.afterCommit(() -> verificationService.sendVerificationMessage(updated));
+        TransactionalUtils.afterCommit(() -> sendVerificationMessage(updated));
         return updated;
     }
 
@@ -92,7 +98,7 @@ public class VerificationServiceImpl implements VerificationService {
     @Override
     public AbstractUser verifyUser(String code) throws EntityNotFoundException, BadTokenException, BadEntityException {
         JWTClaimsSet claims = jweTokenService.parseToken(code);
-        AbstractUser user = userService.extractUserFromClaims(claims);
+        AbstractUser user = extractUserFromClaims(claims);
         RapidJwt.validate(claims, VERIFY_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
 
 
@@ -106,5 +112,13 @@ public class VerificationServiceImpl implements VerificationService {
         AbstractUser updated = verificationService.makeVerified(user);
         log.debug("Verified user: " + updated.getContactInformation());
         return updated;
+    }
+
+    protected AbstractUser extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException {
+        Serializable id = idConverter.toId(claims.getSubject());
+        // fetch the user
+        Optional<AbstractUser> byId = userService.findById(id);
+        VerifyEntity.isPresent(byId, "User with id: " + id + " not found");
+        return byId.get();
     }
 }

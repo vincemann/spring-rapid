@@ -28,8 +28,6 @@ public class UserUtils {
 //    }
 
 
-    // todo add to user service
-
     public <T extends AbstractUser> T findAuthenticatedUser(){
         if (!RapidSecurityContext.isAuthenticated()){
             throw new AccessDeniedException("No user logged in");
@@ -43,10 +41,4 @@ public class UserUtils {
         return userByContactInformation.get();
     }
 
-
-    public <T extends AbstractUser> T findUserById(Serializable id) throws EntityNotFoundException {
-        Optional<T> userByContactInformation = (Optional<T>) userService.findById(id);
-        VerifyEntity.isPresent(userByContactInformation,"user with contactInformation: " + RapidSecurityContext.getName()+ " could not be found");
-        return userByContactInformation.get();
-    }
 }

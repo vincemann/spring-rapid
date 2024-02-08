@@ -4,16 +4,12 @@ import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 public interface UserServiceExtension<S extends UserService>
         extends CrudServiceExtension<S>, UserService
@@ -86,8 +82,8 @@ public interface UserServiceExtension<S extends UserService>
 //    }
 
     @Override
-    default AbstractUser newAdmin(AuthProperties.Admin admin) {
-        return getNext().newAdmin(admin);
+    default AbstractUser createAdmin(AuthProperties.Admin admin) {
+        return getNext().createAdmin(admin);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.controller;
 
-import com.github.vincemann.springrapid.auth.controller.dto.SignupDto;
+import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;

@@ -18,7 +18,7 @@ import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.repo.*;
 import com.github.vincemann.springrapid.acldemo.service.*;
 import com.github.vincemann.springrapid.auth.boot.AdminInitializer;
-import com.github.vincemann.springrapid.auth.controller.dto.SignupDto;
+import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import org.junit.jupiter.api.Assertions;

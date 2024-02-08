@@ -4,11 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.controller.dto.*;
-import com.github.vincemann.springrapid.auth.controller.dto.ChangePasswordDto;
-import com.github.vincemann.springrapid.auth.controller.dto.user.FindForeignUserDto;
+import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
+import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
+import com.github.vincemann.springrapid.auth.dto.ResetPasswordView;
+import com.github.vincemann.springrapid.auth.dto.SignupDto;
+import com.github.vincemann.springrapid.auth.dto.user.FindForeignUserDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.controller.dto.user.FindOwnUserDto;
-import com.github.vincemann.springrapid.auth.controller.dto.user.FullUserDto;
+import com.github.vincemann.springrapid.auth.dto.user.FindOwnUserDto;
+import com.github.vincemann.springrapid.auth.dto.user.FullUserDto;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.*;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
@@ -16,7 +19,6 @@ import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 
-import com.github.vincemann.springrapid.auth.util.UrlParamUtil;
 import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.map.*;
 import com.github.vincemann.springrapid.core.controller.id.IdFetchingException;
@@ -53,7 +55,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	private S unsecuredService;
 
 	private PasswordService passwordService;
-	private SignupService<U,SignupDto> signupService;
+	private SignupService<U, SignupDto> signupService;
 
 	private HttpTokenService httpTokenService;
 	private AuthProperties authProperties;

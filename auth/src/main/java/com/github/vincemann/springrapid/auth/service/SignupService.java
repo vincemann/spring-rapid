@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.service;
 
-import com.github.vincemann.springrapid.auth.controller.dto.SignupAdminDto;
-import com.github.vincemann.springrapid.auth.controller.dto.SignupDto;
+import com.github.vincemann.springrapid.auth.dto.SignupAdminDto;
+import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.springframework.validation.annotation.Validated;

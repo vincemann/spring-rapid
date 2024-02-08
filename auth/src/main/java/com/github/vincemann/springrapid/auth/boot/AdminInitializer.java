@@ -60,7 +60,7 @@ public class AdminInitializer implements CommandLineRunner {
             }
             // Doesn't exist. So, create it.
             log.debug("creating: " + admin);
-            userService.signupAdmin(userService.newAdmin(admin));
+            userService.signupAdmin(userService.createAdmin(admin));
         }
     }
 

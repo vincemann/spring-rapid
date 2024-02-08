@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.controller.dto;
+package com.github.vincemann.springrapid.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
