@@ -34,7 +34,7 @@
 
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>auto-bidir</artifactId>
+            <artifactId>bidir</artifactId>
             <version>${project.version}</version>
         </dependency>
 

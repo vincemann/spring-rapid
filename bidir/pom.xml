@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.vincemann.spring-rapid</groupId>
-    <artifactId>auto-bidir</artifactId>
+    <artifactId>bidir</artifactId>
 
     <parent>
         <groupId>com.github.vincemann</groupId>

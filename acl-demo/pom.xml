@@ -21,7 +21,7 @@
 
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>auto-bidir</artifactId>
+            <artifactId>bidir</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -51,7 +51,7 @@
 
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>auth-tests</artifactId>
+            <artifactId>auth-it</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

@@ -37,9 +37,9 @@
         <module>lemon-exceptions</module>
         <module>auth-demo</module>
         <module>auth-test</module>
-        <module>auth-tests</module>
+        <module>auth-it</module>
         <module>core</module>
-        <module>auto-bidir</module>
+        <module>bidir</module>
         <module>acl</module>
         <module>core-test</module>
         <module>core-demo</module>
