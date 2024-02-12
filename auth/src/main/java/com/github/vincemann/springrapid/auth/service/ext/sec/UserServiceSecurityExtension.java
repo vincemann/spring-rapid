@@ -52,9 +52,33 @@ public class UserServiceSecurityExtension
     }
 
     @Override
-    public AbstractUser signupAdmin(AbstractUser admin) throws AlreadyRegisteredException, BadEntityException {
-        AuthorizationTemplate.assertHasRoles(AuthRoles.ADMIN);
-        return getNext().signupAdmin(admin);
+    public AbstractUser addRole(Serializable userId, String role) throws EntityNotFoundException, BadEntityException {
+        return getNext().addRole(userId,role);
+    }
+
+    @Override
+    public AbstractUser removeRole(Serializable userId, String role) throws EntityNotFoundException, BadEntityException {
+        return getNext().removeRole(userId,role);
+    }
+
+    @Override
+    public void updatePassword(Serializable userId, String password) throws EntityNotFoundException, BadEntityException {
+        getNext().updatePassword(userId,password);
+    }
+
+    @Override
+    public AbstractUser updateContactInformation(Serializable userId, String contactInformation) throws EntityNotFoundException, BadEntityException {
+        return getNext().updateContactInformation(userId,contactInformation);
+    }
+
+    @Override
+    public AbstractUser updateContactInformation(AbstractUser update, String contactInformation) throws EntityNotFoundException, BadEntityException {
+        return getNext().updateContactInformation(update,contactInformation);
+    }
+
+    @Override
+    public AbstractUser createUser() {
+        return getNext().createUser();
     }
 
     @LogInteraction

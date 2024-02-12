@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.auth.handler;
 
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
 
+import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -30,9 +30,10 @@ public class RapidAuthenticationSuccessHandler
 	extends SimpleUrlAuthenticationSuccessHandler {
 	
 
-    private UserService userService;
-    private HttpTokenService httpTokenService;
 	private CoreProperties properties;
+
+	private UserUtils userUtils;
+
 	
 	@Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
@@ -41,10 +42,10 @@ public class RapidAuthenticationSuccessHandler
         // Instead of handle(request, response, authentication),
 		// the statements below are introduced
     	response.setStatus(HttpServletResponse.SC_OK);
-    	response.setContentType(properties.getController().getMediaType());
-		String token = null;
+//    	response.setContentType(properties.getController().getMediaType());
+		String token;
 		try {
-			token = userService.createNewAuthToken();
+			token = userUtils.createNewAuthToken();
 		} catch (EntityNotFoundException e) {
 			throw new RuntimeException("No authenticated Principal found",e);
 		}
@@ -66,12 +67,7 @@ public class RapidAuthenticationSuccessHandler
 	}
 
 	@Autowired
-	public void setUserService(UserService userService) {
-		this.userService = userService;
-	}
-	
-	@Autowired
-	public void setHttpTokenService(HttpTokenService httpTokenService) {
-		this.httpTokenService = httpTokenService;
+	public void setUserUtils(UserUtils userUtils) {
+		this.userUtils = userUtils;
 	}
 }

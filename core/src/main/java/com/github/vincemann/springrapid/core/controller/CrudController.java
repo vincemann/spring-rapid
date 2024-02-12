@@ -262,7 +262,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
 
     protected ResponseEntity<String> ok(String jsonDto) {
         return ResponseEntity.ok()
-                .contentType(MediaType.valueOf(coreProperties.getController().getMediaType()))
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(jsonDto);
     }
 
@@ -280,7 +280,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
 
     protected ResponseEntity<?> ok() {
         return ResponseEntity.ok()
-                .contentType(MediaType.valueOf(coreProperties.getController().getMediaType()))
+                .contentType(MediaType.APPLICATION_JSON)
                 .build();
     }
 
@@ -322,9 +322,6 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
      */
     protected abstract void configureDtoMappings(DtoMappingsBuilder builder);
 
-    protected String getMediaType() {
-        return coreProperties.getController().getMediaType();
-    }
 
 
     @Override
@@ -393,7 +390,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
         return RequestMappingInfo
                 .paths(findUrl)
                 .methods(RequestMethod.GET)
-                .produces(getMediaType())
+                .produces(MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
 
@@ -401,7 +398,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
         return RequestMappingInfo
                 .paths(findSomeUrl)
                 .methods(RequestMethod.POST)
-                .produces(getMediaType())
+                .produces(MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
 
@@ -410,7 +407,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
         return RequestMappingInfo
                 .paths(deleteUrl)
                 .methods(RequestMethod.DELETE)
-                .produces(getMediaType())
+                .produces(MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
 
@@ -418,8 +415,8 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
         return RequestMappingInfo
                 .paths(createUrl)
                 .methods(RequestMethod.POST)
-                .consumes(getMediaType())
-                .produces(getMediaType())
+                .consumes(MediaType.APPLICATION_JSON_VALUE)
+                .produces(MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
 
@@ -427,8 +424,8 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
         return RequestMappingInfo
                 .paths(updateUrl)
                 .methods(RequestMethod.PUT)
-                .consumes(getMediaType())
-                .produces(getMediaType())
+                .consumes(MediaType.APPLICATION_JSON_VALUE)
+                .produces(MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
 
@@ -436,7 +433,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
         return RequestMappingInfo
                 .paths(findAllUrl)
                 .methods(RequestMethod.GET)
-                .produces(getMediaType())
+                .produces(MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
 

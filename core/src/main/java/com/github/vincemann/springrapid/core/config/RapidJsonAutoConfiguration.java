@@ -27,16 +27,13 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGL
 //string to json and vice versa
 public class RapidJsonAutoConfiguration implements WebMvcConfigurer {
 
-    @Autowired
-    private CoreProperties coreProperties;
-
     public RapidJsonAutoConfiguration() {
 
     }
 
     @Override
     public void configureContentNegotiation (ContentNegotiationConfigurer configurer) {
-        configurer.defaultContentType(MediaType.valueOf(coreProperties.getController().getMediaType()));
+        configurer.defaultContentType(MediaType.APPLICATION_JSON);
     }
 
     @ConditionalOnMissingBean(ObjectMapper.class)

@@ -57,7 +57,7 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
         MyFindOwnUserDto dto = getDtoMapper().mapToDto(saved, MyFindOwnUserDto.class);
         return okWithAuthToken(dto);
     }
-    
+
     // overwrite without annotations to not expose as endpoint
     @Override
     public ResponseEntity<FindOwnUserDto> signup(SignupDto signupDto) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {

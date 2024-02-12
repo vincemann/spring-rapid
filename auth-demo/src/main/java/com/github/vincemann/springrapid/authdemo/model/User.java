@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authdemo.model;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.authdemo.service.ValidUsername;
+import com.github.vincemann.springrapid.authdemo.service.val.ValidUsername;
 import com.google.common.collect.Sets;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +16,6 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.util.Set;
 
 @Entity

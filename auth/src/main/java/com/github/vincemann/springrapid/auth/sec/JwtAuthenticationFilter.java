@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.auth.sec;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
-import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
 import com.github.vincemann.springrapid.auth.service.token.JwtService;
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;

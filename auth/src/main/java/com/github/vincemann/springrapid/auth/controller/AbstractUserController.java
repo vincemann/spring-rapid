@@ -129,7 +129,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 
 	@GetMapping("/api/core/user/request-change-ci")
-	public ResponseEntity<Void> requestChangeContactInformation(@Valid @RequestBody RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException {
+	public ResponseEntity<Void> requestChangeContactInformation(@Valid @RequestBody RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException {
 		contactInformationService.requestContactInformationChange(dto);
 		return okNoContent();
 	}

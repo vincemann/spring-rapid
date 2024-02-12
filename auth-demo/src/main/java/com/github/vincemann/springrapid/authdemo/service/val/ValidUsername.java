@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.authdemo.service;
+package com.github.vincemann.springrapid.authdemo.service.val;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

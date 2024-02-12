@@ -54,13 +54,13 @@ public class AdminInitializer implements CommandLineRunner {
                     log.debug("replacing...");
                     userService.deleteById(byContactInformation.get().getId());
                 }else {
-                    log.debug("keep old admin");
+                    log.debug("keeping old admin");
                     continue;
                 }
             }
             // Doesn't exist. So, create it.
             log.debug("creating: " + admin);
-            userService.signupAdmin(userService.createAdmin(admin));
+            userService.create(userService.createAdmin(admin));
         }
     }
 

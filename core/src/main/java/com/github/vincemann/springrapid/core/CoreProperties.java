@@ -31,8 +31,6 @@ public class CoreProperties {
         // if set to true, BadEntityException will be thrown if user tries to update unsupported field
         // if set to false, warning is logged and unsupported action is ignored
         public boolean strictUpdateMerge = true;
-        // dont change to something other than json, for now only json is supported
-        public String mediaType = MediaType.APPLICATION_JSON_UTF8_VALUE;
         public Endpoints endpoints = new Endpoints();
 
         @Getter

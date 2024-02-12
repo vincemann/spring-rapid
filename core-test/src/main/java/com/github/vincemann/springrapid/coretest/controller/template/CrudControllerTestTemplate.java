@@ -51,14 +51,14 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
         return put(controller.getUpdateUrl())
                 .param("id",id.toString())
                 .content(patchString)
-                .contentType(getController().getCoreProperties().getController().getMediaType());
+                .contentType(MediaType.APPLICATION_JSON_VALUE);
     }
 
 
     public  MockHttpServletRequestBuilder create(Object dto) throws Exception {
         return post(controller.getCreateUrl())
                 .content(serialize(dto))
-                .contentType(getController().getCoreProperties().getController().getMediaType());
+                .contentType(MediaType.APPLICATION_JSON_VALUE);
     }
 
 

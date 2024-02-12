@@ -2,15 +2,13 @@ package com.github.vincemann.springrapid.authdemo.dto;
 
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 
-import com.github.vincemann.springrapid.authdemo.service.ValidUsername;
+import com.github.vincemann.springrapid.authdemo.service.val.ValidUsername;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import java.util.Set;
 
 @NoArgsConstructor
 @Getter
