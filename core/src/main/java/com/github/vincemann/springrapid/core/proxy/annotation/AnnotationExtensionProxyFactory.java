@@ -104,6 +104,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
                                 .toArray(new ServiceExtension[0]);
                         if (internalProxy == null) {
                             internalProxy = new ExtensionProxyBuilder<>(lastProxiedBean)
+                                    // todo does this work?
                                     .addGenericExtensions(extensions)
                                     .setDefaultExtensionsEnabled(defaultEnabled)
                                     .ignoreDefaultExtensions(proxyDefinition.get().ignoredExtensions())

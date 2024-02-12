@@ -1,14 +1,20 @@
 package com.github.vincemann.springrapid.auth.config;
 
+import com.github.vincemann.springrapid.acl.DefaultAclExtension;
 import com.github.vincemann.springrapid.acl.config.RapidAclExtensionsAutoConfiguration;
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.acl.service.ext.sec.CrudAclChecksExtension;
+import com.github.vincemann.springrapid.auth.service.SignupService;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.auth.service.ext.acl.AclUserExtension;
+import com.github.vincemann.springrapid.auth.service.ext.acl.SignupServiceAclExtension;
+import com.github.vincemann.springrapid.auth.service.ext.sec.ContactInformationServiceSecurityExtension;
+import com.github.vincemann.springrapid.auth.service.ext.sec.PasswordServiceSecurityExtension;
+import com.github.vincemann.springrapid.auth.service.ext.sec.UserAuthTokenServiceSecurityExtension;
 import com.github.vincemann.springrapid.auth.service.ext.sec.UserServiceSecurityExtension;
 import com.github.vincemann.springrapid.acl.proxy.*;
 import com.github.vincemann.springrapid.acl.service.ext.acl.CleanUpAclExtension;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
 import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +24,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.acls.model.MutableAclService;
+
+import java.util.List;
 
 
 /**
@@ -45,11 +53,36 @@ public class RapidUserServiceSecurityAutoConfiguration {
         return new UserServiceSecurityExtension();
     }
 
-    @Bean("aclUserServiceExtension")
-    @ConditionalOnMissingBean(name = "aclUserServiceExtension")
+
+    @ConditionalOnMissingBean(name = "contactInformationServiceSecurityExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public AclUserExtension aclUserServiceExtension() {
-        return new AclUserExtension();
+    @Bean
+    public ContactInformationServiceSecurityExtension contactInformationServiceSecurityExtension(){
+        return new ContactInformationServiceSecurityExtension();
+    }
+
+
+    @ConditionalOnMissingBean(name = "passwordServiceSecurityExtension")
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    @Bean
+    public PasswordServiceSecurityExtension passwordServiceSecurityExtension(){
+        return new PasswordServiceSecurityExtension();
+    }
+
+    @ConditionalOnMissingBean(name = "userAuthTokenServiceSecurityExtension")
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    @Bean
+    public UserAuthTokenServiceSecurityExtension userAuthTokenServiceSecurityExtension(){
+        return new UserAuthTokenServiceSecurityExtension();
+    }
+
+
+
+    @Bean("signupServiceAclExtension")
+    @ConditionalOnMissingBean(name = "signupServiceAclExtension")
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public SignupServiceAclExtension signupServiceAclExtension() {
+        return new SignupServiceAclExtension();
     }
 
 
@@ -57,14 +90,12 @@ public class RapidUserServiceSecurityAutoConfiguration {
     @Bean
     @Acl
     public UserService<?, ?> aclUserService(UserService<?, ?> service,
-                                            CleanUpAclExtension cleanUpAclExtension,
-                                            // all other relevant acl stuff in here:
-                                            AclUserExtension aclUserServiceExtension
+                                            CleanUpAclExtension cleanUpAclExtension
     ) {
         return new ExtensionProxyBuilder<>(service)
                 // dont work with default extensions to keep things simple and concrete for user
                 .setDefaultExtensionsEnabled(false)
-                .addExtension(aclUserServiceExtension)
+                // acl info is only created in signup
                 .addExtension(cleanUpAclExtension)
                 .build();
     }
@@ -82,6 +113,18 @@ public class RapidUserServiceSecurityAutoConfiguration {
                 .setDefaultExtensionsEnabled(false)
                 .addExtension(securityRule)
                 .addExtension(crudAclChecksExtension)
+                .build();
+    }
+
+    @Bean
+    @Acl
+    @ConditionalOnMissingBean(name = "aclSignupService")
+    public SignupService aclSignupService(SignupService service,
+                                          SignupServiceAclExtension signupServiceAclExtension
+    ) {
+        return new ExtensionProxyBuilder<>(signupService)
+                .setDefaultExtensionsEnabled(false)
+                .addExtension(signupServiceAclExtension)
                 .build();
     }
 

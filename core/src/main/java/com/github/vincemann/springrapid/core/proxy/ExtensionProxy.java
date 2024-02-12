@@ -25,7 +25,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
     private final Map<MethodIdentifier, Method> methods = new HashMap<>();
     private List<String> ignoredMethodNames = Lists.newArrayList("getEntityClass", "getRepository", "toString", "equals", "hashCode", "getClass", "clone", "notify", "notifyAll", "wait", "finalize", "setBeanName", "getBeanName", "getTargetClass");
     private List<MethodIdentifier> learnedIgnoredMethods = new ArrayList<>();
-    private CrudService proxied;
+    private Object proxied;
     private List<ServiceExtension<?>> extensions = new ArrayList<>();
     private ThreadLocal<State> state = new ThreadLocal<>();
     //caches
@@ -37,7 +37,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
     private Set<Class<? extends ServiceExtension>> defaultExtensionsIgnored = new HashSet<>();
 
 
-    public ExtensionProxy(CrudService proxied, ServiceExtension<?>... extensions) {
+    public ExtensionProxy(Object proxied, ServiceExtension<?>... extensions) {
         for (Method method : proxied.getClass().getMethods()) {
             this.methods.put(new MethodIdentifier(method), method);
         }
@@ -88,7 +88,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
 
 
     @Override
-    public CrudService<?, ?> getLast() {
+    public Object getLast() {
         return proxied;
     }
 
@@ -293,20 +293,5 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
     private static class ExtensionState {
         private State state;
         private ServiceExtension extension;
-    }
-
-    //    protected boolean isGetTargetClassMethod(Method method){
-//        if (method.getName().equals("getTargetClass") && method.getParameterTypes().length==0){
-//            return true;
-//        }else {
-//            return false;
-//        }
-//    }
-
-    @Override
-    public String toString() {
-        return "ServiceExtensionProxy{ " +
-                "for entity: " + getProxied().getEntityClass() +
-                " }";
     }
 }

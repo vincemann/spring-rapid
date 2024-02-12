@@ -9,91 +9,50 @@ import org.springframework.test.util.AopTestUtils;
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
 
-/**
- * typesafe builder for {@link ExtensionProxy}
- * @param <S>   type of root service to proxy (must be {@link CrudService})
- * @param <E>   type of entity of root service
- * @param <Id>  type of id of entity
- */
-public class ExtensionProxyBuilder<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>, Id extends Serializable> {
+
+public class ExtensionProxyBuilder<T> {
     private final ExtensionProxy proxy;
 
-    public ExtensionProxyBuilder(S proxied) {
+    public ExtensionProxyBuilder(T proxied) {
         this.proxy = new ExtensionProxy(proxied);
     }
 
-//    public static <S extends SimpleCrudService<E,Id>,E extends IdentifiableEntity<Id>, Id extends Serializable> ServiceExtensionProxyBuilder<S,E,Id> builder(S proxied){
-//        return new ServiceExtensionProxyBuilder<>(proxied);
-//    }
-//
-//    public ServiceExtensionProxyBuilder(S proxy) {
-//        this.proxy = proxy;
-//    }
-
-    // diese aufsplittung muss ich machen weil ich nicht sagen kann <T super S | T extends CrudService<? super E, ? super Id>>
-    // das 'oder' wird durch 2 seperate methoden realisiert
-
-    // this method is used to add SimpleService implementing extensions, to ensure down casting works
-    // service extension can either be superclass, same class or child class of S, the only thing that matters, is that I can cast
-    // from E to extension entity type. i.E. I can cast IdentEntity to Owner -> ? super E aka ? super Owner is correct
-
-
-    /**
-     * User this method if your {@link ServiceExtension} implements {@link GenericCrudServiceExtension}.
-     */
-    public ExtensionProxyBuilder<S,E,Id> addGenericExtensions(ServiceExtension<? extends CrudService<? super E,? super Id>>... extensions){
-        for (ServiceExtension<? extends CrudService<? super E, ? super Id>> extension : extensions) {
-            addGenericExtension(extension);
-        }
-        return this;
-    }
-
-    public ExtensionProxyBuilder<S,E,Id> addGenericExtension(ServiceExtension<? extends CrudService<? super E,? super Id>> extension){
-        proxy.addExtension(extension);
-        return this;
-    }
-
-    // service extension can be any super class of service
-    // also types that are not of type SimpleService
-    public ExtensionProxyBuilder<S,E,Id> addExtensions(ServiceExtension<? super S>... extensions){
-        for (ServiceExtension<? super S> extension : extensions) {
+    public ExtensionProxyBuilder<T> addExtensions(ServiceExtension<? super T>... extensions){
+        for (ServiceExtension<? super T> extension : extensions) {
             proxy.addExtension(extension);
         }
         return this;
     }
 
-    public ExtensionProxyBuilder<S,E,Id> addExtension(ServiceExtension<? super S> extension){
+    public ExtensionProxyBuilder<T> addExtension(ServiceExtension<? super T> extension){
         proxy.addExtension(extension);
         return this;
     }
 
-    public ExtensionProxyBuilder<S,E,Id> ignoreDefaultExtensions(Class<? extends ServiceExtension>... extensions){
-        for (Class<? extends ServiceExtension> extension : extensions) {
+    public ExtensionProxyBuilder<T> ignoreDefaultExtensions(Class<? extends ServiceExtension<? super T>>... extensions){
+        for (Class<? extends ServiceExtension<? super T>> extension : extensions) {
             proxy.ignoreExtension(extension);
         }
         return this;
     }
 
 
-    public ExtensionProxyBuilder<S,E,Id> setDefaultExtensionsEnabled(Boolean enabled){
-//        if (enabled==null){
-//            enabled=true;
-//        }
+    public ExtensionProxyBuilder<T> setDefaultExtensionsEnabled(boolean enabled){
         proxy.setDefaultExtensionsEnabled(enabled);
         return this;
     }
 
 
-    public S build(){
-        S unproxied = AopTestUtils.getUltimateTargetObject(proxy.getProxied());
-        S proxyInstance = (S) Proxy.newProxyInstance(
+    public T build(){
+        T unproxied = AopTestUtils.getUltimateTargetObject(proxy.getProxied());
+        T proxyInstance = (T) Proxy.newProxyInstance(
                 unproxied.getClass().getClassLoader(),
                 ClassUtils.getAllInterfaces(unproxied.getClass()).toArray(new Class[0]),
                 proxy);
         return proxyInstance;
     }
 
-
-
-
+    protected ExtensionProxy getProxy() {
+        return proxy;
+    }
 }
