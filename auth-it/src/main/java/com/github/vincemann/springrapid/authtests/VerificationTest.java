@@ -28,16 +28,9 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 	public void canVerifyContactInformation() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		MailData mailData = userController.signup2xx(signupDto);
-		AbstractUser<Serializable> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
 		mvc.perform(userController.verifyContactInformationWithLink(mailData.getLink()))
-				.andExpect(status().is(200))
-				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
-				.andExpect(jsonPath("$.id").value(savedUser.getId()))
-				.andExpect(jsonPath("$.roles").value(hasSize(signupDto.getRoles().size())))
-				.andExpect(jsonPath("$.roles", containsInAnyOrder(signupDto.getRoles().toArray(new String[0]))))
-				.andExpect(jsonPath("$.roles", not(hasItem(AuthRoles.UNVERIFIED))))
-				.andExpect(jsonPath("$.verified").value(true))
-				.andExpect(jsonPath("$.goodUser").value(true));
+				.andExpect(status().is(204))
+				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
 
 	}
 

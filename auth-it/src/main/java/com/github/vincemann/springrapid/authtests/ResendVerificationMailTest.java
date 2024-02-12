@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.authtests;
 
+import static com.github.vincemann.springrapid.auth.service.VerificationServiceImpl.VERIFY_CONTACT_INFORMATION_AUDIENCE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -23,7 +24,7 @@ public class ResendVerificationMailTest extends RapidAuthIntegrationTest {
 
 		MailData mailData = userController.verifyMailWasSend();
 		Assertions.assertEquals(UNVERIFIED_USER_CONTACT_INFORMATION,mailData.getTo());
-		Assertions.assertEquals(JpaUserService.VERIFY_CONTACT_INFORMATION_AUDIENCE,mailData.getTopic());
+		Assertions.assertEquals(VERIFY_CONTACT_INFORMATION_AUDIENCE,mailData.getTopic());
 	}
 
 	@Test

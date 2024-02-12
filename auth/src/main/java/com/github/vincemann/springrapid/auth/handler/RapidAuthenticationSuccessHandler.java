@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.handler;
 
+import com.github.vincemann.springrapid.auth.service.UserAuthTokenService;
 import com.github.vincemann.springrapid.auth.service.UserService;
 
 import com.github.vincemann.springrapid.auth.util.UserUtils;
@@ -28,11 +29,9 @@ import java.io.IOException;
 @Slf4j
 public class RapidAuthenticationSuccessHandler
 	extends SimpleUrlAuthenticationSuccessHandler {
-	
 
-	private CoreProperties properties;
 
-	private UserUtils userUtils;
+	private UserAuthTokenService authTokenService;
 
 	
 	@Override
@@ -45,7 +44,7 @@ public class RapidAuthenticationSuccessHandler
 //    	response.setContentType(properties.getController().getMediaType());
 		String token;
 		try {
-			token = userUtils.createNewAuthToken();
+			token = authTokenService.createNewAuthToken();
 		} catch (EntityNotFoundException e) {
 			throw new RuntimeException("No authenticated Principal found",e);
 		}
@@ -61,13 +60,8 @@ public class RapidAuthenticationSuccessHandler
         log.debug("Authentication succeeded for user: " + RapidSecurityContext.getName());
     }
 
-    @Autowired
-	public void setProperties(CoreProperties properties) {
-		this.properties = properties;
-	}
 
-	@Autowired
-	public void setUserUtils(UserUtils userUtils) {
-		this.userUtils = userUtils;
+	@Autowired public void setAuthTokenService(UserAuthTokenService authTokenService) {
+		this.authTokenService = authTokenService;
 	}
 }

@@ -38,9 +38,9 @@ public class AuthProperties {
 			this.coreProperties = coreProperties;
 		}
 
-		public String userBaseUrl = coreProperties.baseUrl+"/user";
+		public String userBaseUrl;
 
-		public String loginUrl = coreProperties.baseUrl+"/login";
+		public String loginUrl;
 
 		public String signupUrl;
 		public String resetPasswordUrl;

@@ -60,7 +60,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     public RequestBuilder signup(Object dto) throws Exception {
         return post(getController().getSignupUrl())
                 .content(serialize(dto))
-                .contentType(getController().getCoreProperties().getController().getMediaType());
+                .contentType(MediaType.APPLICATION_JSON);
     }
 
     public MailData signup2xx(Object dto) throws Exception {

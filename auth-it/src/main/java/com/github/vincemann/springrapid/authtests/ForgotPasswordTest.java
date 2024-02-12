@@ -1,17 +1,17 @@
 package com.github.vincemann.springrapid.authtests;
 
-import static com.github.vincemann.springrapid.auth.service.JpaUserService.FORGOT_PASSWORD_AUDIENCE;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
+
+import static com.github.vincemann.springrapid.auth.service.PasswordServiceImpl.FORGOT_PASSWORD_AUDIENCE;
+import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.UNKNOWN_CONTACT_INFORMATION;
+import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.USER_CONTACT_INFORMATION;
 import static com.github.vincemann.springrapid.core.util.ProxyUtils.aopUnproxy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 public class ForgotPasswordTest extends RapidAuthIntegrationTest {
 
 

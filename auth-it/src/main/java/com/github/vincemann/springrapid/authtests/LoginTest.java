@@ -96,7 +96,7 @@ public class LoginTest extends RapidAuthIntegrationTest {
 
 	@Test
 	public void cantUseWrongToken() throws Exception {
-		mvc.perform(get(authProperties.getController().getContextUrl())
+		mvc.perform(get(authProperties.getController().getTestTokenUrl())
 				.header(HttpHeaders.AUTHORIZATION, "Bearer a-wrong-token"))
 				.andExpect(status().isUnauthorized());
 	}

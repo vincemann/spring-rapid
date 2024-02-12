@@ -46,11 +46,11 @@ public abstract class AuthTestAdapter {
     public abstract AbstractUser createTestUser(String contactInformation, String password, String... roles);
 
     public SignupDto createValidSignupDto(){
-        return new SignupDto(SIGNUP_USER_CONTACT_INFORMATION, SIGNUP_USER_PASSWORD, Sets.newHashSet(Roles.USER));
+        return new SignupDto(SIGNUP_USER_CONTACT_INFORMATION, SIGNUP_USER_PASSWORD);
     }
 
     public SignupDto createInvalidSignupDto(){
-        return new SignupDto(INVALID_CONTACT_INFORMATION,INVALID_PASSWORD,Sets.newHashSet(Roles.USER));
+        return new SignupDto(INVALID_CONTACT_INFORMATION,INVALID_PASSWORD);
     }
 
 

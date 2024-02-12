@@ -17,7 +17,6 @@ public class ChangePasswordTest extends RapidAuthIntegrationTest {
 		return ChangePasswordDto.builder()
 				.oldPassword(oldPassword)
 				.newPassword(NEW_PASSWORD)
-				.retypeNewPassword(NEW_PASSWORD)
 				.build();
 	}
 
@@ -29,7 +28,6 @@ public class ChangePasswordTest extends RapidAuthIntegrationTest {
 		ChangePasswordDto changePasswordDto = ChangePasswordDto.builder()
 				.oldPassword(USER_PASSWORD)
 				.newPassword(NEW_PASSWORD)
-				.retypeNewPassword(NEW_PASSWORD)
 				.build();
 
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
@@ -90,7 +88,6 @@ public class ChangePasswordTest extends RapidAuthIntegrationTest {
 		ChangePasswordDto changePasswordDto = ChangePasswordDto.builder()
 				.oldPassword(null)
 				.newPassword(null)
-				.retypeNewPassword(null)
 				.build();
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(userController.changePassword(getUser().getId(),token, changePasswordDto))
@@ -102,7 +99,6 @@ public class ChangePasswordTest extends RapidAuthIntegrationTest {
 		changePasswordDto = ChangePasswordDto.builder()
 				.oldPassword(USER_PASSWORD)
 				.newPassword(INVALID_PASSWORD)
-				.retypeNewPassword(INVALID_PASSWORD)
 				.build();
 		token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(userController.changePassword(getUser().getId(),token, changePasswordDto))
@@ -113,22 +109,11 @@ public class ChangePasswordTest extends RapidAuthIntegrationTest {
 		changePasswordDto = ChangePasswordDto.builder()
 				.oldPassword(USER_PASSWORD+"wrong")
 				.newPassword(NEW_PASSWORD)
-				.retypeNewPassword(NEW_PASSWORD)
 				.build();
 		token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(userController.changePassword(getUser().getId(),token, changePasswordDto))
 				.andExpect(status().isBadRequest());
 		login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
-		// different retype-password
-		changePasswordDto = ChangePasswordDto.builder()
-				.oldPassword(USER_PASSWORD)
-				.newPassword(NEW_PASSWORD)
-				.retypeNewPassword(NEW_PASSWORD+"different")
-				.build();
-		token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-		mvc.perform(userController.changePassword(getUser().getId(),token, changePasswordDto))
-				.andExpect(status().isBadRequest());
-		login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 	}
 }

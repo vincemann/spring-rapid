@@ -38,7 +38,6 @@ public class SignupTest extends RapidAuthIntegrationTest {
 	@Test
 	public void canSignup() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
-		Set<String> roles = signupDto.getRoles();
 
 		mvc.perform(userController.signup(signupDto))
 				.andExpect(status().is(200))
@@ -46,7 +45,7 @@ public class SignupTest extends RapidAuthIntegrationTest {
 				.andExpect(jsonPath("$.id").exists())
 				.andExpect(jsonPath("$.password").doesNotExist())
 				.andExpect(jsonPath("$.contactInformation").value(signupDto.getContactInformation()))
-				.andExpect(jsonPath("$.roles").value(hasSize(roles.size()+1)))
+				.andExpect(jsonPath("$.roles").exists())
 //				.andExpect(jsonPath("$.roles", containsInAnyOrder(roles.toArray(new String[0]))))
 				.andExpect(jsonPath("$.roles", hasItem(AuthRoles.UNVERIFIED)))
 				.andExpect(jsonPath("$.roles", hasItem(AuthRoles.USER)))

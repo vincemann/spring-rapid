@@ -15,6 +15,7 @@ public class CoreProperties {
 
     public Controller controller = new Controller();
     public String baseUrl = "/api/core";
+    public String contextUrl;
     /**
      * Client web application's base URL.
      * Used in the verification link mailed to the users, etc.
@@ -23,6 +24,10 @@ public class CoreProperties {
 
 
     public Map<String, Object> shared;
+
+    public String getContextUrl() {
+        return baseUrl + "/context";
+    }
 
     @Getter
     @Setter

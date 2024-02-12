@@ -37,7 +37,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 	public void canChangeOwnContactInformation() throws Exception {
 		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		MailData mailData = userController.requestContactInformationChange2xx(getUser().getId(), token,
-				new RequestContactInformationChangeDto(NEW_CONTACT_INFORMATION));
+				new RequestContactInformationChangeDto(getUser().getContactInformation(),NEW_CONTACT_INFORMATION));
 
 		mvc.perform(userController.changeContactInformationWithLink(mailData.getLink(),token))
 				//gets new token for new contactInformation to use
@@ -45,7 +45,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(content().string(""));
 
-		
+
 		AbstractUser<Serializable> updatedUser = getUserService().findById(getUser().getId()).get();
 		Assertions.assertNull(updatedUser.getNewContactInformation());
 		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getContactInformation());
@@ -55,7 +55,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 	public void unverifiedUserCanChangeOwnContactInformation() throws Exception {
 		String token = login2xx(UNVERIFIED_USER_CONTACT_INFORMATION,UNVERIFIED_USER_PASSWORD);
 		MailData mailData = userController.requestContactInformationChange2xx(getUnverifiedUser().getId(), token,
-				new RequestContactInformationChangeDto(NEW_CONTACT_INFORMATION));
+				new RequestContactInformationChangeDto(getUser().getContactInformation(),NEW_CONTACT_INFORMATION));
 
 		mvc.perform(userController.changeContactInformationWithLink(mailData.getLink(),token))
 				//gets new token for new contactInformation to use
@@ -73,7 +73,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 	public void cantChangeContactInformationOfDiffUser() throws Exception {
 		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		MailData mailData = userController.requestContactInformationChange2xx(getUser().getId(), token,
-				new RequestContactInformationChangeDto(NEW_CONTACT_INFORMATION));
+				new RequestContactInformationChangeDto(getUser().getContactInformation(),NEW_CONTACT_INFORMATION));
 
 		token = login2xx(SECOND_USER_CONTACT_INFORMATION,SECOND_USER_PASSWORD);
 		// other user has sniffed correct code, but wrong token
@@ -86,7 +86,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 	public void cantChangeOwnContactInformationWithSameCodeTwice() throws Exception {
 		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		MailData mailData = userController.requestContactInformationChange2xx(getUser().getId(), token,
-				new RequestContactInformationChangeDto(NEW_CONTACT_INFORMATION));
+				new RequestContactInformationChangeDto(getUser().getContactInformation(),NEW_CONTACT_INFORMATION));
 
 		mvc.perform(userController.changeContactInformationWithLink(mailData.getLink(),token))
 				//gets new token for new contactInformation to use
@@ -108,8 +108,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 	public void cantChangeOwnContactInformationWithInvalidCode() throws Exception {
 		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		MailData mailData = userController.requestContactInformationChange2xx(getUser().getId(), token,
-				new RequestContactInformationChangeDto(NEW_CONTACT_INFORMATION));
-
+				new RequestContactInformationChangeDto(getUser().getContactInformation(),NEW_CONTACT_INFORMATION));
 
 
 		// Blank token
@@ -143,77 +142,77 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 //     * Providing an obsolete changeContactInformationCode shouldn't work.
 //     */
 //    //todo sometimes 401 sometimes 403
-	@Test
-	public void cantChangeOwnContactInformationWithObsoleteCode() throws Exception {
-		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
-		MailData mailData = userController.requestContactInformationChange2xx(getUser().getId(), token,
-				new RequestContactInformationChangeDto(NEW_CONTACT_INFORMATION));
-		// credentials updated after the request for contactInformation change was made
+@Test
+public void cantChangeOwnContactInformationWithObsoleteCode() throws Exception {
+	String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
+	MailData mailData = userController.requestContactInformationChange2xx(getUser().getId(), token,
+			new RequestContactInformationChangeDto(getUser().getContactInformation(),NEW_CONTACT_INFORMATION));
+	// credentials updated after the request for contactInformation change was made
 
-		transactionTemplate.execute(status -> {
-			AbstractUser<Serializable> user = getUserService().findById(getUser().getId()).get();
-			user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-			try {
-				getUserService().fullUpdate(user);
-			} catch (BadEntityException | EntityNotFoundException e) {
-				throw new RuntimeException(e);
-			}
-			return null;
-		});
+	transactionTemplate.execute(status -> {
+		AbstractUser<Serializable> user = getUserService().findById(getUser().getId()).get();
+		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
+		try {
+			getUserService().fullUpdate(user);
+		} catch (BadEntityException | EntityNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		return null;
+	});
 
-		// A new auth token is needed, because old one would be obsolete!
-		token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
+	// A new auth token is needed, because old one would be obsolete!
+	token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 
 
-		// now ready to test!
-		mvc.perform(userController.changeContactInformationWithLink(mailData.getLink(),token))
-				//gets new token for new contactInformation to use
-				.andExpect(status().is(403));
-	}
+	// now ready to test!
+	mvc.perform(userController.changeContactInformationWithLink(mailData.getLink(),token))
+			//gets new token for new contactInformation to use
+			.andExpect(status().is(403));
+}
 //
 //	/**
 //     * Trying without having requested first.
 //	 * @throws Exception
 //     */
-	@Test
-	@Disabled // you can never get the real code without requesting contactInformation change first
-	public void cantChangeOwnContactInformationWithoutRequestingContactInformationChangeFirst() throws Exception {
-		String code = createChangeContactInformationToken(getUser(), NEW_CONTACT_INFORMATION, 600000L);
-		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
-		mvc.perform(userController.changeContactInformation(code,token))
-				//gets new token for new contactInformation to use
-				.andExpect(status().isForbidden());
-	}
+@Test
+@Disabled // you can never get the real code without requesting contactInformation change first
+public void cantChangeOwnContactInformationWithoutRequestingContactInformationChangeFirst() throws Exception {
+	String code = createChangeContactInformationToken(getUser(), NEW_CONTACT_INFORMATION, 600000L);
+	String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
+	mvc.perform(userController.changeContactInformation(code,token))
+			//gets new token for new contactInformation to use
+			.andExpect(status().isForbidden());
+}
 //
 //    /**
 //     * Trying after some user registers the newContactInformation, leaving it non unique.
 //     * @throws Exception
 //     */
-	@Test
-	public void cantChangeOwnContactInformationWhenNewContactInformationNotUnique() throws Exception {
+@Test
+public void cantChangeOwnContactInformationWhenNewContactInformationNotUnique() throws Exception {
 
-		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
-		MailData mailData = userController.requestContactInformationChange2xx(getUser().getId(), token,
-				new RequestContactInformationChangeDto(NEW_CONTACT_INFORMATION));
+	String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
+	MailData mailData = userController.requestContactInformationChange2xx(getUser().getId(), token,
+			new RequestContactInformationChangeDto(getUser().getContactInformation(),NEW_CONTACT_INFORMATION));
 
-		// Some other user changed to the same contactInformation, before i could issue my request
+	// Some other user changed to the same contactInformation, before i could issue my request
 
-		transactionTemplate.execute(new TransactionCallback<Object>() {
-			@SneakyThrows
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				AbstractUser<Serializable> user = getUserService().findById(getSecondUser().getId()).get();
-				user.setContactInformation(NEW_CONTACT_INFORMATION);
-				getUserService().fullUpdate(user);
-				return null;
-			}
-		});
+	transactionTemplate.execute(new TransactionCallback<Object>() {
+		@SneakyThrows
+		@Override
+		public Object doInTransaction(TransactionStatus status) {
+			AbstractUser<Serializable> user = getUserService().findById(getSecondUser().getId()).get();
+			user.setContactInformation(NEW_CONTACT_INFORMATION);
+			getUserService().fullUpdate(user);
+			return null;
+		}
+	});
 
 
-		mvc.perform(userController.changeContactInformationWithLink(mailData.getLink(),token))
-				//gets new token for new contactInformation to use
-				.andExpect(status().is(400));
-	}
+	mvc.perform(userController.changeContactInformationWithLink(mailData.getLink(),token))
+			//gets new token for new contactInformation to use
+			.andExpect(status().is(400));
+}
 
 	protected String createChangeContactInformationToken(AbstractUser targetUser, String newContactInformation, Long expiration){
 		return jweTokenService.createToken(
