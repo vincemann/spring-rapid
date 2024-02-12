@@ -47,11 +47,8 @@ public class JpaVisitService
 
     private RapidAclService rapidAclService;
     private OwnerService ownerService;
-    private final OwnerRepository ownerRepository;
 
-    public JpaVisitService(OwnerRepository ownerRepository) {
-        this.ownerRepository = ownerRepository;
-    }
+
 
     @Override
     public void subscribeOwner(Long ownerId, Long visitId) throws EntityNotFoundException {

@@ -25,7 +25,7 @@ import java.util.Optional;
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.any;
 
 @Controller
-public class VisitController extends SecuredCrudController<Visit, Long>
+public class VisitController extends SecuredCrudController<Visit, Long, VisitService>
 {
     @Getter
     private String subscribeOwnerUrl;
@@ -34,13 +34,6 @@ public class VisitController extends SecuredCrudController<Visit, Long>
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {
         builder.when(any()).thenReturn(VisitDto.class);
-    }
-
-    @Autowired
-    @Lazy
-    @Secured
-    public void setVisitService(VisitService service) {
-        this.service = service;
     }
 
     @Override
@@ -58,5 +51,13 @@ public class VisitController extends SecuredCrudController<Visit, Long>
         }
         return ResponseEntity.ok().build();
     }
+
+    @Autowired
+    @Lazy
+    @Secured
+    public void setVisitService(VisitService service) {
+        this.service = service;
+    }
+
 
 }

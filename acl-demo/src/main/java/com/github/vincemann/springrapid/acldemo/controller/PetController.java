@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerCreatesPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerUpdatesPetDto;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
+import com.github.vincemann.springrapid.acldemo.service.PetService;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
@@ -15,7 +16,7 @@ import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappin
 
 
 @Controller
-public class PetController extends SecuredCrudController<Pet, Long> {
+public class PetController extends SecuredCrudController<Pet, Long, PetService> {
 
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {

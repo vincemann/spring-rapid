@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acldemo.controller;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTest;
 import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
-import com.github.vincemann.springrapid.acldemo.dto.user.FullUserDto;
+import com.github.vincemann.springrapid.acldemo.dto.user.MyFullUserDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.CreateVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.FullVetDto;
@@ -101,8 +101,8 @@ public class VetControllerTest extends MyIntegrationTest {
                 createUpdateJsonLine("remove", "/roles", MyRoles.NEW_VET)
         );
 
-        FullUserDto responseVetUserDto = performDs2xx(userController.update(verifyVetJson, vet.getUser().getId().toString())
-                .header(HttpHeaders.AUTHORIZATION, adminToken), FullUserDto.class);
+        MyFullUserDto responseVetUserDto = performDs2xx(userController.update(verifyVetJson, vet.getUser().getId().toString())
+                .header(HttpHeaders.AUTHORIZATION, adminToken), MyFullUserDto.class);
 
         Vet updatedDbVet = vetRepository.findById(vet.getId()).get();
         propertyAssert(responseVetUserDto)
