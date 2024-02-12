@@ -59,7 +59,8 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
                 return bean;
             }
             boolean primaryBeanRegistered = beanFactory.getBeanDefinition(beanName).isPrimary();
-            Class serviceInterface = resolveServiceInterface(unwrappedBean, beanName);
+
+//            Class serviceInterface = resolveServiceInterface(unwrappedBean, beanName);
             // todo fancyly log this annotation to show proxy chain with arrows
             if (log.isDebugEnabled())
                 log.debug("Identified Proxies of bean: " + beanName + " : " + toCreate);
@@ -141,25 +142,16 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
 
 
     protected Class resolveServiceInterface(Object bean, String beanName) {
-        String entityName = ((CrudService) bean).getEntityClass().getSimpleName();
-        String interfaceName = entityName + "Service";
-        Optional<Class<?>> serviceInterfaceClass = Lists.newArrayList(bean.getClass().getInterfaces()).stream()
-                .filter(i -> i.getSimpleName().equals(interfaceName))
-                .findFirst();
-        Assert.isTrue(serviceInterfaceClass.isPresent(), "Could not find interface named: " + interfaceName + " for Service bean: " + beanName + " please create interface following namingConvention : 'entityName+Service'");
-        return serviceInterfaceClass.get();
+        // if needed, just take first interface found, or define var in annotation holding main interface
+//        String entityName = ((CrudService) bean).getEntityClass().getSimpleName();
+//        String interfaceName = entityName + "Service";
+//        Optional<Class<?>> serviceInterfaceClass = Lists.newArrayList(bean.getClass().getInterfaces()).stream()
+//                .filter(i -> i.getSimpleName().equals(interfaceName))
+//                .findFirst();
+//        Assert.isTrue(serviceInterfaceClass.isPresent(), "Could not find interface named: " + interfaceName + " for Service bean: " + beanName + " please create interface following namingConvention : 'entityName+Service'");
+//        return serviceInterfaceClass.get();
+        return null;
     }
-
-//    protected GenericBeanDefinition createBeanDef(Class<? extends Annotation>[] qualifiers, boolean primary, Class<? extends CrudService> beanClass) {
-//        final GenericBeanDefinition serviceBeanDef = new GenericBeanDefinition();
-//        for (Class<? extends Annotation> qualifier : qualifiers) {
-//            Assert.isTrue(qualifier.isAnnotationPresent(Qualifier.class));
-//            serviceBeanDef.addQualifier(new AutowireCandidateQualifier(qualifier));
-//        }
-//        serviceBeanDef.setPrimary(primary);
-//        serviceBeanDef.setBeanClass(beanClass);
-//        return serviceBeanDef;
-//    }
 
     protected GenericBeanDefinition createBeanDefinition(
             Class<? extends Annotation>[] qualifiers,
@@ -209,8 +201,6 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         return prefix + beanType.getSimpleName();
     }
 
-
-}
 
     protected List<ServiceExtension> resolveExtensions(DefineProxy proxyDefinition) {
         String[] beanNameExtensions = proxyDefinition.extensions();
