@@ -144,6 +144,7 @@ public abstract class AbstractEntityController
         return request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
     }
 
+
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         try {

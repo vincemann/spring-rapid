@@ -34,7 +34,6 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
         builder.when(roles(AuthRoles.ADMIN))
                 .thenReturn(MyFullUserDto.class);
 
-
         super.configureDtoMappings(builder);
     }
 
