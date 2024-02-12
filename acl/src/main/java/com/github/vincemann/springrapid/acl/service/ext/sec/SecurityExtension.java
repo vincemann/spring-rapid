@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class SecurityExtension<T>
         extends ServiceExtension<T> {
 
-    protected AclTemplate securityChecker;
+    protected AclTemplate aclTemplate;
 
     @Autowired
     public void setAclSecurityChecker(AclTemplate securityChecker) {
-        this.securityChecker = securityChecker;
+        this.aclTemplate = securityChecker;
     }
 }

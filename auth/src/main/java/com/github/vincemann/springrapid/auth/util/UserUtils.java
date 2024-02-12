@@ -19,19 +19,17 @@ import java.util.Optional;
 public class UserUtils {
 
     private UserService userService;
-    private AuthorizationTokenService authorizationTokenService;
-    private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
-    private RapidSecurityContext securityContext;
 
     private IdConverter idConverter;
 
-    @Lazy
-    @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+
+    public AbstractUser extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException {
+        Serializable id = idConverter.toId(claims.getSubject());
+        // fetch the user
+        Optional<AbstractUser> byId = userService.findById(id);
+        VerifyEntity.isPresent(byId, "User with id: " + id + " not found");
+        return byId.get();
     }
-
-
 
     public <T extends AbstractUser> T findAuthenticatedUser(){
         if (!RapidSecurityContext.isAuthenticated()){
@@ -46,14 +44,15 @@ public class UserUtils {
         return userByContactInformation.get();
     }
 
-    public String createNewAuthToken(String contactInformation) throws EntityNotFoundException {
-        Optional<AbstractUser> byContactInformation = userService.findByContactInformation(contactInformation);
-        VerifyEntity.isPresent(byContactInformation, "user with contactInformation: " + contactInformation + " not found");
-        return authorizationTokenService.createToken(authenticatedPrincipalFactory.create(byContactInformation.get()));
+
+    @Autowired
+    public void setIdConverter(IdConverter idConverter) {
+        this.idConverter = idConverter;
     }
 
-    public String createNewAuthToken() throws EntityNotFoundException {
-        return createNewAuthToken(securityContext.currentPrincipal().getName());
+    @Lazy
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
-
 }

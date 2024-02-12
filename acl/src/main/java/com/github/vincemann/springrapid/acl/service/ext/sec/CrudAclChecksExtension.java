@@ -24,7 +24,7 @@ public class CrudAclChecksExtension
 
     @Override
     public Optional findById(Serializable id) {
-        getSecurityChecker().checkPermission(id,getLast().getEntityClass(), BasePermission.READ);
+        getAclTemplate().checkPermission(id,getLast().getEntityClass(), BasePermission.READ);
         return getNext().findById(id);
     }
 
@@ -37,20 +37,20 @@ public class CrudAclChecksExtension
 
     @Override
     public IdentifiableEntity partialUpdate(IdentifiableEntity entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
-        getSecurityChecker().checkPermission(entity,BasePermission.WRITE);
+        getAclTemplate().checkPermission(entity,BasePermission.WRITE);
         return getNext().partialUpdate(entity, fieldsToUpdate);
     }
 
     @Override
     public IdentifiableEntity fullUpdate(IdentifiableEntity entity) throws BadEntityException, EntityNotFoundException {
-        getSecurityChecker().checkPermission(entity,BasePermission.WRITE);
+        getAclTemplate().checkPermission(entity,BasePermission.WRITE);
         return getNext().fullUpdate(entity);
     }
 
     @Override
     public Set<IdentifiableEntity> findSome(Set ids) {
         Set<IdentifiableEntity> entities = getNext().findSome(ids);
-        entities.stream().forEach(entity -> getSecurityChecker().checkPermission(entity,BasePermission.READ));
+        entities.stream().forEach(entity -> getAclTemplate().checkPermission(entity,BasePermission.READ));
 //        return getSecurityChecker().filter(entities,BasePermission.READ);
         return entities;
     }
@@ -58,20 +58,20 @@ public class CrudAclChecksExtension
     @Override
     public Set findAll(List jpqlFilters, List entityFilters, List sortingStrategies) {
         Set<IdentifiableEntity> entities = getNext().findAll(jpqlFilters,entityFilters,sortingStrategies);
-        entities.stream().forEach(entity -> getSecurityChecker().checkPermission(entity,BasePermission.READ));
+        entities.stream().forEach(entity -> getAclTemplate().checkPermission(entity,BasePermission.READ));
         return entities;
     }
 
     @Override
     public Set findAll() {
         Set<IdentifiableEntity> entities = getNext().findAll();
-        entities.stream().forEach(entity -> getSecurityChecker().checkPermission(entity,BasePermission.READ));
+        entities.stream().forEach(entity -> getAclTemplate().checkPermission(entity,BasePermission.READ));
         return entities;
     }
 
     @Override
     public void deleteById(Serializable id) throws EntityNotFoundException {
-        getSecurityChecker().checkPermission(id,getLast().getEntityClass(),BasePermission.DELETE);
+        getAclTemplate().checkPermission(id,getLast().getEntityClass(),BasePermission.DELETE);
         getNext().deleteById(id);
     }
 

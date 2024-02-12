@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.*;
+import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
@@ -22,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import static com.github.vincemann.springrapid.auth.util.PrincipalUtils.isAnon;
+import static com.github.vincemann.springrapid.core.util.MethodNameUtil.propertyNameOf;
 
 /**
  * Note:
@@ -53,6 +55,8 @@ public abstract class JpaUserService
         adminUser.getRoles().add(AuthRoles.ADMIN);
         return adminUser;
     }
+
+
 
 
     @Override

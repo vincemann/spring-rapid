@@ -18,6 +18,7 @@ import org.springframework.security.access.expression.method.MethodSecurityExpre
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.util.SimpleMethodInvocation;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -86,15 +87,10 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
     }
 
     private boolean _checkPermission(Serializable id, Class<?> clazz, Permission permission) {
-        if (id == null) {
-            throw new IllegalArgumentException("Id must not be null");
-        }
-        if (permission == null) {
-            throw new IllegalArgumentException("Permission must not be null");
-        }
-        if (clazz == null) {
-            throw new IllegalArgumentException("Clazz must not be null");
-        }
+        Assert.notNull(permission,"checked permission must not be null");
+        Assert.notNull(clazz,"entity class must not be null");
+        Assert.notNull(id,"id must not be null");
+
         AuthorizationTemplate.assertAuthenticated();
 
 //        RapidAuthenticatedPrincipal p = rapidSecurityContext.currentPrincipal();
@@ -103,6 +99,9 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
     }
 
     public void checkPermission(IdentifiableEntity<?> entity, Permission permission) throws AccessDeniedException {
+        Assert.notNull(entity,"checked permission must not be null");
+        Assert.notNull(entity,"entity must not be null");
+        Assert.notNull(entity.getId(),"id must not be null");
 
         boolean permitted = _checkPermission(entity.getId(), entity.getClass(), permission);
         if (!permitted) {

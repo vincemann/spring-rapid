@@ -9,12 +9,14 @@ import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
+import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -34,10 +36,9 @@ public class VerificationServiceImpl implements VerificationService {
 
     private UserService userService;
 
-
-    private VerificationService verificationService;
-
     private IdConverter idConverter;
+
+    private UserUtils userUtils;
 
     @Transactional
     @Override
@@ -101,7 +102,7 @@ public class VerificationServiceImpl implements VerificationService {
     @Override
     public void verifyUser(String code) throws EntityNotFoundException, BadTokenException, BadEntityException {
         JWTClaimsSet claims = jweTokenService.parseToken(code);
-        AbstractUser user = extractUserFromClaims(claims);
+        AbstractUser user = userUtils.extractUserFromClaims(claims);
         RapidJwt.validate(claims, VERIFY_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
 
 
@@ -112,15 +113,37 @@ public class VerificationServiceImpl implements VerificationService {
 
         //no login needed bc token of user is appended in controller -> we avoid dynamic logins in a stateless env
         //also to be able to use read-only security test -> generic principal type does not need to be passed into this class
-        AbstractUser updated = verificationService.makeVerified(user);
+        AbstractUser updated = makeVerified(user);
         log.debug("Verified user: " + updated.getContactInformation());
     }
 
-    protected AbstractUser extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException {
-        Serializable id = idConverter.toId(claims.getSubject());
-        // fetch the user
-        Optional<AbstractUser> byId = userService.findById(id);
-        VerifyEntity.isPresent(byId, "User with id: " + id + " not found");
-        return byId.get();
+    @Autowired
+    public void setJweTokenService(JweTokenService jweTokenService) {
+        this.jweTokenService = jweTokenService;
+    }
+
+    @Autowired
+    public void setProperties(AuthProperties properties) {
+        this.properties = properties;
+    }
+
+    @Autowired
+    public void setMessageSender(MessageSender messageSender) {
+        this.messageSender = messageSender;
+    }
+
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    @Autowired
+    public void setIdConverter(IdConverter idConverter) {
+        this.idConverter = idConverter;
+    }
+
+    @Autowired
+    public void setUserUtils(UserUtils userUtils) {
+        this.userUtils = userUtils;
     }
 }

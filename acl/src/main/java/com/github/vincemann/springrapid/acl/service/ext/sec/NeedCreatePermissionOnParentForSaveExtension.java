@@ -22,7 +22,7 @@ public class NeedCreatePermissionOnParentForSaveExtension
             if (aclParent == null){
                 throw new BadEntityException("No acl parent found");
             }else {
-                getSecurityChecker().checkPermission(aclParent, BasePermission.CREATE);
+                getAclTemplate().checkPermission(aclParent, BasePermission.CREATE);
             }
         }
         return getNext().create(entity);

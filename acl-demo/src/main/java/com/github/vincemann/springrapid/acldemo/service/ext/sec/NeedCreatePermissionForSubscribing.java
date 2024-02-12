@@ -15,13 +15,13 @@ public class NeedCreatePermissionForSubscribing extends SecurityExtension<VisitS
 {
     @Override
     public void subscribeOwner(Long ownerId, Long visitId) throws EntityNotFoundException {
-        getSecurityChecker().checkPermission(visitId,Visit.class, BasePermission.CREATE);
+        getAclTemplate().checkPermission(visitId,Visit.class, BasePermission.CREATE);
         getNext().subscribeOwner(ownerId,visitId);
     }
 
     @Override
     public void unsubscribeOwner(Long ownerId, Long visitId) throws BadEntityException, EntityNotFoundException {
-        getSecurityChecker().checkPermission(visitId,Visit.class, BasePermission.CREATE);
+        getAclTemplate().checkPermission(visitId,Visit.class, BasePermission.CREATE);
         getNext().unsubscribeOwner(ownerId,visitId);
     }
 }
