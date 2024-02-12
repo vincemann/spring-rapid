@@ -110,8 +110,8 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return okWithAuthToken();
 	}
 
-	public String showResetPassword(@RequestParam("code") String code, Model model) {
-		model.addAttribute("code", code);
+	public String showResetPassword(HttpServletRequest request, HttpServletResponse response, Model model) throws BadEntityException {
+		String code = readRequestParam(request, "code");
 		model.addAttribute("resetPasswordUrl", getResetPasswordUrl());
 		model.addAttribute("resetPasswordDto", new ResetPasswordView());
 		return "reset-password";

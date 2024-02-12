@@ -1,14 +1,19 @@
 package com.github.vincemann.springrapid.auth.config;
 
-import com.github.vincemann.springrapid.auth.service.JpaUserService;
-import com.github.vincemann.springrapid.auth.service.UserService;
+import com.github.vincemann.springrapid.acl.proxy.Acl;
+import com.github.vincemann.springrapid.acl.proxy.Secured;
+import com.github.vincemann.springrapid.acl.service.ext.acl.CleanUpAclExtension;
+import com.github.vincemann.springrapid.acl.service.ext.sec.CrudAclChecksExtension;
+import com.github.vincemann.springrapid.auth.service.*;
+import com.github.vincemann.springrapid.auth.service.ext.acl.SignupServiceAclExtension;
+import com.github.vincemann.springrapid.auth.service.ext.sec.UserServiceSecurityExtension;
 import com.github.vincemann.springrapid.auth.service.val.ContactInformationValidator;
 import com.github.vincemann.springrapid.auth.service.val.EmailContactInformationValidator;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidatorImpl;
 import com.github.vincemann.springrapid.auth.util.UserUtils;
-import com.github.vincemann.springrapid.auth.service.RapidUserDetailsService;
 
+import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.service.pass.BcryptRapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.service.pass.RapidPasswordEncoder;
 import org.springframework.context.annotation.Configuration;
@@ -27,11 +32,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class RapidUserServiceAutoConfiguration {
 
 
-//    @Autowired
-//    private UserService userService;
-
-
-
     /**
      * Configures UserDetailsService if missing
      */
@@ -42,12 +42,6 @@ public class RapidUserServiceAutoConfiguration {
         return new RapidUserDetailsService();
     }
 
-//    @Bean
-//    @ConditionalOnMissingBean(IdConverter.class)
-//    public IdConverter<Long> idConverter() {
-////        return id -> userService.toId(id);
-//        return new LongIdConverter();
-//    }
 
 
     // keep it like that - otherwise stuff is not proxied and much other sht happening
@@ -60,9 +54,7 @@ public class RapidUserServiceAutoConfiguration {
         return abstractUserService;
     }
 
-    /**
-     * Configures Password encoder if missing
-     */
+
     @Bean
     @ConditionalOnMissingBean(PasswordEncoder.class)
     public RapidPasswordEncoder passwordEncoder() {
@@ -82,16 +74,37 @@ public class RapidUserServiceAutoConfiguration {
         return new EmailContactInformationValidator();
     }
 
-//    @Autowired
-//    public void configureAuthUtils(UserService<AbstractUser<Serializable>,Serializable> userService){
-//        UserUtils.setUserService(userService);
-//    }
-//    @Autowired
-//    public void configureAuthUtils(CrudServiceLocator crudServiceLocator, UserService<AbstractUser<Serializable>,Serializable> userService, ApplicationContext applicationContext){
-//        UserUtils.setCrudServiceLocator(crudServiceLocator);
-//        UserUtils.setUserService(userService);
-//        UserUtils.setApplicationContext(applicationContext);
-//    }
+
+    @Bean
+    @ConditionalOnMissingBean(VerificationService.class)
+    public VerificationService verificationService(){
+        return new VerificationServiceImpl();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(SignupService.class)
+    public SignupService signupService(){
+        return new SignupServiceImpl();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PasswordService.class)
+    public PasswordService passwordService(){
+        return new PasswordServiceImpl();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(UserAuthTokenService.class)
+    public UserAuthTokenService userAuthTokenService(){
+        return new UserAuthTokenServiceImpl();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ContactInformationService.class)
+    public ContactInformationService contactInformationService(){
+        return new ContactInformationServiceImpl();
+    }
+
 
     @Bean
     @ConditionalOnMissingBean(UserUtils.class)
@@ -100,5 +113,46 @@ public class RapidUserServiceAutoConfiguration {
     }
 
 
+    @ConditionalOnMissingBean(name = "aclUserService")
+    @Bean
+    @Acl
+    public UserService<?, ?> aclUserService(UserService<?, ?> service,
+                                            CleanUpAclExtension cleanUpAclExtension
+    ) {
+        return new ExtensionProxyBuilder<>(service)
+                // dont work with default extensions to keep things simple and concrete for user
+                .defaultExtensionsEnabled(false)
+                // acl info is only created in signup
+                .addExtension(cleanUpAclExtension)
+                .build();
+    }
+
+
+    @ConditionalOnMissingBean(name = "securedUserService")
+    @Bean
+    @Secured
+    public UserService<?, ?> securedUserService(@Acl UserService<?, ?> service,
+                                                UserServiceSecurityExtension securityRule,
+                                                CrudAclChecksExtension crudAclChecksExtension
+    ) {
+        return new ExtensionProxyBuilder<>(service)
+                // dont work with default extensions to keep things safer for user related stuff
+                .defaultExtensionsEnabled(false)
+                .addExtension(securityRule)
+                .addExtension(crudAclChecksExtension)
+                .build();
+    }
+
+    @Bean
+    @Acl
+    @ConditionalOnMissingBean(name = "aclSignupService")
+    public SignupService aclSignupService(SignupService service,
+                                          SignupServiceAclExtension signupServiceAclExtension
+    ) {
+        return new ExtensionProxyBuilder<>(service)
+                .defaultExtensionsEnabled(false)
+                .addExtension(signupServiceAclExtension)
+                .build();
+    }
 
 }

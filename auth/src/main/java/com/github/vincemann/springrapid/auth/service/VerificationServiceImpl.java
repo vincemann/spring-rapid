@@ -117,33 +117,27 @@ public class VerificationServiceImpl implements VerificationService {
         log.debug("Verified user: " + updated.getContactInformation());
     }
 
-    @Autowired
-    public void setJweTokenService(JweTokenService jweTokenService) {
+    @Autowired public void setJweTokenService(JweTokenService jweTokenService) {
         this.jweTokenService = jweTokenService;
     }
 
-    @Autowired
-    public void setProperties(AuthProperties properties) {
+    @Autowired public void setProperties(AuthProperties properties) {
         this.properties = properties;
     }
 
-    @Autowired
-    public void setMessageSender(MessageSender messageSender) {
+    @Autowired public void setMessageSender(MessageSender messageSender) {
         this.messageSender = messageSender;
     }
 
-    @Autowired
-    public void setUserService(UserService userService) {
+    @Autowired public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
-    @Autowired
-    public void setIdConverter(IdConverter idConverter) {
+    @Autowired public void setIdConverter(IdConverter idConverter) {
         this.idConverter = idConverter;
     }
 
-    @Autowired
-    public void setUserUtils(UserUtils userUtils) {
+    @Autowired public void setUserUtils(UserUtils userUtils) {
         this.userUtils = userUtils;
     }
 }

@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 public interface VerificationService {
 
 
-    @Transactional
     AbstractUser makeUnverified(AbstractUser user) throws BadEntityException, EntityNotFoundException;
 
     AbstractUser makeVerified(AbstractUser user) throws BadEntityException, EntityNotFoundException;

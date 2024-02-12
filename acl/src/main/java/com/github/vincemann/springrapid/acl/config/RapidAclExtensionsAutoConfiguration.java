@@ -49,10 +49,10 @@ public class RapidAclExtensionsAutoConfiguration {
         return new NeedCreatePermissionOnParentForSaveExtension();
     }
 
-    @ConditionalOnMissingBean(name = "authenticatedGainsAdminPermissionAboutSavedAclExtension")
+    @ConditionalOnMissingBean(name = "authenticatedGainsAdminPermissionOnCreatedAclExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
-    public AuthenticatedGainsAdminPermissionOnCreatedAclExtension authenticatedGainsAdminPermissionAboutSavedAclExtension(){
+    public AuthenticatedGainsAdminPermissionOnCreatedAclExtension authenticatedGainsAdminPermissionOnCreatedAclExtension(){
         return new AuthenticatedGainsAdminPermissionOnCreatedAclExtension();
     }
 

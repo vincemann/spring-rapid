@@ -25,7 +25,8 @@ public abstract class ServiceExtension<T>
     private String beanName;
     private Chain chain;
 
-    private Class<T> targetClass = (Class<T>) ((ParameterizedType)getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    @SuppressWarnings("unchecked")
+    private Class<T> targetClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
 
 

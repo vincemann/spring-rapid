@@ -33,7 +33,7 @@ import org.springframework.security.acls.model.MutableAclService;
 @Slf4j
 //we need the acl beans here
 @AutoConfigureAfter({RapidAclExtensionsAutoConfiguration.class})
-public class RapidUserServiceSecurityAutoConfiguration {
+public class RapidUserExtensionsAutoConfiguration {
 
 
     @Autowired
@@ -80,49 +80,6 @@ public class RapidUserServiceSecurityAutoConfiguration {
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public SignupServiceAclExtension signupServiceAclExtension() {
         return new SignupServiceAclExtension();
-    }
-
-
-    @ConditionalOnMissingBean(name = "aclUserService")
-    @Bean
-    @Acl
-    public UserService<?, ?> aclUserService(UserService<?, ?> service,
-                                            CleanUpAclExtension cleanUpAclExtension
-    ) {
-        return new ExtensionProxyBuilder<>(service)
-                // dont work with default extensions to keep things simple and concrete for user
-                .setDefaultExtensionsEnabled(false)
-                // acl info is only created in signup
-                .addExtension(cleanUpAclExtension)
-                .build();
-    }
-
-
-    @ConditionalOnMissingBean(name = "securedUserService")
-    @Bean
-    @Secured
-    public UserService<?, ?> securedUserService(@Acl UserService<?, ?> service,
-                                                UserServiceSecurityExtension securityRule,
-                                                CrudAclChecksExtension crudAclChecksExtension
-    ) {
-        return new ExtensionProxyBuilder<>(service)
-                // dont work with default extensions to keep things safer for user related stuff
-                .setDefaultExtensionsEnabled(false)
-                .addExtension(securityRule)
-                .addExtension(crudAclChecksExtension)
-                .build();
-    }
-
-    @Bean
-    @Acl
-    @ConditionalOnMissingBean(name = "aclSignupService")
-    public SignupService aclSignupService(SignupService service,
-                                          SignupServiceAclExtension signupServiceAclExtension
-    ) {
-        return new ExtensionProxyBuilder<>(service)
-                .setDefaultExtensionsEnabled(false)
-                .addExtension(signupServiceAclExtension)
-                .build();
     }
 
 

@@ -7,7 +7,6 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.util.ContainerAnnotationUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.aop.TargetClassAware;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -110,7 +109,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
                             internalProxy = new ExtensionProxyBuilder<>(lastProxiedBean)
                                     // todo does this work?
                                     .addExtensions(extensions)
-                                    .setDefaultExtensionsEnabled(defaultEnabled)
+                                    .defaultExtensionsEnabled(defaultEnabled)
                                     .ignoreDefaultExtensions(proxyDefinition.get().ignoredExtensions())
                                     .build();
                             createdInternalProxies.put(proxyName, internalProxy);

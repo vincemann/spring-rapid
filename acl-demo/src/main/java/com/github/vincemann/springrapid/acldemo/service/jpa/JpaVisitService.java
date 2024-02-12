@@ -26,9 +26,9 @@ import java.util.Optional;
 
 
 @DefineProxy(name = "acl", extensions = {
-        "authenticatedGainsAdminPermissionOnCreated",
+        "authenticatedGainsAdminPermissionOnCreatedAclExtension",
         "vetsGainsReadPermissionOnCreated",
-        "ownerGainsReadPermissionOnCreate"
+        "ownerGainsReadPermissionOnCreated"
 })
 @DefineProxy(name = "secured", extensions = {
         "onlyVetAndAdminCanCreate",

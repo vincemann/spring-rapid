@@ -1,12 +1,9 @@
 package com.github.vincemann.springrapid.core.proxy;
 
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.CrudService;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.test.util.AopTestUtils;
 
-import java.io.Serializable;
 import java.lang.reflect.Proxy;
 
 
@@ -37,7 +34,7 @@ public class ExtensionProxyBuilder<T> {
     }
 
 
-    public ExtensionProxyBuilder<T> setDefaultExtensionsEnabled(boolean enabled){
+    public ExtensionProxyBuilder<T> defaultExtensionsEnabled(boolean enabled){
         proxy.setDefaultExtensionsEnabled(enabled);
         return this;
     }

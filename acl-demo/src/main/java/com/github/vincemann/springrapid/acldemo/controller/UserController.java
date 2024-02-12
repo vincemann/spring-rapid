@@ -13,6 +13,7 @@ import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.Lists;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import javax.validation.Valid;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
 
@@ -44,9 +46,8 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
         return okWithAuthToken(dto);
     }
 
-    // overwrite without annotations to not expose as endpoint
     @Override
-    public ResponseEntity<FindOwnUserDto> signup(SignupDto signupDto) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
-        return super.signup(signupDto);
+    public List<String> getIgnoredEndPoints() {
+        return Lists.newArrayList(getSignupUrl());
     }
 }
