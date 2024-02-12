@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.MessageSender;
+import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
@@ -82,7 +83,7 @@ public class ContactInformationServiceImpl implements ContactInformationService 
     }
 
     @Override
-    public void requestContactInformationChange(RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException {
+    public void requestContactInformationChange(RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException {
         Optional<AbstractUser> oldUser = userService.findByContactInformation(dto.getOldContactInformation());
         VerifyEntity.isPresent(oldUser, dto.getOldContactInformation(), userService.getEntityClass());
 
@@ -101,9 +102,9 @@ public class ContactInformationServiceImpl implements ContactInformationService 
         TransactionalUtils.afterCommit(() -> sendChangeContactInformationMessage(updated));
     }
 
-    protected void checkUniqueContactInformation(String contactInformation) throws BadEntityException {
+    protected void checkUniqueContactInformation(String contactInformation) throws AlreadyRegisteredException {
         if (userService.findByContactInformation(contactInformation).isPresent())
-            throw new BadEntityException("contact information already present");
+            throw new AlreadyRegisteredException("contact information already present");
     }
 
     /**

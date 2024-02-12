@@ -3,12 +3,14 @@ package com.github.vincemann.springrapid.authdemo.controller;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.dto.user.FindOwnUserDto;
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
+import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
 import com.github.vincemann.springrapid.authdemo.dto.*;
+import com.github.vincemann.springrapid.authdemo.dto.user.MyFindOwnUserDto;
+import com.github.vincemann.springrapid.authdemo.dto.user.MyFullUserDto;
+import com.github.vincemann.springrapid.authdemo.dto.user.UserUpdatesOwnDto;
 import com.github.vincemann.springrapid.authdemo.model.User;
-import com.github.vincemann.springrapid.authdemo.service.MyJpaUserService;
 import com.github.vincemann.springrapid.authdemo.service.MySignupService;
 import com.github.vincemann.springrapid.authdemo.service.MyUserService;
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
@@ -55,7 +57,7 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
         MyFindOwnUserDto dto = getDtoMapper().mapToDto(saved, MyFindOwnUserDto.class);
         return okWithAuthToken(dto);
     }
-
+    
     // overwrite without annotations to not expose as endpoint
     @Override
     public ResponseEntity<FindOwnUserDto> signup(SignupDto signupDto) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {

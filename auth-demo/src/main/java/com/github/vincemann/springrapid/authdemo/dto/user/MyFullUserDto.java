@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.authdemo.dto;
+package com.github.vincemann.springrapid.authdemo.dto.user;
 
 import lombok.*;
 

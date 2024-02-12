@@ -26,7 +26,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
 
-	private HttpTokenService httpTokenService;
     private AuthorizationTokenService authorizationTokenService;
     private RapidSecurityContext securityContext;
     private AuthProperties authProperties;

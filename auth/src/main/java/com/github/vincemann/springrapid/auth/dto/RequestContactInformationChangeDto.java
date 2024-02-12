@@ -1,18 +1,19 @@
 package com.github.vincemann.springrapid.auth.dto;
 
-import lombok.*;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import com.github.vincemann.springrapid.auth.service.val.ValidContactInformation;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
 
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
 @AllArgsConstructor
+@Data
 public class RequestContactInformationChangeDto {
+    @NotBlank
+    private String oldContactInformation;
 
     @NotBlank
+    @ValidContactInformation
     private String newContactInformation;
 }

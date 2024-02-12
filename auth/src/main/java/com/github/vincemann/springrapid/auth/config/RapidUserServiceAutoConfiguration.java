@@ -2,6 +2,8 @@ package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.auth.service.JpaUserService;
 import com.github.vincemann.springrapid.auth.service.UserService;
+import com.github.vincemann.springrapid.auth.service.val.ContactInformationValidator;
+import com.github.vincemann.springrapid.auth.service.val.EmailContactInformationValidator;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidatorImpl;
 import com.github.vincemann.springrapid.auth.util.UserUtils;
@@ -72,6 +74,12 @@ public class RapidUserServiceAutoConfiguration {
     @ConditionalOnMissingBean(PasswordValidator.class)
     public PasswordValidator passwordValidator(){
         return new PasswordValidatorImpl();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ContactInformationValidator.class)
+    public ContactInformationValidator contactInformationValidator(){
+        return new EmailContactInformationValidator();
     }
 
 //    @Autowired

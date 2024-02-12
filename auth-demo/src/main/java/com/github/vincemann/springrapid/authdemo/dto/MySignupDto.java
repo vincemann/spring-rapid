@@ -21,13 +21,6 @@ public class MySignupDto extends SignupDto {
     @NotBlank(message = "{blank.name}")
     private String name;
 
-    @NotBlank
-    @Email
-    @Override
-    public String getContactInformation() {
-        return super.getContactInformation();
-    }
-
 
 
     @Builder
