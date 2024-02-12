@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.acl.config;
 
 import com.github.vincemann.springrapid.acl.AclProperties;
+import com.github.vincemann.springrapid.acl.AclTemplate;
+import com.github.vincemann.springrapid.acl.AclTemplateImpl;
 import com.github.vincemann.springrapid.acl.framework.AdministrationDefaultPermissionGrantingStrategy;
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
@@ -52,11 +54,14 @@ public class RapidAclAutoConfiguration {
     DataSource dataSource;
 
 
+    @Bean
+    @ConditionalOnMissingBean(AclTemplate.class)
+    public AclTemplate aclTemplate(){
+        return new AclTemplateImpl();
+    }
 
 
 
-
-//    @Primary
     @Bean
     public CacheManager aclCacheManager() {
         // Reuse the existing CacheManager instance if it exists
