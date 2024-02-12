@@ -21,10 +21,6 @@ public class JpaMyUserService
 		extends JpaUserService<User, Long, UserRepository>
 				implements MyUserService {
 
-	@Override
-    public User newUser() {
-        return new User();
-    }
 
 	@Override
 	public Optional<User> findByUuid(String uuid) {

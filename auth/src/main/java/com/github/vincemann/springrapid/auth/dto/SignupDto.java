@@ -26,14 +26,10 @@ public class SignupDto implements Serializable {
     @ValidPassword
     private String password;
 
-    @NotNull
-    private Set<String> roles = new HashSet<>();
 
-    public SignupDto(String contactInformation, String password, Set<String> roles) {
+    public SignupDto(String contactInformation, String password) {
         this.contactInformation = contactInformation;
         this.password = password;
-        if (roles != null)
-            this.roles = roles;
     }
 
     @Override
@@ -41,7 +37,6 @@ public class SignupDto implements Serializable {
         return "SignupDto{" +
                 "contactInformation='" + contactInformation + '\'' +
                 ", password='" + password + '\'' +
-                ", roles=" + roles +
                 '}';
     }
 }

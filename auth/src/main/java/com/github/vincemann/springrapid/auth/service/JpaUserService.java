@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import static com.github.vincemann.springrapid.auth.util.PrincipalUtils.isAnon;
@@ -41,13 +42,12 @@ public abstract class JpaUserService
     private RapidPasswordEncoder passwordEncoder;
     private PasswordValidator passwordValidator;
 
-    public abstract U newUser();
 
     @Transactional
     //only called internally
     public U createAdmin(AuthProperties.Admin admin) {
         // create the adminUser
-        U adminUser = newUser();
+        U adminUser = createUser();
         adminUser.setContactInformation(admin.getContactInformation());
         adminUser.setPassword(admin.getPassword());
         adminUser.getRoles().add(AuthRoles.ADMIN);
@@ -55,8 +55,20 @@ public abstract class JpaUserService
     }
 
 
-
-
+    @Override
+    public U createUser() {
+        // Attempt to instantiate U using reflection
+        try {
+            // Obtain the class object for U and create a new instance
+            // Assumes U has a no-argument constructor
+            return getEntityClass().getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            // Handle the exception as appropriate for your application
+            // This could involve logging the error and/or throwing a runtime exception
+            log.error("Error creating user instance", e);
+            throw new RuntimeException("Unable to create user instance with default constructor", e);
+        }
+    }
 
     @Transactional
     @Override
@@ -125,6 +137,11 @@ public abstract class JpaUserService
         return service.partialUpdate(update);
     }
 
+    @Override
+    public Optional<U> findByContactInformation(String contactInformation) {
+        return getRepository().findByContactInformation(contactInformation);
+    }
+
     @Autowired
     public void setPasswordEncoder(RapidPasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
@@ -137,7 +154,7 @@ public abstract class JpaUserService
     }
 
 
-//    protected boolean rolesUpdated(U update) throws EntityNotFoundException {
+    //    protected boolean rolesUpdated(U update) throws EntityNotFoundException {
 //        U old = findOldEntity(update.getId());
 //        if (!old.getRoles().equals(update))
 //            return true;

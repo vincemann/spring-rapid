@@ -32,8 +32,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 	@Autowired
 	TransactionTemplate transactionTemplate;
 
-	//works solo but token is obsolete when run in group
-//	@Disabled
+
 	@Test
 	public void canChangeOwnContactInformation() throws Exception {
 		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);

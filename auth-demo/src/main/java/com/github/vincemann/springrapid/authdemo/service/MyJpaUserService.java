@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.authdemo.service;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.service.JpaUserService;
 import com.github.vincemann.springrapid.authdemo.model.User;
-import com.github.vincemann.springrapid.authdemo.repository.UserRepository;
+import com.github.vincemann.springrapid.authdemo.repo.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,11 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 //@Primary
 @Transactional
 public class MyJpaUserService extends JpaUserService<User, Long, UserRepository> implements MyUserService{
-
-	@Override
-    public User newUser() {
-        return new User();
-    }
 
 
 	@Override

@@ -1,34 +1,39 @@
-package com.github.vincemann.springrapid.auth.service;
+package com.github.vincemann.springrapid.authdemo.service;
 
-import com.github.vincemann.springrapid.auth.dto.SignupDto;
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
+import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
+import com.github.vincemann.springrapid.auth.service.VerificationService;
+import com.github.vincemann.springrapid.authdemo.dto.MySignupDto;
+import com.github.vincemann.springrapid.authdemo.model.User;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Slf4j
-public class SignupServiceImpl implements SignupService {
+@Service
+public class MySignupServiceImpl implements MySignupService {
 
-    private UserService<AbstractUser<?>,?> userService;
+
+    private MyUserService userService;
     private VerificationService verificationService;
 
-
     @Override
-    public AbstractUser signup(SignupDto dto) throws BadEntityException, AlreadyRegisteredException {
+    public User signup(MySignupDto dto) throws BadEntityException, AlreadyRegisteredException {
         //admins get created with createAdminMethod
-        AbstractUser user = userService.createUser();
+        User user = userService.createUser();
         user.getRoles().add(AuthRoles.USER);
 
 
         checkUniqueContactInformation(dto.getContactInformation());
         user.setContactInformation(dto.getContactInformation());
+        user.setName(dto.getName());
 
         // will be encoded by user service
         user.setPassword(dto.getPassword());
 
-        AbstractUser saved = userService.create(user);
+        User saved = userService.create(user);
         // is done in same transaction -> so applied directly, but message sent after transaction to make sure it
         // is not sent when transaction fails
         try {
@@ -41,14 +46,14 @@ public class SignupServiceImpl implements SignupService {
         return saved;
     }
 
+
     protected void checkUniqueContactInformation(String contactInformation) throws BadEntityException {
         if (userService.findByContactInformation(contactInformation).isPresent())
             throw new BadEntityException("contact information already present");
     }
 
-
     @Autowired
-    public void setUserService(UserService<AbstractUser<?>, ?> userService) {
+    public void setUserService(MyUserService userService) {
         this.userService = userService;
     }
 

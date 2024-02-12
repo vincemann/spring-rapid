@@ -5,7 +5,10 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter @Setter @ToString @NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 public class MyFullUserDto {
     private String name;
     private String contactInformation;
