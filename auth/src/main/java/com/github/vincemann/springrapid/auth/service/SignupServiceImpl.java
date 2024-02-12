@@ -49,13 +49,10 @@ public class SignupServiceImpl implements SignupService {
     }
 
 
-    @Autowired
-    public void setUserService(UserService<AbstractUser<?>, ?> userService) {
+    @Autowired public void setUserService(UserService<AbstractUser<?>, ?> userService) {
         this.userService = userService;
     }
-
-    @Autowired
-    public void setVerificationService(VerificationService verificationService) {
+    @Autowired public void setVerificationService(VerificationService verificationService) {
         this.verificationService = verificationService;
     }
 }

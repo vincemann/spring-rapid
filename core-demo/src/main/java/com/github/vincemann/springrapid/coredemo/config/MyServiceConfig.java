@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.config;
 
+import com.github.vincemann.springrapid.core.proxy.CrudServiceExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
 import com.github.vincemann.springrapid.coredemo.service.Root;
 import org.springframework.context.annotation.Configuration;
@@ -47,7 +48,7 @@ public class MyServiceConfig {
                                      OwnerOfTheYearExtension ownerOfTheYearExtension,
                                      ExampleAclExtension exampleAclExtension,
                                      SaveNameToWordPressDbExtension saveNameToWordPressDbExtension) {
-        return new ExtensionProxyBuilder<>(ownerService)
+        return new CrudServiceExtensionProxyBuilder<>(ownerService)
                 .addGenericExtension(saveNameToWordPressDbExtension)
                 .addGenericExtension(ownerOfTheYearExtension)
                 .addExtension(exampleAclExtension)

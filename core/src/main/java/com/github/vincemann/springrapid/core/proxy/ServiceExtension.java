@@ -3,7 +3,10 @@ package com.github.vincemann.springrapid.core.proxy;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.IBeanNameAware;
+import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import com.google.common.base.Objects;
+
+import java.lang.reflect.ParameterizedType;
 
 /**
  * Write extensions for normal Services, managed by {@link ExtensionProxy}.
@@ -22,6 +25,9 @@ public abstract class ServiceExtension<T>
     private String beanName;
     private Chain chain;
 
+    private Class<T> targetClass = (Class<T>) ((ParameterizedType)getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+
+
 
     public ServiceExtension() {
     }
@@ -34,6 +40,18 @@ public abstract class ServiceExtension<T>
         return chain;
     }
 
+    /**
+     * call this method in order to find out dynamically if you can add this extension to the given proxy
+     * -> kinda like dynamic type safety
+     */
+    public boolean matchesProxy(Object proxy){
+        ExtensionProxy p = ProxyUtils.getExtensionProxy(proxy);
+        return matchesProxy(p);
+    }
+
+    public boolean matchesProxy(ExtensionProxy proxy){
+        return targetClass.isAssignableFrom(proxy.getProxied().getClass());
+    }
 
     /**
      * Only use this to call the proxied method.

@@ -38,7 +38,7 @@ public class ProxyUtils {
 //        throw new IllegalArgumentException("not a spring rapid extension proxy");
 //    }
 
-    public static <S extends CrudService> ExtensionProxy getExtensionProxy(S service){
+    public static <S> ExtensionProxy getExtensionProxy(S service){
         return (ExtensionProxy) Proxy.getInvocationHandler(AopTestUtils.getUltimateTargetObject(service));
     }
 
@@ -51,6 +51,7 @@ public class ProxyUtils {
             return false;
         return !Proxy.isProxyClass(target.getClass()) || Proxy.getInvocationHandler(target) == null;
     }
+
 
 
     /**

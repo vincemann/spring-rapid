@@ -1,8 +1,10 @@
 package com.github.vincemann.springrapid.auth.config;
 
-import com.github.vincemann.springrapid.acl.DefaultAclExtension;
 import com.github.vincemann.springrapid.acl.config.RapidAclExtensionsAutoConfiguration;
+import com.github.vincemann.springrapid.acl.proxy.Acl;
+import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
+import com.github.vincemann.springrapid.acl.service.ext.acl.CleanUpAclExtension;
 import com.github.vincemann.springrapid.acl.service.ext.sec.CrudAclChecksExtension;
 import com.github.vincemann.springrapid.auth.service.SignupService;
 import com.github.vincemann.springrapid.auth.service.UserService;
@@ -11,21 +13,16 @@ import com.github.vincemann.springrapid.auth.service.ext.sec.ContactInformationS
 import com.github.vincemann.springrapid.auth.service.ext.sec.PasswordServiceSecurityExtension;
 import com.github.vincemann.springrapid.auth.service.ext.sec.UserAuthTokenServiceSecurityExtension;
 import com.github.vincemann.springrapid.auth.service.ext.sec.UserServiceSecurityExtension;
-import com.github.vincemann.springrapid.acl.proxy.*;
-import com.github.vincemann.springrapid.acl.service.ext.acl.CleanUpAclExtension;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
-import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.acls.model.MutableAclService;
-
-import java.util.List;
 
 
 /**
@@ -122,10 +119,11 @@ public class RapidUserServiceSecurityAutoConfiguration {
     public SignupService aclSignupService(SignupService service,
                                           SignupServiceAclExtension signupServiceAclExtension
     ) {
-        return new ExtensionProxyBuilder<>(signupService)
+        return new ExtensionProxyBuilder<>(service)
                 .setDefaultExtensionsEnabled(false)
                 .addExtension(signupServiceAclExtension)
                 .build();
     }
+
 
 }

@@ -29,32 +29,30 @@ public class RapidDefaultSecurityExtensionAutoConfiguration {
     ApplicationContext context;
 
 
-//    private List<AbstractServiceExtension> defaultSecurityExtensions;
-//
-//    @Autowired(required = false)
-//    @DefaultSecurityExtension
-//    public void setDefaultExtensions(List<AbstractServiceExtension> defaultExtensions) {
-//        this.defaultSecurityExtensions = defaultExtensions;
-//    }
-
-    //    @ConditionalOnProperty(prefix = "rapid-acl", name = "defaultAclChecks")
     @Autowired
-    public void addDefaultSecurityExtension(AclProperties aclProperties, @Secured List<CrudService> securityProxies, @Autowired(required = false) @DefaultSecurityExtension Optional<List<ServiceExtension>> defaultSecurityExtensionsOptional){
+    public void addDefaultSecurityExtension(@Secured List<CrudService> securityProxies, @Autowired(required = false) @DefaultSecurityExtension Optional<List<ServiceExtension>> defaultSecurityExtensionsOptional){
 
         for (CrudService securityProxy : securityProxies) {
             ExtensionProxy proxy = ProxyUtils.getExtensionProxy(securityProxy);
             if (!proxy.getDefaultExtensionsEnabled()){
-                log.debug("Default security extensions disabled for proxy: " + proxy);
+                log.debug("default extensions disabled for proxy: " + proxy);
                 continue;
             }
 
             List<ServiceExtension> defaultSecurityExtensions = createDefaultSecurityExtensions(defaultSecurityExtensionsOptional);
-            log.debug("Adding Default security extensions for proxy: " + proxy);
             for (ServiceExtension extension : defaultSecurityExtensions) {
+                log.debug("checking if default security extensions for proxy should be added: " + extension);
+
+                if (!extension.matchesProxy(proxy)){
+                    log.debug("default security extension does not match proxy, skipping");
+                    continue;
+                }
+
                 if (proxy.isIgnored((Class<? extends ServiceExtension>) AopTestUtils.getUltimateTargetObject(extension).getClass())){
                     log.info("ignoring default extension: " + extension.getClass().getSimpleName());
                     continue;
                 }
+                log.debug("adding default security extension to proxy");
                 proxy.addExtension(extension);
             }
         }

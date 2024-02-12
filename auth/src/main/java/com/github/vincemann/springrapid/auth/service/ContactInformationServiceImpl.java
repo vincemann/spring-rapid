@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
+import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
@@ -20,6 +21,7 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
@@ -40,13 +42,13 @@ public class ContactInformationServiceImpl implements ContactInformationService 
 
     private VerificationService verificationService;
 
-    private IdConverter idConverter;
+    private UserUtils userUtils;
 
     @Override
     public AbstractUser changeContactInformation(String code) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException, BadTokenException {
 
         JWTClaimsSet claims = jweTokenService.parseToken(code);
-        AbstractUser user = extractUserFromClaims(claims);
+        AbstractUser user = userUtils.extractUserFromClaims(claims);
 
         RapidJwt.validate(claims, CHANGE_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
 
@@ -73,14 +75,6 @@ public class ContactInformationServiceImpl implements ContactInformationService 
         return updated;
     }
 
-
-    protected AbstractUser extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException {
-        Serializable id = idConverter.toId(claims.getSubject());
-        // fetch the user
-        Optional<AbstractUser> byId = userService.findById(id);
-        VerifyEntity.isPresent(byId, "User with id: " + id + " not found");
-        return byId.get();
-    }
 
     @Override
     public void requestContactInformationChange(RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException {
@@ -131,5 +125,29 @@ public class ContactInformationServiceImpl implements ContactInformationService 
         messageSender.sendMessage(changeContactInformationLink, CHANGE_CONTACT_INFORMATION_AUDIENCE, changeContactInformationCode, user.getContactInformation());
 
         log.debug("Change contactInformation link mail queued.");
+    }
+
+    @Autowired public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    @Autowired public void setJweTokenService(JweTokenService jweTokenService) {
+        this.jweTokenService = jweTokenService;
+    }
+
+    @Autowired public void setProperties(AuthProperties properties) {
+        this.properties = properties;
+    }
+
+    @Autowired public void setMessageSender(MessageSender messageSender) {
+        this.messageSender = messageSender;
+    }
+
+    @Autowired public void setVerificationService(VerificationService verificationService) {
+        this.verificationService = verificationService;
+    }
+
+    @Autowired public void setUserUtils(UserUtils userUtils) {
+        this.userUtils = userUtils;
     }
 }

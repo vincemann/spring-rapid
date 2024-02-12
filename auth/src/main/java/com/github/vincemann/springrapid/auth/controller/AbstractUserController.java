@@ -13,7 +13,6 @@ import com.github.vincemann.springrapid.auth.service.*;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
-import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
@@ -53,8 +52,8 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 
 	private S unsecuredService;	// getService() to get secured
-	private UserUtils userUtils;
 
+	private UserAuthTokenService authTokenService;
 	private PasswordService passwordService;
 	private SignupService signupService;
 	private ContactInformationService contactInformationService;
@@ -150,9 +149,9 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 		String token;
 		if (contactInformation.isEmpty()){
-			token = userUtils.createNewAuthToken();
+			token = authTokenService.createNewAuthToken();
 		}else {
-			token = userUtils.createNewAuthToken(contactInformation.get());
+			token = authTokenService.createNewAuthToken(contactInformation.get());
 		}
 		// result = {token:asfsdfjsdjfnd}
 		return ok(getJsonMapper().writeDto(MapUtils.mapOf("token", token)));
@@ -264,7 +263,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 				.paths(getFindByContactInformationUrl())
 				.methods(RequestMethod.GET)
 				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-				.produces(getMediaType())
+				.produces(MediaType.APPLICATION_JSON_VALUE)
 				.build();
 	}
 
@@ -275,14 +274,14 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	protected ResponseEntity<Void> okWithAuthToken() throws EntityNotFoundException {
 		HttpHeaders headers = new HttpHeaders();
-		String token = userUtils.createNewAuthToken();
+		String token = authTokenService.createNewAuthToken();
 		headers.add(HttpHeaders.AUTHORIZATION,token);
 		return ResponseEntity.status(204).headers(headers).build();
 	}
 
 	protected <T> ResponseEntity<T> okWithAuthToken(T body) throws EntityNotFoundException {
 		HttpHeaders headers = new HttpHeaders();
-		String token = userUtils.createNewAuthToken();
+		String token = authTokenService.createNewAuthToken();
 		headers.add(HttpHeaders.AUTHORIZATION,token);
 		return ResponseEntity.status(200).headers(headers).body(body);
 	}
@@ -306,9 +305,11 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	@Autowired public void setAuthProperties(AuthProperties authProperties) {
 		this.authProperties = authProperties;
 	}
-	@Autowired public void setUserUtils(UserUtils userUtils) {
-		this.userUtils = userUtils;
+
+	@Autowired public void setAuthTokenService(UserAuthTokenService authTokenService) {
+		this.authTokenService = authTokenService;
 	}
+
 	@Autowired public void setPasswordService(PasswordService passwordService) {
 		this.passwordService = passwordService;
 	}

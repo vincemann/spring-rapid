@@ -25,35 +25,30 @@ public class RapidDefaultAclExtensionsAutoConfiguration {
     @Autowired
     ApplicationContext context;
 
-//    private List<AbstractServiceExtension> defaultAclExtensions;
-//
-//    @Autowired(required = false)
-//    @DefaultAclExtension
-//    public void setDefaultAclExtensions(List<AbstractServiceExtension> defaultAclExtensions) {
-//        this.defaultAclExtensions = defaultAclExtensions;
-//    }
-
     @Autowired
-    public void addDefaultAclExtension(@Acl List<CrudService> aclProxies, @Autowired(required = false) @DefaultAclExtension Optional<List<ServiceExtension>> defaultAclExtensionsOptional) {
-//        AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
-//        Qualifier qualifier = AnnotationUtils.findAnnotation(Acl.class, Qualifier.class);
-//        Collection<CrudService> aclProxies = BeanFactoryAnnotationUtils.qualifiedBeansOfType((ListableBeanFactory) beanFactory, CrudService.class, qualifier.value()).values();
+    public void addDefaultAclExtension(@Acl List<Object> aclProxies, @Autowired(required = false) @DefaultAclExtension Optional<List<ServiceExtension>> defaultAclExtensionsOptional) {
 
-
-        for (CrudService aclProxy : aclProxies) {
+        for (Object aclProxy : aclProxies) {
             ExtensionProxy proxy = ProxyUtils.getExtensionProxy(aclProxy);
             if (!proxy.getDefaultExtensionsEnabled()){
-                log.debug("Default acl extensions disabled for proxy: " + proxy);
+                log.debug("default extensions disabled for proxy: " + proxy);
                 continue;
             }
+
             List<ServiceExtension> defaultAclExtensions = createDefaultAclExtensions(defaultAclExtensionsOptional);
-            log.debug("Adding Default acl extensions for proxy: " + proxy);
-            for (ServiceExtension defaultAclExtension : defaultAclExtensions) {
-                if (proxy.isIgnored((Class<? extends ServiceExtension>) AopTestUtils.getUltimateTargetObject(defaultAclExtension).getClass())){
-                    log.info("ignoring default extension: " + defaultAclExtension.getClass().getSimpleName());
+
+            for (ServiceExtension extension : defaultAclExtensions) {
+                log.debug("checking if default acl extensions for proxy should be added: " + extension);
+                if (!extension.matchesProxy(proxy)){
+                    log.debug("default acl extension does not match proxy, skipping");
                     continue;
                 }
-                proxy.addExtension(defaultAclExtension);
+                if (proxy.isIgnored((Class<? extends ServiceExtension>) AopTestUtils.getUltimateTargetObject(extension).getClass())){
+                    log.info("ignoring default acl extension");
+                    continue;
+                }
+                log.debug("adding default acl extension to proxy");
+                proxy.addExtension(extension);
             }
         }
     }
@@ -74,19 +69,6 @@ public class RapidDefaultAclExtensionsAutoConfiguration {
             extensions.add(defaultExtension);
         }
         return extensions;
-
-//        if (aclProperties.isAdminFullAccess()){
-//            AbstractServiceExtension<?, ? super ProxyController> adminExtension = (AbstractServiceExtension<?, ? super ProxyController>) context.getBean("adminHasFullPermissionAboutSavedAclExtension");
-//            defaultAclExtensions.add(adminExtension);
-////            AbstractServiceExtension adminExtension = defaultAclExtensions.stream().filter(e -> e.getClass().equals(AdminHasFullPermissionAboutSavedAclExtension.class)).findFirst().get();
-////            defaultAclExtensions.remove(adminExtension);
-//        }
-//        if (aclProperties.isCleanupAcl()){
-//            AbstractServiceExtension<?, ? super ProxyController> cleanUpAclExtension = (AbstractServiceExtension<?, ? super ProxyController>) context.getBean("cleanUpAclExtension");
-//            defaultAclExtensions.add(cleanUpAclExtension);
-////            AbstractServiceExtension cleanupExtension = defaultAclExtensions.stream().filter(e -> e.getClass().equals(CleanUpAclExtension.class)).findFirst().get();
-////            defaultAclExtensions.remove(cleanupExtension);
-//        }
     }
 
 }

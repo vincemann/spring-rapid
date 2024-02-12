@@ -24,7 +24,7 @@ public class TransactionalUtils {
                         }
                     });
         }else {
-      		log.warn("No Transaction active for 'after commi' runnable -> execute now");
+      		log.warn("No Transaction active for 'after tx commit' - runnable -> executing now");
       		runnable.run();
 		}
     }
