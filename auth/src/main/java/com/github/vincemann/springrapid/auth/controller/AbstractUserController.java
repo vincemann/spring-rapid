@@ -127,7 +127,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	}
 
 
-	public ResponseEntity<Void> requestChangeContactInformation(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException, IOException {
+	public ResponseEntity<Void> requestContactInformationChange(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException, IOException {
 		String body = readBody(request);
 		RequestContactInformationChangeDto dto = getJsonMapper().readDto(body, RequestContactInformationChangeDto.class);
 		getDtoValidationStrategy().validate(dto);
@@ -253,10 +253,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	@Override
 	protected void registerEndpoints() throws NoSuchMethodException {
 		super.registerEndpoints();
-
-		if (!getIgnoredEndPoints().contains(getFindByContactInformationUrl())){
-			registerEndpoint(createFindByContactInformationRequestMappingInfo(),"fetchByContactInformation");
-		}
 
 		if (!getIgnoredEndPoints().contains(getSignupUrl())){
 			registerEndpoint(createSignupRequestMappingInfo(),"signup");

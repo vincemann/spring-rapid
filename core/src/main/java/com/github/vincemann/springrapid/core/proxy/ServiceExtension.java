@@ -4,6 +4,7 @@ package com.github.vincemann.springrapid.core.proxy;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.IBeanNameAware;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
+import com.github.vincemann.springrapid.core.util.TypeResolver;
 import com.google.common.base.Objects;
 
 import java.lang.reflect.ParameterizedType;
@@ -25,8 +26,8 @@ public abstract class ServiceExtension<T>
     private String beanName;
     private Chain chain;
 
-    @SuppressWarnings("unchecked")
-    private Class<T> targetClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+
+    private Class<?> targetClass = TypeResolver.findFirstGenericParameter(this.getClass());
 
 
 

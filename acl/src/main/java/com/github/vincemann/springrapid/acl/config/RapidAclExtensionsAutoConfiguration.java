@@ -27,8 +27,8 @@ public class RapidAclExtensionsAutoConfiguration {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    @ConditionalOnMissingBean(name = "ownerGainsAdminPermissionAboutSavedAclExtension")
-    public OwnerGainsAdminPermissionOnCreatedAclExtension ownerGainsAdminPermissionAboutSavedAclExtension(){
+    @ConditionalOnMissingBean(name = "ownerGainsAdminPermissionOnCreatedAclExtension")
+    public OwnerGainsAdminPermissionOnCreatedAclExtension ownerGainsAdminPermissionOnCreatedAclExtension(){
         return new OwnerGainsAdminPermissionOnCreatedAclExtension();
     }
 

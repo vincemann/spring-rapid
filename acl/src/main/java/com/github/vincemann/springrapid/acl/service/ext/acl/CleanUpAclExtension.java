@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.acl.service.ext.acl;
 
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
+import com.github.vincemann.springrapid.acl.proxy.Acl;
+import com.github.vincemann.springrapid.core.DefaultExtension;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -14,6 +16,7 @@ import java.io.Serializable;
 @Getter
 @Slf4j
 @Transactional
+@DefaultExtension(qualifier = Acl.class)
 /**
  * Removes Acl's on delete, if existing.
  */

@@ -4,9 +4,14 @@ package com.github.vincemann.springrapid.core.config;
 import com.github.vincemann.springrapid.core.DefaultExtension;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxy;
+import org.springframework.aop.framework.AopProxyUtils;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +38,18 @@ public class RapidDefaultExtensionsAutoConfiguration {
         // Discover and process all ServiceExtensions marked with @DefaultExtension
         Map<String, Object> defaultExtensions = context.getBeansWithAnnotation(DefaultExtension.class);
         defaultExtensions.values().forEach(extension -> {
-            DefaultExtension annotation = extension.getClass().getAnnotation(DefaultExtension.class);
+            Class<?> targetClass = null;
+
+            if (AopUtils.isAopProxy(extension)) {
+                // If the bean is a proxy, determine the target class
+                targetClass = AopProxyUtils.ultimateTargetClass(extension);
+            } else {
+                // If it's not a proxy, just use its class
+                targetClass = extension.getClass();
+            }
+
+            DefaultExtension annotation = targetClass.getAnnotation(DefaultExtension.class);
+            Assert.notNull(annotation,"no DefaultExtension annotation defined on the extension class: " + targetClass);
             applyExtensionToQualifiedBeans(findQualifier(annotation), obtainFreshInstance((ServiceExtension) extension));
         });
     }
@@ -57,8 +73,7 @@ public class RapidDefaultExtensionsAutoConfiguration {
     }
 
     /**
-     * scope of extensions has to be Prototype, because I need a new instance for each proxy of that extension.
-     * Call this method for each proxy to get a new set of instances of the default extensions.
+     * scope of extensions is often Prototype ( whenever state is present within extension ) -> this method fetches new instance
      */
     private ServiceExtension obtainFreshInstance(ServiceExtension extension){
         String beanName = context.getBeanNamesForType(extension.getClass())[0];

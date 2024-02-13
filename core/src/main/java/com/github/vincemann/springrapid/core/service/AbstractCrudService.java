@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.util.TypeResolver;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.aop.TargetClassAware;
@@ -53,9 +54,9 @@ public abstract class AbstractCrudService
         return applicationContext.getBean(this.getClass());
     }
 
-    // todo probably a good idea to get this via constructor
+
     @SuppressWarnings("unchecked")
-    private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    private Class<E> entityClass = (Class<E>) TypeResolver.findFirstGenericParameter(this.getClass());
 
     public R getRepository() {
         return repository;

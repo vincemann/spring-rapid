@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.acl.service.ext.acl.RoleGainsPermissionOnCreatedAclExtension;
 import com.github.vincemann.springrapid.acl.service.ext.sec.NeedCreatePermissionOnParentForSaveExtension;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
+import com.github.vincemann.springrapid.acldemo.service.ext.sec.MyNeedCreatePermissionOnParentForSaveExtension;
 import com.github.vincemann.springrapid.acldemo.service.ext.sec.NeedRoleForCreateExtension;
 import com.github.vincemann.springrapid.core.DefaultExtension;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -26,7 +27,7 @@ public class ExtensionsConfig {
     }
 
     @Bean
-    public RoleGainsPermissionOnCreatedAclExtension vetsGainsReadPermissionOnCreated(){
+    public RoleGainsPermissionOnCreatedAclExtension vetsGainReadPermissionOnCreated(){
         return new RoleGainsPermissionOnCreatedAclExtension(MyRoles.VET,BasePermission.READ);
     }
 
@@ -34,6 +35,6 @@ public class ExtensionsConfig {
     @DefaultExtension(qualifier = Secured.class)
     @Bean
     public NeedCreatePermissionOnParentForSaveExtension needCreatePermissionOnParentForCreate(){
-        return new NeedCreatePermissionOnParentForSaveExtension();
+        return new MyNeedCreatePermissionOnParentForSaveExtension();
     }
 }
