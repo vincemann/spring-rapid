@@ -35,7 +35,6 @@ import static com.github.vincemann.springrapid.core.proxy.ExtensionProxies.proxy
 @Configuration
 @Slf4j
 @EnableTransactionManagement
-//@AutoConfigureBefore({AclAutoConfiguration.class})
 public class RapidUserServiceAutoConfiguration {
 
 
@@ -56,9 +55,9 @@ public class RapidUserServiceAutoConfiguration {
     // user must not set its implementation to Primary tho
     @Bean
     @Primary
-    public UserService myUserService(JpaUserService abstractUserService) {
+    public UserService myUserService(JpaUserService userService) {
 //        return createInstance();
-        return abstractUserService;
+        return userService;
     }
 
     @Bean
@@ -71,7 +70,6 @@ public class RapidUserServiceAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(PasswordEncoder.class)
     public RapidPasswordEncoder passwordEncoder() {
-//        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
         return new BcryptRapidPasswordEncoder();
     }
 
@@ -89,34 +87,34 @@ public class RapidUserServiceAutoConfiguration {
 
 
     @Bean
-    @ConditionalOnMissingBean(VerificationService.class)
+    @ConditionalOnMissingBean(name = "verificationService")
     public VerificationService verificationService(){
         return new VerificationServiceImpl();
     }
 
     @Bean
-    @ConditionalOnMissingBean(SignupService.class)
+    @ConditionalOnMissingBean(name = "signupService")
     @Primary
     public SignupService signupService(){
         return new SignupServiceImpl();
     }
 
     @Bean
-    @ConditionalOnMissingBean(PasswordService.class)
+    @ConditionalOnMissingBean(name = "passwordService")
     @Primary
     public PasswordService passwordService(){
         return new PasswordServiceImpl();
     }
 
     @Bean
-    @ConditionalOnMissingBean(UserAuthTokenService.class)
+    @ConditionalOnMissingBean(name = "userAuthTokenService")
     @Primary
     public UserAuthTokenService userAuthTokenService(){
         return new UserAuthTokenServiceImpl();
     }
 
     @Bean
-    @ConditionalOnMissingBean(ContactInformationService.class)
+    @ConditionalOnMissingBean(name = "contactInformationService")
     @Primary
     public ContactInformationService contactInformationService(){
         return new ContactInformationServiceImpl();

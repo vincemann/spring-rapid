@@ -16,6 +16,9 @@ public abstract class AclExtension<S>
 
     protected RapidAclService rapidAclService;
 
+    public AclExtension() {
+    }
+
     @Autowired
     public void setAclPermissionService(RapidAclService rapidAclService) {
         this.rapidAclService = rapidAclService;

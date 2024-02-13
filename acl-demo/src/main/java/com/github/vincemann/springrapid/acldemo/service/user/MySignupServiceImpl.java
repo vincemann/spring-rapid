@@ -17,7 +17,8 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Slf4j
-@Service
+// overwriting of lib signup service only works via name not type
+@Service(value = "signupService")
 @Primary
 public class MySignupServiceImpl extends SignupServiceImpl {
 

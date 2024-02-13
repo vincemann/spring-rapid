@@ -6,8 +6,8 @@ import com.github.vincemann.aoplog.api.IBeanNameAware;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import com.github.vincemann.springrapid.core.util.TypeResolver;
 import com.google.common.base.Objects;
-
-import java.lang.reflect.ParameterizedType;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Write extensions for normal Services, managed by {@link ExtensionProxy}.
@@ -19,6 +19,7 @@ import java.lang.reflect.ParameterizedType;
  *
  * @param <T> Type of proxied Service, you are writing the Extension for.
  */
+@Slf4j
 public abstract class ServiceExtension<T>
         implements NextLinkAware<T>,AopLoggable, IBeanNameAware {
 
@@ -27,11 +28,21 @@ public abstract class ServiceExtension<T>
     private Chain chain;
 
 
-    private Class<?> targetClass = TypeResolver.findFirstGenericParameter(this.getClass());
+    @Setter
+    private Class<?> targetClass;
 
 
 
     public ServiceExtension() {
+        this.targetClass = findTargetClass();
+    }
+
+    protected Class<?> findTargetClass(){
+        Class<?> clazz = TypeResolver.findFirstGenericParameter(this.getClass());
+        if (clazz == null){
+            log.debug("could not find type parameter, call setter for target class on extension or just ignore - but dynamic type safety check is ignored for adding extensions to proxy");
+        }
+        return clazz;
     }
 
     protected void setChain(Chain chain) {
@@ -52,6 +63,10 @@ public abstract class ServiceExtension<T>
     }
 
     public boolean matchesProxy(ExtensionProxy proxy){
+        if (targetClass == null){
+            log.debug("target class is null, ignoring dynamic type safety check");
+            return true;
+        }
         return targetClass.isAssignableFrom(proxy.getProxied().getClass());
     }
 
