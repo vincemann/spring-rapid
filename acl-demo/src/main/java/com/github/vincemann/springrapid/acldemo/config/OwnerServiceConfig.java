@@ -8,11 +8,14 @@ import com.github.vincemann.springrapid.acldemo.service.Root;
 import com.github.vincemann.springrapid.acldemo.service.ext.acl.UserGainsAdminPermissionOnContainedCreatedUser;
 import com.github.vincemann.springrapid.auth.service.ext.acl.UserGainsAdminPermissionOnCreated;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtensionProxyBuilder;
+import com.github.vincemann.springrapid.core.proxy.ExtensionProxies;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
 
+import static com.github.vincemann.springrapid.core.proxy.ExtensionProxies.crudProxy;
+
 /**
- * Demonstrates First style for adding extensions and creating multiple service versions/proxies.
+ * Demonstrates programmatic style for adding extensions and creating multiple service versions/proxies.
  * For Annotation-based approach see i.E. {@link com.github.vincemann.springrapid.acldemo.service.jpa.JpaVetService}.
  */
 @Configuration
@@ -25,7 +28,7 @@ public class OwnerServiceConfig {
                                         UserGainsAdminPermissionOnContainedCreatedUser userGainsAdminPermissionOnContainedCreatedUser,
                                         UserGainsAdminPermissionOnCreated<Owner,Long> userGainsAdminPermissionOnCreated
     ) {
-        return new CrudServiceExtensionProxyBuilder<>(ownerService)
+        return crudProxy(ownerService)
                 .addGenericExtension(userGainsAdminPermissionOnContainedCreatedUser)
                 .addGenericExtension(userGainsAdminPermissionOnCreated)
                 .build();
@@ -35,7 +38,7 @@ public class OwnerServiceConfig {
     @Bean
     public OwnerService securedOwnerService(@Acl OwnerService ownerService){
         // CrudAclChecksSecurityExtension will be added automatically by RapidDefaultSecurityExtensionAutoConfiguration
-        return new CrudServiceExtensionProxyBuilder<>(ownerService).build();
+        return crudProxy(ownerService).build();
     }
 
 }

@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.syncdemo.config;
 
+import com.github.vincemann.springrapid.core.proxy.ExtensionProxies;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
 import com.github.vincemann.springrapid.syncdemo.service.OwnerService;
 import com.github.vincemann.springrapid.syncdemo.service.PetService;
@@ -10,6 +11,8 @@ import com.github.vincemann.springrapid.syncdemo.service.ext.SaveNameToWordPress
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+
+import static com.github.vincemann.springrapid.core.proxy.ExtensionProxies.crudProxy;
 
 /**
  * Add some Dummy Extensions to demonstrate proxy, extension system
@@ -35,7 +38,7 @@ public class MyServiceConfig {
     @Primary
     @Bean
     public PetService petService(@Root PetService petService, ExampleAclExtension aclServiceExtension) {
-        return new ExtensionProxyBuilder<>(petService)
+        return crudProxy(petService)
                 .addExtension(aclServiceExtension)
                 .build();
     }
@@ -47,7 +50,7 @@ public class MyServiceConfig {
                                      ExampleAclExtension aclServiceExtension,
                                      SaveNameToWordPressDbExtension saveNameToWordPressDbExtension
     ) {
-        return new ExtensionProxyBuilder<>(ownerService)
+        return crudProxy(ownerService)
                 .addGenericExtension(saveNameToWordPressDbExtension)
                 .addGenericExtension(ownerOfTheYearExtension)
                 .addExtension(aclServiceExtension)

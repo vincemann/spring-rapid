@@ -6,6 +6,9 @@ import com.github.vincemann.springrapid.acl.service.ext.acl.CleanUpAclExtension;
 import com.github.vincemann.springrapid.acl.service.ext.sec.CrudAclChecksExtension;
 import com.github.vincemann.springrapid.auth.service.*;
 import com.github.vincemann.springrapid.auth.service.ext.acl.SignupServiceAclExtension;
+import com.github.vincemann.springrapid.auth.service.ext.sec.ContactInformationServiceSecurityExtension;
+import com.github.vincemann.springrapid.auth.service.ext.sec.PasswordServiceSecurityExtension;
+import com.github.vincemann.springrapid.auth.service.ext.sec.UserAuthTokenServiceSecurityExtension;
 import com.github.vincemann.springrapid.auth.service.ext.sec.UserServiceSecurityExtension;
 import com.github.vincemann.springrapid.auth.service.val.ContactInformationValidator;
 import com.github.vincemann.springrapid.auth.service.val.EmailContactInformationValidator;
@@ -13,6 +16,7 @@ import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidatorImpl;
 import com.github.vincemann.springrapid.auth.util.UserUtils;
 
+import com.github.vincemann.springrapid.core.proxy.ExtensionProxies;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.service.pass.BcryptRapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.service.pass.RapidPasswordEncoder;
@@ -24,6 +28,9 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import static com.github.vincemann.springrapid.core.proxy.ExtensionProxies.crudProxy;
+import static com.github.vincemann.springrapid.core.proxy.ExtensionProxies.proxy;
 
 @Configuration
 @Slf4j
@@ -52,6 +59,12 @@ public class RapidUserServiceAutoConfiguration {
     public UserService myUserService(JpaUserService abstractUserService) {
 //        return createInstance();
         return abstractUserService;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(UserUtils.class)
+    public UserUtils userUtils(){
+        return new UserUtils();
     }
 
 
@@ -83,33 +96,72 @@ public class RapidUserServiceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(SignupService.class)
+    @Primary
     public SignupService signupService(){
         return new SignupServiceImpl();
     }
 
     @Bean
     @ConditionalOnMissingBean(PasswordService.class)
+    @Primary
     public PasswordService passwordService(){
         return new PasswordServiceImpl();
     }
 
     @Bean
     @ConditionalOnMissingBean(UserAuthTokenService.class)
+    @Primary
     public UserAuthTokenService userAuthTokenService(){
         return new UserAuthTokenServiceImpl();
     }
 
     @Bean
     @ConditionalOnMissingBean(ContactInformationService.class)
+    @Primary
     public ContactInformationService contactInformationService(){
         return new ContactInformationServiceImpl();
     }
 
+    @Bean
+    @Secured
+    @ConditionalOnMissingBean(name = "securedContactInformationService")
+    public ContactInformationService securedContactInformationService(ContactInformationService service,
+                                                                      ContactInformationServiceSecurityExtension securityExtension){
+        return proxy(service)
+                .addExtension(securityExtension)
+                .build();
+    }
 
     @Bean
-    @ConditionalOnMissingBean(UserUtils.class)
-    public UserUtils userUtils(){
-        return new UserUtils();
+    @Secured
+    @ConditionalOnMissingBean(name = "securedUserAuthTokenService")
+    public UserAuthTokenService securedUserAuthTokenService(UserAuthTokenService service,
+                                                                      UserAuthTokenServiceSecurityExtension securityExtension){
+        return proxy(service)
+                .addExtension(securityExtension)
+                .build();
+    }
+
+    @Bean
+    @Secured
+    @ConditionalOnMissingBean(name = "securedPasswordService")
+    public PasswordService securedPasswordService(PasswordService service,
+                                                            PasswordServiceSecurityExtension securityExtension){
+        return proxy(service)
+                .addExtension(securityExtension)
+                .build();
+    }
+
+    @Bean
+    @Acl
+    @ConditionalOnMissingBean(name = "aclSignupService")
+    public SignupService aclSignupService(SignupService service,
+                                          SignupServiceAclExtension signupServiceAclExtension
+    ) {
+        return proxy(service)
+                .defaultExtensionsEnabled(false)
+                .addExtension(signupServiceAclExtension)
+                .build();
     }
 
 
@@ -119,7 +171,7 @@ public class RapidUserServiceAutoConfiguration {
     public UserService<?, ?> aclUserService(UserService<?, ?> service,
                                             CleanUpAclExtension cleanUpAclExtension
     ) {
-        return new ExtensionProxyBuilder<>(service)
+        return crudProxy(service)
                 // dont work with default extensions to keep things simple and concrete for user
                 .defaultExtensionsEnabled(false)
                 // acl info is only created in signup
@@ -135,7 +187,7 @@ public class RapidUserServiceAutoConfiguration {
                                                 UserServiceSecurityExtension securityRule,
                                                 CrudAclChecksExtension crudAclChecksExtension
     ) {
-        return new ExtensionProxyBuilder<>(service)
+        return crudProxy(service)
                 // dont work with default extensions to keep things safer for user related stuff
                 .defaultExtensionsEnabled(false)
                 .addExtension(securityRule)
@@ -143,16 +195,5 @@ public class RapidUserServiceAutoConfiguration {
                 .build();
     }
 
-    @Bean
-    @Acl
-    @ConditionalOnMissingBean(name = "aclSignupService")
-    public SignupService aclSignupService(SignupService service,
-                                          SignupServiceAclExtension signupServiceAclExtension
-    ) {
-        return new ExtensionProxyBuilder<>(service)
-                .defaultExtensionsEnabled(false)
-                .addExtension(signupServiceAclExtension)
-                .build();
-    }
 
 }

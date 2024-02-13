@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.auth.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.vincemann.springrapid.acl.proxy.Acl;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.dto.*;
@@ -447,27 +448,44 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	public void setUnsecuredService(S Service) {
 		this.unsecuredService = Service;
 	}
-	@Autowired public void setAuthProperties(AuthProperties authProperties) {
+	@Autowired
+	public void setAuthProperties(AuthProperties authProperties) {
 		this.authProperties = authProperties;
 	}
 
-	@Autowired public void setAuthTokenService(UserAuthTokenService authTokenService) {
+	@Autowired
+	@Secured
+	@Lazy
+	public void setUserAuthTokenService(UserAuthTokenService authTokenService) {
 		this.authTokenService = authTokenService;
 	}
 
-	@Autowired public void setPasswordService(PasswordService passwordService) {
+	@Autowired
+	@Secured
+	@Lazy
+	public void setPasswordService(PasswordService passwordService) {
 		this.passwordService = passwordService;
 	}
-	@Autowired public void setSignupService(SignupService signupService) {
+	@Autowired
+	@Acl
+	@Lazy
+	public void setSignupService(SignupService signupService) {
 		this.signupService = signupService;
 	}
-	@Autowired public void setContactInformationService(ContactInformationService contactInformationService) {
+	@Autowired
+	@Secured
+	@Lazy
+	public void setContactInformationService(ContactInformationService contactInformationService) {
 		this.contactInformationService = contactInformationService;
 	}
-	@Autowired public void setVerificationService(VerificationService verificationService) {
+	@Autowired
+	public void setVerificationService(VerificationService verificationService) {
 		this.verificationService = verificationService;
 	}
-	@Autowired public void setAuthorizationTokenService(AuthorizationTokenService authorizationTokenService) {
+	@Autowired
+	@Secured
+	@Lazy
+	public void setAuthorizationTokenService(AuthorizationTokenService authorizationTokenService) {
 		this.authorizationTokenService = authorizationTokenService;
 	}
 }

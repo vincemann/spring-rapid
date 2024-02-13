@@ -36,8 +36,6 @@ public class VerificationServiceImpl implements VerificationService {
 
     private UserService userService;
 
-    private IdConverter idConverter;
-
     private UserUtils userUtils;
 
     @Transactional
@@ -46,7 +44,7 @@ public class VerificationServiceImpl implements VerificationService {
         if (user.getRoles().contains(AuthRoles.UNVERIFIED)){
             throw new BadEntityException("Already unverified");
         }
-        AbstractUser updated = userService.addRole(user, AuthRoles.UNVERIFIED);
+        AbstractUser updated = userService.addRole(user.getId(), AuthRoles.UNVERIFIED);
         TransactionalUtils.afterCommit(() -> sendVerificationMessage(updated));
         return updated;
     }
@@ -58,7 +56,7 @@ public class VerificationServiceImpl implements VerificationService {
             throw new BadEntityException("Already verified");
         }
 
-        return userService.removeRole(user,AuthRoles.UNVERIFIED);
+        return userService.removeRole(user.getId(),AuthRoles.UNVERIFIED);
     }
 
     protected void sendVerificationMessage(AbstractUser user) {
@@ -133,9 +131,6 @@ public class VerificationServiceImpl implements VerificationService {
         this.userService = userService;
     }
 
-    @Autowired public void setIdConverter(IdConverter idConverter) {
-        this.idConverter = idConverter;
-    }
 
     @Autowired public void setUserUtils(UserUtils userUtils) {
         this.userUtils = userUtils;

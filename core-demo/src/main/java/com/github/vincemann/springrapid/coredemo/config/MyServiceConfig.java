@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.config;
 
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtensionProxyBuilder;
+import com.github.vincemann.springrapid.core.proxy.ExtensionProxies;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
 import com.github.vincemann.springrapid.coredemo.service.Root;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,8 @@ import com.github.vincemann.springrapid.coredemo.service.ext.OwnerOfTheYearExten
 import com.github.vincemann.springrapid.coredemo.service.ext.SaveNameToWordPressDbExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+
+import static com.github.vincemann.springrapid.core.proxy.ExtensionProxies.crudProxy;
 
 /**
  * Add some Dummy Extensions to demonstrate proxy, extension system
@@ -37,7 +40,7 @@ public class MyServiceConfig {
     @Bean
     public PetService petService(@Root PetService petService,
                                  ExampleAclExtension exampleAclExtension) {
-        return new ExtensionProxyBuilder<>(petService)
+        return crudProxy(petService)
                 .addExtension(exampleAclExtension)
                 .build();
     }
@@ -48,7 +51,7 @@ public class MyServiceConfig {
                                      OwnerOfTheYearExtension ownerOfTheYearExtension,
                                      ExampleAclExtension exampleAclExtension,
                                      SaveNameToWordPressDbExtension saveNameToWordPressDbExtension) {
-        return new CrudServiceExtensionProxyBuilder<>(ownerService)
+        return crudProxy(ownerService)
                 .addGenericExtension(saveNameToWordPressDbExtension)
                 .addGenericExtension(ownerOfTheYearExtension)
                 .addExtension(exampleAclExtension)

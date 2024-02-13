@@ -3,12 +3,12 @@ package com.github.vincemann.springrapid.core.proxy;
 import com.github.vincemann.aoplog.MethodUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
-import com.github.vincemann.springrapid.core.service.CrudService;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.util.Assert;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -22,17 +22,23 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
 
+    //caches
+    private ConcurrentHashMap<ExtensionState, Object> nextCache = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<MethodIdentifier, List<ExtensionHandle>> extensionChainCache = new ConcurrentHashMap<>();
+
+
+    // internal stuff
     private final Map<MethodIdentifier, Method> methods = new HashMap<>();
     private List<String> ignoredMethodNames = Lists.newArrayList("getEntityClass", "getRepository", "toString", "equals", "hashCode", "getClass", "clone", "notify", "notifyAll", "wait", "finalize", "setBeanName", "getBeanName", "getTargetClass");
     private List<MethodIdentifier> learnedIgnoredMethods = new ArrayList<>();
-    private Object proxied;
-    private List<ServiceExtension<?>> extensions = new ArrayList<>();
     private ThreadLocal<State> state = new ThreadLocal<>();
-    //caches
-    private ConcurrentHashMap<ExtensionState, Object> next_cache = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<MethodIdentifier, List<ExtensionHandle>> extensionChainCache = new ConcurrentHashMap<>();
     private String beanName;
 
+
+
+    // vars
+    private Object proxied;
+    private List<ServiceExtension<?>> extensions = new ArrayList<>();
     private Boolean defaultExtensionsEnabled = Boolean.TRUE;
     private Set<Class<? extends ServiceExtension>> defaultExtensionsIgnored = new HashSet<>();
 
@@ -68,6 +74,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
     }
 
     public void addExtension(ServiceExtension<?> extension) {
+        Assert.isTrue(extension.matchesProxy(this),"extension does not match proxy, must be superclass of proxied object");
         this.extensions.add(extension);
         //extension expects chainController<T>, gets ChainController<S>, T is always superclass of S -> so this is safe
         extension.setChain(this);
@@ -80,6 +87,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
     }
 
     public void addExtension(ServiceExtension<?> extension, int index) {
+        Assert.isTrue(extension.matchesProxy(this),"extension does not match proxy, must be superclass of proxied object");
         this.extensions.add(index, extension);
         //extension expects chainController<T>, gets ChainController<S>, T is always superclass of S -> so this is safe
         extension.setChain(this);
@@ -143,9 +151,9 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
     @Override
     public Object getNext(ServiceExtension extension) {
         State state = this.state.get();
-        //is next object cached?
+        // is next object cached?
         ExtensionState extensionState = new ExtensionState(state, extension);
-        Object cached = next_cache.get(extensionState);
+        Object cached = nextCache.get(extensionState);
         if (cached != null) {
             return cached;
         }
@@ -154,13 +162,13 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
             // make sure extensions method is not intercepted by aop proxy maybe that triggers method call directly
             throw new IllegalArgumentException("method of extension: " + extension + " is called directly. Make sure to only call methods of proxies. \n Also make sure your extensions have the Prototype scope!");
         }
-        //get extension chain by method
+        // get extension chain by method
         List<ExtensionHandle> extensionChain = extensionChainCache.get(state.getMethodIdentifier());
         Optional<ExtensionHandle> link = extensionChain.stream()
                 .filter(e -> ProxyUtils.isEqual(e.getExtension(), (extension)))
                 .findFirst();
         if (link.isEmpty()) {
-            throw new IllegalArgumentException("Already called Extension: " + extension + " not part of extension chain: " + extensionChain);
+            throw new IllegalArgumentException("already called extension: " + extension + " not part of extension chain: " + extensionChain);
         }
 
         int extensionIndex = extensionChain.indexOf(link.get());
@@ -172,7 +180,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
         } else {
             result = createProxiedExtension(extensionChain.get(nextIndex).getExtension());
         }
-        next_cache.put(extensionState, result);
+        nextCache.put(extensionState, result);
 
         return result;
     }
@@ -221,7 +229,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
                     Method extensionsMethod = MethodUtils.findMethod(extension.getClass(), method.getName(), method.getParameterTypes());
                     method_chain_entry.getValue().add(new ExtensionHandle(extension, extensionsMethod));
                 } catch (NoSuchMethodException e) {
-                    // happens all the time, when extension does not define the method in question, that may be defined in a extension
+                    // happens all the time, when extension does not define the method in question, that may be defined in an extension
                     // further downstream tho
                     if (log.isTraceEnabled())
                         log.trace("No such method found: ", e);
@@ -244,7 +252,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
      * Is reset after method call on proxy ( = all Extensions and proxied) are called.
      */
     @EqualsAndHashCode
-    protected static class State {
+    private static class State {
         @Getter
         private MethodIdentifier methodIdentifier;
 
@@ -273,7 +281,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
     @AllArgsConstructor
     @Getter
     @ToString
-    protected class ExtensionHandle {
+    private class ExtensionHandle {
         ServiceExtension<?> extension;
         Method method;
 

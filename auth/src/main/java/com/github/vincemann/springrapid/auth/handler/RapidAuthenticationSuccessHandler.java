@@ -61,7 +61,8 @@ public class RapidAuthenticationSuccessHandler
     }
 
 
-	@Autowired public void setAuthTokenService(UserAuthTokenService authTokenService) {
+	@Autowired
+	public void setAuthTokenService(UserAuthTokenService authTokenService) {
 		this.authTokenService = authTokenService;
 	}
 }
