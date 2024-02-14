@@ -11,7 +11,7 @@ public class RapidAclDemoApplication
 {
 
 	public static void main(String[] args){
-		ApplicationContext context = SpringApplication.run(RapidAclDemoApplication.class, args);
+		SpringApplication.run(RapidAclDemoApplication.class, args);
 	}
 
 }

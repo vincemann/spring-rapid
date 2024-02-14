@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import com.github.vincemann.springrapid.core.util.Lists;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -25,10 +27,9 @@ import java.util.stream.Collectors;
  *
  */
 @Slf4j
-public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationContextAware, ApplicationListener<ContextRefreshedEvent>, BeanFactoryPostProcessor {
+public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationListener<ContextRefreshedEvent>, BeanFactoryAware {
     @Getter
     private Map<Class<? extends IdentifiableEntity>, CrudService> primaryServices = new HashMap<>();
-    private ApplicationContext applicationContext;
 
     private ConfigurableListableBeanFactory beanFactory;
 
@@ -38,8 +39,8 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationCo
     }
 
     @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory= (ConfigurableListableBeanFactory) beanFactory;
     }
 
     @Override
@@ -77,15 +78,11 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationCo
         }
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
 
     //@LogInteraction
     @Override
     public synchronized CrudService find(Class<? extends IdentifiableEntity> entityClass, Class<? extends Annotation> annotation) {
-        Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(annotation);
+        Map<String, Object> beansWithAnnotation = beanFactory.getBeansWithAnnotation(annotation);
         List result = beansWithAnnotation.values().stream()
                 .filter(b -> ((CrudService) b).getEntityClass().equals(entityClass))
                 .collect(Collectors.toList());

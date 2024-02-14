@@ -193,14 +193,14 @@ public class VisitControllerTest extends MyIntegrationTest {
         String meierToken = userController.login2xx(OWNER_MEIER_CONTACT_INFORMATION, OWNER_MEIER_PASSWORD);
         Visit visit = createVisit(vetDiCaprioToken, savedKahn, savedDicaprio, checkTeethVisit, savedBella);
 
-        // meier cant subscribe visit
+        // meier cant subscribe to visit
         mvc.perform(visitController.find(visit.getId())
                 .header(HttpHeaders.AUTHORIZATION,meierToken))
                 .andExpect(status().isForbidden());
 
         mvc.perform(visitController.subscribe(vetDiCaprioToken,savedMeier.getId(),visit.getId(),true))
                 .andExpect(status().is2xxSuccessful());
-        // now meier should be able to subscribe visit
+        // now meier should be able to subscribe to visit
 
         mvc.perform(visitController.find(visit.getId())
                 .header(HttpHeaders.AUTHORIZATION,meierToken))
