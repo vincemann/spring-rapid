@@ -37,7 +37,7 @@ public class OwnerServiceConfig {
     @Secured
     @Bean
     public OwnerService securedOwnerService(@Acl OwnerService ownerService){
-        // CrudAclChecksSecurityExtension will be added automatically by RapidDefaultSecurityExtensionAutoConfiguration
+        // CrudAclChecksSecurityExtension will be added automatically, since its @Secured @DefaultExtension
         return crudProxy(ownerService).build();
     }
 

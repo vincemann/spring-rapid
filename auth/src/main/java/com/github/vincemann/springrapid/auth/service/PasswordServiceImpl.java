@@ -42,17 +42,18 @@ public class PasswordServiceImpl implements PasswordService {
 
     @Transactional(readOnly = true)
     @Override
-    public void forgotPassword(String contactInformation) throws EntityNotFoundException {
+    public AbstractUser forgotPassword(String contactInformation) throws EntityNotFoundException {
         // fetch the user record from database
         Optional<AbstractUser<Serializable>> byContactInformation = userService.findByContactInformation(contactInformation);
         VerifyEntity.isPresent(byContactInformation, "User with contactInformation: " + contactInformation + " not found");
         AbstractUser user = byContactInformation.get();
         TransactionalUtils.afterCommit(() -> sendForgotPasswordMessage(user));
+        return user;
     }
 
     @Transactional
     @Override
-    public void resetPassword(ResetPasswordDto dto) throws EntityNotFoundException, BadEntityException, BadTokenException {
+    public AbstractUser resetPassword(ResetPasswordDto dto) throws EntityNotFoundException, BadEntityException, BadTokenException {
 
         JWTClaimsSet claims = jweTokenService.parseToken(dto.getCode());
         RapidJwt.validate(claims, FORGOT_PASSWORD_AUDIENCE);
@@ -61,7 +62,7 @@ public class PasswordServiceImpl implements PasswordService {
         RapidJwt.validateIssuedAfter(claims, user.getCredentialsUpdatedMillis());
 
         // sets the password
-        userService.updatePassword(user.getId(),dto.getNewPassword());
+        return userService.updatePassword(user.getId(),dto.getNewPassword());
         // dont return user instance or email - just create token for authenticated
         // if user is allowed to reset password of someone else, it does not make sense to give him the token of the updated user
         // which is not even his own -> just always return own token in header
@@ -71,7 +72,7 @@ public class PasswordServiceImpl implements PasswordService {
 
     @Transactional
     @Override
-    public void changePassword(ChangePasswordDto dto) throws EntityNotFoundException, BadEntityException {
+    public AbstractUser changePassword(ChangePasswordDto dto) throws EntityNotFoundException, BadEntityException {
         AbstractUser<Serializable> user = VerifyEntity.isPresent(userService.findByContactInformation(dto.getContactInformation()),dto.getContactInformation(),userService.getEntityClass());
         VerifyEntity.isPresent(user, "User not found");
         String oldPassword = user.getPassword();
@@ -83,8 +84,7 @@ public class PasswordServiceImpl implements PasswordService {
                         oldPassword), "Wrong password");
 
         // sets the password
-        userService.updatePassword(user.getId(),dto.getNewPassword());
-        log.debug("changed pw of user: " + user.getContactInformation());
+        return userService.updatePassword(user.getId(),dto.getNewPassword());
     }
 
     /**

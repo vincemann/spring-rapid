@@ -83,7 +83,7 @@ public class VerificationServiceImpl implements VerificationService {
     }
 
     @Override
-    public void resendVerificationMessage(String contactInformation) throws EntityNotFoundException, BadEntityException {
+    public AbstractUser resendVerificationMessage(String contactInformation) throws EntityNotFoundException, BadEntityException {
 
         Optional<AbstractUser> user = userService.findByContactInformation(contactInformation);
         VerifyEntity.isPresent(user,"no user found with contactInformation: "+ contactInformation);
@@ -91,6 +91,7 @@ public class VerificationServiceImpl implements VerificationService {
         VerifyEntity.is(user.get().getRoles().contains(AuthRoles.UNVERIFIED), " Already verified");
 
         TransactionalUtils.afterCommit(() -> sendVerificationMessage(user.get()));
+        return user.get();
     }
 
 
@@ -98,7 +99,7 @@ public class VerificationServiceImpl implements VerificationService {
 
     @Transactional
     @Override
-    public void verifyUser(String code) throws EntityNotFoundException, BadTokenException, BadEntityException {
+    public AbstractUser verifyUser(String code) throws EntityNotFoundException, BadTokenException, BadEntityException {
         JWTClaimsSet claims = jweTokenService.parseToken(code);
         AbstractUser user = userUtils.extractUserFromClaims(claims);
         RapidJwt.validate(claims, VERIFY_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
@@ -111,8 +112,7 @@ public class VerificationServiceImpl implements VerificationService {
 
         //no login needed bc token of user is appended in controller -> we avoid dynamic logins in a stateless env
         //also to be able to use read-only security test -> generic principal type does not need to be passed into this class
-        AbstractUser updated = makeVerified(user);
-        log.debug("Verified user: " + updated.getContactInformation());
+        return makeVerified(user);
     }
 
     @Autowired public void setJweTokenService(JweTokenService jweTokenService) {

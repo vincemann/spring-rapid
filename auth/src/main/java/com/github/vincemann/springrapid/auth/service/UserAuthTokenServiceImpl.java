@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
@@ -26,6 +27,8 @@ public class UserAuthTokenServiceImpl implements UserAuthTokenService {
     }
 
     public String createNewAuthToken() throws EntityNotFoundException {
+        if (RapidSecurityContext.getRoles().contains(AuthRoles.ANON))
+            throw new IllegalArgumentException("cannot create token for anon user");
         return createNewAuthToken(securityContext.currentPrincipal().getName());
     }
 

@@ -39,7 +39,9 @@ public abstract class JpaUserService
                 R extends AbstractUserRepository<U, Id>
                 >
         extends JpaCrudService<U, Id, R>
-        implements UserService<U, Id>, ApplicationContextAware {
+        implements UserService<U, Id>,
+        ApplicationContextAware
+{
 
     private RapidPasswordEncoder passwordEncoder;
     private PasswordValidator passwordValidator;
@@ -61,15 +63,12 @@ public abstract class JpaUserService
 
     @Override
     public U createUser() {
-        // Attempt to instantiate U using reflection
+        // Attempt to instantiate U using reflection calling no args constructor
         try {
             // Obtain the class object for U and create a new instance
             // Assumes U has a no-argument constructor
             return getEntityClass().getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            // Handle the exception as appropriate for your application
-            // This could involve logging the error and/or throwing a runtime exception
-            log.error("Error creating user instance", e);
             throw new RuntimeException("Unable to create user instance with default constructor", e);
         }
     }
@@ -113,11 +112,11 @@ public abstract class JpaUserService
 
 
     @Override
-    public void updatePassword(Id userId, String password) throws EntityNotFoundException, BadEntityException {
+    public U updatePassword(Id userId, String password) throws EntityNotFoundException, BadEntityException {
         U update = Entity.createUpdate(getEntityClass(), userId);
         update.setPassword(encodedPasswordIfNeeded(password));
         update.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        service.partialUpdate(update);
+        return service.partialUpdate(update);
     }
     
     protected String encodedPasswordIfNeeded(String password){

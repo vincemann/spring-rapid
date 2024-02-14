@@ -28,6 +28,7 @@ public class UserAuthTokenServiceSecurityExtension extends SecurityExtension<Use
 
     @Override
     public String createNewAuthToken() throws EntityNotFoundException {
+        VerifyAccess.condition(RapidSecurityContext.isAuthenticated(),"need to be authenticated to create auth token");
         return getNext().createNewAuthToken();
     }
 }

@@ -77,7 +77,7 @@ public class ContactInformationServiceImpl implements ContactInformationService 
 
 
     @Override
-    public void requestContactInformationChange(RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException {
+    public AbstractUser requestContactInformationChange(RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException {
         Optional<AbstractUser> oldUser = userService.findByContactInformation(dto.getOldContactInformation());
         VerifyEntity.isPresent(oldUser, dto.getOldContactInformation(), userService.getEntityClass());
 
@@ -94,6 +94,7 @@ public class ContactInformationServiceImpl implements ContactInformationService 
         // needs to be done bc validation exceptions are thrown after transaction ends, otherwise validation fails but
         // message is still sent
         TransactionalUtils.afterCommit(() -> sendChangeContactInformationMessage(updated));
+        return updated;
     }
 
     protected void checkUniqueContactInformation(String contactInformation) throws AlreadyRegisteredException {

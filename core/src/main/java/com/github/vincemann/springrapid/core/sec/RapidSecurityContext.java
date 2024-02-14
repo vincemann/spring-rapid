@@ -17,13 +17,9 @@ import java.util.function.Supplier;
 public interface RapidSecurityContext
         extends AopLoggable {
 
-    /**
-     * this method is ment to be called when user should be set as authenticated.
-     * It should not be called when actually logging in, rather when token is parsed and authenticated user is set.
-     */
     @LogInteraction(Severity.DEBUG)
     @CustomToString(key = "arg1", toStringMethod = "shortToString")
-    RapidPrincipal setAuthenticated(RapidPrincipal principal);
+    void setAuthenticated(RapidPrincipal principal);
 
     @LogInteraction(Severity.DEBUG)
     @CustomToString(key = "arg1", toStringMethod = "shortToString")

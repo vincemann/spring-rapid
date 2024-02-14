@@ -54,6 +54,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	private S unsecuredService;	// getService() to get secured
 
 	private UserAuthTokenService authTokenService;
+	private UserAuthTokenService unsecuredAuthTokenService;
 	private PasswordService passwordService;
 	private SignupService signupService;
 	private ContactInformationService contactInformationService;
@@ -71,7 +72,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		getDtoValidationStrategy().validate(dto);
   		AbstractUser saved = signupService.signup(dto);
 		FindOwnUserDto responseDto = getDtoMapper().mapToDto(saved, FindOwnUserDto.class);
-		return okWithAuthToken(responseDto);
+		return okWithAuthToken(responseDto,saved.getContactInformation());
 	}
 
 	public ResponseEntity<Void> resendVerificationMail(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
@@ -86,8 +87,8 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	 */
 	public ResponseEntity<Void> verifyUser(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, BadTokenException {
 		String code = readRequestParam(request, "code");
-		verificationService.verifyUser(code);
-		return okWithAuthToken();
+		AbstractUser updated = verificationService.verifyUser(code);
+		return okWithAuthToken(updated.getContactInformation());
 	}
 
 
@@ -107,8 +108,8 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		String body = readBody(request);
 		ResetPasswordDto dto = getJsonMapper().readDto(body, ResetPasswordDto.class);
 		getDtoValidationStrategy().validate(dto);
-		passwordService.resetPassword(dto);
-		return okWithAuthToken();
+		AbstractUser updated = passwordService.resetPassword(dto);
+		return okWithAuthToken(updated.getContactInformation());
 	}
 
 	public String showResetPassword(HttpServletRequest request, HttpServletResponse response, Model model) throws BadEntityException {
@@ -123,8 +124,8 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		String body = readBody(request);
 		ChangePasswordDto dto = getJsonMapper().readDto(body, ChangePasswordDto.class);
 		getDtoValidationStrategy().validate(dto);
-		passwordService.changePassword(dto);
-		return okWithAuthToken();
+		AbstractUser updated = passwordService.changePassword(dto);
+		return okWithAuthToken(updated.getContactInformation());
 	}
 
 
@@ -139,8 +140,8 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	public ResponseEntity<Void> changeContactInformation(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadTokenException, AlreadyRegisteredException, BadEntityException {
 		String code = readRequestParam(request, "code");
-		contactInformationService.changeContactInformation(code);
-		return okWithAuthToken();
+		AbstractUser updated = contactInformationService.changeContactInformation(code);
+		return okWithAuthToken(updated.getContactInformation());
 	}
 
 	/**
@@ -418,16 +419,16 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	//				HELPERS
 
 
-	protected ResponseEntity<Void> okWithAuthToken() throws EntityNotFoundException {
+	protected ResponseEntity<Void> okWithAuthToken(String contactInformation) throws EntityNotFoundException {
 		HttpHeaders headers = new HttpHeaders();
-		String token = authTokenService.createNewAuthToken();
+		String token = unsecuredAuthTokenService.createNewAuthToken(contactInformation);
 		headers.add(HttpHeaders.AUTHORIZATION,token);
 		return ResponseEntity.status(204).headers(headers).build();
 	}
 
-	protected <T> ResponseEntity<T> okWithAuthToken(T body) throws EntityNotFoundException {
+	protected <T> ResponseEntity<T> okWithAuthToken(T body, String contactInformation) throws EntityNotFoundException {
 		HttpHeaders headers = new HttpHeaders();
-		String token = authTokenService.createNewAuthToken();
+		String token = unsecuredAuthTokenService.createNewAuthToken(contactInformation);
 		headers.add(HttpHeaders.AUTHORIZATION,token);
 		return ResponseEntity.status(200).headers(headers).body(body);
 	}
@@ -458,6 +459,13 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	@Lazy
 	public void setUserAuthTokenService(UserAuthTokenService authTokenService) {
 		this.authTokenService = authTokenService;
+	}
+
+
+	@Autowired
+	@Lazy
+	public void setUnsecuredAuthTokenService(UserAuthTokenService unsecuredAuthTokenService) {
+		this.unsecuredAuthTokenService = unsecuredAuthTokenService;
 	}
 
 	@Autowired

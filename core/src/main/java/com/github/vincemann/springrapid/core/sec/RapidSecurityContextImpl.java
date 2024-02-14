@@ -2,16 +2,11 @@ package com.github.vincemann.springrapid.core.sec;
 
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.List;
 import java.util.function.Supplier;
 
 // use springs authentication.getDetails to store more info then already given in RapidAuthenticatedPrincipal
@@ -22,14 +17,13 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
 
 
     @Override
-    public RapidPrincipal setAuthenticated(RapidPrincipal principal) {
+    public void setAuthenticated(RapidPrincipal principal) {
         RapidPrincipal old = currentPrincipal();
         if (old != null) {
             if (log.isWarnEnabled())
                 log.warn("Principal: " + old + " was already logged in. This login will override authenticated user");
         }
         SecurityContextHolder.getContext().setAuthentication(createToken(principal));
-        return old;
     }
 
 
@@ -94,7 +88,6 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
 
     protected RapidPrincipal getAnonUser(){
         RapidPrincipal principal = new RapidPrincipal();
-        principal.setName("anon");
         principal.setRoles(Sets.newHashSet(Roles.ANON));
         return principal;
     }
@@ -112,9 +105,5 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
         return new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities());
     }
 
-
-    protected GrantedAuthority map(String role) {
-        return new SimpleGrantedAuthority(role);
-    }
 
 }

@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 
 @Configuration
 @EnableWebSecurity
-// only run it like this in dev or test env!
+// only run it like this in dev or test env
 public class H2WebSecurityConfig extends RapidWebSecurityConfig {
 
 

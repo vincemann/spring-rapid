@@ -29,7 +29,7 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
     U removeRole(ID userId, String role) throws EntityNotFoundException, BadEntityException;
 
-    void updatePassword(ID userId, String password) throws EntityNotFoundException, BadEntityException;
+    U updatePassword(ID userId, String password) throws EntityNotFoundException, BadEntityException;
 
     U updateContactInformation(ID userId, String contactInformation) throws EntityNotFoundException, BadEntityException;
 

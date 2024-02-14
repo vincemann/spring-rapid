@@ -15,5 +15,5 @@ public interface ContactInformationService {
 
     public AbstractUser changeContactInformation(@NotBlank String code) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException, BadTokenException;
 
-    public void requestContactInformationChange(@Valid RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException;
+    public AbstractUser requestContactInformationChange(@Valid RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException;
 }
