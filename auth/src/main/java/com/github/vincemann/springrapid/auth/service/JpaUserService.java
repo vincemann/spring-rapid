@@ -13,6 +13,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.service.pass.RapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.util.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,14 +64,7 @@ public abstract class JpaUserService
 
     @Override
     public U createUser() {
-        // Attempt to instantiate U using reflection calling no args constructor
-        try {
-            // Obtain the class object for U and create a new instance
-            // Assumes U has a no-argument constructor
-            return getEntityClass().getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            throw new RuntimeException("Unable to create user instance with default constructor", e);
-        }
+        return BeanUtils.instantiateClass(getEntityClass());
     }
 
     @Transactional
