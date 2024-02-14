@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.util.ContainerAnnotationUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -49,7 +50,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         if (bean instanceof CrudService && !(bean instanceof ServiceExtension)) {
             // this will make sure root proxied bean is wrapped with aop proxy
             Object proxied = beanFactory.getBean(beanName);
-            Object unwrappedBean = AopTestUtils.getUltimateTargetObject(proxied);
+            Object unwrappedBean = AopProxyUtils.getSingletonTarget(proxied);
 
 
             List<DefineProxy> proxyDefinitions = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), DefineProxy.class, DefineProxies.class);
@@ -66,9 +67,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
             for (CreateProxy proxy : toCreate) {
                 // make sure there is only one primary bean
                 if (proxy.primary()) {
-                    if (primaryBeanRegistered) {
-                        throw new IllegalArgumentException("Multiple ProxyBeans marked as primary");
-                    }
+                    Assert.state(!primaryBeanRegistered,"Multiple ProxyBeans marked as primary");
                     primaryBeanRegistered = true;
                 }
 
@@ -95,11 +94,8 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
                     if (proxyDefinition.isEmpty()) {
                         // did not find matching local proxy definition, must be a proxy from elsewhere
                         // try to find globally, proxy definitions name is assumed to be the global bean name
-                        if (beanFactory.containsBean(proxyName)) {
-                            internalProxy = beanFactory.getBean(proxyName);
-                        } else {
-                            throw new IllegalArgumentException("Proxy with name: " + proxyName + " could not be found. Make sure to create a local ProxyDefinition with this name or define a bean globally with that name");
-                        }
+                        Assert.state(beanFactory.containsBean(proxyName),"Proxy with name: " + proxyName + " could not be found. Make sure to create a local ProxyDefinition with this name or define a bean globally with that name");
+                        internalProxy = beanFactory.getBean(proxyName);
                     } else {
                         // this is the normal case
                         // found local proxy definition, now create proxy
@@ -160,7 +156,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         for (Class<? extends Annotation> qualifierContainer : qualifiers) {
             // needs to be done like this
             Qualifier qualifier = AnnotationUtils.findAnnotation(qualifierContainer, Qualifier.class);
-            Assert.notNull(qualifier,"Provided class must be a Qualifier");
+            Assert.notNull(qualifier,"Provided annotation class must have a meta qualifier annotation");
             proxyBeanDefinition.addQualifier(new AutowireCandidateQualifier(Qualifier.class,qualifier.value()));
         }
 
@@ -190,8 +186,8 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
     protected List<ServiceExtension> resolveExtensions(DefineProxy proxyDefinition) {
         String[] beanNameExtensions = proxyDefinition.extensions();
         Class[] classExtensions = proxyDefinition.extensionClasses();
-        if (beanNameExtensions.length > 0 && classExtensions.length > 0)
-            throw new IllegalArgumentException("Only use either 'extensions' or 'extensionClasses' in Annotation Proxy");
+        boolean nameAndClassesSet = beanNameExtensions.length > 0 && classExtensions.length > 0;
+        Assert.state(!nameAndClassesSet,"Only use either 'extensions' or 'extensionClasses' in annotation based proxy creation");
         if (classExtensions.length > 0) {
             return resolveExtensions(classExtensions);
         } else if (beanNameExtensions.length > 0) {
@@ -206,9 +202,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         ArrayList<Class> extensionStrings = Lists.newArrayList(classExtensions);
         for (Class extensionClass : extensionStrings) {
             Object extension = beanFactory.getBean(extensionClass);
-            if (!(extension instanceof ServiceExtension)) {
-                throw new IllegalArgumentException("Given extension bean: " + extensionClass.getSimpleName() + " is not of Type BasicServiceExtension");
-            }
+            Assert.isInstanceOf(ServiceExtension.class,extension,"Given extension bean: " + extension.getClass() + " must be of type ServiceExtension");
             ServiceExtension serviceExtension = (ServiceExtension) extension;
             beanFactory.autowireBean(extension);
             //beanFactory.autowireBeanProperties();
@@ -223,9 +217,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         ArrayList<String> extensionStrings = Lists.newArrayList(extensionStringArr);
         for (String extensionString : extensionStrings) {
             Object extension = beanFactory.getBean(extensionString);
-            if (!(extension instanceof ServiceExtension)) {
-                throw new IllegalArgumentException("Given extension bean: " + extensionString + " is not of Type AbstractServiceExtension");
-            }
+            Assert.isInstanceOf(ServiceExtension.class,extension,"Given extension bean: " + extension.getClass() + " must be of type ServiceExtension");
             ServiceExtension serviceExtension = (ServiceExtension) extension;
             beanFactory.autowireBean(extension);
             //beanFactory.autowireBeanProperties();
