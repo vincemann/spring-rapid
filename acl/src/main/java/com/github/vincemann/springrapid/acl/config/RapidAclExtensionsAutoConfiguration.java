@@ -32,11 +32,11 @@ public class RapidAclExtensionsAutoConfiguration {
         return new OwnerGainsAdminPermissionOnCreatedAclExtension();
     }
 
+
     @ConditionalOnMissingBean(name = "crudAclChecksSecurityExtension")
     @DefaultExtension(qualifier = Secured.class)
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
-//    @ConditionalOnProperty(name = "rapid-acl.defaultAclChecks", havingValue = "true", matchIfMissing = true)
     @ConditionalOnCustomProperties(properties = {"rapid-acl.defaultSecurityExtensions", "rapid-acl.defaultAclChecks"})
     public CrudAclChecksExtension crudAclChecksSecurityExtension(){
         return new CrudAclChecksExtension();

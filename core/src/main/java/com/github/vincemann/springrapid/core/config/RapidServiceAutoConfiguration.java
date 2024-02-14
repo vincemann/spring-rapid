@@ -24,13 +24,10 @@ public class RapidServiceAutoConfiguration {
 
 
 
-    @ConditionalOnMissingBean(CrudServiceLocator.class)
     @Bean
-    public CrudServiceLocator crudServiceLocator(ConfigurableApplicationContext context, ConfigurableListableBeanFactory beanFactory){
-        CrudServiceLocatorImpl locator = new CrudServiceLocatorImpl();
-        context.addBeanFactoryPostProcessor(locator);
-        locator.postProcessBeanFactory(beanFactory);
-        return locator;
+    @ConditionalOnMissingBean(CrudServiceLocator.class)
+    public CrudServiceLocator crudServiceLocator(){
+        return new CrudServiceLocatorImpl();
     }
 
     @Bean
