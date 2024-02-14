@@ -17,16 +17,19 @@ import org.springframework.security.acls.domain.BasePermission;
 public class ExtensionsConfig {
 
     @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public RoleGainsPermissionOnCreatedAclExtension vetGainsAdminPermissionOnCreated(){
         return new RoleGainsPermissionOnCreatedAclExtension(MyRoles.VET, BasePermission.ADMINISTRATION);
     }
 
     @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public NeedRoleForCreateExtension onlyVetAndAdminCanCreate(){
         return new NeedRoleForCreateExtension(MyRoles.VET);
     }
 
     @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public RoleGainsPermissionOnCreatedAclExtension vetsGainReadPermissionOnCreated(){
         return new RoleGainsPermissionOnCreatedAclExtension(MyRoles.VET,BasePermission.READ);
     }

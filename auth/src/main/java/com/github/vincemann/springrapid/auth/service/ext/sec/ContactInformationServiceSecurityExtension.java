@@ -37,11 +37,11 @@ public class ContactInformationServiceSecurityExtension extends SecurityExtensio
     }
 
     @Override
-    public void requestContactInformationChange(RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException {
+    public AbstractUser requestContactInformationChange(RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException {
         Optional<AbstractUser> user = userService.findByContactInformation(dto.getOldContactInformation());
         VerifyEntity.isPresent(user,"User not found with old contact information");
         getAclTemplate().checkPermission(user.get(), BasePermission.WRITE);
-        getNext().requestContactInformationChange(dto);
+        return getNext().requestContactInformationChange(dto);
     }
 
     @Autowired

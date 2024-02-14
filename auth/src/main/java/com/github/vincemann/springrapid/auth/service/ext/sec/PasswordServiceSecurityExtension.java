@@ -21,23 +21,23 @@ public class PasswordServiceSecurityExtension extends SecurityExtension<Password
     private UserService userService;
 
     @Override
-    public void forgotPassword(String contactInformation) throws EntityNotFoundException {
+    public AbstractUser forgotPassword(String contactInformation) throws EntityNotFoundException {
         // anon has to be able to reset password without being logged in
-        getNext().forgotPassword(contactInformation);
+        return getNext().forgotPassword(contactInformation);
     }
 
     @Override
-    public void resetPassword(ResetPasswordDto resetPasswordDto) throws EntityNotFoundException, BadEntityException, BadTokenException {
-        getNext().resetPassword(resetPasswordDto);
+    public AbstractUser resetPassword(ResetPasswordDto resetPasswordDto) throws EntityNotFoundException, BadEntityException, BadTokenException {
+        return getNext().resetPassword(resetPasswordDto);
     }
 
     @Override
-    public void changePassword(ChangePasswordDto changePasswordDto) throws EntityNotFoundException, BadEntityException {
+    public AbstractUser changePassword(ChangePasswordDto changePasswordDto) throws EntityNotFoundException, BadEntityException {
         Optional<AbstractUser> user = userService.findByContactInformation(changePasswordDto.getContactInformation());
         if (user.isEmpty())
             throw new EntityNotFoundException("user not found");
         getAclTemplate().checkPermission(user.get(), BasePermission.WRITE);
-        getNext().changePassword(changePasswordDto);
+        return getNext().changePassword(changePasswordDto);
     }
 
     @Autowired

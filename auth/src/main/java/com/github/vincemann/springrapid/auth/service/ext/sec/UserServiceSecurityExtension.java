@@ -45,9 +45,9 @@ public class UserServiceSecurityExtension
     }
 
     @Override
-    public void updatePassword(Serializable userId, String password) throws EntityNotFoundException, BadEntityException {
+    public AbstractUser updatePassword(Serializable userId, String password) throws EntityNotFoundException, BadEntityException {
         getAclTemplate().checkPermission(userId,getLast().getEntityClass(), BasePermission.WRITE);
-        getNext().updatePassword(userId,password);
+        return getNext().updatePassword(userId,password);
     }
 
     @Override
