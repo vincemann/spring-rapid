@@ -26,7 +26,7 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 
 /**
- * Parses proxy annotations {@link CreateProxy} and {@link DefineProxy} and creates extension proxies for {@link CrudService}s.
+ * Parses proxy annotations {@link CreateProxy} and {@link DefineProxy} and creates extension proxies for all beans defining those annotations.
  * see {@link ExtensionProxy}.
  */
 @Slf4j
@@ -47,7 +47,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        if (bean instanceof CrudService && !(bean instanceof ServiceExtension)) {
+        if (!(bean instanceof ServiceExtension)) {
             // this will make sure root proxied bean is wrapped with aop proxy
             Object proxied = beanFactory.getBean(beanName);
             Object unwrappedBean = AopProxyUtils.getSingletonTarget(proxied);
@@ -67,18 +67,21 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
             for (CreateProxy proxy : toCreate) {
                 // make sure there is only one primary bean
                 if (proxy.primary()) {
-                    Assert.state(!primaryBeanRegistered,"Multiple ProxyBeans marked as primary");
+                    Assert.state(!primaryBeanRegistered, "Multiple ProxyBeans marked as primary");
                     primaryBeanRegistered = true;
                 }
 
                 Assert.notEmpty(proxy.qualifiers(), "must at least have one qualifier");
 
 
-
                 // compose proxy instance by creating all internal proxies needed and form a proxy chain
                 Object lastProxiedBean = proxied;
 
-                String proxyBeanName = resolveProxyName(proxy.qualifiers(), proxy.name(), unwrappedBean.getClass());
+                String proxyBeanName = proxy.name().isEmpty()
+                        ?
+                        resolveProxyName(proxy.qualifiers(), unwrappedBean.getClass())
+                        :
+                        proxy.name();
 
                 if (log.isDebugEnabled())
                     log.debug("creating proxyBean with name: " + proxyBeanName);
@@ -94,7 +97,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
                     if (proxyDefinition.isEmpty()) {
                         // did not find matching local proxy definition, must be a proxy from elsewhere
                         // try to find globally, proxy definitions name is assumed to be the global bean name
-                        Assert.state(beanFactory.containsBean(proxyName),"Proxy with name: " + proxyName + " could not be found. Make sure to create a local ProxyDefinition with this name or define a bean globally with that name");
+                        Assert.state(beanFactory.containsBean(proxyName), "Proxy with name: " + proxyName + " could not be found. Make sure to create a local ProxyDefinition with this name or define a bean globally with that name");
                         internalProxy = beanFactory.getBean(proxyName);
                     } else {
                         // this is the normal case
@@ -125,7 +128,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
                 // when this proxy is autowired via @Secured @Autowired bean, then bean will never be wrapped with aop proxy
                 // keep that in mind, jdk proxies dont match aop
                 // but the most inner proxied bean (the root version of the service) will be wrapped with aop proxy
-                registerBean(proxy.qualifiers(), proxy.primary(), unwrappedBean,proxyBean, proxyBeanName);
+                registerBean(proxy.qualifiers(), proxy.primary(), unwrappedBean, proxyBean, proxyBeanName);
 
                 if (log.isDebugEnabled())
                     log.debug("registered proxy as bean: " + proxyBeanName);
@@ -150,14 +153,15 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         Assert.notEmpty(interfaces, "Target bean must implement at least one interface");
 
         GenericBeanDefinition proxyBeanDefinition = new GenericBeanDefinition();
+        // Dealing with a jdk proxy here, no class known -> bean just implements interfaces - will be autowired by interface anyways
         proxyBeanDefinition.setBeanClass(null);
 
         // Manually add qualifiers
         for (Class<? extends Annotation> qualifierContainer : qualifiers) {
             // needs to be done like this
             Qualifier qualifier = AnnotationUtils.findAnnotation(qualifierContainer, Qualifier.class);
-            Assert.notNull(qualifier,"Provided annotation class must have a meta qualifier annotation");
-            proxyBeanDefinition.addQualifier(new AutowireCandidateQualifier(Qualifier.class,qualifier.value()));
+            Assert.notNull(qualifier, "Provided annotation class must have a meta qualifier annotation");
+            proxyBeanDefinition.addQualifier(new AutowireCandidateQualifier(Qualifier.class, qualifier.value()));
         }
 
         proxyBeanDefinition.setPrimary(primary);
@@ -167,9 +171,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         beanFactory.registerSingleton(proxyBeanName, proxy);
     }
 
-    protected String resolveProxyName(Class<? extends Annotation>[] qualifiers, String userBeanName, Class beanType) {
-        if (!userBeanName.isEmpty())
-            return userBeanName;
+    protected String resolveProxyName(Class<? extends Annotation>[] qualifiers, Class beanType) {
         // need to create own bean name, user has not supplied one
         StringBuilder sb = new StringBuilder();
         Arrays.stream(qualifiers)
@@ -187,7 +189,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         String[] beanNameExtensions = proxyDefinition.extensions();
         Class[] classExtensions = proxyDefinition.extensionClasses();
         boolean nameAndClassesSet = beanNameExtensions.length > 0 && classExtensions.length > 0;
-        Assert.state(!nameAndClassesSet,"Only use either 'extensions' or 'extensionClasses' in annotation based proxy creation");
+        Assert.state(!nameAndClassesSet, "Only use either 'extensions' or 'extensionClasses' in annotation based proxy creation");
         if (classExtensions.length > 0) {
             return resolveExtensions(classExtensions);
         } else if (beanNameExtensions.length > 0) {
@@ -202,7 +204,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         ArrayList<Class> extensionStrings = Lists.newArrayList(classExtensions);
         for (Class extensionClass : extensionStrings) {
             Object extension = beanFactory.getBean(extensionClass);
-            Assert.isInstanceOf(ServiceExtension.class,extension,"Given extension bean: " + extension.getClass() + " must be of type ServiceExtension");
+            Assert.isInstanceOf(ServiceExtension.class, extension, "Given extension bean: " + extension.getClass() + " must be of type ServiceExtension");
             ServiceExtension serviceExtension = (ServiceExtension) extension;
             beanFactory.autowireBean(extension);
             //beanFactory.autowireBeanProperties();
@@ -217,7 +219,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         ArrayList<String> extensionStrings = Lists.newArrayList(extensionStringArr);
         for (String extensionString : extensionStrings) {
             Object extension = beanFactory.getBean(extensionString);
-            Assert.isInstanceOf(ServiceExtension.class,extension,"Given extension bean: " + extension.getClass() + " must be of type ServiceExtension");
+            Assert.isInstanceOf(ServiceExtension.class, extension, "Given extension bean: " + extension.getClass() + " must be of type ServiceExtension");
             ServiceExtension serviceExtension = (ServiceExtension) extension;
             beanFactory.autowireBean(extension);
             //beanFactory.autowireBeanProperties();
