@@ -16,8 +16,7 @@ import org.springframework.stereotype.Controller;
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
 
 @Controller
-public class VetController
-        extends SecuredCrudController<Vet, Long, VetService> {
+public class VetController extends SecuredCrudController<Vet, Long, VetService> {
 
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {

@@ -12,7 +12,9 @@ import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AutowireCandidateQualifier;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -300,6 +302,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         List<ServiceExtension> extensions = new ArrayList<>();
         ArrayList<Class> extensionStrings = Lists.newArrayList(classExtensions);
         for (Class extensionClass : extensionStrings) {
+            assertPrototype(extensionClass);
             Object extension = beanFactory.getBean(extensionClass);
             Assert.isInstanceOf(ServiceExtension.class, extension, "Given extension bean: " + extension.getClass() + " must be of type ServiceExtension");
             ServiceExtension serviceExtension = (ServiceExtension) extension;
@@ -311,11 +314,13 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         return extensions;
     }
 
-    protected List<ServiceExtension> resolveExtensions(String[] extensionStringArr) {
+    protected List<ServiceExtension> resolveExtensions(String[] extensionBeanNames) {
         List<ServiceExtension> extensions = new ArrayList<>();
-        ArrayList<String> extensionStrings = Lists.newArrayList(extensionStringArr);
-        for (String extensionString : extensionStrings) {
-            Object extension = beanFactory.getBean(extensionString);
+        ArrayList<String> extensionNames = Lists.newArrayList(extensionBeanNames);
+        for (String extensionName : extensionNames) {
+
+            assertPrototype(extensionName);
+            Object extension = beanFactory.getBean(extensionName);
             Assert.isInstanceOf(ServiceExtension.class, extension, "Given extension bean: " + extension.getClass() + " must be of type ServiceExtension");
             ServiceExtension serviceExtension = (ServiceExtension) extension;
             beanFactory.autowireBean(extension);
@@ -324,5 +329,17 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
 
         }
         return extensions;
+    }
+
+    protected void assertPrototype(String beanName){
+        BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
+        Assert.state(beanDefinition.isPrototype(),"extensions must be of scope prototype");
+    }
+
+    protected void assertPrototype(Class<?> clazz){
+        String[] beanNamesForType = beanFactory.getBeanNamesForType(clazz);
+        Assert.isTrue(beanNamesForType.length == 1,"must find at least one bean for extension class: " + clazz);
+        String beanName = beanNamesForType[0];
+        assertPrototype(beanName);
     }
 }

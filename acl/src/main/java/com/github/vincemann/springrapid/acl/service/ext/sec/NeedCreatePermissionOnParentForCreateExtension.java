@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.acl.service.ext.sec;
 
 import com.github.vincemann.springrapid.acl.model.AclParentAware;
+import com.github.vincemann.springrapid.acl.proxy.Secured;
+import com.github.vincemann.springrapid.core.DefaultExtension;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -10,7 +12,7 @@ import org.springframework.security.acls.domain.BasePermission;
 import java.io.Serializable;
 
 
-public class NeedCreatePermissionOnParentForSaveExtension
+public class NeedCreatePermissionOnParentForCreateExtension
         extends SecurityExtension<CrudService>
         implements CrudServiceExtension<CrudService> {
 

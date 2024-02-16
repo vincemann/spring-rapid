@@ -9,6 +9,8 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Configuration;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +36,14 @@ public class RapidDefaultExtensionsAutoConfiguration {
     public void init() {
         // Discover and process all ServiceExtensions marked with @DefaultExtension
         Map<String, Object> defaultExtensions = context.getBeansWithAnnotation(DefaultExtension.class);
-        defaultExtensions.values().forEach(extension -> {
+        defaultExtensions.entrySet().forEach(entry -> {
             Class<?> targetClass = null;
+
+            String beanName = entry.getKey();
+            Object extension = entry.getValue();
+
+            Assert.isInstanceOf(ServiceExtension.class,extension,"bean with DefaultExtension annotation must be of type ServiceExtension");
+            assertPrototype(beanName);
 
             if (AopUtils.isAopProxy(extension)) {
                 // If the bean is a proxy, determine the target class
@@ -47,19 +55,25 @@ public class RapidDefaultExtensionsAutoConfiguration {
 
             DefaultExtension annotation = targetClass.getAnnotation(DefaultExtension.class);
             Assert.notNull(annotation,"no DefaultExtension annotation defined on the extension class: " + targetClass);
-            applyExtensionToQualifiedBeans(findQualifier(annotation), annotation.service(), obtainFreshInstance((ServiceExtension) extension));
+            applyExtensionToQualifiedBeans(findQualifier(annotation), annotation.service(), ((ServiceExtension) extension));
         });
+    }
+
+    protected void assertPrototype(String beanName){
+        BeanDefinition beanDefinition = ((ConfigurableListableBeanFactory) context.getAutowireCapableBeanFactory()).getBeanDefinition(beanName);
+        Assert.state(beanDefinition.isPrototype(),"extensions must be of scope prototype");
     }
 
 
     private void applyExtensionToQualifiedBeans(String qualifier,Class<?> matchClass, ServiceExtension extension) {
+        ServiceExtension extensionInstance = obtainFreshInstance(extension);
         // Dynamically find and process all beans with the specified qualifier
         Map<String, Object> beansWithQualifier = (Map<String, Object>) BeanFactoryAnnotationUtils.qualifiedBeansOfType((ListableBeanFactory) context.getAutowireCapableBeanFactory(), matchClass, qualifier);
         beansWithQualifier.values().forEach(bean -> {
             ExtensionProxy proxy = ProxyUtils.getExtensionProxy(bean);
-            if (proxy != null && proxy.getDefaultExtensionsEnabled() && !proxy.isIgnored(extension.getClass())) {
-                log.debug("Adding default extension "+extension.getClass().getSimpleName()+" to proxy: " + proxy.getProxied());
-                proxy.addExtension(extension);
+            if (proxy != null && proxy.getDefaultExtensionsEnabled() && !proxy.isIgnored(extensionInstance.getClass())) {
+                log.debug("Adding default extension "+extensionInstance.getClass().getSimpleName()+" to proxy: " + proxy);
+                proxy.addExtension(extensionInstance);
             }
         });
     }
@@ -67,7 +81,9 @@ public class RapidDefaultExtensionsAutoConfiguration {
     public String findQualifier(DefaultExtension annotation){
         Qualifier qualifier = AnnotationUtils.findAnnotation(annotation.qualifier(), Qualifier.class);
         Assert.notNull(qualifier,"default extensions 'qualifier' field needs to be set to annotation type having @Qualifier meta annotation");
-        return qualifier.value();
+        String qualifierString = (String) qualifier.value();
+        Assert.isTrue(!qualifierString.isEmpty(),"must provide non emtpy qualifier string value");
+        return qualifierString;
     }
 
     /**

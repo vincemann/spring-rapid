@@ -2,9 +2,9 @@ package com.github.vincemann.springrapid.acldemo.config;
 
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.acl.service.ext.acl.RoleGainsPermissionOnCreatedAclExtension;
-import com.github.vincemann.springrapid.acl.service.ext.sec.NeedCreatePermissionOnParentForSaveExtension;
+import com.github.vincemann.springrapid.acl.service.ext.sec.NeedCreatePermissionOnParentForCreateExtension;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
-import com.github.vincemann.springrapid.acldemo.service.ext.sec.MyNeedCreatePermissionOnParentForSaveExtension;
+import com.github.vincemann.springrapid.acldemo.service.ext.sec.MyNeedCreatePermissionOnParentForCreateExtension;
 import com.github.vincemann.springrapid.acldemo.service.ext.sec.NeedRoleForCreateExtension;
 import com.github.vincemann.springrapid.core.DefaultExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -37,8 +37,8 @@ public class ExtensionsConfig {
 
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @DefaultExtension(qualifier = Secured.class, service = CrudService.class)
-    @Bean
-    public NeedCreatePermissionOnParentForSaveExtension needCreatePermissionOnParentForCreate(){
-        return new MyNeedCreatePermissionOnParentForSaveExtension();
+    @Bean(name = "needCreatePermissionOnParentForCreateExtension")
+    public NeedCreatePermissionOnParentForCreateExtension needCreatePermissionOnParentForCreateExtension(){
+        return new MyNeedCreatePermissionOnParentForCreateExtension();
     }
 }

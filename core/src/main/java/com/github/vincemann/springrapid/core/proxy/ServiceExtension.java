@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.core.util.TypeResolver;
 import com.google.common.base.Objects;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.Assert;
 
 /**
  * Write extensions for normal Services, managed by {@link ExtensionProxy}.
@@ -46,6 +47,8 @@ public abstract class ServiceExtension<T>
     }
 
     protected void setChain(Chain chain) {
+        if (chain != null && this.chain != null)
+            throw new IllegalArgumentException("cannot set chain twice, make sure all extensions are scope prototype");
         this.chain = chain;
     }
 

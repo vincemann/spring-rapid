@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.acl.service.ext.acl.CleanUpAclExtension;
 import com.github.vincemann.springrapid.acl.service.ext.acl.CreatedInheritsParentsPermissionsAclExtension;
 import com.github.vincemann.springrapid.acl.service.ext.acl.OwnerGainsAdminPermissionOnCreatedAclExtension;
 import com.github.vincemann.springrapid.acl.service.ext.sec.CrudAclChecksExtension;
-import com.github.vincemann.springrapid.acl.service.ext.sec.NeedCreatePermissionOnParentForSaveExtension;
+import com.github.vincemann.springrapid.acl.service.ext.sec.NeedCreatePermissionOnParentForCreateExtension;
 import com.github.vincemann.springrapid.core.DefaultExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.util.condition.ConditionalOnCustomProperties;
@@ -43,11 +43,11 @@ public class RapidAclExtensionsAutoConfiguration {
         return new CrudAclChecksExtension();
     }
 
-    @ConditionalOnMissingBean(name = "needCreatePermissionOnParentForSaveExtension")
+    @ConditionalOnMissingBean(name = "needCreatePermissionOnParentForCreateExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
-    public NeedCreatePermissionOnParentForSaveExtension needCreatePermissionOnParentForSaveExtension(){
-        return new NeedCreatePermissionOnParentForSaveExtension();
+    public NeedCreatePermissionOnParentForCreateExtension needCreatePermissionOnParentForCreateExtension(){
+        return new NeedCreatePermissionOnParentForCreateExtension();
     }
 
     @ConditionalOnMissingBean(name = "authenticatedGainsAdminPermissionOnCreatedAclExtension")

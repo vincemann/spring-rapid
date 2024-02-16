@@ -29,7 +29,6 @@ public class VisitController extends SecuredCrudController<Visit, Long, VisitSer
 {
     @Getter
     private String subscribeOwnerUrl;
-    private VisitService service;
 
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {
@@ -45,19 +44,11 @@ public class VisitController extends SecuredCrudController<Visit, Long, VisitSer
     @RequestMapping(value = "/api/core/visit/subscribe-owner", method = RequestMethod.GET)
     public ResponseEntity<?> subscribeOwner(@RequestParam(value = "subscribe") boolean subscribe, @RequestParam("owner-id") long ownerId, @RequestParam("visit-id") long visitId) throws BadEntityException, EntityNotFoundException {
         if (subscribe){
-            service.subscribeOwner(ownerId,visitId);
+            getService().subscribeOwner(ownerId,visitId);
         }else {
-            service.unsubscribeOwner(ownerId,visitId);
+            getService().unsubscribeOwner(ownerId,visitId);
         }
         return ResponseEntity.ok().build();
     }
-
-    @Autowired
-    @Lazy
-    @Secured
-    public void setVisitService(VisitService service) {
-        this.service = service;
-    }
-
 
 }

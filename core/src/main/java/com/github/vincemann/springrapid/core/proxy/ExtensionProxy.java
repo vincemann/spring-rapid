@@ -158,19 +158,16 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
         if (cached != null) {
             return cached;
         }
-        if (state == null) {
-            // MOST LIKELY: make sure your extensions have the Prototype scope, and for each proxy a new instance of extension is added!
-            // make sure extensions method is not intercepted by aop proxy maybe that triggers method call directly
-            throw new IllegalArgumentException("method of extension: " + extension + " is called directly. Make sure to only call methods of proxies. \n Also make sure your extensions have the Prototype scope!");
-        }
+
+        // IF STATE IS NULL - MOST LIKELY: make sure your extensions have the Prototype scope, and for each proxy a new instance of extension is added!
+        // make sure extensions method is not intercepted by aop proxy maybe that triggers method call directly
+        Assert.notNull(state,"method of extension: " + extension + " is called directly. Make sure to only call methods of proxies. \n Also make sure your extensions have the Prototype scope!");
         // get extension chain by method
         List<ExtensionHandle> extensionChain = extensionChainCache.get(state.getMethodIdentifier());
         Optional<ExtensionHandle> link = extensionChain.stream()
                 .filter(e -> ProxyUtils.isEqual(e.getExtension(), (extension)))
                 .findFirst();
-        if (link.isEmpty()) {
-            throw new IllegalArgumentException("already called extension: " + extension + " not part of extension chain: " + extensionChain);
-        }
+        Assert.state(link.isPresent(),"already called extension: " + extension + " not part of extension chain: " + extensionChain);
 
         int extensionIndex = extensionChain.indexOf(link.get());
         int nextIndex = extensionIndex + 1;
