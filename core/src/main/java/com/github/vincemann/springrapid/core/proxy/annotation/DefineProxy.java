@@ -5,13 +5,11 @@ import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
 import java.lang.annotation.*;
 
 /**
- * Defines a proxy that can be used as a blueprint to create a sub proxy for {@link CreateProxy} or used
- * to link proxy chain ({@link AutowireProxy}).
+ * Defines an extension proxy that can be used as a blueprint to create a sub proxy (proxy stub) for {@link CreateProxy} or ({@link AutowireProxy}).
  * The proxy will be an {@link com.github.vincemann.springrapid.core.proxy.ExtensionProxy} and will be created by
  * {@link AnnotationExtensionProxyFactory}.
  *
- * see {@link CreateProxy} for example.
- *
+ * See {@link CreateProxy} and {@link AutowireProxy} for examples.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
