@@ -18,7 +18,6 @@ public abstract class Person extends IdentifiableEntityImpl<Long> {
     @NotBlank
     private String firstName;
 
-    @Unique
     @NotBlank
     @Column(name = "last_name")
     private String lastName;

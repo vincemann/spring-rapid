@@ -16,6 +16,7 @@ import org.checkerframework.common.aliasing.qual.Unique;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -25,13 +26,15 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "pets")
+@Table(name = "pets", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"name"})
+})
 @Entity
 public class Pet extends IdentifiableEntityImpl<Long> {
 
 
     @Builder
-    public Pet(@Unique String name, PetType petType, Set<Illness> illnesss, Owner owner, LocalDate birthDate) {
+    public Pet( String name, PetType petType, Set<Illness> illnesss, Owner owner, LocalDate birthDate) {
         this.name = name;
         this.petType = petType;
         if (illnesss !=null)
@@ -40,14 +43,14 @@ public class Pet extends IdentifiableEntityImpl<Long> {
         this.birthDate = birthDate;
     }
 
-    @Column(name = "name")
-    @Unique
+    @NotEmpty
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
 
     //uniDir ManyToOne -> PetType does not know about this mapping
     @ManyToOne
-    @JoinColumn(name = "pet_type_id")
+    @JoinColumn(name = "pet_type_id", nullable = false)
     @UniDirChildEntity
     private PetType petType;
 
@@ -58,9 +61,8 @@ public class Pet extends IdentifiableEntityImpl<Long> {
     @BiDirChildCollection(Illness.class)
     private Set<Illness> illnesss = new HashSet<>();
 
-    @NotNull
     @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "owner_id", nullable = false)
     @JsonBackReference
     @BiDirParentEntity
     private Owner owner;
@@ -75,7 +77,6 @@ public class Pet extends IdentifiableEntityImpl<Long> {
         return "Pet{" +
                 "name='" + name + '\'' +
                 ", petType=" + petType +
-                // todo illness is null or element in illnesss is null -> np ex
                 ", illnesses=" +  (illnesss == null ? "null" : Arrays.toString(illnesss.stream().map(Illness::getName).toArray())) +
                 ", owner=" + (owner==null? "null": owner.getLastName()) +
                 ", birthDate=" + birthDate +

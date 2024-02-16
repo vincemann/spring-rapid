@@ -5,8 +5,12 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.springframework.security.acls.model.Permission;
 
+@EqualsAndHashCode(callSuper = true)
 public class AuthenticatedGainsPermissionOnCreatedAclExtension extends AclExtension<CrudService>
         implements CrudServiceExtension<CrudService> {
 
@@ -23,4 +27,5 @@ public class AuthenticatedGainsPermissionOnCreatedAclExtension extends AclExtens
         rapidAclService.savePermissionForAuthenticatedOverEntity(saved, permissions);
         return saved;
     }
+
 }

@@ -20,7 +20,9 @@ import java.util.Set;
 @Setter
 @Getter
 @Entity
-@Table(name = "owners")
+@Table(name = "owners", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"last_name"})
+})
 public class Owner extends Person implements UserAwareEntity {
 
     public Owner() {
@@ -55,7 +57,7 @@ public class Owner extends Person implements UserAwareEntity {
     @NotNull
     @UniDirChildEntity
     @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id",referencedColumnName = "id")
+    @JoinColumn(name = "user_id",referencedColumnName = "id", nullable = false)
     private User user;
 
 

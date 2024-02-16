@@ -35,6 +35,12 @@ public class ExtensionsConfig {
         return new RoleGainsPermissionOnCreatedAclExtension(MyRoles.VET,BasePermission.READ);
     }
 
+    @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public RoleGainsPermissionOnCreatedAclExtension vetsGainWritePermissionOnCreated(){
+        return new RoleGainsPermissionOnCreatedAclExtension(MyRoles.VET,BasePermission.WRITE);
+    }
+
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @DefaultExtension(qualifier = Secured.class, service = CrudService.class)
     @Bean(name = "needCreatePermissionOnParentForCreateExtension")

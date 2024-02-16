@@ -13,20 +13,20 @@ import org.springframework.security.acls.domain.BasePermission;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class NeedCreatePermissionForSubscribing
+public class NeedReadPermissionForSubscribing
         extends SecurityExtension<VisitService>
         implements GenericCrudServiceExtension<VisitService, Visit,Long>,
         VisitService
 {
     @Override
     public void subscribeOwner(Long ownerId, Long visitId) throws EntityNotFoundException {
-        getAclTemplate().checkPermission(visitId, Visit.class, BasePermission.CREATE);
+        getAclTemplate().checkPermission(visitId, Visit.class, BasePermission.READ);
         getNext().subscribeOwner(ownerId,visitId);
     }
 
     @Override
     public void unsubscribeOwner(Long ownerId, Long visitId) throws BadEntityException, EntityNotFoundException {
-        getAclTemplate().checkPermission(visitId, Visit.class, BasePermission.CREATE);
+        getAclTemplate().checkPermission(visitId, Visit.class, BasePermission.READ);
         getNext().unsubscribeOwner(ownerId,visitId);
     }
 }

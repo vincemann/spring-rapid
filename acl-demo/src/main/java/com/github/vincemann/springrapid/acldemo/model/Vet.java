@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,7 +21,9 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "vets")
+@Table(name = "vets", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"last_name"})
+})
 public class Vet extends Person implements UserAwareEntity {
 
     @Builder
@@ -42,6 +45,7 @@ public class Vet extends Person implements UserAwareEntity {
     @BiDirChildCollection(Specialty.class)
     private Set<Specialty> specialtys = new HashSet<>();
 
+    @NotNull
     @UniDirChildEntity
     @OneToOne(cascade = CascadeType.ALL)
     private User user;

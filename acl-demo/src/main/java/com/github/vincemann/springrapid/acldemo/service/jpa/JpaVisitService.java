@@ -33,21 +33,20 @@ import java.util.Optional;
 @DefineProxy(name = "secured", extensions = {
         "onlyVetAndAdminCanCreate",
         "vetCanOnlyCreateOwnVisits",
-        "needCreatePermissionForSubscribing"
+        "needReadPermissionForSubscribing"
 })
-@CreateProxy(qualifiers = Acl.class,proxies = "acl")
-@CreateProxy(qualifiers = Secured.class,proxies = {"acl","secured"})
+@CreateProxy(qualifiers = Acl.class, proxies = "acl")
+@CreateProxy(qualifiers = Secured.class, proxies = {"acl", "secured"})
 @Primary
 @Service
 
 public class JpaVisitService
-        extends JpaCrudService<Visit,Long, VisitRepository>
-                implements VisitService {
+        extends JpaCrudService<Visit, Long, VisitRepository>
+        implements VisitService {
 
 
     private RapidAclService rapidAclService;
     private OwnerService ownerService;
-
 
 
     @Override
@@ -56,20 +55,17 @@ public class JpaVisitService
         Owner owner = VerifyEntity.isPresent(ownerById, ownerId, Owner.class);
         Visit visit = VerifyEntity.isPresent(service.findById(visitId), visitId, Visit.class);
 
-        rapidAclService.savePermissionForUserOverEntity(owner.getUser().getContactInformation(),visit, BasePermission.READ);
+        rapidAclService.savePermissionForUserOverEntity(owner.getUser().getContactInformation(), visit, BasePermission.READ);
     }
 
     @Override
-    public void unsubscribeOwner(Long ownerId, Long visitId) throws BadEntityException, EntityNotFoundException {
-        try {
-            Optional<Owner> ownerById = ownerService.findById(ownerId);
-            Owner owner = VerifyEntity.isPresent(ownerById, ownerId, Owner.class);
-            Visit visit = VerifyEntity.isPresent(service.findById(visitId), visitId, Visit.class);
+    public void unsubscribeOwner(Long ownerId, Long visitId) throws EntityNotFoundException {
 
-            rapidAclService.deletePermissionForUserOverEntity(owner.getUser().getContactInformation(),visit, BasePermission.READ);
-        } catch (AclNotFoundException | AceNotFoundException e) {
-            throw new BadEntityException(e);
-        }
+        Optional<Owner> ownerById = ownerService.findById(ownerId);
+        Owner owner = VerifyEntity.isPresent(ownerById, ownerId, Owner.class);
+        Visit visit = VerifyEntity.isPresent(service.findById(visitId), visitId, Visit.class);
+
+        rapidAclService.deletePermissionForUserOverEntityIfPresent(owner.getUser().getContactInformation(), visit, BasePermission.READ);
     }
 
     @Autowired
