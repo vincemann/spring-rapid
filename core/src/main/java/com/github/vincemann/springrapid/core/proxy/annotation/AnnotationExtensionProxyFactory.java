@@ -103,13 +103,13 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
                         // this is the normal case
                         // found local proxy definition, now create proxy
                         internalProxy = createdInternalProxies.get(proxyName);
-                        boolean defaultEnabled = proxyDefinition.get().defaultExtensionsEnabled();
+                        boolean defaultExtensions = proxyDefinition.get().defaultExtensionsEnabled();
                         ServiceExtension[] extensions = resolveExtensions(proxyDefinition.get())
                                 .toArray(new ServiceExtension[0]);
                         if (internalProxy == null) {
                             internalProxy = new ExtensionProxyBuilder<>(lastProxiedBean)
                                     .addExtensions(extensions)
-                                    .defaultExtensionsEnabled(defaultEnabled)
+                                    .defaultExtensionsEnabled(defaultExtensions)
                                     .ignoreDefaultExtensions(proxyDefinition.get().ignoredExtensions())
                                     .build();
                             createdInternalProxies.put(proxyName, internalProxy);
