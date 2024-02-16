@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.AutowireCandidateQualifier;
@@ -23,12 +24,14 @@ import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
  * Parses {@link DefineProxy} and creates and stores respective Extension Proxies.
  * Parses {@link CreateProxy} and creates respective proxy chains and publishes them to context.
- * Parses {@link AutowireProxyChain} annotations and inject respective proxy chains into fields.
+ * Parses {@link AutowireProxyChain} annotations and inject respective proxy chains into fields or via setter injection (constructor injection is not supported).
  * see {@link ExtensionProxy}.
  */
 @Slf4j
@@ -72,7 +75,10 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
     }
 
     private void autowireProxyChains(Object bean) {
-        ReflectionUtils.doWithFields(bean.getClass(), field -> {
+        Class<?> targetClass = bean.getClass();
+
+        // Handle field injection
+        ReflectionUtils.doWithFields(targetClass, field -> {
             AutowireProxyChain proxyChain = field.getAnnotation(AutowireProxyChain.class);
             if (proxyChain != null) {
                 field.setAccessible(true);
@@ -80,7 +86,22 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
                 field.set(bean, proxiedBean);
             }
         });
+
+        // Handle setter injection
+        ReflectionUtils.doWithMethods(targetClass, method -> {
+            if (method.getParameterCount() == 1 && method.isAnnotationPresent(AutowireProxyChain.class)) {
+                AutowireProxyChain proxyChain = method.getAnnotation(AutowireProxyChain.class);
+                method.setAccessible(true);
+                Object proxiedBean = createProxyChain(method.getParameterTypes()[0], proxyChain.value());
+                try {
+                    method.invoke(bean, proxiedBean);
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
+
 
     protected void createProxies(Object proxied, String beanName, List<CreateProxy> toCreate) {
         if (toCreate.isEmpty())
