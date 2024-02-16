@@ -146,17 +146,17 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
             // when this proxy is autowired via @Secured @Autowired bean, then bean will never be wrapped with aop proxy
             // keep that in mind, jdk proxies dont match aop
             // but the most inner proxied bean (the root version of the service) will be wrapped with aop proxy
-            registerBean(proxy.qualifiers(), proxy.primary(), unwrappedBean, proxyBean, proxyBeanName);
+            registerBean(proxied,proxy.qualifiers(), proxy.primary(), proxyBean, proxyBeanName);
 
             if (log.isDebugEnabled())
                 log.debug("registered proxy as bean: " + proxyBeanName);
         }
     }
 
-    protected Object createProxyChain(Class<?> proxiedClass, String[] proxies) {
-        ProxyInfo proxyInfo = findProxyInfo(proxiedClass);
+    protected Object createProxyChain(Object root, String[] proxies){
+        ProxyInfo proxyInfo = findProxyInfo(unwrap(root).getClass());
 
-        Object lastProxiedBean = proxyInfo.getRootProxied();
+        Object lastProxiedBean = root;
         for (String proxyName : proxies) {
             // try to find locally
             Optional<DefineProxy> proxyDefinition = findProxyDefinition(proxyInfo, proxyName);
@@ -172,6 +172,13 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
             }
         }
         return lastProxiedBean;
+    }
+
+    protected Object createProxyChain(Class<?> proxiedClass, String[] proxies) {
+        ProxyInfo proxyInfo = findProxyInfo(proxiedClass);
+
+        Object root = proxyInfo.getRootProxied();
+        return createProxyChain(root,proxies);
     }
 
     protected Optional<DefineProxy> findProxyDefinition(ProxyInfo info, String proxyName) {
@@ -203,7 +210,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
 
     @AllArgsConstructor
     @Getter
-    private class ProxyInfo {
+    private static class ProxyInfo {
         private Object rootProxied;
         private List<DefineProxy> proxyDefinitions;
     }
@@ -224,15 +231,15 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
 
 
     protected void registerBean(
+            Object proxied,
             Class<? extends Annotation>[] qualifiers,
             boolean primary,
-            Object unwrappedProxied,
             Object proxy,
             String proxyBeanName
     ) {
 
 
-        Class<?>[] interfaces = unwrappedProxied.getClass().getInterfaces();
+        Class<?>[] interfaces = unwrap(proxied).getClass().getInterfaces();
 
         // Assert that there are interfaces to proxy
         Assert.notEmpty(interfaces, "Target bean must implement at least one interface");

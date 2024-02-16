@@ -44,22 +44,8 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
     private Set<Class<? extends ServiceExtension>> defaultExtensionsIgnored = new HashSet<>();
 
 
-    public ExtensionProxy(@Nullable Object proxied, ServiceExtension<?>... extensions) {
-        if (proxied == null){
-            Assert.isTrue(extensions.length==0,"when late initializing proxy, then must not provide extensions in constructor");
-            return;
-        }
+    public ExtensionProxy(Object proxied, ServiceExtension<?>... extensions) {
         this.proxied = proxied;
-        init();
-    }
-
-    // late init
-    protected void setProxied(Object proxied){
-        this.proxied = proxied;
-        init();
-    }
-
-    protected void init(){
         for (Method method : proxied.getClass().getMethods()) {
             this.methods.put(new MethodIdentifier(method), method);
         }
