@@ -4,12 +4,14 @@ import com.github.vincemann.springrapid.auth.service.val.ValidPassword;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 
 @Builder
 @AllArgsConstructor
 @Data
+@NoArgsConstructor
 public class ChangePasswordDto {
 
     @NotBlank

@@ -14,16 +14,18 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
 
+// only do validation on highest level, that is exposed to user, not when only using internally
 @Validated
 public interface UserService<U extends AbstractUser<ID>, ID extends Serializable>
         extends CrudService<U,ID>, AopLoggable
 {
 
-    public Optional<U> findByContactInformation( @NotBlank String contactInformation);
+    public Optional<U> findByContactInformation(@NotBlank String contactInformation);
 
     U addRole(ID userId, String role) throws EntityNotFoundException, BadEntityException;
 
@@ -32,8 +34,6 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     U updatePassword(ID userId, String password) throws EntityNotFoundException, BadEntityException;
 
     U updateContactInformation(ID userId, String contactInformation) throws EntityNotFoundException, BadEntityException;
-
-    U updateContactInformation(U update, String contactInformation) throws EntityNotFoundException, BadEntityException;
 
 
     // keep it like that, otherwise the AbstractUser type wont be in impl methods

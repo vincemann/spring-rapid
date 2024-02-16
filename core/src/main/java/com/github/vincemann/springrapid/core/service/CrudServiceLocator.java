@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
 
@@ -16,5 +15,5 @@ public interface CrudServiceLocator {
     //public CrudService find(String beanName);
     public CrudService find(Class<? extends IdentifiableEntity> entityClass);
 
-    public void loadPrimaryServices();
+    public void loadServices();
 }

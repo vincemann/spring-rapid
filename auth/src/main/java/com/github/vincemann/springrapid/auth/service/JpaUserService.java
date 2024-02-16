@@ -124,15 +124,11 @@ public abstract class JpaUserService
     @Override
     public U updateContactInformation(Id userId, String contactInformation) throws EntityNotFoundException, BadEntityException {
         U update = Entity.createUpdate(getEntityClass(), userId);
-        return updateContactInformation(update,contactInformation);
-    }
-
-    @Override
-    public U updateContactInformation(U update, String contactInformation) throws EntityNotFoundException, BadEntityException {
         update.setContactInformation(contactInformation);
         update.setCredentialsUpdatedMillis(System.currentTimeMillis());
         return service.partialUpdate(update);
     }
+
 
     @Override
     public Optional<U> findByContactInformation(String contactInformation) {

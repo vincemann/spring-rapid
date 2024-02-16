@@ -59,6 +59,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	private SignupService signupService;
 	private ContactInformationService contactInformationService;
 	private VerificationService verificationService;
+
 	private AuthorizationTokenService authorizationTokenService;
 
 
@@ -453,21 +454,17 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	public void setAuthProperties(AuthProperties authProperties) {
 		this.authProperties = authProperties;
 	}
-
 	@Autowired
 	@Secured
 	@Lazy
 	public void setUserAuthTokenService(UserAuthTokenService authTokenService) {
 		this.authTokenService = authTokenService;
 	}
-
-
 	@Autowired
 	@Lazy
 	public void setUnsecuredAuthTokenService(UserAuthTokenService unsecuredAuthTokenService) {
 		this.unsecuredAuthTokenService = unsecuredAuthTokenService;
 	}
-
 	@Autowired
 	@Secured
 	@Lazy
@@ -487,12 +484,11 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		this.contactInformationService = contactInformationService;
 	}
 	@Autowired
+	@Lazy
 	public void setVerificationService(VerificationService verificationService) {
 		this.verificationService = verificationService;
 	}
 	@Autowired
-	@Secured
-	@Lazy
 	public void setAuthorizationTokenService(AuthorizationTokenService authorizationTokenService) {
 		this.authorizationTokenService = authorizationTokenService;
 	}

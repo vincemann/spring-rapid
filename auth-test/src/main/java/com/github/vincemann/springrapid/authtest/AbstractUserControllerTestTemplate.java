@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authtest;
 
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
-import com.github.vincemann.springrapid.auth.dto.ResetPasswordView;
+import com.github.vincemann.springrapid.auth.dto.*;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
@@ -40,8 +40,6 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         extends CrudControllerTestTemplate<C> {
 
 
-    private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
-    private RapidSecurityContext rapidSecurityContext;
     private MailSender<MailData> mailSenderMock;
 
 
@@ -57,13 +55,13 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         super.setMvc(mvc);
     }
 
-    public RequestBuilder signup(Object dto) throws Exception {
+    public RequestBuilder signup(SignupDto dto) throws Exception {
         return post(getController().getSignupUrl())
                 .content(serialize(dto))
                 .contentType(MediaType.APPLICATION_JSON);
     }
 
-    public MailData signup2xx(Object dto) throws Exception {
+    public MailData signup2xx(SignupDto dto) throws Exception {
         mvc.perform(signup(dto))
                 .andExpect(status().is2xxSuccessful());
         return verifyMailWasSend();
@@ -94,7 +92,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 //    }
 
 
-    public RequestBuilder changeContactInformation(String code, String token) throws Exception {
+    public RequestBuilder changeContactInformation(String code, String token) {
         return post(getController().getChangeContactInformationUrl())
                 .param("code", code)
 //                .param("id", targetId.toString())
@@ -102,37 +100,37 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
-    public RequestBuilder changeContactInformationWithLink(String link, String token) throws Exception {
+    public RequestBuilder changeContactInformationWithLink(String link, String token) {
         return post(link)
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
 
-    public RequestBuilder requestContactInformationChange(Serializable targetId, String token, Object requestNewContactInformationDto) throws Exception {
+    public RequestBuilder requestContactInformationChange(Serializable targetId, String token, RequestContactInformationChangeDto dto) throws Exception {
         return post(getController().getRequestContactInformationChangeUrl())
                 .param("id", targetId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, token)
-                .content(serialize(requestNewContactInformationDto));
+                .content(serialize(dto));
     }
 
-    public MailData requestContactInformationChange2xx(Serializable targetId, String token, Object requestNewContactInformationDto) throws Exception {
+    public MailData requestContactInformationChange2xx(Serializable targetId, String token, RequestContactInformationChangeDto dto) throws Exception {
         mvc.perform(post(getController().getRequestContactInformationChangeUrl())
                 .param("id", targetId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, token)
-                .content(serialize(requestNewContactInformationDto)))
+                .content(serialize(dto)))
                 .andExpect(status().is2xxSuccessful());
         return verifyMailWasSend();
     }
 
-    public RequestBuilder changePassword(Serializable id, String token, Object changePasswordDto) throws Exception {
+    public RequestBuilder changePassword(Serializable id, String token, ChangePasswordDto dto) throws Exception {
         return post(getController().getChangePasswordUrl())
                 .param("id", id.toString())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(serialize(changePasswordDto));
+                .content(serialize(dto));
     }
 
     public RequestBuilder forgotPassword(String contactInformation) throws Exception {
@@ -149,11 +147,10 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return verifyMailWasSend();
     }
 
-    public RequestBuilder resetPassword(ResetPasswordView resetPasswordView, String code) throws Exception {
+    public RequestBuilder resetPassword(ResetPasswordDto dto) throws Exception {
         return post(getController().getResetPasswordUrl())
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("code", code)
-                .content("password="+resetPasswordView.getPassword()+"&matchPassword="+resetPasswordView.getMatchPassword());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(serialize(dto));
     }
 
     public RequestBuilder getResetPasswordView(String link) throws Exception {
@@ -162,11 +159,10 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 //                .content(serialize(resetPasswordDto)));
     }
 
-    public RequestBuilder resetPassword(String url, Object resetPasswordDto, String code) throws Exception {
+    public RequestBuilder resetPassword(String url, ResetPasswordDto dto) throws Exception {
         return post(url)
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("code", code)
-                .content(serialize(resetPasswordDto));
+                .content(serialize(dto));
     }
 
     public RequestBuilder fetchNewToken(String token) throws Exception {
@@ -255,16 +251,6 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return login2xx(user.getContactInformation(), user.getPassword());
     }
 
-
-    @Autowired
-    public void setAuthenticatedPrincipalFactory(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {
-        this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
-    }
-
-    @Autowired
-    public void setRapidSecurityContext(RapidSecurityContext rapidSecurityContext) {
-        this.rapidSecurityContext = rapidSecurityContext;
-    }
 
     public static class ResponseToken {
 

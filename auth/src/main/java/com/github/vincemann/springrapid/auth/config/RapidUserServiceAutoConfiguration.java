@@ -2,10 +2,13 @@ package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.acl.proxy.Acl;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
+import com.github.vincemann.springrapid.acl.service.ext.acl.AuthenticatedGainsAdminPermissionOnCreatedAclExtension;
 import com.github.vincemann.springrapid.acl.service.ext.acl.CleanUpAclExtension;
 import com.github.vincemann.springrapid.acl.service.ext.sec.CrudAclChecksExtension;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.*;
 import com.github.vincemann.springrapid.auth.service.ext.acl.SignupServiceAclExtension;
+import com.github.vincemann.springrapid.auth.service.ext.acl.UserGainsAdminPermissionOnCreated;
 import com.github.vincemann.springrapid.auth.service.ext.sec.ContactInformationServiceSecurityExtension;
 import com.github.vincemann.springrapid.auth.service.ext.sec.PasswordServiceSecurityExtension;
 import com.github.vincemann.springrapid.auth.service.ext.sec.UserAuthTokenServiceSecurityExtension;
@@ -28,6 +31,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import java.io.Serializable;
 
 import static com.github.vincemann.springrapid.core.proxy.ExtensionProxies.crudProxy;
 import static com.github.vincemann.springrapid.core.proxy.ExtensionProxies.proxy;
@@ -170,12 +175,13 @@ public class RapidUserServiceAutoConfiguration {
     @Bean
     @Acl
     public UserService<?, ?> aclUserService(UserService<?, ?> service,
-                                            CleanUpAclExtension cleanUpAclExtension
+                                            CleanUpAclExtension cleanUpAclExtension,
+                                            UserGainsAdminPermissionOnCreated<AbstractUser<?>,?> userGainsAdminOverSelf
     ) {
         return crudProxy(service)
                 // dont work with default extensions to keep things simple and concrete for user
                 .disableDefaultExtensions()
-                // acl info is only created in signup
+                .addGenericExtension(userGainsAdminOverSelf)
                 .addExtension(cleanUpAclExtension)
                 .build();
     }

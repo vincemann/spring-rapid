@@ -56,11 +56,6 @@ public class UserServiceSecurityExtension
         return getNext().updateContactInformation(userId,contactInformation);
     }
 
-    @Override
-    public AbstractUser updateContactInformation(AbstractUser update, String contactInformation) throws EntityNotFoundException, BadEntityException {
-        getAclTemplate().checkPermission(update, BasePermission.WRITE);
-        return getNext().updateContactInformation(update,contactInformation);
-    }
 
     @Override
     public AbstractUser createUser() {
@@ -90,9 +85,10 @@ public class UserServiceSecurityExtension
 
     @Override
     public Optional findByContactInformation(String contactInformation) {
-        Optional<AbstractUser> user = getLast().findByContactInformation(contactInformation);
-        if (user.isPresent())
-            getAclTemplate().checkPermission(user.get(), BasePermission.READ);
+        // anon should be able to find ForeignUserDto at least, in order to retrieve id
+//        Optional<AbstractUser> user = getLast().findByContactInformation(contactInformation);
+//        if (user.isPresent())
+//            getAclTemplate().checkPermission(user.get(), BasePermission.READ);
         return getNext().findByContactInformation(contactInformation);
     }
 

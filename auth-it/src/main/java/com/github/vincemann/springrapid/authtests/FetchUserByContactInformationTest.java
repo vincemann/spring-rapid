@@ -14,7 +14,7 @@ public class FetchUserByContactInformationTest extends RapidAuthIntegrationTest 
 
 
 	@Test
-	public void anonKnowsContactInformation_canFindMatchingId() throws Exception {
+	public void givenAnonKnowsForeignUsersCI_whenFindByCI_thenRetrievesIdOnly() throws Exception {
 		mvc.perform(userController.findByContactInformation(USER_CONTACT_INFORMATION))
 				.andExpect(status().is(200))
 				.andExpect(jsonPath("$.id").value(getUser().getId()))

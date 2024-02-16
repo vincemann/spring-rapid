@@ -5,9 +5,16 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 
 import java.io.Serializable;
 
+/**
+ * Adds additional type safe addExtension methods for CrudServices.
+ * See {@link ExtensionProxyBuilder}.
+ */
 public class CrudServiceExtensionProxyBuilder
-        <S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>, Id extends Serializable>
-        extends ExtensionProxyBuilder<S>{
+        <
+                S extends CrudService<E, Id>,
+                E extends IdentifiableEntity<Id>,
+                Id extends Serializable>
+        extends AbstractExtensionProxyBuilder<S, CrudServiceExtensionProxyBuilder<S, E, Id>> {
 
     public CrudServiceExtensionProxyBuilder(S proxied) {
         super(proxied);
@@ -16,14 +23,14 @@ public class CrudServiceExtensionProxyBuilder
     /**
      * User this method if your {@link ServiceExtension} implements {@link GenericCrudServiceExtension}.
      */
-    public CrudServiceExtensionProxyBuilder<S,E,Id> addGenericExtensions(ServiceExtension<? extends CrudService<? super E,? super Id>>... extensions){
-        for (ServiceExtension<? extends CrudService<? super E, ? super Id>> extension : extensions) {
+    public CrudServiceExtensionProxyBuilder<S, E, ? extends Serializable> addGenericExtensions(ServiceExtension<? extends CrudService<? super E, ? extends Serializable>>... extensions) {
+        for (ServiceExtension<? extends CrudService<? super E, ? extends Serializable>> extension : extensions) {
             addGenericExtension(extension);
         }
         return this;
     }
 
-    public CrudServiceExtensionProxyBuilder<S,E,Id> addGenericExtension(ServiceExtension<? extends CrudService<? super E,? super Id>> extension){
+    public CrudServiceExtensionProxyBuilder<S, E, ? extends Serializable> addGenericExtension(ServiceExtension<? extends CrudService<? super E, ? extends Serializable>> extension) {
         getProxy().addExtension(extension);
         return this;
     }

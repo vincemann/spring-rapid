@@ -11,8 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
 @SpringBootTest({
-        "lemon.recaptcha.sitekey=",
-        "rapid-auth.loginBruteforceProtection=true",
+        "rapid-auth.bruteForceProtection=true",
         "rapid-auth.maxLoginAttempts=5"
 })
 public class LoginBruteForceTest extends RapidAuthIntegrationTest {

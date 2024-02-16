@@ -14,18 +14,18 @@ import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
-import com.github.vincemann.springrapid.core.util.Entity;
-import com.github.vincemann.springrapid.core.util.Message;
-import com.github.vincemann.springrapid.core.util.VerifyAccess;
-import com.github.vincemann.springrapid.core.util.VerifyEntity;
+import com.github.vincemann.springrapid.core.util.*;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
 import java.util.Optional;
+
+import static com.github.vincemann.springrapid.core.util.MethodNameUtil.propertyNameOf;
 
 @Slf4j
 public class ContactInformationServiceImpl implements ContactInformationService {
@@ -44,6 +44,7 @@ public class ContactInformationServiceImpl implements ContactInformationService 
 
     private UserUtils userUtils;
 
+    @Transactional
     @Override
     public AbstractUser changeContactInformation(String code) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException, BadTokenException {
 
@@ -63,9 +64,12 @@ public class ContactInformationServiceImpl implements ContactInformationService 
         checkUniqueContactInformation(user.getNewContactInformation());
         // update the fields
 
+        // changing newContactInformation to null is too high level to put into low level updateContactInformation method -> need two update calls
         AbstractUser update = Entity.createUpdate(user);
         update.setNewContactInformation(null);
-        AbstractUser updated = userService.updateContactInformation(update, user.getContactInformation());
+        userService.partialUpdate(update,propertyNameOf(user::getNewContactInformation));
+
+        AbstractUser updated = userService.updateContactInformation(user.getId(), user.getNewContactInformation());
 
         // make the user verified if he is not
         if (user.hasRole(AuthRoles.UNVERIFIED))

@@ -10,10 +10,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.util.Assert;
@@ -35,7 +32,7 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationLi
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        loadPrimaryServices();
+        loadServices();
     }
 
     @Override
@@ -44,7 +41,7 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationLi
     }
 
     @Override
-    public void loadPrimaryServices() {
+    public void loadServices() {
         List<String> beanNames = Lists.newArrayList(beanFactory.getBeanNamesForType(CrudService.class));
         List<String> extensionNames = Lists.newArrayList(beanFactory.getBeanNamesForType(ServiceExtension.class));
 
@@ -81,7 +78,7 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationLi
 
     //@LogInteraction
     @Override
-    public synchronized CrudService find(Class<? extends IdentifiableEntity> entityClass, Class<? extends Annotation> annotation) {
+    public CrudService find(Class<? extends IdentifiableEntity> entityClass, Class<? extends Annotation> annotation) {
         Map<String, Object> beansWithAnnotation = beanFactory.getBeansWithAnnotation(annotation);
         List result = beansWithAnnotation.values().stream()
                 .filter(b -> ((CrudService) b).getEntityClass().equals(entityClass))
@@ -92,7 +89,7 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationLi
 
     //@LogInteraction
     @Override
-    public synchronized CrudService find(Class<? extends IdentifiableEntity> entityClass) {
+    public CrudService find(Class<? extends IdentifiableEntity> entityClass) {
         return primaryServices.get(entityClass);
     }
 }

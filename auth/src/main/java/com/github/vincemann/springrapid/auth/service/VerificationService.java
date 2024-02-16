@@ -5,7 +5,11 @@ import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.NotBlank;
+
+@Validated
 public interface VerificationService {
 
 
@@ -13,7 +17,7 @@ public interface VerificationService {
 
     AbstractUser makeVerified(AbstractUser user) throws BadEntityException, EntityNotFoundException;
 
-    AbstractUser resendVerificationMessage(String contactInformation) throws EntityNotFoundException, BadEntityException;
+    AbstractUser resendVerificationMessage(@NotBlank String contactInformation) throws EntityNotFoundException, BadEntityException;
 
-    AbstractUser verifyUser(String code) throws EntityNotFoundException, BadTokenException, BadEntityException;
+    AbstractUser verifyUser(@NotBlank String code) throws EntityNotFoundException, BadTokenException, BadEntityException;
 }
