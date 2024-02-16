@@ -29,7 +29,7 @@ import static com.github.vincemann.springrapid.core.util.ReflectionUtils.setFina
  * petIds= [4,10,2,5,7]
  *
  * op 'remove', path '/petIds', value '5'
- * ->
+ * get translated to ->
  * op 'remove', path '/petIds/3'
  *
  *
@@ -93,7 +93,11 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
             JsonPatch patch;
             try {
                 patch = createPatch(targetDto, patchNode);
-            } catch (Exception e) {
+            }
+            catch (BadEntityException e){
+                throw e;
+            }
+            catch (Exception e) {
                 throw new BadEntityException(e);
             }
 
@@ -167,7 +171,7 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
 //        }
 
         if (elementToDelete.isEmpty()) {
-            throw new IllegalArgumentException("Element to delete: "+value+" not found");
+            throw new BadEntityException("Element to delete: "+value+" not found");
         }
         int index = position[0];
         List<Integer> removedIndices = getRemovedIndices(removedIndicesMap, collection);

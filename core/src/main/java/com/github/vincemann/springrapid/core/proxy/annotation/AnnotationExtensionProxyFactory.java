@@ -57,17 +57,16 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 
-        // this will make sure root proxied bean is wrapped with aop proxy
-        Object proxied = beanFactory.getBean(beanName);
-        Object unwrappedBean = unwrap(proxied);
+        if (! (bean instanceof ServiceExtension)){
+            Object unwrappedBean = unwrap(bean);
+
+            List<DefineProxy> proxyDefinitions = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), DefineProxy.class, DefineProxies.class);
+            saveProxyInfo(beanName, proxyDefinitions);
 
 
-        List<DefineProxy> proxyDefinitions = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), DefineProxy.class, DefineProxies.class);
-        saveProxyInfo(proxied, proxyDefinitions);
-
-
-        List<CreateProxy> toCreate = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), CreateProxy.class, CreateProxies.class);
-        createProxies(proxied, beanName, toCreate);
+            List<CreateProxy> toCreate = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), CreateProxy.class, CreateProxies.class);
+            createProxies(beanName, toCreate);
+        }
 
 
         autowireProxyChains(bean);
@@ -103,9 +102,11 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
     }
 
 
-    protected void createProxies(Object proxied, String beanName, List<CreateProxy> toCreate) {
+    protected void createProxies(String beanName, List<CreateProxy> toCreate) {
         if (toCreate.isEmpty())
             return;
+        // this will make sure root proxied bean is wrapped with aop proxy
+        Object proxied = beanFactory.getBean(beanName);
         Object unwrappedBean = unwrap(proxied);
 
         boolean primaryBeanRegistered = beanFactory.getBeanDefinition(beanName).isPrimary();
@@ -198,14 +199,17 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         return unwrappedBean;
     }
 
-    protected void saveProxyInfo(Object bean, List<DefineProxy> proxyDefinitions) {
+    protected void saveProxyInfo(String beanName, List<DefineProxy> proxyDefinitions) {
         if (proxyDefinitions.isEmpty())
             return;
-        Class<?> proxiedClass = unwrap(bean).getClass();
+        Object proxied = beanFactory.getBean(beanName);
+        Class<?> proxiedClass = unwrap(proxied).getClass();
         for (DefineProxy proxyDefinition : proxyDefinitions) {
             Assert.isTrue(!proxyDefinition.name().isEmpty(), "must provide name for proxy");
         }
-        this.proxyInfos.put(proxiedClass, new ProxyInfo(bean, proxyDefinitions));
+        // this will make sure root proxied bean is wrapped with aop proxy
+
+        this.proxyInfos.put(proxiedClass, new ProxyInfo(proxied, proxyDefinitions));
     }
 
     @AllArgsConstructor

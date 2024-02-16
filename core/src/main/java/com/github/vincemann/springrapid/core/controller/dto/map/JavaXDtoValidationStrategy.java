@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.core.controller.dto.map;
 
 import com.github.vincemann.springrapid.core.controller.dto.DtoValidationStrategy;
-import com.github.vincemann.springrapid.core.util.ValidationUtil;
 
 import javax.validation.*;
 import java.util.Set;

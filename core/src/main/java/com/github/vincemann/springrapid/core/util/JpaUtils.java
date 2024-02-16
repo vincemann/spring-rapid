@@ -1,17 +1,27 @@
 package com.github.vincemann.springrapid.core.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtilsBean;
 import org.hibernate.collection.spi.PersistentCollection;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 
 @Slf4j
 public class JpaUtils {
 
 
     public static <T> T deepDetach(T entity){
-        return BeanUtils.clone(ProxyUtils.hibernateUnproxy(entity));
+        return clone(ProxyUtils.hibernateUnproxy(entity));
+    }
+
+    private static <T> T clone(T bean){
+        try {
+            return (T) BeanUtilsBean.getInstance().cloneBean(bean);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static <T> T deepDetachOrGet(T entity){

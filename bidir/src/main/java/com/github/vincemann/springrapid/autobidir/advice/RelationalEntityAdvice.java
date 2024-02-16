@@ -14,6 +14,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.aop.framework.AopProxyUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -98,7 +99,7 @@ public class RelationalEntityAdvice {
         Set<String> updatedFields = Entity.findPartialUpdatedFields(update, fieldsToUpdate);
 
         // expects all collections to be initialized and not of Persistent Type
-        IdentifiableEntity detachedOldEntity = ReflectionUtils.createInstance(ProxyUtils.getTargetClass(update));
+        IdentifiableEntity detachedOldEntity = BeanUtils.instantiateClass(ProxyUtils.getTargetClass(update));
         NullAwareBeanUtils.copyProperties(detachedOldEntity, old, updatedFields);
 
         relationalEntityManager.partialUpdate(old, detachedOldEntity, update, updatedFields.toArray(new String[0]));
@@ -107,7 +108,7 @@ public class RelationalEntityAdvice {
     @Before(
             value =
                     "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
-                    "com.github.vincemann.springrapid.core.RapidArchitecture.saveOperation() && " +
+                    "com.github.vincemann.springrapid.core.RapidArchitecture.createOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
                     "args(entity)")

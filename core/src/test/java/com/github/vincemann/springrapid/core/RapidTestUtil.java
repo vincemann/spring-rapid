@@ -20,15 +20,6 @@ public class RapidTestUtil {
         return (E) byId.get();
     }
 
-    public static <E extends IdentifiableEntity> E mustBePresentIn(CrudService service, Serializable id){
-        Optional byId;
-        byId = service.findById(id);
-        if (byId.isEmpty()){
-            throw new IllegalArgumentException("No Entity found with id: " + id);
-        }
-        return (E) byId.get();
-    }
-
 
     public static String createUpdateJsonLine(String operation, String path, String value){
         return "  {\"op\": \""+operation+"\", \"path\": \""+path+"\", \"value\": \""+value+"\"}";

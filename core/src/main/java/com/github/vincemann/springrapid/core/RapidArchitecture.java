@@ -1,13 +1,11 @@
 package com.github.vincemann.springrapid.core;
 
-import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.stereotype.Component;
 
 public class RapidArchitecture {
 
-    @Pointcut("execution(* save(..))")
-    public void saveOperation(){}
+    @Pointcut("execution(* create(..))")
+    public void createOperation(){}
 
     @Pointcut("execution(* fullUpdate(..))")
     public void fullUpdateOperation(){}

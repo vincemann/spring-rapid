@@ -9,15 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ReflectionUtils {
 
 
-    public static <T> T createInstance(Class<T> clazz) {
-        try {
-            return clazz.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public static void initializeNullCollectionFields(Object object) {
 
 

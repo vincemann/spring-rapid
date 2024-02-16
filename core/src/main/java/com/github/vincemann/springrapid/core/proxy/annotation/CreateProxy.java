@@ -48,9 +48,7 @@ public @interface CreateProxy {
     /**
      * Bean name or created proxy bean
      * If left empty bean name is generated based on qualifiers and root bean name
-     * @return
      */
-    @Nullable
     String name() default "";
     boolean primary() default false;
 }

@@ -26,7 +26,6 @@ public class JpaVetService
     }
 
     @LogInteraction
-    @Transactional
     @Override
     public Optional<Vet> findByLastName(String lastName) {
         return getRepository().findByLastName(lastName);

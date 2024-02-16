@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 /**
  * Used to autowire dynamically created proxy chains.
- * Dont combine with {@link Autowired}, use as a replacement.
+ * Don't combine with {@link Autowired}, use as a replacement.
  * Only setter and field injection is supported.
  * Proxies may be created with {@link DefineProxy} or as normal spring beans.
  * This is an alternative approach to using {@link CreateProxy}.
@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  *
  * class SomeOtherClass{
  *
- *     @AutowiredProxyChain(value = {"acl","secured"})
+ *     @AutowireProxyChain(value = {"acl","secured"})
  *     private MyService service;
  *
  * }
