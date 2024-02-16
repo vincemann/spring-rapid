@@ -66,10 +66,10 @@ public class RapidDefaultExtensionsAutoConfiguration {
 
 
     private void applyExtensionToQualifiedBeans(String qualifier,Class<?> matchClass, ServiceExtension extension) {
-        ServiceExtension extensionInstance = obtainFreshInstance(extension);
         // Dynamically find and process all beans with the specified qualifier
         Map<String, Object> beansWithQualifier = (Map<String, Object>) BeanFactoryAnnotationUtils.qualifiedBeansOfType((ListableBeanFactory) context.getAutowireCapableBeanFactory(), matchClass, qualifier);
         beansWithQualifier.values().forEach(bean -> {
+            ServiceExtension extensionInstance = obtainFreshInstance(extension);
             ExtensionProxy proxy = ProxyUtils.getExtensionProxy(bean);
             if (proxy != null && proxy.getDefaultExtensionsEnabled() && !proxy.isIgnored(extensionInstance.getClass())) {
                 log.debug("Adding default extension "+extensionInstance.getClass().getSimpleName()+" to proxy: " + proxy);
