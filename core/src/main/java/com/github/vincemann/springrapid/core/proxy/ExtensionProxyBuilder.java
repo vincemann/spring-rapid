@@ -8,10 +8,16 @@ import java.lang.reflect.Proxy;
 
 
 public class ExtensionProxyBuilder<T> {
-    private final ExtensionProxy proxy;
+    private ExtensionProxy proxy;
+    private Class<?> proxiedClass;
 
     public ExtensionProxyBuilder(T proxied) {
         this.proxy = new ExtensionProxy(proxied);
+    }
+
+    public ExtensionProxyBuilder(Class<T> proxiedClass){
+        this.proxy = new ExtensionProxy(null);
+        this.proxiedClass = proxiedClass;
     }
 
     public ExtensionProxyBuilder<T> addExtensions(ServiceExtension<? super T>... extensions){
@@ -41,12 +47,20 @@ public class ExtensionProxyBuilder<T> {
 
 
     public T build(){
-        T unproxied = AopTestUtils.getUltimateTargetObject(proxy.getProxied());
-        T proxyInstance = (T) Proxy.newProxyInstance(
-                unproxied.getClass().getClassLoader(),
-                ClassUtils.getAllInterfaces(unproxied.getClass()).toArray(new Class[0]),
-                proxy);
-        return proxyInstance;
+        if (proxy != null){
+            T unproxied = AopTestUtils.getUltimateTargetObject(proxy.getProxied());
+            T proxyInstance = (T) Proxy.newProxyInstance(
+                    unproxied.getClass().getClassLoader(),
+                    ClassUtils.getAllInterfaces(unproxied.getClass()).toArray(new Class[0]),
+                    proxy);
+            return proxyInstance;
+        }else{
+            T proxyInstance = (T) Proxy.newProxyInstance(
+                    proxiedClass.getClassLoader(),
+                    ClassUtils.getAllInterfaces(proxiedClass).toArray(new Class[0]),
+                    proxy);
+            return proxyInstance;
+        }
     }
 
     protected ExtensionProxy getProxy() {

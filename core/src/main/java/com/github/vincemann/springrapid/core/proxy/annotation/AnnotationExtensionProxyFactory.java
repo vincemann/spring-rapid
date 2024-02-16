@@ -3,36 +3,42 @@ package com.github.vincemann.springrapid.core.proxy.annotation;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxy;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
-import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.util.ContainerAnnotationUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.AutowireCandidateQualifier;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
 
 /**
- * Parses proxy annotations {@link CreateProxy} and {@link DefineProxy} and creates extension proxies for all beans defining those annotations.
+ * Parses {@link DefineProxy} and creates and stores respective Extension Proxies.
+ * Parses {@link CreateProxy} and creates respective proxy chains and publishes them to context.
+ * Parses {@link AutowireProxyChain} annotations and inject respective proxy chains into fields.
  * see {@link ExtensionProxy}.
  */
 @Slf4j
 public class AnnotationExtensionProxyFactory implements BeanPostProcessor, ApplicationContextAware, Ordered {
 
     private DefaultListableBeanFactory beanFactory;
+
+    // stores mapping of proxied class to proxy info (all proxy definitions like "acl","secured" stubs + root proxied obj)
+    // with this info proxy chains can be created
+    private Map<Class<?>, ProxyInfo> proxyInfos = new HashMap<>();
 
 
     @Override
@@ -47,94 +53,152 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        if (!(bean instanceof ServiceExtension)) {
-            // this will make sure root proxied bean is wrapped with aop proxy
-            Object proxied = beanFactory.getBean(beanName);
-            Object unwrappedBean = AopProxyUtils.getSingletonTarget(proxied);
+
+        // this will make sure root proxied bean is wrapped with aop proxy
+        Object proxied = beanFactory.getBean(beanName);
+        Object unwrappedBean = unwrap(proxied);
 
 
-            List<DefineProxy> proxyDefinitions = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), DefineProxy.class, DefineProxies.class);
-            List<CreateProxy> toCreate = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), CreateProxy.class, CreateProxies.class);
-            Map<String, Object> createdInternalProxies = new HashMap<>();
-            if (toCreate.isEmpty()) {
-                return bean;
+        List<DefineProxy> proxyDefinitions = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), DefineProxy.class, DefineProxies.class);
+        saveProxyInfo(proxied, proxyDefinitions);
+
+
+        List<CreateProxy> toCreate = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), CreateProxy.class, CreateProxies.class);
+        createProxies(proxied, beanName, toCreate);
+
+
+        autowireProxyChains(bean);
+        return bean;
+    }
+
+    private void autowireProxyChains(Object bean) {
+        ReflectionUtils.doWithFields(bean.getClass(), field -> {
+            AutowireProxyChain proxyChain = field.getAnnotation(AutowireProxyChain.class);
+            if (proxyChain != null) {
+                field.setAccessible(true);
+                Object proxiedBean = createProxyChain(field.getType(), proxyChain.value());
+                field.set(bean, proxiedBean);
             }
-            boolean primaryBeanRegistered = beanFactory.getBeanDefinition(beanName).isPrimary();
+        });
+    }
+
+    protected void createProxies(Object proxied, String beanName, List<CreateProxy> toCreate) {
+        if (toCreate.isEmpty())
+            return;
+        Object unwrappedBean = unwrap(proxied);
+
+        boolean primaryBeanRegistered = beanFactory.getBeanDefinition(beanName).isPrimary();
+
+        if (log.isDebugEnabled())
+            log.debug("Identified Proxies of bean: " + beanName + " : " + toCreate);
+
+        for (CreateProxy proxy : toCreate) {
+            // make sure there is only one primary bean
+            if (proxy.primary()) {
+                Assert.state(!primaryBeanRegistered, "Multiple ProxyBeans marked as primary");
+                primaryBeanRegistered = true;
+            }
+
+            Assert.notEmpty(proxy.qualifiers(), "must at least have one qualifier");
+
+
+            // compose proxy instance by creating all internal proxies needed and form a proxy chain
+
+            String proxyBeanName = proxy.name().isEmpty()
+                    ?
+                    resolveProxyName(proxy.qualifiers(), unwrappedBean.getClass())
+                    :
+                    proxy.name();
 
             if (log.isDebugEnabled())
-                log.debug("Identified Proxies of bean: " + beanName + " : " + toCreate);
-
-            for (CreateProxy proxy : toCreate) {
-                // make sure there is only one primary bean
-                if (proxy.primary()) {
-                    Assert.state(!primaryBeanRegistered, "Multiple ProxyBeans marked as primary");
-                    primaryBeanRegistered = true;
-                }
-
-                Assert.notEmpty(proxy.qualifiers(), "must at least have one qualifier");
+                log.debug("creating proxyBean with name: " + proxyBeanName);
 
 
-                // compose proxy instance by creating all internal proxies needed and form a proxy chain
-                Object lastProxiedBean = proxied;
+            // the last created proxy from the chain is the most outer proxy -> entry point for proxy chain -> gets autowired
+            Object proxyBean = createProxyChain(unwrappedBean.getClass(), proxy.proxies());
 
-                String proxyBeanName = proxy.name().isEmpty()
-                        ?
-                        resolveProxyName(proxy.qualifiers(), unwrappedBean.getClass())
-                        :
-                        proxy.name();
+            if (log.isDebugEnabled()) {
+                log.debug("registering proxy as bean : " + proxyBean);
+            }
 
-                if (log.isDebugEnabled())
-                    log.debug("creating proxyBean with name: " + proxyBeanName);
+            // register bean here like securedFooService mapped to qualifier secured for example
+            // when this proxy is autowired via @Secured @Autowired bean, then bean will never be wrapped with aop proxy
+            // keep that in mind, jdk proxies dont match aop
+            // but the most inner proxied bean (the root version of the service) will be wrapped with aop proxy
+            registerBean(proxy.qualifiers(), proxy.primary(), unwrappedBean, proxyBean, proxyBeanName);
 
+            if (log.isDebugEnabled())
+                log.debug("registered proxy as bean: " + proxyBeanName);
+        }
+    }
 
-                for (String proxyName : proxy.proxies()) {
-                    // try to find locally
-                    Object internalProxy;
-                    Optional<DefineProxy> proxyDefinition = proxyDefinitions
-                            .stream()
-                            .filter(p -> p.name().equals(proxyName))
-                            .findFirst();
-                    if (proxyDefinition.isEmpty()) {
-                        // did not find matching local proxy definition, must be a proxy from elsewhere
-                        // try to find globally, proxy definitions name is assumed to be the global bean name
-                        Assert.state(beanFactory.containsBean(proxyName), "Proxy with name: " + proxyName + " could not be found. Make sure to create a local ProxyDefinition with this name or define a bean globally with that name");
-                        internalProxy = beanFactory.getBean(proxyName);
-                    } else {
-                        // this is the normal case
-                        // found local proxy definition, now create proxy
-                        internalProxy = createdInternalProxies.get(proxyName);
-                        boolean defaultExtensions = proxyDefinition.get().defaultExtensionsEnabled();
-                        ServiceExtension[] extensions = resolveExtensions(proxyDefinition.get())
-                                .toArray(new ServiceExtension[0]);
-                        if (internalProxy == null) {
-                            internalProxy = new ExtensionProxyBuilder<>(lastProxiedBean)
-                                    .addExtensions(extensions)
-                                    .defaultExtensionsEnabled(defaultExtensions)
-                                    .ignoreDefaultExtensions(proxyDefinition.get().ignoredExtensions())
-                                    .build();
-                            createdInternalProxies.put(proxyName, internalProxy);
-                        }
-                    }
-                    lastProxiedBean = internalProxy;
-                }
-                // the last created proxy from the chain is the most outer proxy -> entry point for proxy chain -> gets autowired
-                Object proxyBean = lastProxiedBean;
+    protected Object createProxyChain(Class<?> proxiedClass, String[] proxies) {
+        ProxyInfo proxyInfo = findProxyInfo(proxiedClass);
 
-                if (log.isDebugEnabled()) {
-                    log.debug("registering proxy as bean : " + proxyBean);
-                }
-
-                // register bean here like securedFooService mapped to qualifier secured for example
-                // when this proxy is autowired via @Secured @Autowired bean, then bean will never be wrapped with aop proxy
-                // keep that in mind, jdk proxies dont match aop
-                // but the most inner proxied bean (the root version of the service) will be wrapped with aop proxy
-                registerBean(proxy.qualifiers(), proxy.primary(), unwrappedBean, proxyBean, proxyBeanName);
-
-                if (log.isDebugEnabled())
-                    log.debug("registered proxy as bean: " + proxyBeanName);
+        Object lastProxiedBean = proxyInfo.getRootProxied();
+        for (String proxyName : proxies) {
+            // try to find locally
+            Optional<DefineProxy> proxyDefinition = findProxyDefinition(proxyInfo, proxyName);
+            if (proxyDefinition.isEmpty()) {
+                // did not find matching local proxy definition, must be a proxy from elsewhere
+                // try to find globally, proxy definitions name is assumed to be the global bean name
+                Assert.state(beanFactory.containsBean(proxyName), "Proxy with name: " + proxyName + " could not be found. Make sure to create a local ProxyDefinition with this name or define a bean globally with that name");
+                lastProxiedBean = beanFactory.getBean(proxyName);
+            } else {
+                // this is the normal case
+                // found local proxy definition, now create proxy
+                lastProxiedBean = createProxy(lastProxiedBean, proxyDefinition.get());
             }
         }
-        return bean;
+        return lastProxiedBean;
+    }
+
+    protected Optional<DefineProxy> findProxyDefinition(ProxyInfo info, String proxyName) {
+        return info.getProxyDefinitions().stream()
+                .filter(p -> p.name().equals(proxyName))
+                .findFirst();
+    }
+
+    protected ProxyInfo findProxyInfo(Class<?> proxiedClass) {
+        return proxyInfos.get(proxiedClass);
+    }
+
+    protected Object unwrap(Object bean) {
+        Object unwrappedBean = AopProxyUtils.getSingletonTarget(bean);
+        if (unwrappedBean == null)
+            return bean;
+        return unwrappedBean;
+    }
+
+    protected void saveProxyInfo(Object bean, List<DefineProxy> proxyDefinitions) {
+        if (proxyDefinitions.isEmpty())
+            return;
+        Class<?> proxiedClass = unwrap(bean).getClass();
+        for (DefineProxy proxyDefinition : proxyDefinitions) {
+            Assert.isTrue(!proxyDefinition.name().isEmpty(), "must provide name for proxy");
+        }
+        this.proxyInfos.put(proxiedClass, new ProxyInfo(bean, proxyDefinitions));
+    }
+
+    @AllArgsConstructor
+    @Getter
+    private class ProxyInfo {
+        private Object rootProxied;
+        private List<DefineProxy> proxyDefinitions;
+    }
+
+    protected <T> T createProxy(T proxied, DefineProxy proxyDefinition) {
+        Assert.isTrue(!proxyDefinition.name().isEmpty(), "must provide name for proxy");
+        boolean defaultExtensions = proxyDefinition.defaultExtensionsEnabled();
+        ServiceExtension[] extensions = resolveExtensions(proxyDefinition)
+                .toArray(new ServiceExtension[0]);
+
+        return (T) new ExtensionProxyBuilder<>(proxied)
+                .addExtensions(extensions)
+                .defaultExtensionsEnabled(defaultExtensions)
+                .ignoreDefaultExtensions(proxyDefinition.ignoredExtensions())
+                .build();
+
     }
 
 
@@ -170,6 +234,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         beanFactory.registerBeanDefinition(proxyBeanName, proxyBeanDefinition);
         beanFactory.registerSingleton(proxyBeanName, proxy);
     }
+
 
     protected String resolveProxyName(Class<? extends Annotation>[] qualifiers, Class beanType) {
         // need to create own bean name, user has not supplied one
