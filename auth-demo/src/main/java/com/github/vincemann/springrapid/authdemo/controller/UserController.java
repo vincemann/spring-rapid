@@ -57,7 +57,7 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
     public ResponseEntity<MyFindOwnUserDto> signup(@Valid @RequestBody MySignupDto signupDto) throws BadEntityException, EntityNotFoundException, AlreadyRegisteredException {
         User saved = signupService.signup(signupDto);
         MyFindOwnUserDto dto = getDtoMapper().mapToDto(saved, MyFindOwnUserDto.class);
-        return okWithAuthToken(dto);
+        return okWithAuthToken(dto,saved.getContactInformation());
     }
 
     @Override

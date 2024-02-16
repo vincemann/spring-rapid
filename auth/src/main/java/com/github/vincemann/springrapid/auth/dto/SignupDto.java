@@ -17,7 +17,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
 public class SignupDto implements Serializable {
 
     @NotBlank
@@ -29,6 +28,7 @@ public class SignupDto implements Serializable {
     private String password;
 
 
+    @Builder
     public SignupDto(String contactInformation, String password) {
         this.contactInformation = contactInformation;
         this.password = password;

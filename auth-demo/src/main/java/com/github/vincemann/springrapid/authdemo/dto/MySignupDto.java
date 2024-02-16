@@ -20,8 +20,7 @@ public class MySignupDto extends SignupDto {
     private String name;
 
 
-
-    @Builder
+    @Builder(builderMethodName = "Builder")
     public MySignupDto(String contactInformation, String password, String name) {
         super(contactInformation, password);
         this.name = name;

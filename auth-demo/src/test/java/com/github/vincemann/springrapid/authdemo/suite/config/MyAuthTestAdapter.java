@@ -21,13 +21,21 @@ public class MyAuthTestAdapter extends AuthTestAdapter {
     @Override
     public SignupDto createValidSignupDto() {
         SignupDto signupDto = super.createValidSignupDto();
-        return new MySignupDto(signupDto.getContactInformation(), signupDto.getPassword(),createUniqueName(), Sets.newHashSet(Roles.USER));
+        return MySignupDto.Builder()
+                .name(createUniqueName())
+                .contactInformation(signupDto.getContactInformation())
+                .password(signupDto.getPassword())
+                .build();
     }
 
     @Override
     public SignupDto createInvalidSignupDto() {
         SignupDto signupDto = super.createInvalidSignupDto();
-        return new MySignupDto(signupDto.getContactInformation(), signupDto.getPassword(),createUniqueName(),signupDto.getRoles());
+        return MySignupDto.Builder()
+                .name(createUniqueName())
+                .contactInformation(signupDto.getContactInformation())
+                .password(signupDto.getPassword())
+                .build();
     }
 
 
