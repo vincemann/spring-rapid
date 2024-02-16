@@ -16,7 +16,7 @@ import java.io.Serializable;
 @Getter
 @Slf4j
 @Transactional
-@DefaultExtension(qualifier = Acl.class)
+@DefaultExtension(qualifier = Acl.class, service = CrudService.class)
 /**
  * Removes Acl's on delete, if existing.
  */

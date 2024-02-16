@@ -126,6 +126,7 @@ public class RapidUserServiceAutoConfiguration {
     public ContactInformationService securedContactInformationService(ContactInformationService service,
                                                                       ContactInformationServiceSecurityExtension securityExtension){
         return proxy(service)
+                .disableDefaultExtensions()
                 .addExtension(securityExtension)
                 .build();
     }
@@ -136,6 +137,7 @@ public class RapidUserServiceAutoConfiguration {
     public UserAuthTokenService securedUserAuthTokenService(UserAuthTokenService service,
                                                                       UserAuthTokenServiceSecurityExtension securityExtension){
         return proxy(service)
+                .disableDefaultExtensions()
                 .addExtension(securityExtension)
                 .build();
     }
@@ -146,6 +148,7 @@ public class RapidUserServiceAutoConfiguration {
     public PasswordService securedPasswordService(PasswordService service,
                                                             PasswordServiceSecurityExtension securityExtension){
         return proxy(service)
+                .disableDefaultExtensions()
                 .addExtension(securityExtension)
                 .build();
     }
@@ -157,7 +160,7 @@ public class RapidUserServiceAutoConfiguration {
                                           SignupServiceAclExtension signupServiceAclExtension
     ) {
         return proxy(service)
-                .defaultExtensionsEnabled(false)
+                .disableDefaultExtensions()
                 .addExtension(signupServiceAclExtension)
                 .build();
     }
@@ -171,7 +174,7 @@ public class RapidUserServiceAutoConfiguration {
     ) {
         return crudProxy(service)
                 // dont work with default extensions to keep things simple and concrete for user
-                .defaultExtensionsEnabled(false)
+                .disableDefaultExtensions()
                 // acl info is only created in signup
                 .addExtension(cleanUpAclExtension)
                 .build();
@@ -187,7 +190,7 @@ public class RapidUserServiceAutoConfiguration {
     ) {
         return crudProxy(service)
                 // dont work with default extensions to keep things safer for user related stuff
-                .defaultExtensionsEnabled(false)
+                .disableDefaultExtensions()
                 .addExtension(securityRule)
                 .addExtension(crudAclChecksExtension)
                 .build();

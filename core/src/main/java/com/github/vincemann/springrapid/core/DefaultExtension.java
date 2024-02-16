@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.core;
 
-import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.lang.annotation.*;
@@ -11,4 +10,5 @@ import java.lang.annotation.*;
 @Inherited
 public @interface DefaultExtension {
     Class<? extends Annotation> qualifier();
+    Class<?> service() default Object.class;
 }

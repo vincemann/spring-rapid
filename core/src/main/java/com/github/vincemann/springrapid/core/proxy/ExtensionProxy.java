@@ -303,4 +303,13 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
         private State state;
         private ServiceExtension extension;
     }
+
+
+    @Override
+    public String toString() {
+        return "ExtensionProxy{" +
+                "beanName='" + beanName + '\'' +
+                ", proxied=" + proxied +
+                '}';
+    }
 }

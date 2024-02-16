@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.service.ext.sec.MyNeedCreatePermissionOnParentForSaveExtension;
 import com.github.vincemann.springrapid.acldemo.service.ext.sec.NeedRoleForCreateExtension;
 import com.github.vincemann.springrapid.core.DefaultExtension;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +36,7 @@ public class ExtensionsConfig {
     }
 
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    @DefaultExtension(qualifier = Secured.class)
+    @DefaultExtension(qualifier = Secured.class, service = CrudService.class)
     @Bean
     public NeedCreatePermissionOnParentForSaveExtension needCreatePermissionOnParentForCreate(){
         return new MyNeedCreatePermissionOnParentForSaveExtension();

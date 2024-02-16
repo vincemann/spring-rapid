@@ -9,6 +9,7 @@ import com.github.vincemann.springrapid.acl.service.ext.acl.OwnerGainsAdminPermi
 import com.github.vincemann.springrapid.acl.service.ext.sec.CrudAclChecksExtension;
 import com.github.vincemann.springrapid.acl.service.ext.sec.NeedCreatePermissionOnParentForSaveExtension;
 import com.github.vincemann.springrapid.core.DefaultExtension;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.util.condition.ConditionalOnCustomProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -34,7 +35,7 @@ public class RapidAclExtensionsAutoConfiguration {
 
 
     @ConditionalOnMissingBean(name = "crudAclChecksSecurityExtension")
-    @DefaultExtension(qualifier = Secured.class)
+    @DefaultExtension(qualifier = Secured.class, service = CrudService.class)
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
     @ConditionalOnCustomProperties(properties = {"rapid-acl.defaultSecurityExtensions", "rapid-acl.defaultAclChecks"})
@@ -76,7 +77,7 @@ public class RapidAclExtensionsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "cleanUpAclExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    @DefaultExtension(qualifier = Acl.class)
+    @DefaultExtension(qualifier = Acl.class, service = CrudService.class)
 //    @ConditionalOnProperty(name = "rapid-acl.cleanupAcl", havingValue = "true", matchIfMissing = true)
     @ConditionalOnCustomProperties(properties = {"rapid-acl.defaultAclExtensions", "rapid-acl.cleanupAcl"})
     public CleanUpAclExtension cleanUpAclExtension(){

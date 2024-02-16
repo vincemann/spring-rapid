@@ -33,6 +33,9 @@ public class ExtensionProxyBuilder<T> {
         return this;
     }
 
+    public ExtensionProxyBuilder<T> disableDefaultExtensions(){
+        return defaultExtensionsEnabled(false);
+    }
 
     public ExtensionProxyBuilder<T> defaultExtensionsEnabled(boolean enabled) {
         proxy.setDefaultExtensionsEnabled(enabled);

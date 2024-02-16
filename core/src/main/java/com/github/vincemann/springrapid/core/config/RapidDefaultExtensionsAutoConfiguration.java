@@ -9,9 +9,6 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -50,17 +47,18 @@ public class RapidDefaultExtensionsAutoConfiguration {
 
             DefaultExtension annotation = targetClass.getAnnotation(DefaultExtension.class);
             Assert.notNull(annotation,"no DefaultExtension annotation defined on the extension class: " + targetClass);
-            applyExtensionToQualifiedBeans(findQualifier(annotation), obtainFreshInstance((ServiceExtension) extension));
+            applyExtensionToQualifiedBeans(findQualifier(annotation), annotation.service(), obtainFreshInstance((ServiceExtension) extension));
         });
     }
 
-    private void applyExtensionToQualifiedBeans(String qualifier, ServiceExtension extension) {
+
+    private void applyExtensionToQualifiedBeans(String qualifier,Class<?> matchClass, ServiceExtension extension) {
         // Dynamically find and process all beans with the specified qualifier
-        Map<String, Object> beansWithQualifier = BeanFactoryAnnotationUtils.qualifiedBeansOfType((ListableBeanFactory) context.getAutowireCapableBeanFactory(), Object.class, qualifier);
+        Map<String, Object> beansWithQualifier = (Map<String, Object>) BeanFactoryAnnotationUtils.qualifiedBeansOfType((ListableBeanFactory) context.getAutowireCapableBeanFactory(), matchClass, qualifier);
         beansWithQualifier.values().forEach(bean -> {
             ExtensionProxy proxy = ProxyUtils.getExtensionProxy(bean);
             if (proxy != null && proxy.getDefaultExtensionsEnabled() && !proxy.isIgnored(extension.getClass())) {
-                log.debug("Adding default extension to proxy: " + extension);
+                log.debug("Adding default extension "+extension.getClass().getSimpleName()+" to proxy: " + proxy.getProxied());
                 proxy.addExtension(extension);
             }
         });
