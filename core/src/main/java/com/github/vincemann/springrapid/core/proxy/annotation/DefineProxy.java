@@ -6,7 +6,7 @@ import java.lang.annotation.*;
 
 /**
  * Defines a proxy that can be used as a blueprint to create a sub proxy for {@link CreateProxy} or used
- * to link proxy chain ({@link AutowireProxyChain}).
+ * to link proxy chain ({@link AutowireProxy}).
  * The proxy will be an {@link com.github.vincemann.springrapid.core.proxy.ExtensionProxy} and will be created by
  * {@link AnnotationExtensionProxyFactory}.
  *

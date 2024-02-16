@@ -10,8 +10,6 @@ import java.lang.annotation.Target;
 
 /**
  * Used to autowire dynamically created proxy chains.
- * Don't combine with {@link Autowired}, use as a replacement.
- * Only setter and field injection is supported.
  * Proxies may be created with {@link DefineProxy} or as normal spring beans.
  * This is an alternative approach to using {@link CreateProxy}.
  *
@@ -32,13 +30,16 @@ import java.lang.annotation.Target;
  *
  * This would create a new proxy instance secured -> acl -> root and set to field 'service'.
  *
+ * Note:
+ * Don't combine with {@link Autowired}, use as a replacement.
+ * Only setter and field injection is supported.
  *
  * See {@link com.github.vincemann.springrapid.core.proxy.ExtensionProxy} and {@link AnnotationExtensionProxyFactory}.
  */
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Qualifier
-public @interface AutowireProxyChain {
+public @interface AutowireProxy {
     /**
      * Contains the proxy names in the order of chaining.
      * Can be either the {@link DefineProxy#name()} or bean name.

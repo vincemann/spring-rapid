@@ -11,14 +11,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 
 /**
- * Write extensions for normal Services, managed by {@link ExtensionProxy}.
+ * Baseclass for all extensions managed by {@link ExtensionProxy}.
  *
  * Create your own Service Extension by extending from this class and implementing the interface(s) of the service, that you want
  * to write an Extension for.
- * {@link ExtensionProxy} will call the extension, when given to it, and integrate it in the extension chain.
+ * Add the extension either annotation based via {@link com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy} and {@link com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy}
+ * or programmatically with {@link ExtensionProxyBuilder}.
+ *
+ * The {@link ExtensionProxy} will call the extension as part of a proxy chain.
  *
  *
- * @param <T> Type of proxied Service, you are writing the Extension for.
+ *
+ * @param <T> assignable most abstract type of proxied service, you are writing the extension for
  */
 @Slf4j
 public abstract class ServiceExtension<T>

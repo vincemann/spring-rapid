@@ -10,11 +10,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AutowireCandidateQualifier;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -26,14 +24,13 @@ import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
  * Parses {@link DefineProxy} and creates and stores respective Extension Proxies.
  * Parses {@link CreateProxy} and creates respective proxy chains and publishes them to context.
- * Parses {@link AutowireProxyChain} annotations and inject respective proxy chains into fields or via setter injection (constructor injection is not supported).
+ * Parses {@link AutowireProxy} annotations and inject respective proxy chains into fields or via setter injection (constructor injection is not supported).
  * see {@link ExtensionProxy}.
  */
 @Slf4j
@@ -80,7 +77,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
 
         // Handle field injection
         ReflectionUtils.doWithFields(targetClass, field -> {
-            AutowireProxyChain proxyChain = field.getAnnotation(AutowireProxyChain.class);
+            AutowireProxy proxyChain = field.getAnnotation(AutowireProxy.class);
             if (proxyChain != null) {
                 field.setAccessible(true);
                 Object proxiedBean = createProxyChain(field.getType(), proxyChain.value());
@@ -90,8 +87,8 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
 
         // Handle setter injection
         ReflectionUtils.doWithMethods(targetClass, method -> {
-            if (method.getParameterCount() == 1 && method.isAnnotationPresent(AutowireProxyChain.class)) {
-                AutowireProxyChain proxyChain = method.getAnnotation(AutowireProxyChain.class);
+            if (method.getParameterCount() == 1 && method.isAnnotationPresent(AutowireProxy.class)) {
+                AutowireProxy proxyChain = method.getAnnotation(AutowireProxy.class);
                 method.setAccessible(true);
                 Object proxiedBean = createProxyChain(method.getParameterTypes()[0], proxyChain.value());
                 try {

@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.core.proxy;
 
 import com.github.vincemann.aoplog.MethodUtils;
+import com.github.vincemann.springrapid.core.proxy.annotation.AutowireProxy;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import lombok.*;
@@ -8,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.InvocationHandler;
@@ -18,6 +18,76 @@ import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Jdk invocation handler for spring rapids core component - extension proxies.
+ * An extension proxy is autowired usually with a qualifier like "secured" or "acl" and represents a version of a service.
+ * You can chain multiple proxies together to a proxy chain - so {@link this#getProxied()} often is another extension proxy.
+ *
+ * By using this concept you can autowire different version of you services.
+ * For example for internal use you may autowire the default version of your service, without security checks, because only trusted internal
+ * code calls the methods.
+ * But in other places (like in controllers) you may want to autowire the 'secured' version of the same service, providing additional functionality (like security checks).
+ * This would look something like this:
+ *
+ * class MyController{
+ *
+ *     @Autowired
+ *     @Secured // this annotation must define a meta annotation of type {@link org.springframework.beans.factory.annotation.Qualifier}
+ *     private MyService securedService;
+ *
+ *     @PostMapping(...)
+ *     public void createUser(@RequestBody UserDto dto){
+ *          securedService.create(dto);
+ *     }
+ * }
+ *
+ * class SomeInternalComponent{
+ *
+ *      @Autowired
+ *      private MyService securedService;
+ *
+ * }
+ *
+ * So each proxy has its own additional functionalities, which are implemented via {@link ServiceExtension}s.
+ * Each proxy has n extensions, which must implement at least one method of the proxied service.
+ * The extension hooks some method of the proxied service, similar to an aop around advice.
+ * Looks something like this:
+ *
+ * interface MyService{
+ *     Object create(Object object);
+ * }
+ *
+ * class MyServiceImpl implements MyService{
+ *     ...
+ * }
+ *
+ * @Component
+ * @Scope(Prototype)
+ * class OnlyAdminCanCreateExtension extends SecurityExtension<MyService> implements MyService{
+ *
+ *      // hook the create method by overwriting
+ *      @Overwrite
+ *      public Object create(Object entity){
+ *          // before
+ *          getAclTemplate().assertHasRole(Roles.Admin);
+ *          // call next in proxy chain (could be the root object or another extension or another extension proxy)
+ *          Object created = getNext().create(entity);
+ *          // after
+ *          return created;
+ *      }
+ * }
+ *
+ * Note that the extension must implement the proxied interface.
+ * To keep things shorter you can also implement {@link CrudServiceExtension} and only overwrite the methods you want to add functionality for.
+ *
+ *
+ * You can create the proxy and expose it to the context either programmatically by using {@link ExtensionProxyBuilder},
+ * or via annotations using {@link com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy}, {@link com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy} and {@link AutowireProxy}
+ *
+ * You can also define default extensions for certain qualifiers, see {@link com.github.vincemann.springrapid.core.DefaultExtension} for more info.
+ *
+ *
+ */
 @Getter
 @Setter
 @Slf4j

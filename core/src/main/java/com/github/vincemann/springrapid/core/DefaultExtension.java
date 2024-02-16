@@ -4,6 +4,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.lang.annotation.*;
 
+/**
+ * Annotate extensions that should be automatically added to the {@link com.github.vincemann.springrapid.core.proxy.ExtensionProxy} by the framework.
+ * 
+ */
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Qualifier("default-extension")

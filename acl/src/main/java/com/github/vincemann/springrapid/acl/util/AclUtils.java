@@ -27,7 +27,7 @@ public class AclUtils {
         } else if (sid instanceof GrantedAuthoritySid) {
             return ((GrantedAuthoritySid) sid).getGrantedAuthority();
         } else {
-            throw new IllegalArgumentException("unknown sid, overwrite this function");
+            throw new IllegalArgumentException("unknown sid type, overwrite this function");
         }
     }
 

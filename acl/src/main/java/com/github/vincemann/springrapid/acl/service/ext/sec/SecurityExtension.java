@@ -6,9 +6,7 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *
- * Write extensions for secured Services
- * @see ServiceExtension
+ * indicates this extension is for {@link com.github.vincemann.springrapid.acl.proxy.Secured} - service
  */
 @Getter
 public abstract class SecurityExtension<T>

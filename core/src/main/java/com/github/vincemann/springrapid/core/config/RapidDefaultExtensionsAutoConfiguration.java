@@ -37,7 +37,7 @@ public class RapidDefaultExtensionsAutoConfiguration {
         // Discover and process all ServiceExtensions marked with @DefaultExtension
         Map<String, Object> defaultExtensions = context.getBeansWithAnnotation(DefaultExtension.class);
         defaultExtensions.entrySet().forEach(entry -> {
-            Class<?> targetClass = null;
+            Class<?> targetClass;
 
             String beanName = entry.getKey();
             Object extension = entry.getValue();
@@ -81,7 +81,7 @@ public class RapidDefaultExtensionsAutoConfiguration {
     public String findQualifier(DefaultExtension annotation){
         Qualifier qualifier = AnnotationUtils.findAnnotation(annotation.qualifier(), Qualifier.class);
         Assert.notNull(qualifier,"default extensions 'qualifier' field needs to be set to annotation type having @Qualifier meta annotation");
-        String qualifierString = (String) qualifier.value();
+        String qualifierString = qualifier.value();
         Assert.isTrue(!qualifierString.isEmpty(),"must provide non emtpy qualifier string value");
         return qualifierString;
     }

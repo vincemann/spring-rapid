@@ -30,7 +30,7 @@ public class AclCascadeInfo {
             try {
                 this.target = Types.createMethod(target);
             }catch (Exception e){
-                throw new IllegalArgumentException("Could not extract method from method ref");
+                throw new IllegalArgumentException("Could not extract method from method ref",e);
             }
         }
         this.targetSupplier = targetSupplier;
