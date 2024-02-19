@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.core.controller.UrlParamWebExtensionPars
 import com.github.vincemann.springrapid.core.controller.WebExtensionType;
 import com.github.vincemann.springrapid.core.service.filter.WebExtension;
 import com.github.vincemann.springrapid.core.util.Lists;
+import org.hamcrest.Matcher;
 //import org.hamcrest.Matcher;
 
 import java.util.Arrays;
@@ -24,23 +25,23 @@ public class DtoMappingConditions {
         };
     }
 
-//    public static Predicate<DtoRequestInfo> endpoint(Matcher<String> endpointMatcher){
-//        return new DescribablePredicate<>("endpoint-matcher: " + endpointMatcher) {
-//            @Override
-//            public boolean test(DtoRequestInfo dtoRequestInfo) {
-//                return endpointMatcher.matches(dtoRequestInfo.getEndpoint());
-//            }
-//        };
-//    }
-//
-//    public static Predicate<DtoRequestInfo> endpoint(Matcher<DtoRequestInfo> matcher){
-//        return new DescribablePredicate<>("request: " + matcher) {
-//            @Override
-//            public boolean test(DtoRequestInfo dtoRequestInfo) {
-//                return matcher.matches(dtoRequestInfo);
-//            }
-//        };
-//    }
+    public static Predicate<DtoRequestInfo> endpoint(Matcher<String> endpointMatcher){
+        return new DescribablePredicate<>("endpoint-matcher: " + endpointMatcher) {
+            @Override
+            public boolean test(DtoRequestInfo dtoRequestInfo) {
+                return endpointMatcher.matches(dtoRequestInfo.getEndpoint());
+            }
+        };
+    }
+
+    public static Predicate<DtoRequestInfo> request(Matcher<DtoRequestInfo> matcher){
+        return new DescribablePredicate<>("request: " + matcher) {
+            @Override
+            public boolean test(DtoRequestInfo dtoRequestInfo) {
+                return matcher.matches(dtoRequestInfo);
+            }
+        };
+    }
 
     public static Predicate<DtoRequestInfo> endpointRegex(String regex) {
         return new DescribablePredicate<>("endpoint-regex: " + regex) {
