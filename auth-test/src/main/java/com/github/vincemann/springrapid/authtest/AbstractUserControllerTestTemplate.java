@@ -107,9 +107,8 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
 
-    public RequestBuilder requestContactInformationChange(Serializable targetId, String token, RequestContactInformationChangeDto dto) throws Exception {
+    public RequestBuilder requestContactInformationChange(String token, RequestContactInformationChangeDto dto) throws Exception {
         return post(getController().getRequestContactInformationChangeUrl())
-                .param("id", targetId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .content(serialize(dto));
