@@ -11,8 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
 @SpringBootTest({
-        "rapid-auth.bruteForceProtection=true",
-        "rapid-auth.maxLoginAttempts=5"
+        "rapid-auth.bruteforce-protection=true",
+        "rapid-auth.max-login-attempts=5"
 })
 public class LoginBruteForceTest extends RapidAuthIntegrationTest {
 

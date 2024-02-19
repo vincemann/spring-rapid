@@ -30,6 +30,7 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected AuthorizationTokenService authorizationTokenService;
 	protected RapidSecurityContext securityContext;
 	protected RapidAuthenticationSuccessHandler authenticationSuccessHandler;
+	protected BruteForceProtectionConfigurer bruteForceProtectionConfigurer;
 
 	public RapidWebSecurityConfig() {
 
@@ -56,6 +57,11 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 		otherConfigurations(http); // override this to add more configurations
 		login(http); // authentication
 		exceptionHandling(http); // exception handling
+		bruteforceProtection(http);
+	}
+
+	private void bruteforceProtection(HttpSecurity http) throws Exception {
+		http.apply(bruteForceProtectionConfigurer);
 	}
 
 //	protected void disableFilterForLogin(WebSecurity web){
@@ -204,4 +210,8 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 		this.authenticationSuccessHandler = authenticationSuccessHandler;
 	}
 
+	@Autowired(required = false)
+	public void setBruteForceProtectionConfigurer(BruteForceProtectionConfigurer bruteForceProtectionConfigurer) {
+		this.bruteForceProtectionConfigurer = bruteForceProtectionConfigurer;
+	}
 }
