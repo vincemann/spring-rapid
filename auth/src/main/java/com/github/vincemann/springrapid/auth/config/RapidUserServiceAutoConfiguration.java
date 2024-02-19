@@ -94,6 +94,7 @@ public class RapidUserServiceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "verificationService")
+    @Primary
     public VerificationService verificationService(){
         return new VerificationServiceImpl();
     }

@@ -330,7 +330,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
 
     protected void assertPrototype(String beanName){
         BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-        Assert.state(beanDefinition.isPrototype(),"extensions must be of scope prototype");
+        Assert.state(beanDefinition.isPrototype(),"extensions must be of scope prototype, violation of constraint from bean: " + beanName);
     }
 
     protected void assertPrototype(Class<?> clazz){

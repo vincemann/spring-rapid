@@ -61,7 +61,8 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	private void bruteforceProtection(HttpSecurity http) throws Exception {
-		http.apply(bruteForceProtectionConfigurer);
+		if (bruteForceProtectionConfigurer != null)
+			http.apply(bruteForceProtectionConfigurer);
 	}
 
 //	protected void disableFilterForLogin(WebSecurity web){

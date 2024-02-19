@@ -6,6 +6,7 @@ import com.github.vincemann.aoplog.api.IBeanNameAware;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 
 import com.google.common.base.Objects;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.GenericTypeResolver;
@@ -35,6 +36,7 @@ public abstract class ServiceExtension<T>
 
 
     @Setter
+    @Getter
     private Class<?> targetClass;
 
 
@@ -131,4 +133,11 @@ public abstract class ServiceExtension<T>
         return (T) getChain().getLast();
     }
 
+    @Override
+    public String toString() {
+        return "ServiceExtension{" +
+                "type=" +this.getClass().getSimpleName()+", "+
+                "targetClass=" + targetClass +
+                '}';
+    }
 }

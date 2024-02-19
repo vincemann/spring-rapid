@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Used primarily to add more plugins.
  *
  */
-public abstract class ExtensionProxyConfigurer<S extends CrudService> implements InitializingBean {
+public abstract class ExtensionProxyConfigurer<S> implements InitializingBean {
 
     S service;
 

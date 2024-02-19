@@ -47,7 +47,7 @@ public class RapidDefaultExtensionsAutoConfiguration {
 
             if (AopUtils.isAopProxy(extension)) {
                 // If the bean is a proxy, determine the target class
-                targetClass = AopProxyUtils.ultimateTargetClass(extension);
+                targetClass = AopProxyUtils.getSingletonTarget(extension).getClass();
             } else {
                 // If it's not a proxy, just use its class
                 targetClass = extension.getClass();

@@ -145,7 +145,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
     }
 
     public void addExtension(ServiceExtension<?> extension) {
-        Assert.isTrue(extension.matchesProxy(this),"extension does not match proxy, must be superclass of proxied object");
+        Assert.isTrue(extension.matchesProxy(this),"extension does not match proxy, must be superclass of proxied object. extension: " + extension);
         this.extensions.add(extension);
         //extension expects chainController<T>, gets ChainController<S>, T is always superclass of S -> so this is safe
         extension.setChain(this);
