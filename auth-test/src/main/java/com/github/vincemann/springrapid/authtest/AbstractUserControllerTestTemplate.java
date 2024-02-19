@@ -124,9 +124,8 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return verifyMailWasSend();
     }
 
-    public RequestBuilder changePassword(Serializable id, String token, ChangePasswordDto dto) throws Exception {
+    public RequestBuilder changePassword(String token, ChangePasswordDto dto) throws Exception {
         return post(getController().getChangePasswordUrl())
-                .param("id", id.toString())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(serialize(dto));

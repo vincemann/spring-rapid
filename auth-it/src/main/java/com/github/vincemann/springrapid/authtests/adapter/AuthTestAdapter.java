@@ -37,6 +37,7 @@ public abstract class AuthTestAdapter {
     public static  String BLOCKED_USER_PASSWORD = "blockedUserSanjaySanjay99!";
 
     public static String UNKNOWN_USER_ID = "99";
+    public static String UNKNOWN_USER_CONTACT_INFORMATION = "unknown@example.com";
 
 
     public void beforeEach() throws Exception{}

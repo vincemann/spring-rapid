@@ -13,25 +13,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class ChangePasswordTest extends RapidAuthIntegrationTest {
 
-	private ChangePasswordDto changePasswordDto(String oldPassword){
+	private ChangePasswordDto changePasswordDto(String contactInformation, String oldPassword){
 		return ChangePasswordDto.builder()
+				.contactInformation(contactInformation)
 				.oldPassword(oldPassword)
 				.newPassword(NEW_PASSWORD)
 				.build();
 	}
 
-	/**
-	 * A non-admin user should be able to change his password.
-	 */
+
+
 	@Test
 	public void canChangeOwnPassword() throws Exception {
 		ChangePasswordDto changePasswordDto = ChangePasswordDto.builder()
+				.contactInformation(USER_CONTACT_INFORMATION)
 				.oldPassword(USER_PASSWORD)
 				.newPassword(NEW_PASSWORD)
 				.build();
 
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-		mvc.perform(userController.changePassword(getUser().getId(),token, changePasswordDto))
+		mvc.perform(userController.changePassword(token, changePasswordDto))
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
 
@@ -45,10 +46,10 @@ public class ChangePasswordTest extends RapidAuthIntegrationTest {
 
 	@Test
 	public void adminCanChangePasswordOfDiffUser() throws Exception {
-		ChangePasswordDto changePasswordDto = changePasswordDto(USER_PASSWORD);
+		ChangePasswordDto changePasswordDto = changePasswordDto(USER_CONTACT_INFORMATION,USER_PASSWORD);
 
 		String token = login2xx(ADMIN_CONTACT_INFORMATION, ADMIN_PASSWORD);
-		mvc.perform(userController.changePassword(getUser().getId(),token, changePasswordDto))
+		mvc.perform(userController.changePassword(token, changePasswordDto))
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
 
@@ -59,22 +60,22 @@ public class ChangePasswordTest extends RapidAuthIntegrationTest {
 
 	@Test
 	public void cantChangePasswordForUnknownId() throws Exception {
-		ChangePasswordDto changePasswordDto = changePasswordDto(USER_PASSWORD);
+		ChangePasswordDto changePasswordDto = changePasswordDto(UNKNOWN_CONTACT_INFORMATION,USER_PASSWORD);
 
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
-		mvc.perform(userController.changePassword(UNKNOWN_USER_ID,token, changePasswordDto))
+		mvc.perform(userController.changePassword(token, changePasswordDto))
 				.andExpect(status().isNotFound());
 	}
 
 
 	@Test
 	public void userCantChangePasswordOfAnotherUser() throws Exception {
-		ChangePasswordDto changePasswordDto = changePasswordDto(SECOND_USER_PASSWORD);
+		ChangePasswordDto changePasswordDto = changePasswordDto(SECOND_USER_CONTACT_INFORMATION,SECOND_USER_PASSWORD);
 
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
-		mvc.perform(userController.changePassword(getSecondUser().getId(),token, changePasswordDto))
+		mvc.perform(userController.changePassword(token, changePasswordDto))
 				.andExpect(status().isForbidden());
 
 		login2xx(SECOND_USER_CONTACT_INFORMATION, SECOND_USER_PASSWORD);
@@ -88,9 +89,10 @@ public class ChangePasswordTest extends RapidAuthIntegrationTest {
 		ChangePasswordDto changePasswordDto = ChangePasswordDto.builder()
 				.oldPassword(null)
 				.newPassword(null)
+				.contactInformation(null)
 				.build();
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-		mvc.perform(userController.changePassword(getUser().getId(),token, changePasswordDto))
+		mvc.perform(userController.changePassword(token, changePasswordDto))
 				.andExpect(status().isBadRequest());
 		login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
@@ -99,9 +101,10 @@ public class ChangePasswordTest extends RapidAuthIntegrationTest {
 		changePasswordDto = ChangePasswordDto.builder()
 				.oldPassword(USER_PASSWORD)
 				.newPassword(INVALID_PASSWORD)
+				.contactInformation(USER_CONTACT_INFORMATION)
 				.build();
 		token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-		mvc.perform(userController.changePassword(getUser().getId(),token, changePasswordDto))
+		mvc.perform(userController.changePassword(token, changePasswordDto))
 				.andExpect(status().isBadRequest());
 		login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
@@ -109,11 +112,23 @@ public class ChangePasswordTest extends RapidAuthIntegrationTest {
 		changePasswordDto = ChangePasswordDto.builder()
 				.oldPassword(USER_PASSWORD+"wrong")
 				.newPassword(NEW_PASSWORD)
+				.contactInformation(USER_CONTACT_INFORMATION)
 				.build();
 		token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-		mvc.perform(userController.changePassword(getUser().getId(),token, changePasswordDto))
+		mvc.perform(userController.changePassword(token, changePasswordDto))
 				.andExpect(status().isBadRequest());
 		login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
+		// blank contact information
+		// wrong old password
+		changePasswordDto = ChangePasswordDto.builder()
+				.oldPassword(USER_PASSWORD)
+				.newPassword(NEW_PASSWORD)
+				.contactInformation("")
+				.build();
+		token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
+		mvc.perform(userController.changePassword(token, changePasswordDto))
+				.andExpect(status().isBadRequest());
+		login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 	}
 }
