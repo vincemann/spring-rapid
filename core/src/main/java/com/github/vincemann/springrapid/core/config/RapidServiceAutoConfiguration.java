@@ -15,7 +15,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import javax.persistence.EntityManager;
 
-@EnableAspectJAutoProxy(proxyTargetClass = true)
 @Configuration
 public class RapidServiceAutoConfiguration {
 

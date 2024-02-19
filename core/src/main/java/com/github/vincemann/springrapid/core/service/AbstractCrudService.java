@@ -2,8 +2,9 @@ package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.util.TypeResolver;
+
 import lombok.Setter;
+import org.springframework.core.GenericTypeResolver;
 import org.springframework.stereotype.Component;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.BeansException;
@@ -56,7 +57,7 @@ public abstract class AbstractCrudService
 
 
     @SuppressWarnings("unchecked")
-    private Class<E> entityClass = (Class<E>) TypeResolver.findFirstGenericParameter(this.getClass());
+    private Class<E> entityClass = (Class<E>) GenericTypeResolver.resolveTypeArguments(this.getClass(),CrudService.class)[0];
 
     public R getRepository() {
         return repository;

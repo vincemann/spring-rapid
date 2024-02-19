@@ -115,9 +115,8 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .content(serialize(dto));
     }
 
-    public MailData requestContactInformationChange2xx(Serializable targetId, String token, RequestContactInformationChangeDto dto) throws Exception {
+    public MailData requestContactInformationChange2xx(String token, RequestContactInformationChangeDto dto) throws Exception {
         mvc.perform(post(getController().getRequestContactInformationChangeUrl())
-                .param("id", targetId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .content(serialize(dto)))
@@ -219,8 +218,6 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
     public RequestBuilder verifyContactInformationWithLink(String link) throws Exception {
         return get(link)
-//                .param("id", id.toString())
-//                .param("code", code)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
@@ -235,13 +232,13 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
     public RequestBuilder resendVerificationContactInformation(String contactInformation, String token) throws Exception {
         return post(getController().getResendVerificationContactInformationUrl())
-                .param("contactInformation", contactInformation)
+                .param("ci", contactInformation)
                 .header(HttpHeaders.AUTHORIZATION, token);
     }
 
     public MailData resendVerificationContactInformation2xx(String contactInformation, String token) throws Exception {
         mvc.perform(post(getController().getResendVerificationContactInformationUrl())
-                .param("contactInformation", contactInformation)
+                .param("ci", contactInformation)
                 .header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().is2xxSuccessful());
         return verifyMailWasSend();

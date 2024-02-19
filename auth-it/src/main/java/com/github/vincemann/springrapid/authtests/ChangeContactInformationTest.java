@@ -36,7 +36,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 	@Test
 	public void canChangeOwnContactInformation() throws Exception {
 		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
-		MailData mailData = userController.requestContactInformationChange2xx(getUser().getId(), token,
+		MailData mailData = userController.requestContactInformationChange2xx(token,
 				new RequestContactInformationChangeDto(getUser().getContactInformation(),NEW_CONTACT_INFORMATION));
 
 		mvc.perform(userController.changeContactInformationWithLink(mailData.getLink(),token))
@@ -54,8 +54,8 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 	@Test
 	public void unverifiedUserCanChangeOwnContactInformation() throws Exception {
 		String token = login2xx(UNVERIFIED_USER_CONTACT_INFORMATION,UNVERIFIED_USER_PASSWORD);
-		MailData mailData = userController.requestContactInformationChange2xx(getUnverifiedUser().getId(), token,
-				new RequestContactInformationChangeDto(getUser().getContactInformation(),NEW_CONTACT_INFORMATION));
+		MailData mailData = userController.requestContactInformationChange2xx(token,
+				new RequestContactInformationChangeDto(getUnverifiedUser().getContactInformation(),NEW_CONTACT_INFORMATION));
 
 		mvc.perform(userController.changeContactInformationWithLink(mailData.getLink(),token))
 				//gets new token for new contactInformation to use
@@ -72,7 +72,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 	@Test
 	public void cantChangeContactInformationOfDiffUser() throws Exception {
 		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
-		MailData mailData = userController.requestContactInformationChange2xx(getUser().getId(), token,
+		MailData mailData = userController.requestContactInformationChange2xx(token,
 				new RequestContactInformationChangeDto(getUser().getContactInformation(),NEW_CONTACT_INFORMATION));
 
 		token = login2xx(SECOND_USER_CONTACT_INFORMATION,SECOND_USER_PASSWORD);
@@ -85,7 +85,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 	@Test
 	public void cantChangeOwnContactInformationWithSameCodeTwice() throws Exception {
 		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
-		MailData mailData = userController.requestContactInformationChange2xx(getUser().getId(), token,
+		MailData mailData = userController.requestContactInformationChange2xx(token,
 				new RequestContactInformationChangeDto(getUser().getContactInformation(),NEW_CONTACT_INFORMATION));
 
 		mvc.perform(userController.changeContactInformationWithLink(mailData.getLink(),token))
@@ -107,7 +107,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 	@Test
 	public void cantChangeOwnContactInformationWithInvalidCode() throws Exception {
 		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
-		MailData mailData = userController.requestContactInformationChange2xx(getUser().getId(), token,
+		MailData mailData = userController.requestContactInformationChange2xx(token,
 				new RequestContactInformationChangeDto(getUser().getContactInformation(),NEW_CONTACT_INFORMATION));
 
 
@@ -145,7 +145,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 @Test
 public void cantChangeOwnContactInformationWithObsoleteCode() throws Exception {
 	String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
-	MailData mailData = userController.requestContactInformationChange2xx(getUser().getId(), token,
+	MailData mailData = userController.requestContactInformationChange2xx(token,
 			new RequestContactInformationChangeDto(getUser().getContactInformation(),NEW_CONTACT_INFORMATION));
 	// credentials updated after the request for contactInformation change was made
 
@@ -192,7 +192,7 @@ public void cantChangeOwnContactInformationWithoutRequestingContactInformationCh
 public void cantChangeOwnContactInformationWhenNewContactInformationNotUnique() throws Exception {
 
 	String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
-	MailData mailData = userController.requestContactInformationChange2xx(getUser().getId(), token,
+	MailData mailData = userController.requestContactInformationChange2xx(token,
 			new RequestContactInformationChangeDto(getUser().getContactInformation(),NEW_CONTACT_INFORMATION));
 
 	// Some other user changed to the same contactInformation, before i could issue my request

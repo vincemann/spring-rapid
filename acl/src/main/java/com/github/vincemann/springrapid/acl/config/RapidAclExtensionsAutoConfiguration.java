@@ -10,10 +10,10 @@ import com.github.vincemann.springrapid.acl.service.ext.sec.CrudAclChecksExtensi
 import com.github.vincemann.springrapid.acl.service.ext.sec.NeedCreatePermissionOnParentForCreateExtension;
 import com.github.vincemann.springrapid.core.DefaultExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.util.condition.ConditionalOnCustomProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -38,7 +38,7 @@ public class RapidAclExtensionsAutoConfiguration {
     @DefaultExtension(qualifier = Secured.class, service = CrudService.class)
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
-    @ConditionalOnCustomProperties(properties = {"rapid-acl.defaultSecurityExtensions", "rapid-acl.defaultAclChecks"})
+    @ConditionalOnProperty(name = "rapid-acl.default-acl-checks", havingValue = "true", matchIfMissing = true)
     public CrudAclChecksExtension crudAclChecksSecurityExtension(){
         return new CrudAclChecksExtension();
     }
@@ -78,8 +78,7 @@ public class RapidAclExtensionsAutoConfiguration {
     @ConditionalOnMissingBean(name = "cleanUpAclExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @DefaultExtension(qualifier = Acl.class, service = CrudService.class)
-//    @ConditionalOnProperty(name = "rapid-acl.cleanupAcl", havingValue = "true", matchIfMissing = true)
-    @ConditionalOnCustomProperties(properties = {"rapid-acl.defaultAclExtensions", "rapid-acl.cleanupAcl"})
+    @ConditionalOnProperty(name = "rapid-acl.cleanup-acl", havingValue = "true", matchIfMissing = true)
     public CleanUpAclExtension cleanUpAclExtension(){
         return new CleanUpAclExtension();
     }

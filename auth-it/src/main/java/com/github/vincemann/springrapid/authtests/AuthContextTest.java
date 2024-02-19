@@ -4,12 +4,10 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.sec.Roles;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
@@ -19,11 +17,8 @@ import java.util.Map;
 import static com.github.vincemann.springrapid.core.util.ProxyUtils.aopUnproxy;
 
 
-public class BasicAuthTest extends RapidAuthIntegrationTest {
+public class AuthContextTest extends RapidAuthIntegrationTest {
 
-
-	@SpyBean
-	CoreProperties coreProperties;
 
 	@BeforeEach
 	public void setup() throws Exception {
@@ -38,7 +33,7 @@ public class BasicAuthTest extends RapidAuthIntegrationTest {
 
 
 	@Test
-	public void loggedInAdminCanGetFullContextInformation() throws Exception {
+	public void authenticatedAdminCanGetFullContextInformation() throws Exception {
 
 		String token = login2xx(ADMIN_CONTACT_INFORMATION, ADMIN_PASSWORD);
 		mvc.perform(get(coreProperties.getContextUrl())
@@ -48,6 +43,20 @@ public class BasicAuthTest extends RapidAuthIntegrationTest {
 
 				.andExpect(jsonPath("$.user.id").value(getAdmin().getId()))
 				.andExpect(jsonPath("$.user.roles[0]").value(Roles.ADMIN))
+				.andExpect(jsonPath("$.user.password").doesNotExist());
+	}
+
+	@Test
+	public void authenticatedUserCanGetFullContextInformation() throws Exception {
+
+		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
+		mvc.perform(get(coreProperties.getContextUrl())
+						.header(HttpHeaders.AUTHORIZATION, token))
+				.andExpect(status().is(200))
+				.andExpect(jsonPath("$.shared").value(hasEntry("testKey","testValue")))
+
+				.andExpect(jsonPath("$.user.id").value(getUser().getId()))
+				.andExpect(jsonPath("$.user.roles[0]").value(Roles.USER))
 				.andExpect(jsonPath("$.user.password").doesNotExist());
 	}
 	

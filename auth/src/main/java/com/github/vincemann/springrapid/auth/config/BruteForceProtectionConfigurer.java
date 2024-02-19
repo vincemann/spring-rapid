@@ -12,7 +12,7 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@ConditionalOnProperty(name = "rapid-auth.bruteForceProtection", havingValue = "true")
+@ConditionalOnProperty(name = "rapid-auth.bruteforce-protection", havingValue = "true")
 public class BruteForceProtectionConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
     private final LoginAttemptService loginAttemptService;

@@ -9,6 +9,7 @@ import com.github.vincemann.springrapid.acl.service.ext.sec.CrudAclChecksExtensi
 import com.github.vincemann.springrapid.auth.service.SignupService;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.ext.acl.SignupServiceAclExtension;
+import com.github.vincemann.springrapid.auth.service.ext.acl.UserGainsAdminPermissionOnCreated;
 import com.github.vincemann.springrapid.auth.service.ext.sec.ContactInformationServiceSecurityExtension;
 import com.github.vincemann.springrapid.auth.service.ext.sec.PasswordServiceSecurityExtension;
 import com.github.vincemann.springrapid.auth.service.ext.sec.UserAuthTokenServiceSecurityExtension;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -82,5 +84,12 @@ public class RapidUserExtensionsAutoConfiguration {
         return new SignupServiceAclExtension();
     }
 
+
+    @ConditionalOnMissingBean(name = "userGainsAdminPermissionAboutSelfAclExtension")
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    @Bean
+    public UserGainsAdminPermissionOnCreated userGainsAdminPermissionAboutSelfAclExtension(){
+        return new UserGainsAdminPermissionOnCreated();
+    }
 
 }

@@ -3,8 +3,8 @@ package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.auth.sec.AdminGlobalSecurityRule;
 import com.github.vincemann.springrapid.auth.sec.DenyBlockedGlobalSecurityRule;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
-import com.github.vincemann.springrapid.core.util.condition.ConditionalOnCustomProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
@@ -18,7 +18,7 @@ public class RapidGlobalSecurityRuleAutoConfiguration {
     }
 
     @ConditionalOnMissingBean(name = "adminGlobalSecurityRule")
-    @ConditionalOnCustomProperties(properties = {"rapid-acl.adminFullAccess"})
+    @ConditionalOnProperty(name = "rapid-acl.admin-full-access", havingValue = "true", matchIfMissing = true)
     @Bean
     public AdminGlobalSecurityRule adminGlobalSecurityRule(){
         return new AdminGlobalSecurityRule();

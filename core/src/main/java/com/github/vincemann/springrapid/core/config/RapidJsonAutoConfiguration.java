@@ -24,7 +24,6 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGL
 @Configuration
 @Slf4j
 @EnableWebMvc
-//string to json and vice versa
 public class RapidJsonAutoConfiguration implements WebMvcConfigurer {
 
     public RapidJsonAutoConfiguration() {

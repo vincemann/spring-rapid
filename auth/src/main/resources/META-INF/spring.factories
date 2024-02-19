@@ -1,6 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.github.vincemann.springrapid.auth.config.RapidTokenServiceAutoConfiguration,\
-com.github.vincemann.springrapid.auth.config.RapidCommonsWebAutoConfiguration,\
 com.github.vincemann.springrapid.auth.config.RapidUserServiceAutoConfiguration,\
 com.github.vincemann.springrapid.auth.config.RapidAuthExceptionHandlerAutoConfiguration,\
 com.github.vincemann.springrapid.auth.config.RapidAuthenticationAutoConfiguration,\
@@ -12,7 +11,6 @@ com.github.vincemann.springrapid.auth.config.RapidUserExtensionsAutoConfiguratio
 com.github.vincemann.springrapid.auth.config.RapidAuthSecurityAutoConfiguration,\
 com.github.vincemann.springrapid.auth.config.RapidAuthAclAutoConfiguration,\
 com.github.vincemann.springrapid.auth.config.RapidAuthControllerAutoConfiguration,\
-com.github.vincemann.springrapid.auth.config.RapidAuthExtensionsAutoConfiguration, \
 com.github.vincemann.springrapid.auth.config.RapidMailAutoConfiguration, \
 com.github.vincemann.springrapid.auth.config.RapidGlobalSecurityRuleAutoConfiguration, \
 com.github.vincemann.springrapid.auth.config.RapidAuthAuditAutoConfiguration, \

@@ -23,6 +23,7 @@ import com.github.vincemann.springrapid.core.proxy.ExtensionProxies;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.service.pass.BcryptRapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.service.pass.RapidPasswordEncoder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -124,6 +125,7 @@ public class RapidUserServiceAutoConfiguration {
     public ContactInformationService contactInformationService(){
         return new ContactInformationServiceImpl();
     }
+
 
     @Bean
     @Secured

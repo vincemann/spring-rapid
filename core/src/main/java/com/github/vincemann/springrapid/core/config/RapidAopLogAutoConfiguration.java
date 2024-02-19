@@ -1,10 +1,11 @@
 package com.github.vincemann.springrapid.core.config;
 
 import com.github.vincemann.aoplog.*;
-import com.github.vincemann.aoplog.parseAnnotation.TypeHierarchyAnnotationParser;
+import com.github.vincemann.aoplog.annotation.TypeHierarchyAnnotationParser;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -15,8 +16,8 @@ import static com.github.vincemann.aoplog.Patterns.GETTER_REGEX;
 import static com.github.vincemann.aoplog.Patterns.SETTER_REGEX;
 
 @Configuration
-@EnableAspectJAutoProxy(proxyTargetClass = true)
 @Slf4j
+@ConditionalOnProperty(name = "rapid-core.enable-aop-log", havingValue = "true", matchIfMissing = true)
 public class RapidAopLogAutoConfiguration {
 
     private static final boolean SKIP_NULL_FIELDS = true;

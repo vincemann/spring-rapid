@@ -4,10 +4,11 @@ package com.github.vincemann.springrapid.core.proxy;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.IBeanNameAware;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
-import com.github.vincemann.springrapid.core.util.TypeResolver;
+
 import com.google.common.base.Objects;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.GenericTypeResolver;
 import org.springframework.util.Assert;
 
 /**
@@ -43,7 +44,7 @@ public abstract class ServiceExtension<T>
     }
 
     protected Class<?> findTargetClass(){
-        Class<?> clazz = TypeResolver.findFirstGenericParameter(this.getClass());
+        Class<?> clazz = GenericTypeResolver.resolveTypeArgument(this.getClass(),ServiceExtension.class);
         if (clazz == null){
             log.debug("could not find type parameter, call setter for target class on extension or just ignore - but dynamic type safety check is ignored for adding extensions to proxy");
         }

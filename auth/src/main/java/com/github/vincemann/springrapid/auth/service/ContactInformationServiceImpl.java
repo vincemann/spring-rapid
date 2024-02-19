@@ -64,12 +64,12 @@ public class ContactInformationServiceImpl implements ContactInformationService 
         checkUniqueContactInformation(user.getNewContactInformation());
         // update the fields
 
+        userService.updateContactInformation(user.getId(), user.getNewContactInformation());
+
         // changing newContactInformation to null is too high level to put into low level updateContactInformation method -> need two update calls
         AbstractUser update = Entity.createUpdate(user);
         update.setNewContactInformation(null);
-        userService.partialUpdate(update,propertyNameOf(user::getNewContactInformation));
-
-        AbstractUser updated = userService.updateContactInformation(user.getId(), user.getNewContactInformation());
+        AbstractUser updated = userService.partialUpdate(update, propertyNameOf(user::getNewContactInformation));
 
         // make the user verified if he is not
         if (user.hasRole(AuthRoles.UNVERIFIED))

@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.proxy;
 
-import com.github.vincemann.aoplog.MethodUtils;
+import com.github.vincemann.aoplog.GenericMatchMethodUtils;
 import com.github.vincemann.springrapid.core.proxy.annotation.AutowireProxy;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
@@ -266,7 +266,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
                     public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
                         //this should always work, there should never get a method called, that does not exist in extension
                         try {
-                            return MethodUtils.findMethod(extension.getClass(), method.getName(), method.getParameterTypes())
+                            return GenericMatchMethodUtils.findMethod(extension.getClass(), method.getName(), method.getParameterTypes())
                                     .invoke(extension, objects);
                         } catch (InvocationTargetException e) {
                             throw e.getTargetException();
@@ -294,7 +294,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
             for (int i = 0; i < extensions.size(); i++) {
                 ServiceExtension<?> extension = extensions.get(i);
                 try {
-                    Method extensionsMethod = MethodUtils.findMethod(extension.getClass(), method.getName(), method.getParameterTypes());
+                    Method extensionsMethod = GenericMatchMethodUtils.findMethod(extension.getClass(), method.getName(), method.getParameterTypes());
                     method_chain_entry.getValue().add(new ExtensionHandle(extension, extensionsMethod));
                 } catch (NoSuchMethodException e) {
                     // happens all the time, when extension does not define the method in question, that may be defined in an extension

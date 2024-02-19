@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Slf4j
 @EnableConfigurationProperties
-@AutoConfigureAfter(RapidGeneralAutoConfiguration.class)
+@AutoConfigureBefore(RapidGeneralAutoConfiguration.class)
 public class RapidAuthGeneralAutoConfiguration {
 
     @ConfigurationProperties(prefix="rapid-auth")

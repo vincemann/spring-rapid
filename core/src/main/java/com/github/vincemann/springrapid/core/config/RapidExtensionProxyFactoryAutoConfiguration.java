@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
 
 @Configuration
-public class RapidProxyAutoConfiguration {
+public class RapidExtensionProxyFactoryAutoConfiguration {
 
     @Bean
     public AnnotationExtensionProxyFactory annotationExtensionProxyFactory(){

@@ -14,7 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@ConditionalOnProperty(name = "rapid-auth.bruteForceProtection", havingValue = "true")
+@ConditionalOnProperty(name = "rapid-auth.bruteforce-protection", havingValue = "true") // opt in
 public class RapidBruteForceAutoConfiguration extends SecurityConfigurerAdapter {
 
 
