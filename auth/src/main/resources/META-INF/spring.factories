@@ -12,7 +12,7 @@ com.github.vincemann.springrapid.auth.config.RapidAuthSecurityAutoConfiguration,
 com.github.vincemann.springrapid.auth.config.RapidAuthAclAutoConfiguration,\
 com.github.vincemann.springrapid.auth.config.RapidAuthControllerAutoConfiguration,\
 com.github.vincemann.springrapid.auth.config.RapidMailAutoConfiguration, \
-com.github.vincemann.springrapid.auth.config.RapidGlobalSecurityRuleAutoConfiguration, \
+com.github.vincemann.springrapid.auth.config.RapidGlobalSecurityRulesAutoConfiguration, \
 com.github.vincemann.springrapid.auth.config.RapidAuthAuditAutoConfiguration, \
 com.github.vincemann.springrapid.auth.config.RapidBruteForceAutoConfiguration, \
 com.github.vincemann.springrapid.auth.config.BruteForceProtectionConfigurer

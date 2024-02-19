@@ -9,16 +9,17 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 
 @Configuration
-public class RapidGlobalSecurityRuleAutoConfiguration {
+public class RapidGlobalSecurityRulesAutoConfiguration {
 
     @ConditionalOnMissingBean(name = "denyBlockedGlobalSecurityRule")
+    @ConditionalOnProperty(name = "rapid-acl.deny-blocked-rule", havingValue = "true", matchIfMissing = true)
     @Bean
     public DenyBlockedGlobalSecurityRule denyBlockedGlobalSecurityRule(){
         return new DenyBlockedGlobalSecurityRule();
     }
 
     @ConditionalOnMissingBean(name = "adminGlobalSecurityRule")
-    @ConditionalOnProperty(name = "rapid-acl.admin-full-access", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(name = "rapid-acl.admin-full-access-rule", havingValue = "true", matchIfMissing = true)
     @Bean
     public AdminGlobalSecurityRule adminGlobalSecurityRule(){
         return new AdminGlobalSecurityRule();

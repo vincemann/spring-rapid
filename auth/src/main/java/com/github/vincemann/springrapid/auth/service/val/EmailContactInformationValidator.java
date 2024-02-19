@@ -9,6 +9,9 @@ import javax.validation.ValidatorFactory;
 import javax.validation.constraints.Email;
 import java.util.Set;
 
+/**
+ * enforces the {@link Email} constraint programmatically
+ */
 public class EmailContactInformationValidator implements ContactInformationValidator {
 
     private Validator validator;

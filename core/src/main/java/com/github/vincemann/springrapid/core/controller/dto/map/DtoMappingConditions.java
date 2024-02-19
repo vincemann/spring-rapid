@@ -4,11 +4,11 @@ import com.github.vincemann.springrapid.core.controller.UrlParamWebExtensionPars
 import com.github.vincemann.springrapid.core.controller.WebExtensionType;
 import com.github.vincemann.springrapid.core.service.filter.WebExtension;
 import com.github.vincemann.springrapid.core.util.Lists;
-import org.hamcrest.Matcher;
-import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
+//import org.hamcrest.Matcher;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public class DtoMappingConditions {
@@ -24,14 +24,23 @@ public class DtoMappingConditions {
         };
     }
 
-    public static Predicate<DtoRequestInfo> endpoint(Matcher<String> endpointMatcher){
-        return new DescribablePredicate<>("endpoint: " + endpointMatcher) {
-            @Override
-            public boolean test(DtoRequestInfo dtoRequestInfo) {
-                return endpointMatcher.matches(dtoRequestInfo.getEndpoint());
-            }
-        };
-    }
+//    public static Predicate<DtoRequestInfo> endpoint(Matcher<String> endpointMatcher){
+//        return new DescribablePredicate<>("endpoint-matcher: " + endpointMatcher) {
+//            @Override
+//            public boolean test(DtoRequestInfo dtoRequestInfo) {
+//                return endpointMatcher.matches(dtoRequestInfo.getEndpoint());
+//            }
+//        };
+//    }
+//
+//    public static Predicate<DtoRequestInfo> endpoint(Matcher<DtoRequestInfo> matcher){
+//        return new DescribablePredicate<>("request: " + matcher) {
+//            @Override
+//            public boolean test(DtoRequestInfo dtoRequestInfo) {
+//                return matcher.matches(dtoRequestInfo);
+//            }
+//        };
+//    }
 
     public static Predicate<DtoRequestInfo> endpointRegex(String regex) {
         return new DescribablePredicate<>("endpoint-regex: " + regex) {
@@ -78,6 +87,20 @@ public class DtoMappingConditions {
         };
     }
 
+    public static Predicate<DtoRequestInfo> anyRoles(String... roles){
+        return new DescribablePredicate<>("roles: " + Arrays.toString(roles)) {
+            @Override
+            public boolean test(DtoRequestInfo dtoRequestInfo) {
+                Set<String> roles = new HashSet<>(dtoRequestInfo.getAuthorities());
+                for(String role : roles){
+                    if(roles.stream().anyMatch(r -> r.equals(role))){
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+    }
     public static Predicate<DtoRequestInfo> roles(String... roles){
         return new DescribablePredicate<>("roles: " + Arrays.toString(roles)) {
             @Override
