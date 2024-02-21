@@ -43,7 +43,6 @@ public class IdResolvingDtoPostProcessor implements EntityDtoPostProcessor<Objec
 
     @Override
     public void postProcessDto(Object dto, IdentifiableEntity<?> entity, String... fieldsToCheck) {
-        //yet unfinished
         List<EntityIdResolver> entityIdResolvers = findResolvers(dto.getClass());
         for (EntityIdResolver entityIdResolver : entityIdResolvers) {
             entityIdResolver.setResolvedIds(dto, entity, fieldsToCheck);
@@ -53,7 +52,6 @@ public class IdResolvingDtoPostProcessor implements EntityDtoPostProcessor<Objec
     // todo this is probably the only method that needs to be transactional and also might need entityManger.merge
     @Override
     public void postProcessEntity(IdentifiableEntity<?> entity, Object dto) throws BadEntityException, EntityNotFoundException {
-        //yet unfinished
         List<EntityIdResolver> entityIdResolvers = findResolvers(dto.getClass());
         for (EntityIdResolver resolver : entityIdResolvers) {
             resolver.setResolvedEntities(entity, dto);

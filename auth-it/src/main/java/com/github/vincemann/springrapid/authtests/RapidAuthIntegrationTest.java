@@ -52,8 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Creates All Test Users.
  * Fills tokens Map in an integration test manner by creating and logging all users in.
  */
-@SpringBootTest
-@ImportAutoConfiguration(exclude = RapidAdminAutoConfiguration.class)
+@SpringBootTest(properties = "rapid-auth.create-admins=false")
 @Getter
 @Slf4j
 // dont do like that because its db impl specific - use service

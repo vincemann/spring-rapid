@@ -90,7 +90,6 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
     }
 
     public ResponseEntity<String> findSome(HttpServletRequest request, HttpServletResponse response) throws IOException, BadEntityException {
-        logSecurityContext();
 
         String json = readBody(request);
         CollectionType idSetType = getJsonMapper().getObjectMapper()
@@ -101,6 +100,7 @@ public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extend
 
         beforeFindSome(ids, request, response);
 
+        logSecurityContext();
         Set<E> foundEntities = findSome(ids);
         List<Object> dtos = new ArrayList<>();
         for (E e : foundEntities) {

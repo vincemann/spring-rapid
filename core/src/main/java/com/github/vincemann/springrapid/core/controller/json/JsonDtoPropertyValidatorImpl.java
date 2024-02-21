@@ -18,9 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
-/**
- * makes sure fields from patch exist as fieldnames in dto
- */
+
 @Setter
 public class JsonDtoPropertyValidatorImpl implements JsonDtoPropertyValidator {
 

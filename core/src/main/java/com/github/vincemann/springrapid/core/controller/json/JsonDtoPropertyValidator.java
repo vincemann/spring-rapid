@@ -6,7 +6,7 @@ import java.nio.file.AccessDeniedException;
 import java.util.Set;
 
 /**
- * Checks if user has dto property, that is not in target dto class.
+ * Checks if update json contains dto property, that is not in target dto class -> not allowed to update.
  * If so, throws {@link AccessDeniedException}.
  */
 public interface JsonDtoPropertyValidator {

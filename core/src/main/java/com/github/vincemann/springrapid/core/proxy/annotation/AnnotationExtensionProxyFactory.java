@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -26,6 +28,8 @@ import org.springframework.util.ReflectionUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+
+import static org.springframework.beans.factory.support.AutowireCandidateQualifier.VALUE_KEY;
 
 /**
  * Parses {@link DefineProxy} and creates and stores respective Extension Proxies.
@@ -71,6 +75,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         autowireProxyChains(bean);
         return bean;
     }
+
 
     private void autowireProxyChains(Object bean) {
         Class<?> targetClass = bean.getClass();

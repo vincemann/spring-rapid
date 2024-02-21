@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
  *
  * See {@link com.github.vincemann.springrapid.core.proxy.ExtensionProxy} and {@link AnnotationExtensionProxyFactory}.
  */
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
+@Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Qualifier
 public @interface AutowireProxy {
