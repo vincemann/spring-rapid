@@ -91,6 +91,18 @@ public abstract class AbstractMvcTest extends InitializingTest implements Initia
        return performDsWithStatus(requestBuilder,status().is2xxSuccessful(),dtoClass);
     }
 
+    public <Dto> Set<Dto> performDs2xxSet(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
+        return deserializeToSet(getMvc().perform(requestBuilder)
+                .andExpect(status().is2xxSuccessful())
+                .andReturn().getResponse().getContentAsString(),dtoClass);
+    }
+    public <Dto> List<Dto> performDs2xxList(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
+        return deserializeToList(getMvc().perform(requestBuilder)
+                .andExpect(status().is2xxSuccessful())
+                .andReturn().getResponse().getContentAsString(),dtoClass);
+    }
+
+
     public <Dto> Dto performDsWithStatus(RequestBuilder requestBuilder, ResultMatcher status, Class<Dto> dtoClass) throws Exception {
         return deserialize(getMvc().perform(requestBuilder)
                 .andExpect(status)

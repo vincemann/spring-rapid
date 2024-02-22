@@ -21,9 +21,9 @@ import java.util.Set;
 
 
 /**
- * Interface for a Service offering Crud Operations.
- * @param <E>       Type of Entity whos crud operations are exposed by this Service
- * @param <Id>      Id Type of E
+ * Interface for a service offering crud operations for entities of type E.
+ * @param <E>       Type of entity
+ * @param <Id>      Id type of entity
  */
 @LogInteraction
 @LogConfig(logAllChildrenMethods = true)

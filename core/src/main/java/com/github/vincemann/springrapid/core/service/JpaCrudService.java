@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import javax.persistence.EntityManager;
 import java.io.Serializable;
@@ -27,7 +28,7 @@ import static com.github.vincemann.springrapid.core.util.FilterUtils.*;
 
 
 /**
- * Implementation of {@link AbstractCrudService} that uses Jpa's {@link JpaRepository}.
+ * Implementation of {@link AbstractCrudService} that uses {@link JpaRepository}.
  *
  * @param <E>  Type of Entity whos crud operations are exposed by this Service
  * @param <Id> Id type of E
@@ -53,17 +54,14 @@ public abstract class JpaCrudService
     @Transactional
     @Override
     public Optional<E> findById(Id id) {
-        if (id == null)
-            throw new IllegalArgumentException("Id cannot be null");
-        Optional<E> byId = getRepository().findById(id);
-        return byId;
+        Assert.notNull(id,"id must not be null");
+        return getRepository().findById(id);
     }
 
     @Transactional
     @Override
     public E softUpdate(E update) throws EntityNotFoundException, BadEntityException {
-        if (update.getId() == null)
-            throw new IllegalArgumentException("id cannot be null for update operations");
+        Assert.notNull(update.getId(),"id must not be null");
         return getRepository().save(update);
     }
 
@@ -76,8 +74,7 @@ public abstract class JpaCrudService
     @Transactional
     @Override
     public E partialUpdate(E update, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
-        if (update.getId() == null)
-            throw new IllegalArgumentException("id cannot be null for update operations");
+        Assert.notNull(update.getId(),"id must not be null");
         E managedEntity = findOldEntity(update.getId());
         // never place breakpoint within this method, this triggers unexpected double execution of advices
         // always check logs to see if this method was executed twice
@@ -99,8 +96,7 @@ public abstract class JpaCrudService
     @Transactional
     @Override
     public E fullUpdate(E update) throws BadEntityException, EntityNotFoundException {
-        if (update.getId() == null)
-            throw new IllegalArgumentException("id cannot be null for update operations");
+        Assert.notNull(update.getId(),"id must not be null");
         return getRepository().save(update);
     }
 
@@ -108,8 +104,7 @@ public abstract class JpaCrudService
     @Transactional
     @Override
     public E create(E entity) throws BadEntityException {
-        if (entity.getId() != null)
-            throw new IllegalArgumentException("dont use create method for update operations");
+        Assert.isNull(entity.getId(),"id must be null, dont use create method for update operations");
         return getRepository().save(entity);
     }
 
@@ -138,16 +133,14 @@ public abstract class JpaCrudService
     @Transactional
     @Override
     public void deleteById(Id id) throws EntityNotFoundException {
-        if (id == null)
-            throw new IllegalArgumentException("Id cannot be null");
+        Assert.notNull(id,"id must not be null");
         Optional<E> entity = findById(id);
         VerifyEntity.isPresent(entity, id, getEntityClass());
         getRepository().deleteById(id);
     }
 
     protected E findOldEntity(Id id) throws EntityNotFoundException {
-        if (id == null)
-            throw new IllegalArgumentException("Id cannot be null");
+        Assert.notNull(id,"id must not be null");
         return findById(id).orElseThrow(() -> new EntityNotFoundException(id, getEntityClass()));
     }
 

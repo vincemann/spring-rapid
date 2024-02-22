@@ -28,11 +28,10 @@ public abstract class AbstractCrudService
         implements CrudService<E, Id>, TargetClassAware, ApplicationContextAware {
     private String beanName;
     private R repository;
-    // root version of service
     @Setter
-    protected CrudService<E, Id> service;
+    protected CrudService<E, Id> service; // root version of service
 
-    // todo for some reason this only works in the setter, not in afterPropertiesSet, fix
+    // for some reason this only works in the setter, not in afterPropertiesSet, fix
     // usually the proxy versions are not available yet, only the root version
     // if a proxy should be injected instead
     // implement InitializingBean::afterPropertiesSet and set the service to new instance
@@ -73,32 +72,13 @@ public abstract class AbstractCrudService
         return entityClass;
     }
 
-    // todo fix beanname issue
     @Override
     public String getBeanName() {
-//        if (!Proxy.isProxyClass(this.getClass())) {
-//            System.err.println("not a proxy");
-//        }
-//        try {
-//            ServiceExtensionProxy<AbstractCrudService<E, Id, R>> extensionProxy = ProxyUtils.getExtensionProxy(this);
-//            return extensionProxy.getBeanName();
-//        } catch (IllegalArgumentException e) {
-//            return this.getBeanName();
-//        }
         return this.beanName;
     }
 
     @Override
     public void setBeanName(String name) {
-//        if (!Proxy.isProxyClass(this.getClass())) {
-//            System.err.println("not a proxy");
-//        }
-//        try {
-//            ServiceExtensionProxy<AbstractCrudService<E, Id, R>> extensionProxy = ProxyUtils.getExtensionProxy(this);
-//            extensionProxy.setBeanName(name);
-//        } catch (IllegalArgumentException e) {
-//            this.beanName = name;
-//        }
         this.beanName = name;
     }
 

@@ -177,10 +177,6 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
             return invokeProxied(method, args);
         } else {
 
-            //trying to figure out target class -> dont even ask extensions, go straight to final proxied
-//            if (isGetTargetClassMethod(method)){
-//                return invokeProxied(method, args);
-//            }
             try {
                 if (args == null) {
                     args = new Object[]{};
@@ -189,8 +185,8 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
                 List<ExtensionHandle> extensionChain = createExtensionChain(method);
                 if (!extensionChain.isEmpty()) {
                     state.set(createState(o, method, args));
-                    ExtensionHandle chainHandle = extensionChain.get(0);
-                    return chainHandle.invoke(args);
+                    ExtensionHandle extension = extensionChain.get(0);
+                    return extension.invoke(args);
                 } else {
                     learnedIgnoredMethods.add(new MethodIdentifier(method));
                     return invokeProxied(method, args);
@@ -210,6 +206,13 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
         return new State(method);
     }
 
+    /**
+     * invokes {@link #proxied} object, skipping over all extensions
+     * @param method method that should be invoked on proxied
+     * @param args  args of method
+     * @return return value of method of proxied called
+     * @throws Throwable rethrows any exception the method invocation might throw
+     */
     protected Object invokeProxied(Method method, Object... args) throws Throwable {
         try {
             return getMethods().get(new MethodIdentifier(method))
@@ -219,6 +222,11 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
         }
     }
 
+    /**
+     * looks through the extension chain and finds next extension that also implements currently invoked method
+     * @param extension current extension acting as a base from where the next should be found
+     * @return next extension from chain
+     */
     @Override
     public Object getNext(ServiceExtension extension) {
         State state = this.state.get();
@@ -277,10 +285,10 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
     }
 
     /**
-     * Each method of Proxy has Extension Chain that consists of all Proxy's Extensions, that also define this method.
+     * Each method of Proxy has extension chain that consists of all extensions of proxy, that also define given method.
      *
-     * @param method
-     * @return
+     * @param method method, chain should be formed for
+     * @return extension chain ( list of extensions, that define method )
      */
     protected List<ExtensionHandle> createExtensionChain(Method method) {
         MethodIdentifier methodIdentifier = new MethodIdentifier(method);
@@ -317,7 +325,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
 
     /**
      * Saved state persisting during method call of proxy.
-     * Is reset after method call on proxy ( = all Extensions and proxied) are called.
+     * Is reset after method call on {@link #proxied} finished
      */
     @EqualsAndHashCode
     private static class State {
