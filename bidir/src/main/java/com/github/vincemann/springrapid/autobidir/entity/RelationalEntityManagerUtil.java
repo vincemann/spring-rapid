@@ -7,6 +7,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Low level support class, used by high level components like {@link RelationalEntityManager}.
+ * Its best to stick with annotations like {@link com.github.vincemann.springrapid.autobidir.EnableAutoBiDir} or, if needed, use
+ * {@link RelationalEntityManager} instead of this component.
+ */
 public interface RelationalEntityManagerUtil {
 
     Set<RelationalEntityType> inferTypes(Class<? extends IdentifiableEntity> entityClass);

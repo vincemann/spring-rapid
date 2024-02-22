@@ -22,7 +22,7 @@ public class RelationalEntityManagerImpl implements RelationalEntityManager {
     private EntityManager entityManager;
 
     @Override
-    public <E extends IdentifiableEntity> E save(E entity, String... membersToCheck) {
+    public <E extends IdentifiableEntity> E create(E entity, String... membersToCheck) {
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(getTargetClass(entity));
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             if (log.isDebugEnabled())

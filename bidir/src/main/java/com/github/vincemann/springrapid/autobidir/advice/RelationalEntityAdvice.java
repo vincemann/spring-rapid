@@ -9,7 +9,6 @@ import com.github.vincemann.springrapid.core.service.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.*;
-import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -122,7 +121,7 @@ public class RelationalEntityAdvice {
 
         assertTransactionActive();
 
-        relationalEntityManager.save(entity);
+        relationalEntityManager.create(entity);
     }
 
     /**

@@ -25,11 +25,4 @@ public class RapidBiDirAdviceAutoConfiguration {
         return new RelationalEntityAdvice();
     }
 
-
-    @Bean
-    @ConditionalOnMissingBean(RelationalEntityManager.class)
-    public RelationalEntityManager relationalEntityManager(){
-        return new RelationalEntityManagerImpl();
-    }
-
 }
