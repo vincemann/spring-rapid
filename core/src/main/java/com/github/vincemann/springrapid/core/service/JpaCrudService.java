@@ -82,13 +82,8 @@ public abstract class JpaCrudService
         // the second invocation (that should never occur in the first place) halts then
 //            System.err.println("managed entity: " + managedEntity);
         E detachedUpdateEntity = JpaUtils.deepDetachOrGet(update);
-        Set<String> whiteList;
-        if (fieldsToUpdate.length == 0)
-            whiteList = ReflectionUtils.findAllNonNullFieldNames(update);
-        else
-            whiteList = Sets.newHashSet(fieldsToUpdate);
-
-        NullAwareBeanUtils.copyProperties(managedEntity, detachedUpdateEntity, whiteList);
+        Set<String> propertiesToUpdate = Entity.findPartialUpdatedFields(update,fieldsToUpdate);
+        NullAwareBeanUtils.copyProperties(managedEntity, detachedUpdateEntity, propertiesToUpdate);
         return getRepository().save(managedEntity);
     }
 

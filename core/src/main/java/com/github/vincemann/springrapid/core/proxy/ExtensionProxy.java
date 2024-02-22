@@ -356,7 +356,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
     @AllArgsConstructor
     @Getter
     @ToString
-    private class ExtensionHandle {
+    private static class ExtensionHandle {
         ServiceExtension<?> extension;
         Method method;
 
@@ -375,7 +375,7 @@ public class ExtensionProxy implements Chain, InvocationHandler, BeanNameAware {
     @EqualsAndHashCode
     private static class ExtensionState {
         private State state;
-        private ServiceExtension extension;
+        private ServiceExtension<?> extension;
     }
 
 

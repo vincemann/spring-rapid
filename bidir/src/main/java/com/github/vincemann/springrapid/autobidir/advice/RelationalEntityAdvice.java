@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.autobidir.advice;
 
+import com.github.vincemann.springrapid.autobidir.DisableAutoBiDir;
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManager;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import org.springframework.test.util.AopTestUtils;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.Set;
 
@@ -36,6 +39,7 @@ public class RelationalEntityAdvice {
     private RelationalEntityManager relationalEntityManager;
 
     private CrudServiceLocator crudServiceLocator;
+
 
 
 
@@ -121,14 +125,35 @@ public class RelationalEntityAdvice {
         relationalEntityManager.save(entity);
     }
 
+    /**
+     * check if join point should be skipped
+     * skip if current bean is not root service
+     * check if enabled by looking for {@link DisableAutoBiDir} and {@link EnableAutoBiDir}.
+     */
     protected boolean skip(JoinPoint joinPoint) {
         // the ignore pointcuts sometimes dont work as expected
         if (!ProxyUtils.isRootService(joinPoint.getTarget()))
             return true;
-        if (AnnotationUtils.findAnnotation(AopProxyUtils.ultimateTargetClass(joinPoint.getTarget()), EnableAutoBiDir.class) == null) {
-            return true;
+        return isEnabled(joinPoint);
+    }
+
+    protected boolean isEnabled(JoinPoint joinPoint){
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Method method = signature.getMethod();
+        // check for class annotation first
+        boolean enabledForClass = AnnotationUtils.findAnnotation(AopProxyUtils.ultimateTargetClass(joinPoint.getTarget()), EnableAutoBiDir.class) != null;
+        if (enabledForClass){
+            // maybe its disabled for this method
+            if (method.isAnnotationPresent(DisableAutoBiDir.class))
+                return true;
+            // is enabled
+            return false;
         }
-        return false;
+
+        // maybe only enabled on method level
+        if (method.isAnnotationPresent(EnableAutoBiDir.class))
+            return false;
+        return true;
     }
 
     protected void assertTransactionActive(){
