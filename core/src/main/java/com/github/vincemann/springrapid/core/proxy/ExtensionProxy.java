@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Jdk invocation handler for spring rapids core component - extension proxies.
  * An extension proxy is autowired usually with a qualifier like "secured" or "acl" and represents a version of a service.
- * You can chain multiple proxies together to a proxy chain - so {@link this#getProxied()} often is another extension proxy.
+ * You can chain multiple proxies together to a proxy chain - so {@link #getProxied()} often is another extension proxy.
  *
  * By using this concept you can autowire different version of you services.
  * For example for internal use you may autowire the default version of your service, without security checks, because only trusted internal
@@ -44,12 +44,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * class SomeInternalComponent{
  *
  *      @Autowired
- *      private MyService securedService;
+ *      private MyService unsecuredService;
  *
  * }
  *
  * So each proxy has its own additional functionalities, which are implemented via {@link ServiceExtension}s.
- * Each proxy has n extensions, which must implement at least one method of the proxied service.
+ * Each proxy has n extensions, which each must implement at least one method of the proxied service (or any of its interfaces).
  * The extension hooks some method of the proxied service, similar to an aop around advice.
  * Looks something like this:
  *
@@ -62,7 +62,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * }
  *
  * @Component
- * @Scope(Prototype)
+ * @Scope("prototype")
  * class OnlyAdminCanCreateExtension extends SecurityExtension<MyService> implements MyService{
  *
  *      // hook the create method by overwriting
@@ -70,7 +70,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *      public Object create(Object entity){
  *          // before
  *          getAclTemplate().assertHasRole(Roles.Admin);
- *          // call next in proxy chain (could be the root object or another extension or another extension proxy)
+ *          // call next in proxy chain (could be the root object, another extension or another extension proxy)
  *          Object created = getNext().create(entity);
  *          // after
  *          return created;
@@ -78,15 +78,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * }
  *
  * Note that the extension must implement the proxied interface.
- * To keep things shorter you can also implement {@link CrudServiceExtension} and only overwrite the methods you want to add functionality for.
- *
  *
  * You can create the proxy and expose it to the context either programmatically by using {@link ExtensionProxyBuilder},
- * or via annotations using {@link com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy}, {@link com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy} and {@link AutowireProxy}
+ * or via annotations using {@link com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy}, {@link com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy} and {@link AutowireProxy}.
  *
  * You can also define default extensions for certain qualifiers, see {@link com.github.vincemann.springrapid.core.DefaultExtension} for more info.
  *
- *
+ * Tip:
+ * If you write an extension for {@link com.github.vincemann.springrapid.core.service.CrudService} in order to keep things shorter you can also implement {@link CrudServiceExtension} and only overwrite the methods you want to add functionality for.
  */
 @Getter
 @Setter
