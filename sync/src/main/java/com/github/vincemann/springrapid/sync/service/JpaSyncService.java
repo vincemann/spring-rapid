@@ -40,7 +40,7 @@ public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends S
 
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public EntitySyncStatus findEntitySyncStatus(LastFetchInfo clientLastUpdate) {
         String id = clientLastUpdate.getId();
@@ -68,7 +68,7 @@ public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends S
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch, List<QueryFilter<? super E>> jpqlFilters) {
         // server side update info
@@ -88,7 +88,7 @@ public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends S
     }
 
     // not very fast, but comfortable if ram filters are needed (EntityFilter)
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch,  List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> entityFilters) {
         // server side update info
@@ -111,7 +111,7 @@ public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends S
     /**
      * only returns set of {@link EntitySyncStatus} for entities that need update.
      */
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Set<EntitySyncStatus> findEntitySyncStatuses(Collection<LastFetchInfo> lastFetchInfo) {
         // maybe add parallel flag ?
@@ -123,7 +123,7 @@ public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends S
 
     @Lazy
     @Autowired
-    public void setRepo(AbstractCrudService<E, Id, ?> crudService) {
+    public void setCrudService(AbstractCrudService<E, Id, ?> crudService) {
         this.crudService = crudService;
     }
 

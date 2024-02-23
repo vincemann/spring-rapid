@@ -3,10 +3,7 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.*;
-import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
-import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -20,11 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-import static com.github.vincemann.springrapid.auth.util.PrincipalUtils.isAnon;
-import static com.github.vincemann.springrapid.core.util.MethodNameUtil.propertyNameOf;
+import static com.github.vincemann.springrapid.core.util.MethodNameUtil.propertyName;
 
 /**
  * Note:
@@ -48,7 +43,6 @@ public abstract class JpaUserService
     private PasswordValidator passwordValidator;
 
 
-    @Transactional
     //only called internally
     public U createAdmin(AuthProperties.Admin admin) {
         // create the adminUser
@@ -71,9 +65,9 @@ public abstract class JpaUserService
     @Override
     public U create(U user) throws BadEntityException {
         // only enforce very basic stuff
-        user.setPassword(encodedPasswordIfNeeded(user.getPassword()));
         if (user.getPassword() != null && !passwordEncoder.isEncoded(user.getPassword()))
             passwordValidator.validate(user.getPassword());
+        user.setPassword(encodePasswordIfNeeded(user.getPassword()));
         return super.create(user);
     }
 
@@ -81,6 +75,7 @@ public abstract class JpaUserService
 
     // helper methods for special updates that enforce basic database rules but not more complex stuff like sending msges to user
 
+    @Transactional
     @Override
     public U addRole(Id userId, String role) throws EntityNotFoundException, BadEntityException {
         U oldEntity = findOldEntity(userId);
@@ -89,10 +84,11 @@ public abstract class JpaUserService
         U update = Entity.createUpdate(oldEntity);
         update.setRoles(newRoles);
         update.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        return service.partialUpdate(update);
+        return service.partialUpdate(update, propertyName(update::getRoles), propertyName(update::getCredentialsUpdatedMillis));
     }
 
 
+    @Transactional
     @Override
     public U removeRole(Id userId, String role) throws EntityNotFoundException, BadEntityException {
         U oldEntity = findOldEntity(userId);
@@ -101,19 +97,20 @@ public abstract class JpaUserService
         U update = Entity.createUpdate(oldEntity);
         update.setRoles(newRoles);
         update.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        return service.partialUpdate(update);
+        return service.partialUpdate(update,propertyName(update::getRoles), propertyName(update::getCredentialsUpdatedMillis));
     }
 
 
+    @Transactional
     @Override
     public U updatePassword(Id userId, String password) throws EntityNotFoundException, BadEntityException {
         U update = Entity.createUpdate(getEntityClass(), userId);
-        update.setPassword(encodedPasswordIfNeeded(password));
+        update.setPassword(encodePasswordIfNeeded(password));
         update.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        return service.partialUpdate(update);
+        return service.partialUpdate(update,propertyName(update::getPassword), propertyName(update::getCredentialsUpdatedMillis));
     }
     
-    protected String encodedPasswordIfNeeded(String password){
+    protected String encodePasswordIfNeeded(String password){
         if (!passwordEncoder.isEncoded(password)) {
             return passwordEncoder.encode(password);
         } else {
@@ -121,6 +118,7 @@ public abstract class JpaUserService
         }
     }
 
+    @Transactional
     @Override
     public U blockUser(String contactInformation) throws EntityNotFoundException, BadEntityException {
         Optional<U> user = findByContactInformation(contactInformation);
@@ -131,15 +129,17 @@ public abstract class JpaUserService
         return addRole(user.get().getId(),AuthRoles.BLOCKED);
     }
 
+    @Transactional
     @Override
     public U updateContactInformation(Id userId, String contactInformation) throws EntityNotFoundException, BadEntityException {
         U update = Entity.createUpdate(getEntityClass(), userId);
         update.setContactInformation(contactInformation);
         update.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        return service.partialUpdate(update);
+        return service.partialUpdate(update,propertyName(update::getContactInformation), propertyName(update::getCredentialsUpdatedMillis));
     }
 
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<U> findByContactInformation(String contactInformation) {
         return getRepository().findByContactInformation(contactInformation);

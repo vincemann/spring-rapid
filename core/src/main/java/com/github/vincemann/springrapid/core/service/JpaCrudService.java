@@ -17,6 +17,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -51,7 +52,7 @@ public abstract class JpaCrudService
     public JpaCrudService() {
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Optional<E> findById(Id id) {
         Assert.notNull(id,"id must not be null");
@@ -65,7 +66,7 @@ public abstract class JpaCrudService
         return getRepository().save(update);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Set<E> findSome(Set<Id> ids) {
         return new HashSet<>(getRepository().findAllById(ids));
@@ -103,7 +104,7 @@ public abstract class JpaCrudService
         return getRepository().save(entity);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Set<E> findAll() {
         return new HashSet<>(getRepository().findAll());
@@ -113,7 +114,7 @@ public abstract class JpaCrudService
      * first query filters applied (where clauses), then in memory filtering.
      * Can be combined as needed.
      */
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Set<E> findAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> filters, List<SortingExtension> sortingExtensions) {
         Set<E> result;

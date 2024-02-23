@@ -13,7 +13,6 @@ import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
 import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.util.*;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.Serializable;
 import java.util.Optional;
 
-import static com.github.vincemann.springrapid.core.util.MethodNameUtil.propertyNameOf;
+import static com.github.vincemann.springrapid.core.util.MethodNameUtil.propertyName;
 
 @Slf4j
 public class ContactInformationServiceImpl implements ContactInformationService {
@@ -69,7 +67,7 @@ public class ContactInformationServiceImpl implements ContactInformationService 
         // changing newContactInformation to null is too high level to put into low level updateContactInformation method -> need two update calls
         AbstractUser update = Entity.createUpdate(user);
         update.setNewContactInformation(null);
-        AbstractUser updated = userService.partialUpdate(update, propertyNameOf(user::getNewContactInformation));
+        AbstractUser updated = userService.partialUpdate(update, propertyName(user::getNewContactInformation));
 
         // make the user verified if he is not
         if (user.hasRole(AuthRoles.UNVERIFIED))

@@ -9,7 +9,7 @@ public class MethodNameUtil {
 
     private MethodNameUtil(){}
 
-    public static String propertyNameOf(Types.Supplier getter){
+    public static String propertyName(Types.Supplier getter){
         Method getterMethod = Types.createMethod(getter);
         String getterName = getterMethod.getName();
         String propertyName = "";
@@ -27,7 +27,7 @@ public class MethodNameUtil {
 
     public static String[] propertyNamesOf(Types.Supplier<?>... getters) {
         return Arrays.stream(getters)
-                .map(MethodNameUtil::propertyNameOf)
+                .map(MethodNameUtil::propertyName)
                 .distinct()
                 .toArray(String[]::new);
     }

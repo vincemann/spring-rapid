@@ -10,6 +10,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.Serializable;
+import java.util.function.Consumer;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -64,14 +65,13 @@ public class LoginTest extends RapidAuthIntegrationTest {
 		// Thread.sleep(1001L);
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
-		transactionTemplate.execute(new TransactionCallback<Object>() {
+		transactionTemplate.executeWithoutResult(new Consumer<>() {
 			@SneakyThrows
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			public void accept(TransactionStatus transactionStatus) {
 				AbstractUser<Serializable> user = getUserService().findById(getUser().getId()).get();
 				user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 				getUserService().softUpdate(user);
-				return null;
 			}
 		});
 
