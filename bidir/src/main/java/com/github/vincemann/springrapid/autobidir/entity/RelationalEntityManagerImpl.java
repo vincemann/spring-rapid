@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -13,46 +14,49 @@ import java.util.*;
 
 import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetClass;
 
+/**
+ * needs to be executed within transaction
+ */
 @Slf4j
-@Transactional
+@Transactional(propagation = Propagation.MANDATORY)
 public class RelationalEntityManagerImpl implements RelationalEntityManager {
 
-    private RelationalEntityManagerUtil relationalEntityManagerUtil;
+    private RelationalEntityManagerUtil helper;
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
     public <E extends IdentifiableEntity> E create(E entity, String... membersToCheck) {
-        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(getTargetClass(entity));
+        Set<RelationalEntityType> relationalEntityTypes = helper.inferTypes(getTargetClass(entity));
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             if (log.isDebugEnabled())
                 log.debug("applying pre persist BiDirParent logic for: " + entity);
             // also filter for class obj stored in annotation, so if I update only one BiDirChildCollection, only init this one
             // with the right class
-            relationalEntityManagerUtil.linkBiDirChildrensParent(entity);
+            helper.linkBiDirChildrensParent(entity);
         }
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
             if (log.isDebugEnabled())
                 log.debug("applying pre persist BiDirChild logic for: " + entity);
-            relationalEntityManagerUtil.linkBiDirParentsChild(entity);
+            helper.linkBiDirParentsChild(entity);
         }
         return entity;
     }
 
     @Override
     public void delete(IdentifiableEntity entity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
-        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(getTargetClass(entity));
+        Set<RelationalEntityType> relationalEntityTypes = helper.inferTypes(getTargetClass(entity));
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             if (log.isDebugEnabled())
                 log.debug("applying pre remove BiDirParent logic for: " + entity.getClass());
-            relationalEntityManagerUtil.unlinkBiDirChildrensParent(entity);
+            helper.unlinkBiDirChildrensParent(entity);
         }
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
             if (log.isDebugEnabled())
                 log.debug("applying pre remove BiDirChild logic for: " + entity);
-            relationalEntityManagerUtil.unlinkBiDirParentsChild(entity);
+            helper.unlinkBiDirParentsChild(entity);
         }
     }
 
@@ -61,7 +65,7 @@ public class RelationalEntityManagerImpl implements RelationalEntityManager {
     @Override
     public <E extends IdentifiableEntity> E partialUpdate(E managed, E oldEntity, E updateEntity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
         // only operate on non null fields of partialUpdateEntity
-        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(getTargetClass(oldEntity));
+        Set<RelationalEntityType> relationalEntityTypes = helper.inferTypes(getTargetClass(oldEntity));
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             if (log.isDebugEnabled())
                 log.debug("applying pre partial-update BiDirParent logic for: " + oldEntity.getClass());
@@ -78,7 +82,7 @@ public class RelationalEntityManagerImpl implements RelationalEntityManager {
 
     @Override
     public <E extends IdentifiableEntity> E fullUpdate(E managed, E oldEntity, E updateEntity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
-        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(getTargetClass(updateEntity));
+        Set<RelationalEntityType> relationalEntityTypes = helper.inferTypes(getTargetClass(updateEntity));
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             if (log.isDebugEnabled())
@@ -97,9 +101,9 @@ public class RelationalEntityManagerImpl implements RelationalEntityManager {
     public Collection<IdentifiableEntity> updateBiDirChildRelations(IdentifiableEntity managed, IdentifiableEntity oldChild, IdentifiableEntity update, String... membersToCheck) throws BadEntityException, EntityNotFoundException {
 
         // old parents are detached
-        Collection<IdentifiableEntity> oldParents = relationalEntityManagerUtil.findAllBiDirParents(oldChild,membersToCheck);
+        Collection<IdentifiableEntity> oldParents = helper.findAllBiDirParents(oldChild,membersToCheck);
         // new parents are detached
-        Collection<IdentifiableEntity> newParents = relationalEntityManagerUtil.findAllBiDirParents(update, membersToCheck);
+        Collection<IdentifiableEntity> newParents = helper.findAllBiDirParents(update, membersToCheck);
 
         // find parents to unlink -> child of those need to be unlinked
         List<IdentifiableEntity> removedParents = new ArrayList<>();
@@ -125,7 +129,7 @@ public class RelationalEntityManagerImpl implements RelationalEntityManager {
             if (log.isDebugEnabled())
                 log.debug("update: unlinking child: " + update + " from removed parent: " + removedParent);
             // could use managed instead of update here but doesnt matter
-            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, update);
+            helper.unlinkBiDirChild(removedParent, update);
             entityManager.merge(removedParent);
         }
 
@@ -134,7 +138,7 @@ public class RelationalEntityManagerImpl implements RelationalEntityManager {
             if (log.isDebugEnabled())
                 log.debug("update: linking child: " + managed + " to added parent: " + addedParent);
             // cant use partial update entity here, need full managed updated
-            relationalEntityManagerUtil.linkBiDirChild(addedParent, managed);
+            helper.linkBiDirChild(addedParent, managed);
             entityManager.merge(addedParent);
         }
         return newParents;
@@ -143,9 +147,9 @@ public class RelationalEntityManagerImpl implements RelationalEntityManager {
     public Collection<IdentifiableEntity> updateBiDirParentRelations(IdentifiableEntity managed, IdentifiableEntity oldParent, IdentifiableEntity updateParent, String... membersToCheck) throws BadEntityException, EntityNotFoundException {
 
         // old children are detached
-        Collection<IdentifiableEntity> oldChildren = relationalEntityManagerUtil.findAllBiDirChildren(oldParent,membersToCheck);
+        Collection<IdentifiableEntity> oldChildren = helper.findAllBiDirChildren(oldParent,membersToCheck);
         // newChildren are detached
-        Collection<IdentifiableEntity> newChildren = relationalEntityManagerUtil.findAllBiDirChildren(updateParent,membersToCheck);
+        Collection<IdentifiableEntity> newChildren = helper.findAllBiDirChildren(updateParent,membersToCheck);
 
         // find removed children -> parent of those need to be unlinked
         List<IdentifiableEntity> removedChildren = new ArrayList<>();
@@ -172,7 +176,7 @@ public class RelationalEntityManagerImpl implements RelationalEntityManager {
             if (log.isDebugEnabled())
                 log.debug("unlinking parent: " + updateParent + " from removed child: " + removedChild);
             // could use managed instead of update here but doesnt matter
-            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, updateParent);
+            helper.unlinkBiDirParent(removedChild, updateParent);
             entityManager.merge(removedChild);
         }
 
@@ -181,7 +185,7 @@ public class RelationalEntityManagerImpl implements RelationalEntityManager {
             if (log.isDebugEnabled())
                 log.debug("linking parent: " + managed + " to added child: " + addedChild);
             // need to set managed here not partial update variant with tons of null fields
-            relationalEntityManagerUtil.linkBiDirParent(addedChild, managed);
+            helper.linkBiDirParent(addedChild, managed);
             entityManager.merge(addedChild);
         }
         return newChildren;
@@ -195,8 +199,8 @@ public class RelationalEntityManagerImpl implements RelationalEntityManager {
 
 
     @Autowired
-    public void setRelationalEntityManagerUtil(RelationalEntityManagerUtil relationalEntityManagerUtil) {
-        this.relationalEntityManagerUtil = relationalEntityManagerUtil;
+    public void setRelationalEntityManagerUtil(RelationalEntityManagerUtil helper) {
+        this.helper = helper;
     }
 
 }

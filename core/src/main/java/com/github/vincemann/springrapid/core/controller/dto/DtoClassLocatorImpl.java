@@ -15,6 +15,6 @@ public class DtoClassLocatorImpl implements DtoClassLocator {
                 }
             }
         }
-        throw new BadEntityException("No matching DTO found for the given request");
+        throw new BadEntityException("No matching dto class found for the given request");
     }
 }

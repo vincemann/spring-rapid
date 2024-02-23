@@ -11,7 +11,7 @@ public class RelationalEntityReflectionUtils {
         private Class<? extends Annotation> annotationType;
         private final Class<?> entityType;
 
-        public AnnotationAndEntityTypeFilter(@NonNull Class<? extends Annotation> annotationType, Class<?> entityType) {
+        public AnnotationAndEntityTypeFilter(Class<? extends Annotation> annotationType, Class<?> entityType) {
             super(annotationType);
             this.annotationType = annotationType;
             this.entityType = entityType;

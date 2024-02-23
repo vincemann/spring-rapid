@@ -18,11 +18,6 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
 
     @Override
     public void setAuthenticated(RapidPrincipal principal) {
-        RapidPrincipal old = currentPrincipal();
-        if (old != null) {
-            if (log.isWarnEnabled())
-                log.warn("Principal: " + old + " was already logged in. This login will override authenticated user");
-        }
         SecurityContextHolder.getContext().setAuthentication(createToken(principal));
     }
 

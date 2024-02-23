@@ -126,13 +126,13 @@ public abstract class AbstractMvcTest extends InitializingTest implements Initia
         return deserialize(s, setType);
     }
 
-    public <E> E findInCollection(Collection<E> collection, Predicate<E> predicate){
+    public <E> E assertCanFindInCollection(Collection<E> collection, Predicate<E> predicate){
         Optional<E> entity = collection.stream().filter(predicate::test).findFirst();
         Assertions.assertTrue(entity.isPresent(),"could not find entity in collection");
         return entity.get();
     }
 
-    public <E extends IdentifiableEntity<?>, E2 extends IdentifiableEntity<?>> E findInCollection(Collection<E> collection, E2 entity){
+    public <E extends IdentifiableEntity<?>, E2 extends IdentifiableEntity<?>> E assertCanFindInCollection(Collection<E> collection, E2 entity){
         Optional<E> filtered = collection.stream().filter(e -> e.getId().equals(entity.getId())).findFirst();
         Assertions.assertTrue(filtered.isPresent(),"could not find entity in collection");
         return filtered.get();

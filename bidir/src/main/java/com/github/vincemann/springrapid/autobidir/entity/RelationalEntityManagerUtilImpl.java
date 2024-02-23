@@ -90,8 +90,8 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      * Find the BiDirParent Collections (all fields of this parent annotated with {@link BiDirParentCollection} )
      * mapped to the Type of the Entities in the Collection.
      *
-     * @return
      */
+    @Override
     public Map<Class<IdentifiableEntity>, Collection<IdentifiableEntity>> findBiDirParentCollections(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         return findEntityCollections(child, BiDirParentCollection.class, membersToCheck);
@@ -100,17 +100,20 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
     /**
      * @return all parents of this, that are not null
      */
+    @Override
     public Collection<IdentifiableEntity> findSingleBiDirParents(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         return findSingleEntities(child, BiDirParentEntity.class, membersToCheck);
     }
 
+    @Override
     public Collection<IdentifiableEntity> findAllBiDirParents(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         return findAllEntities(child, BiDirParentEntity.class, BiDirParentCollection.class, membersToCheck);
     }
 
 
+    @Override
     public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent, String... membersToCheck) throws UnknownParentTypeException {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
@@ -130,7 +133,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
     }
 
 
-    // proxies ok
+    @Override
     public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent, String... membersToCheck) throws UnknownParentTypeException {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
@@ -138,6 +141,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
     }
 
 
+    @Override
     public void unlinkBiDirParentsChild(IdentifiableEntity child, String... membersToCheck) throws UnknownEntityTypeException {
         for (IdentifiableEntity parent : findAllBiDirParents(child, membersToCheck)) {
             unlinkBiDirChild(parent, child, membersToCheck);
@@ -146,6 +150,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
 
 
     // BiDirParent Methods
+    @Override
     public void linkBiDirChildrensParent(IdentifiableEntity parent, String... membersToCheck) {
         for (IdentifiableEntity child : findAllBiDirChildren(parent, membersToCheck)) {
             linkBiDirParent(child, parent, membersToCheck);
@@ -158,6 +163,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      *
      * @return
      */
+    @Override
     public Map<Class<IdentifiableEntity>, Collection<IdentifiableEntity>> findBiDirChildCollections(IdentifiableEntity parent, String... membersToCheck) {
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         return findEntityCollections(parent, BiDirChildCollection.class, membersToCheck);
@@ -168,11 +174,13 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      *
      * @return
      */
+    @Override
     public Set<IdentifiableEntity> findSingleBiDirChildren(IdentifiableEntity parent, String... membersToCheck) {
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         return findSingleEntities(parent, BiDirChildEntity.class, membersToCheck);
     }
 
+    @Override
     public Collection<IdentifiableEntity> findAllBiDirChildren(IdentifiableEntity parent, String... membersToCheck) {
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         return findAllEntities(parent, BiDirChildEntity.class, BiDirChildCollection.class, membersToCheck);

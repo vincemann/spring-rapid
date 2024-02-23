@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.event.ContextRefreshedEvent;
 
+import java.util.List;
 import java.util.Map;
 
 @Configuration
@@ -31,18 +32,13 @@ public class RapidDtoLocatorAutoConfiguration {
 
     @Bean
     @ConditionalOnBean(DelegatingOwnerLocator.class)
-    public ApplicationListener<ContextRefreshedEvent> ownerLocatorRegistrar(ApplicationContext context, DelegatingOwnerLocator delegatingLocator) {
+    public ApplicationListener<ContextRefreshedEvent> ownerLocatorRegistrar(List<OwnerLocator> ownerLocators, DelegatingOwnerLocator delegatingLocator) {
         return event -> {
-            Map<String, OwnerLocator> locators = context.getBeansOfType(OwnerLocator.class);
-            if (locators.size() <= 1){
+            if (ownerLocators.size() <= 1){
                 if (log.isWarnEnabled())
                     log.warn("No OwnerLocator bean found -> dtoMapping principal feature will be ignored.");
             }
-            locators.values().forEach(locator -> {
-                if (locator != delegatingLocator) {
-                    delegatingLocator.register(locator);
-                }
-            });
+            ownerLocators.forEach(delegatingLocator::register);
         };
     }
 
