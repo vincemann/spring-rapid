@@ -73,6 +73,14 @@ public abstract class JpaUserService
         return super.create(user);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public U findPresentByContactInformation(String contactInformation) throws EntityNotFoundException {
+        Assert.notNull(contactInformation);
+        Optional<U> user = findByContactInformation(contactInformation);
+        VerifyEntity.isPresent(user,contactInformation,getEntityClass());
+        return user.get();
+    }
 
 
     // helper methods for special updates that enforce basic database rules but not more complex stuff like sending msges to user
@@ -161,6 +169,7 @@ public abstract class JpaUserService
     @Transactional(readOnly = true)
     @Override
     public Optional<U> findByContactInformation(String contactInformation) {
+        Assert.notNull(contactInformation);
         return getRepository().findByContactInformation(contactInformation);
     }
 
