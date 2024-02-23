@@ -56,6 +56,11 @@ public class UserServiceSecurityExtension
         return getNext().updateContactInformation(userId,contactInformation);
     }
 
+    @Override
+    public AbstractUser blockUser(String contactInformation) throws EntityNotFoundException, BadEntityException {
+        AuthorizationTemplate.assertHasRoles(AuthRoles.ADMIN);
+        return getNext().blockUser(contactInformation);
+    }
 
     @Override
     public AbstractUser createUser() {

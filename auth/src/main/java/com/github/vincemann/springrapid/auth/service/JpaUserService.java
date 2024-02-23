@@ -122,6 +122,16 @@ public abstract class JpaUserService
     }
 
     @Override
+    public U blockUser(String contactInformation) throws EntityNotFoundException, BadEntityException {
+        Optional<U> user = findByContactInformation(contactInformation);
+        VerifyEntity.isPresent(user,contactInformation,getEntityClass());
+        if (user.get().hasRole(AuthRoles.BLOCKED)){
+            throw new BadEntityException("user is already blocked");
+        }
+        return addRole(user.get().getId(),AuthRoles.BLOCKED);
+    }
+
+    @Override
     public U updateContactInformation(Id userId, String contactInformation) throws EntityNotFoundException, BadEntityException {
         U update = Entity.createUpdate(getEntityClass(), userId);
         update.setContactInformation(contactInformation);

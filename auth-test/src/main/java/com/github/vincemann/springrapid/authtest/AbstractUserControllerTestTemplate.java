@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockHttpServletRequestDsl;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -55,7 +56,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         super.setMvc(mvc);
     }
 
-    public RequestBuilder signup(SignupDto dto) throws Exception {
+    public MockHttpServletRequestBuilder signup(SignupDto dto) throws Exception {
         return post(getController().getSignupUrl())
                 .content(serialize(dto))
                 .contentType(MediaType.APPLICATION_JSON);
@@ -67,7 +68,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return verifyMailWasSend();
     }
 
-    public RequestBuilder resendVerificationMail(Serializable id, String token) throws Exception {
+    public MockHttpServletRequestBuilder resendVerificationMail(Serializable id, String token) throws Exception {
         return post(getController().getResendVerificationContactInformationUrl())
                 .param("id",id.toString())
                 .header(HttpHeaders.AUTHORIZATION, token);
@@ -92,7 +93,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 //    }
 
 
-    public RequestBuilder changeContactInformation(String code, String token) {
+    public MockHttpServletRequestBuilder changeContactInformation(String code, String token) {
         return post(getController().getChangeContactInformationUrl())
                 .param("code", code)
 //                .param("id", targetId.toString())
@@ -100,14 +101,14 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
-    public RequestBuilder changeContactInformationWithLink(String link, String token) {
+    public MockHttpServletRequestBuilder changeContactInformationWithLink(String link, String token) {
         return post(link)
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
 
-    public RequestBuilder requestContactInformationChange(String token, RequestContactInformationChangeDto dto) throws Exception {
+    public MockHttpServletRequestBuilder requestContactInformationChange(String token, RequestContactInformationChangeDto dto) throws Exception {
         return post(getController().getRequestContactInformationChangeUrl())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, token)
@@ -123,14 +124,14 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return verifyMailWasSend();
     }
 
-    public RequestBuilder changePassword(String token, ChangePasswordDto dto) throws Exception {
+    public MockHttpServletRequestBuilder changePassword(String token, ChangePasswordDto dto) throws Exception {
         return post(getController().getChangePasswordUrl())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(serialize(dto));
     }
 
-    public RequestBuilder forgotPassword(String contactInformation) throws Exception {
+    public MockHttpServletRequestBuilder forgotPassword(String contactInformation) throws Exception {
         return post(getController().getForgotPasswordUrl())
                 .param("ci", contactInformation)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
@@ -144,31 +145,31 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return verifyMailWasSend();
     }
 
-    public RequestBuilder resetPassword(ResetPasswordDto dto) throws Exception {
+    public MockHttpServletRequestBuilder resetPassword(ResetPasswordDto dto) throws Exception {
         return post(getController().getResetPasswordUrl())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(serialize(dto));
     }
 
-    public RequestBuilder getResetPasswordView(String link) throws Exception {
+    public MockHttpServletRequestBuilder getResetPasswordView(String link) throws Exception {
         return get(link);
 //                .contentType(MediaType.APPLICATION_JSON)
 //                .content(serialize(resetPasswordDto)));
     }
 
-    public RequestBuilder resetPassword(String url, ResetPasswordDto dto) throws Exception {
+    public MockHttpServletRequestBuilder resetPassword(String url, ResetPasswordDto dto) throws Exception {
         return post(url)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(serialize(dto));
     }
 
-    public RequestBuilder fetchNewToken(String token) throws Exception {
+    public MockHttpServletRequestBuilder fetchNewToken(String token) throws Exception {
         return post(getController().getFetchNewAuthTokenUrl())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
-    public RequestBuilder fetchNewToken(String token, String contactInformation) throws Exception {
+    public MockHttpServletRequestBuilder fetchNewToken(String token, String contactInformation) throws Exception {
         return post(getController().getFetchNewAuthTokenUrl())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .param("ci", contactInformation)
@@ -195,7 +196,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
-    public RequestBuilder findByContactInformation(String contactInformation) throws Exception {
+    public MockHttpServletRequestBuilder findByContactInformation(String contactInformation) throws Exception {
         return get(getController().getFindByContactInformationUrl())
                 .param("ci", contactInformation)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
@@ -207,7 +208,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .andReturn().getResponse().getHeader(HttpHeaders.AUTHORIZATION);
     }
 
-    public RequestBuilder verifyContactInformation(String code) throws Exception {
+    public MockHttpServletRequestBuilder verifyContactInformation(String code) throws Exception {
         return get(getController().getVerifyUserUrl())
 //                .param("id", id.toString())
                 .param("code", code)
@@ -228,7 +229,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
 
-    public RequestBuilder resendVerificationContactInformation(String contactInformation, String token) throws Exception {
+    public MockHttpServletRequestBuilder resendVerificationContactInformation(String contactInformation, String token) throws Exception {
         return post(getController().getResendVerificationContactInformationUrl())
                 .param("ci", contactInformation)
                 .header(HttpHeaders.AUTHORIZATION, token);
@@ -244,6 +245,16 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
     public String login2xx(AbstractUser user) throws Exception {
         return login2xx(user.getContactInformation(), user.getPassword());
+    }
+
+    public MockHttpServletRequestBuilder testToken(String token) {
+        return get(controller.getTestTokenUrl())
+                .header(HttpHeaders.AUTHORIZATION, token);
+    }
+
+    public MockHttpServletRequestBuilder blockUser(String ci) {
+        return get(controller.getBlockUserUrl())
+                .param("ci",ci);
     }
 
 

@@ -138,6 +138,11 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return okNoContent();
 	}
 
+	public ResponseEntity<Void> blockUser(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
+		String contactInformation = readRequestParam(request, "ci");
+		unsecuredService.blockUser(contactInformation);
+		return okNoContent();
+	}
 
 	public ResponseEntity<Void> changeContactInformation(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadTokenException, AlreadyRegisteredException, BadEntityException {
 		String code = readRequestParam(request, "code");
@@ -227,6 +232,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	private String requestContactInformationChangeUrl;
 	private String fetchNewAuthTokenUrl;
 	private String testTokenUrl;
+	private String blockUserUrl;
 
 
 	@Override
@@ -248,6 +254,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		requestContactInformationChangeUrl = getAuthProperties().getController().getRequestContactInformationChangeUrl();
 		fetchNewAuthTokenUrl = getAuthProperties().getController().getFetchNewAuthTokenUrl();
 		testTokenUrl = getAuthProperties().getController().getTestTokenUrl();
+		blockUserUrl =  getAuthProperties().getController().getBlockUserUrl();
 	}
 
 
@@ -298,7 +305,12 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 			registerEndpoint(createTestTokenRequestMappingInfo(),"testToken");
 		}
 
+		if (!getIgnoredEndPoints().contains(getBlockUserUrl())){
+			registerEndpoint(createBlockUserRequestMappingInfo(),"blockUser");
+		}
+
 	}
+
 
 
 	protected RequestMappingInfo createSignupRequestMappingInfo() {
@@ -413,6 +425,13 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 				.methods(RequestMethod.POST)
 				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(MediaType.APPLICATION_JSON_VALUE)
+				.build();
+	}
+
+	private RequestMappingInfo createBlockUserRequestMappingInfo() {
+		return RequestMappingInfo
+				.paths(getBlockUserUrl())
+				.methods(RequestMethod.GET)
 				.build();
 	}
 

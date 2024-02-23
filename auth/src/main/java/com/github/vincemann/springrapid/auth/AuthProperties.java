@@ -38,10 +38,31 @@ public class AuthProperties {
 
 		public Controller(CoreProperties coreProperties) {
 			this.coreProperties = coreProperties;
+			initUrls();
+		}
+
+		// init with default values
+		public void initUrls(){
+			userBaseUrl = coreProperties.getBaseUrl()+"/user";
+			loginUrl = coreProperties.getBaseUrl()+"/login";
+
+			signupUrl = getUserBaseUrl() +"/signup";
+			resetPasswordUrl = getUserBaseUrl() +"/reset-password";
+			resetPasswordViewUrl = getUserBaseUrl() +"/reset-password-view";
+			findByContactInformationUrl = getUserBaseUrl() +"/find-by-ci";
+			changeContactInformationUrl = getUserBaseUrl() +"/change-ci";
+			changeContactInformationViewUrl = getUserBaseUrl() +"/change-ci-view";
+			verifyUserUrl = getUserBaseUrl() +"/verify";
+			resendVerifyContactInformationMsgUrl = getUserBaseUrl() +"/resend-verify";
+			forgotPasswordUrl = getUserBaseUrl() +"/forgot-password";
+			changePasswordUrl = getUserBaseUrl() +"/change-password";
+			requestContactInformationChangeUrl = getUserBaseUrl() +"/request-change-ci";
+			fetchNewAuthTokenUrl = getUserBaseUrl() +"/new-token";
+			testTokenUrl = getUserBaseUrl() + "test-token";
+			blockUserUrl = getUserBaseUrl() + "block";
 		}
 
 		public String userBaseUrl;
-
 		public String loginUrl;
 
 		public String signupUrl;
@@ -57,65 +78,70 @@ public class AuthProperties {
 		public String requestContactInformationChangeUrl;
 		public String fetchNewAuthTokenUrl;
 		public String testTokenUrl;
+		public String blockUserUrl;
 
 		public String getUserBaseUrl() {
-			return coreProperties.getBaseUrl()+"/user";
+			return userBaseUrl;
 		}
 
 		public String getLoginUrl() {
-			return coreProperties.getBaseUrl()+"/login";
+			return loginUrl;
 		}
 
 		public String getSignupUrl() {
-			return getUserBaseUrl() +"/signup";
+			return signupUrl;
 		}
 
 		public String getResetPasswordUrl() {
-			return getUserBaseUrl() +"/reset-password";
+			return resetPasswordUrl;
 		}
 
 		public String getResetPasswordViewUrl() {
-			return getUserBaseUrl() +"/reset-password-view";
+			return resetPasswordViewUrl;
 		}
 
 		public String getFindByContactInformationUrl() {
-			return getUserBaseUrl() +"/find-by-ci";
+			return findByContactInformationUrl;
 		}
 
 		public String getChangeContactInformationUrl() {
-			return getUserBaseUrl() +"/change-ci";
+			return changeContactInformationUrl;
 		}
 
 		public String getChangeContactInformationViewUrl() {
-			return getUserBaseUrl() +"/change-ci";
+			return changeContactInformationViewUrl;
 		}
 
 		public String getVerifyUserUrl() {
-			return getUserBaseUrl() +"/verify";
+			return verifyUserUrl;
 		}
 
 		public String getResendVerifyContactInformationMsgUrl() {
-			return getUserBaseUrl() +"/resend-verify";
+			return resendVerifyContactInformationMsgUrl;
 		}
 
 		public String getForgotPasswordUrl() {
-			return getUserBaseUrl() +"/forgot-password";
+			return forgotPasswordUrl;
 		}
 
 		public String getChangePasswordUrl() {
-			return getUserBaseUrl() +"/change-password";
+			return changePasswordUrl;
 		}
 
 		public String getRequestContactInformationChangeUrl() {
-			return getUserBaseUrl() +"/request-change-ci";
+			return requestContactInformationChangeUrl;
 		}
 
 		public String getFetchNewAuthTokenUrl() {
-			return getUserBaseUrl() +"/new-token";
+			return fetchNewAuthTokenUrl;
 		}
 
 		public String getTestTokenUrl() {
-			return getUserBaseUrl() + "test-token";
+			return testTokenUrl;
+		}
+
+		public String getBlockUserUrl() {
+			return blockUserUrl;
 		}
 	}
 

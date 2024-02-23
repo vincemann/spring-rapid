@@ -1,22 +1,16 @@
 package com.github.vincemann.springrapid.auth.service;
 
-import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Map;
 import java.util.Optional;
 
 // only do validation on highest level, that is exposed to user, not when only using internally
@@ -50,4 +44,5 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
     U createAdmin(@Valid AuthProperties.Admin admin);
 
+    U blockUser(@NotBlank String contactInformation) throws EntityNotFoundException, BadEntityException;
 }
