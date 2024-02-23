@@ -15,7 +15,8 @@ public class CoreProperties {
 
     public Controller controller = new Controller();
     public String baseUrl = "/api/core";
-    public String contextUrl;
+    public String contextUrl = baseUrl + "/context";
+
     /**
      * Client web application's base URL.
      * Used in the verification link mailed to the users, etc.
@@ -25,8 +26,20 @@ public class CoreProperties {
 
     public Map<String, Object> shared;
 
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
     public String getContextUrl() {
-        return baseUrl + "/context";
+        return contextUrl;
+    }
+
+    public String getApplicationUrl() {
+        return applicationUrl;
+    }
+
+    public Map<String, Object> getShared() {
+        return shared;
     }
 
     @Getter
@@ -49,6 +62,34 @@ public class CoreProperties {
             public String findSome = "find-some";
             public String delete = "delete";
             public String findAllOfParent = "find-all-of-parent";
+
+            public String getUpdate() {
+                return update;
+            }
+
+            public String getCreate() {
+                return create;
+            }
+
+            public String getFind() {
+                return find;
+            }
+
+            public String getFindAll() {
+                return findAll;
+            }
+
+            public String getFindSome() {
+                return findSome;
+            }
+
+            public String getDelete() {
+                return delete;
+            }
+
+            public String getFindAllOfParent() {
+                return findAllOfParent;
+            }
         }
     }
 

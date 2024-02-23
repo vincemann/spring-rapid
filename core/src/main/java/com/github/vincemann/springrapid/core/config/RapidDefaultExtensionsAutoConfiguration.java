@@ -22,6 +22,11 @@ import org.springframework.util.Assert;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
+/**
+ * adds default extensions to qualified services ({@link com.github.vincemann.springrapid.core.proxy.ExtensionProxy}s
+ *
+ * see {@link DefaultExtension}
+ */
 @Slf4j
 @Configuration
 public class RapidDefaultExtensionsAutoConfiguration {
