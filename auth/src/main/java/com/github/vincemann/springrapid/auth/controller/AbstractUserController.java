@@ -439,14 +439,14 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	//				HELPERS
 
 
-	protected ResponseEntity<Void> okWithAuthToken(String contactInformation) throws EntityNotFoundException {
+	protected ResponseEntity<Void> okWithAuthToken(String contactInformation) throws EntityNotFoundException, BadEntityException {
 		HttpHeaders headers = new HttpHeaders();
 		String token = unsecuredAuthTokenService.createNewAuthToken(contactInformation);
 		headers.add(HttpHeaders.AUTHORIZATION,token);
 		return ResponseEntity.status(204).headers(headers).build();
 	}
 
-	protected <T> ResponseEntity<T> okWithAuthToken(T body, String contactInformation) throws EntityNotFoundException {
+	protected <T> ResponseEntity<T> okWithAuthToken(T body, String contactInformation) throws EntityNotFoundException, BadEntityException {
 		HttpHeaders headers = new HttpHeaders();
 		String token = unsecuredAuthTokenService.createNewAuthToken(contactInformation);
 		headers.add(HttpHeaders.AUTHORIZATION,token);

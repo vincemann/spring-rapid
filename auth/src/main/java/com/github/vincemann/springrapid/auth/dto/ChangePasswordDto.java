@@ -10,11 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ChangePasswordDto {
-
-
     String contactInformation;
-
     String oldPassword;
-
     String newPassword;
 }

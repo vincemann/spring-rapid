@@ -1,16 +1,11 @@
 package com.github.vincemann.springrapid.auth;
 
-import com.github.vincemann.springrapid.auth.service.val.ValidContactInformation;
-import com.github.vincemann.springrapid.auth.service.val.ValidPassword;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -182,14 +177,11 @@ public class AuthProperties {
 		/**
 		 * Login ID of the initial Admin user to be created 
 		 */
-		@NotBlank
-		@ValidContactInformation
 		public String contactInformation;
 		
 		/**
 		 * Password of the initial Admin user to be created 
 		 */
-		@NotBlank
 		public String password;
 
 		public Admin(String contactInformation, String password) {

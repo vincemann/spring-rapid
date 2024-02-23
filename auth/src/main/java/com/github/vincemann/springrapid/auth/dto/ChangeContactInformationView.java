@@ -11,8 +11,5 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @ToString
 public class ChangeContactInformationView {
-
-    @NotBlank
-    @ValidContactInformation
     private String newContactInformation;
 }

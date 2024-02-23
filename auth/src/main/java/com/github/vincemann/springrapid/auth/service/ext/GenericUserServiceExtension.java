@@ -43,6 +43,21 @@ public interface GenericUserServiceExtension<S extends UserService<U, Id>, U ext
     }
 
     @Override
+    default U findPresentByContactInformation(String contactInformation) throws EntityNotFoundException {
+        return getNext().findPresentByContactInformation(contactInformation);
+    }
+
+    @Override
+    default U blockUser(String contactInformation) throws EntityNotFoundException, BadEntityException {
+        return getNext().blockUser(contactInformation);
+    }
+
+    @Override
+    default U findPresentById(Id id) throws EntityNotFoundException {
+        return getNext().findPresentById(id);
+    }
+
+    @Override
     default U fullUpdate(U entity) throws BadEntityException, EntityNotFoundException {
         return GenericCrudServiceExtension.super.fullUpdate(entity);
     }

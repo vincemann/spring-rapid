@@ -60,6 +60,11 @@ public interface CrudServiceExtension<S extends CrudService>
     }
 
     @Override
+    default IdentifiableEntity findPresentById(Serializable id) throws EntityNotFoundException {
+        return getNext().findPresentById(id);
+    }
+
+    @Override
     default IdentifiableEntity softUpdate(IdentifiableEntity entity) throws EntityNotFoundException, BadEntityException {
         return getNext().softUpdate(entity);
     }
@@ -69,10 +74,8 @@ public interface CrudServiceExtension<S extends CrudService>
         return getNext().findAll();
     }
 
-    // todo change to getLast()
     @Override
     public default Class<IdentifiableEntity> getEntityClass() {
-//        return getNext().getEntityClass();
         return getNext().getEntityClass();
     }
 
