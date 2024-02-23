@@ -51,6 +51,12 @@ public class UserServiceSecurityExtension
     }
 
     @Override
+    public AbstractUser findPresentByContactInformation(String contactInformation) throws EntityNotFoundException {
+        // anon should be able to find ForeignUserDto at least, in order to retrieve id, see below
+        return getNext().findPresentByContactInformation(contactInformation);
+    }
+
+    @Override
     public AbstractUser updateContactInformation(Serializable userId, String contactInformation) throws EntityNotFoundException, BadEntityException {
         getAclTemplate().checkPermission(userId,getLast().getEntityClass(), BasePermission.WRITE);
         return getNext().updateContactInformation(userId,contactInformation);

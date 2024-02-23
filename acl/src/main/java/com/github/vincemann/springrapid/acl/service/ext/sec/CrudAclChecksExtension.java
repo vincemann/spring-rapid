@@ -30,12 +30,11 @@ public class CrudAclChecksExtension
         return getNext().findById(id);
     }
 
-
-//    @Override
-//    public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
-//        getSecurityChecker().checkPermission(entity, BasePermission.CREATE);
-//        return getNext().save(entity);
-//    }
+    @Override
+    public IdentifiableEntity findPresentById(Serializable id) throws EntityNotFoundException {
+        getAclTemplate().checkPermission(id,getLast().getEntityClass(), BasePermission.READ);
+        return getNext().findPresentById(id);
+    }
 
     @Override
     public IdentifiableEntity partialUpdate(IdentifiableEntity entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {

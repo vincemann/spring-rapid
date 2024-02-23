@@ -59,6 +59,14 @@ public abstract class JpaCrudService
         return getRepository().findById(id);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public E findPresentById(Id id) throws EntityNotFoundException {
+        Optional<E> byId = findById(id);
+        VerifyEntity.isPresent(byId,id,getEntityClass());
+        return byId.get();
+    }
+
     @Transactional
     @Override
     public E softUpdate(E update) throws EntityNotFoundException, BadEntityException {
