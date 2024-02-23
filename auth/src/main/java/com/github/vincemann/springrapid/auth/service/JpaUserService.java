@@ -14,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
 import java.io.Serializable;
@@ -45,6 +46,7 @@ public abstract class JpaUserService
 
     //only called internally
     public U createAdmin(AuthProperties.Admin admin) {
+        Assert.notNull(admin);
         // create the adminUser
         U adminUser = createUser();
         adminUser.setContactInformation(admin.getContactInformation());
@@ -64,6 +66,7 @@ public abstract class JpaUserService
     @Transactional
     @Override
     public U create(U user) throws BadEntityException {
+        Assert.notNull(user);
         // only enforce very basic stuff
         if (user.getPassword() != null && !passwordEncoder.isEncoded(user.getPassword()))
             passwordValidator.validate(user.getPassword());
@@ -78,6 +81,9 @@ public abstract class JpaUserService
     @Transactional
     @Override
     public U addRole(Id userId, String role) throws EntityNotFoundException, BadEntityException {
+        Assert.notNull(role);
+        Assert.notNull(userId);
+
         U oldEntity = findOldEntity(userId);
         Set<String> newRoles = new HashSet<>(oldEntity.getRoles());
         newRoles.add(role);
@@ -91,9 +97,13 @@ public abstract class JpaUserService
     @Transactional
     @Override
     public U removeRole(Id userId, String role) throws EntityNotFoundException, BadEntityException {
+        Assert.notNull(role);
+        Assert.notNull(userId);
+
         U oldEntity = findOldEntity(userId);
         Set<String> newRoles = new HashSet<>(oldEntity.getRoles());
-        newRoles.remove(role);
+        boolean removed = newRoles.remove(role);
+        Assert.isTrue(removed,"user did not contain role: " + role);
         U update = Entity.createUpdate(oldEntity);
         update.setRoles(newRoles);
         update.setCredentialsUpdatedMillis(System.currentTimeMillis());
@@ -104,6 +114,11 @@ public abstract class JpaUserService
     @Transactional
     @Override
     public U updatePassword(Id userId, String password) throws EntityNotFoundException, BadEntityException {
+        Assert.notNull(password);
+        Assert.notNull(userId);
+
+        if (!passwordEncoder.isEncoded(password))
+            passwordValidator.validate(password);
         U update = Entity.createUpdate(getEntityClass(), userId);
         update.setPassword(encodePasswordIfNeeded(password));
         update.setCredentialsUpdatedMillis(System.currentTimeMillis());
@@ -121,6 +136,8 @@ public abstract class JpaUserService
     @Transactional
     @Override
     public U blockUser(String contactInformation) throws EntityNotFoundException, BadEntityException {
+        VerifyEntity.notEmpty(contactInformation,"contact-information");
+
         Optional<U> user = findByContactInformation(contactInformation);
         VerifyEntity.isPresent(user,contactInformation,getEntityClass());
         if (user.get().hasRole(AuthRoles.BLOCKED)){
@@ -132,6 +149,9 @@ public abstract class JpaUserService
     @Transactional
     @Override
     public U updateContactInformation(Id userId, String contactInformation) throws EntityNotFoundException, BadEntityException {
+        Assert.notNull(userId);
+        Assert.notNull(contactInformation);
+
         U update = Entity.createUpdate(getEntityClass(), userId);
         update.setContactInformation(contactInformation);
         update.setCredentialsUpdatedMillis(System.currentTimeMillis());

@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.auth.service;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
+import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.Getter;
@@ -16,6 +17,8 @@ public class SignupServiceImpl implements SignupService {
 
     private UserService<AbstractUser<?>,?> userService;
     private VerificationService verificationService;
+    private PasswordValidator passwordValidator;
+
 
 
     @Transactional
@@ -26,9 +29,10 @@ public class SignupServiceImpl implements SignupService {
 
 
         checkUniqueContactInformation(dto.getContactInformation());
+        passwordValidator.validate(dto.getPassword()); // fail fast
         user.setContactInformation(dto.getContactInformation());
 
-        // will be encoded by user service
+        // will be encoded by user service downstream
         user.setPassword(dto.getPassword());
 
         AbstractUser saved = userService.create(user);
@@ -56,5 +60,10 @@ public class SignupServiceImpl implements SignupService {
     }
     @Autowired public void setVerificationService(VerificationService verificationService) {
         this.verificationService = verificationService;
+    }
+
+    @Autowired
+    public void setPasswordValidator(PasswordValidator passwordValidator) {
+        this.passwordValidator = passwordValidator;
     }
 }

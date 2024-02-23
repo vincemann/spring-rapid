@@ -11,12 +11,11 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
-@Validated
 public interface PasswordService {
 
-    public AbstractUser forgotPassword(@NotBlank String contactInformation) throws EntityNotFoundException;
+    public AbstractUser forgotPassword(String contactInformation) throws EntityNotFoundException, BadEntityException;
 
-    public AbstractUser resetPassword(@Valid ResetPasswordDto resetPasswordDto) throws EntityNotFoundException, BadEntityException, BadTokenException;
-    public AbstractUser changePassword(@Valid ChangePasswordDto changePasswordDto) throws EntityNotFoundException, BadEntityException;
+    public AbstractUser resetPassword(ResetPasswordDto resetPasswordDto) throws EntityNotFoundException, BadEntityException, BadTokenException;
+    public AbstractUser changePassword(ChangePasswordDto changePasswordDto) throws EntityNotFoundException, BadEntityException;
 
 }

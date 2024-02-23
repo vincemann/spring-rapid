@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.auth;
 
 import com.github.vincemann.springrapid.auth.service.val.ValidContactInformation;
+import com.github.vincemann.springrapid.auth.service.val.ValidPassword;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;

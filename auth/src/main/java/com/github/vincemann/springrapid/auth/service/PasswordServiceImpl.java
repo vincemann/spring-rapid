@@ -7,8 +7,10 @@ import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
+import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
+import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
@@ -16,9 +18,9 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
@@ -37,23 +39,31 @@ public class PasswordServiceImpl implements PasswordService {
     private IdConverter idConverter;
     private PasswordEncoder passwordEncoder;
 
+    private PasswordValidator passwordValidator;
+
+    private UserUtils userUtils;
+
 
 
 
     @Transactional(readOnly = true)
     @Override
-    public AbstractUser forgotPassword(String contactInformation) throws EntityNotFoundException {
+    public AbstractUser forgotPassword(String contactInformation) throws EntityNotFoundException, BadEntityException {
+        if (contactInformation == null || contactInformation.isEmpty()){
+            throw new BadEntityException("need non emtpy contact information");
+        }
         // fetch the user record from database
-        Optional<AbstractUser<Serializable>> byContactInformation = userService.findByContactInformation(contactInformation);
-        VerifyEntity.isPresent(byContactInformation, "User with contactInformation: " + contactInformation + " not found");
-        AbstractUser user = byContactInformation.get();
-        TransactionalUtils.afterCommit(() -> sendForgotPasswordMessage(user));
-        return user;
+        Optional<AbstractUser<Serializable>> user = userService.findByContactInformation(contactInformation);
+        VerifyEntity.isPresent(user, "User with contactInformation: " + contactInformation + " not found");
+        TransactionalUtils.afterCommit(() -> sendForgotPasswordMessage(user.get()));
+        return user.get();
     }
 
     @Transactional
     @Override
     public AbstractUser resetPassword(ResetPasswordDto dto) throws EntityNotFoundException, BadEntityException, BadTokenException {
+        VerifyEntity.notEmpty(dto.getNewPassword(),"newPassword");
+        VerifyEntity.notEmpty(dto.getCode(),"code");
 
         JWTClaimsSet claims = jweTokenService.parseToken(dto.getCode());
         RapidJwt.validate(claims, FORGOT_PASSWORD_AUDIENCE);
@@ -61,11 +71,8 @@ public class PasswordServiceImpl implements PasswordService {
         AbstractUser user = extractUserFromClaims(claims);
         RapidJwt.validateIssuedAfter(claims, user.getCredentialsUpdatedMillis());
 
-        // sets the password
+        passwordValidator.validate(dto.getNewPassword()); // fail fast
         return userService.updatePassword(user.getId(),dto.getNewPassword());
-        // dont return user instance or email - just create token for authenticated
-        // if user is allowed to reset password of someone else, it does not make sense to give him the token of the updated user
-        // which is not even his own -> just always return own token in header
     }
 
 
@@ -73,17 +80,18 @@ public class PasswordServiceImpl implements PasswordService {
     @Transactional
     @Override
     public AbstractUser changePassword(ChangePasswordDto dto) throws EntityNotFoundException, BadEntityException {
-        AbstractUser<Serializable> user = VerifyEntity.isPresent(userService.findByContactInformation(dto.getContactInformation()),dto.getContactInformation(),userService.getEntityClass());
-        VerifyEntity.isPresent(user, "User not found");
+        VerifyEntity.notEmpty(dto.getNewPassword(),"new password");
+        VerifyEntity.notEmpty(dto.getOldPassword(),"old password");
+        VerifyEntity.notEmpty(dto.getContactInformation(),"contact-information");
+
+        AbstractUser<Serializable> user = userUtils.findByContactInformation(dto.getContactInformation());
         String oldPassword = user.getPassword();
 
-
-        // checks
-        VerifyEntity.is(
+        VerifyEntity.isTrue(
                 passwordEncoder.matches(dto.getOldPassword(),
                         oldPassword), "Wrong password");
 
-        // sets the password
+        passwordValidator.validate(dto.getNewPassword()); // fail fast
         return userService.updatePassword(user.getId(),dto.getNewPassword());
     }
 
@@ -93,6 +101,8 @@ public class PasswordServiceImpl implements PasswordService {
      * @param user
      */
     protected void sendForgotPasswordMessage(AbstractUser user) {
+        Assert.notNull(user.getId());
+        Assert.notNull(user.getContactInformation());
 
         log.debug("Sending forgot password link to user: " + user);
         JWTClaimsSet claims = RapidJwt.create(FORGOT_PASSWORD_AUDIENCE,
@@ -118,10 +128,9 @@ public class PasswordServiceImpl implements PasswordService {
 
     protected AbstractUser extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException {
         Serializable id = idConverter.toId(claims.getSubject());
+        Assert.notNull(id);
         // fetch the user
-        Optional<AbstractUser<Serializable>> byId = userService.findById(id);
-        VerifyEntity.isPresent(byId, "User with id: " + id + " not found");
-        return byId.get();
+        return userUtils.findById(id);
     }
 
 
@@ -153,5 +162,15 @@ public class PasswordServiceImpl implements PasswordService {
     @Autowired
     public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Autowired
+    public void setPasswordValidator(PasswordValidator passwordValidator) {
+        this.passwordValidator = passwordValidator;
+    }
+
+    @Autowired
+    public void setUserUtils(UserUtils userUtils) {
+        this.userUtils = userUtils;
     }
 }

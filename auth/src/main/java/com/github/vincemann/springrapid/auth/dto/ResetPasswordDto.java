@@ -12,9 +12,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Data
 public class ResetPasswordDto implements Serializable {
-    @ValidPassword
-    String newPassword;
 
-    @NotBlank
+    String newPassword;
     String code;
 }

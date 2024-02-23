@@ -51,7 +51,7 @@ public class ContactInformationServiceImpl implements ContactInformationService 
 
         RapidJwt.validate(claims, CHANGE_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
 
-        VerifyEntity.is(StringUtils.isNotBlank(user.getNewContactInformation()), "No new contactInformation found. Looks like you have already changed.");
+        VerifyEntity.isTrue(StringUtils.isNotBlank(user.getNewContactInformation()), "No new contactInformation found. Looks like you have already changed.");
 
 
         VerifyAccess.condition(

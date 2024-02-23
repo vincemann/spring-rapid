@@ -12,6 +12,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -22,14 +23,6 @@ public class UserUtils {
 
     private IdConverter idConverter;
 
-
-    public AbstractUser extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException {
-        Serializable id = idConverter.toId(claims.getSubject());
-        // fetch the user
-        Optional<AbstractUser> byId = userService.findById(id);
-        VerifyEntity.isPresent(byId, "User with id: " + id + " not found");
-        return byId.get();
-    }
 
     public <T extends AbstractUser> T findAuthenticatedUser(){
         if (!RapidSecurityContext.isAuthenticated()){
@@ -44,6 +37,19 @@ public class UserUtils {
         return userByContactInformation.get();
     }
 
+    public <T extends AbstractUser> T findByContactInformation(String ci) throws EntityNotFoundException {
+        Assert.notNull(ci);
+        Optional<T> user = (Optional<T>) userService.findByContactInformation(ci);
+        VerifyEntity.isPresent(user,"cant find user with contact information: " + ci);
+        return user.get();
+    }
+
+    public <T extends AbstractUser> T findById(Serializable id) throws EntityNotFoundException {
+        Assert.notNull(id);
+        Optional<T> user = (Optional<T>) userService.findById(id);
+        VerifyEntity.isPresent(user,"cant find user with id: " + id);
+        return user.get();
+    }
 
 
 

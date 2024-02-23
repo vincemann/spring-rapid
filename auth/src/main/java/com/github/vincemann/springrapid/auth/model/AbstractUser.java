@@ -44,7 +44,6 @@ public class AbstractUser<Id extends Serializable>
 	@CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id", nullable = false))
 	@Column(name = "role", nullable = false)
 	@NotEmpty
-	// probably a good idea to create a @ValidRole annotation here
 	protected Set<String> roles = new HashSet<>();
 
 

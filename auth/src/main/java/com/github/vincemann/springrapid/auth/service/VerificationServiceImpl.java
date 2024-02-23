@@ -12,7 +12,6 @@ import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
 import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.Serializable;
 import java.util.Optional;
 
 @Slf4j
@@ -90,7 +88,7 @@ public class VerificationServiceImpl implements VerificationService {
         Optional<AbstractUser> user = userService.findByContactInformation(contactInformation);
         VerifyEntity.isPresent(user,"no user found with contactInformation: "+ contactInformation);
         // must be unverified
-        VerifyEntity.is(user.get().getRoles().contains(AuthRoles.UNVERIFIED), " Already verified");
+        VerifyEntity.isTrue(user.get().getRoles().contains(AuthRoles.UNVERIFIED), " Already verified");
 
         TransactionalUtils.afterCommit(() -> sendVerificationMessage(user.get()));
         return user.get();
@@ -109,7 +107,7 @@ public class VerificationServiceImpl implements VerificationService {
 
         // ensure that user is unverified
         // this makes sense to do here not in security plugin
-        VerifyEntity.is(user.hasRole(AuthRoles.UNVERIFIED), "Already Verified");
+        VerifyEntity.isTrue(user.hasRole(AuthRoles.UNVERIFIED), "Already Verified");
         //verificationCode is jwtToken
 
         //no login needed bc token of user is appended in controller -> we avoid dynamic logins in a stateless env
