@@ -14,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 
 
-public class RoleGainsPermissionOnCreatedAclExtension extends AclExtension<CrudService>
+public class RoleGainsPermissionOnCreatedAclExtension
+        extends AclExtension<CrudService>
         implements CrudServiceExtension<CrudService> {
 
 

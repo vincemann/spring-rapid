@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Getter
@@ -17,6 +18,7 @@ public class SignupServiceImpl implements SignupService {
     private VerificationService verificationService;
 
 
+    @Transactional
     @Override
     public AbstractUser signup(SignupDto dto) throws BadEntityException, AlreadyRegisteredException {
         AbstractUser user = userService.createUser();

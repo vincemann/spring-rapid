@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.springframework.security.acls.model.Permission;
+import org.springframework.transaction.annotation.Transactional;
 
 @EqualsAndHashCode(callSuper = true)
 public class AuthenticatedGainsPermissionOnCreatedAclExtension extends AclExtension<CrudService>
@@ -20,6 +21,7 @@ public class AuthenticatedGainsPermissionOnCreatedAclExtension extends AclExtens
         this.permissions= permissions;
     }
 
+    @Transactional
     @LogInteraction
     @Override
     public IdentifiableEntity create(IdentifiableEntity entity) throws BadEntityException {

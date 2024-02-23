@@ -78,6 +78,7 @@ public class ContactInformationServiceImpl implements ContactInformationService 
     }
 
 
+    @Transactional
     @Override
     public AbstractUser requestContactInformationChange(RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException {
         Optional<AbstractUser> oldUser = userService.findByContactInformation(dto.getOldContactInformation());

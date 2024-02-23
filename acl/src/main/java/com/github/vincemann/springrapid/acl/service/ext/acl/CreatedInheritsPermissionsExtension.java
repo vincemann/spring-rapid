@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 
-@Transactional
 @Getter
 @EqualsAndHashCode(callSuper = true)
 public class CreatedInheritsPermissionsExtension<E extends IdentifiableEntity<Id> & AclParentAware, Id extends Serializable>
@@ -30,6 +29,7 @@ public class CreatedInheritsPermissionsExtension<E extends IdentifiableEntity<Id
         this.permissionsToInherit = permissions;
     }
 
+    @Transactional
     @LogInteraction
     @Override
     public E create(E entity) throws BadEntityException {

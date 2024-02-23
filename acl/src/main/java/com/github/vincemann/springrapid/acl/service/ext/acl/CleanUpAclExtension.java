@@ -15,7 +15,6 @@ import java.io.Serializable;
 
 @Getter
 @Slf4j
-@Transactional
 @DefaultExtension(qualifier = Acl.class, service = CrudService.class)
 /**
  * Removes Acl's on delete, if existing.
@@ -28,6 +27,7 @@ public class CleanUpAclExtension
     private boolean deleteCascade = false;
 
 
+    @Transactional
     @LogInteraction
     @Override
     public void deleteById(Serializable id) throws EntityNotFoundException {

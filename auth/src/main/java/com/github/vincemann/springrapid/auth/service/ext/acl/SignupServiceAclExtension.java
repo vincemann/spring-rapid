@@ -12,13 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Slf4j
-@Transactional
 public class SignupServiceAclExtension
         extends AclExtension<SignupService>
             implements SignupService
 {
 
 
+    @Transactional
     @Override
     public AbstractUser signup(SignupDto signupDto) throws BadEntityException, AlreadyRegisteredException {
         AbstractUser saved = getNext().signup(signupDto);

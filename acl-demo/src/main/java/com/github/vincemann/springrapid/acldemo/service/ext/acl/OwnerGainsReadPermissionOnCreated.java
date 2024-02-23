@@ -12,12 +12,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class OwnerGainsReadPermissionOnCreated extends AclExtension<VisitService>
+public class OwnerGainsReadPermissionOnCreated
+        extends AclExtension<VisitService>
         implements GenericCrudServiceExtension<VisitService, Visit,Long>
 {
+    @Transactional
     @Override
     public Visit create(Visit visit) throws BadEntityException {
         Visit savedVisit = getNext().create(visit);

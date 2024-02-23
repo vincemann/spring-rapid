@@ -12,7 +12,6 @@ import java.util.Optional;
 
 @Service
 //@Primary
-@Transactional
 public class JpaMyUserService
 		extends JpaUserService<User, Long, UserRepository>
 				implements MyUserService {

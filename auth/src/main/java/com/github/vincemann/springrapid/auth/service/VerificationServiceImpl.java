@@ -50,6 +50,7 @@ public class VerificationServiceImpl implements VerificationService {
     }
 
 
+    @Transactional
     @Override
     public AbstractUser makeVerified(AbstractUser user) throws BadEntityException, EntityNotFoundException {
         if (!user.getRoles().contains(AuthRoles.UNVERIFIED)){
@@ -82,6 +83,7 @@ public class VerificationServiceImpl implements VerificationService {
         log.debug("Verification mail to " + user.getContactInformation() + " queued.");
     }
 
+    @Transactional
     @Override
     public AbstractUser resendVerificationMessage(String contactInformation) throws EntityNotFoundException, BadEntityException {
 

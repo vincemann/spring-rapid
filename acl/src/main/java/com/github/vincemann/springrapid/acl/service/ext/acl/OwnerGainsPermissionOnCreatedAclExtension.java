@@ -5,9 +5,11 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Trim;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.model.Permission;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -31,6 +33,7 @@ public class OwnerGainsPermissionOnCreatedAclExtension
 
 
 
+    @Transactional
     @Override
     public IdentifiableEntity create(IdentifiableEntity entity) throws BadEntityException {
         IdentifiableEntity saved = getNext().create(entity);
