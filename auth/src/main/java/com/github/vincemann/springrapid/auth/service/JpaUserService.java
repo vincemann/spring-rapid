@@ -27,7 +27,6 @@ import static com.github.vincemann.springrapid.core.util.MethodNameUtil.property
  * If you extend from this class and annotate with @{@link org.springframework.stereotype.Service} or @{@link org.springframework.stereotype.Component}
  * make sure to not also add {@link org.springframework.context.annotation.Primary}
  */
-@Validated
 @Slf4j
 public abstract class JpaUserService
         <

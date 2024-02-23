@@ -17,14 +17,12 @@ import org.springframework.util.Assert;
 import java.io.Serializable;
 import java.util.Optional;
 
-public class UserUtils {
+public abstract class UserUtils {
 
-    private UserService userService;
-
-    private IdConverter idConverter;
+    private UserUtils(){}
 
 
-    public <T extends AbstractUser> T findAuthenticatedUser(){
+    public static <T extends AbstractUser> T findAuthenticatedUser(UserService userService){
         if (!RapidSecurityContext.isAuthenticated()){
             throw new AccessDeniedException("No user logged in");
         }
@@ -37,30 +35,5 @@ public class UserUtils {
         return userByContactInformation.get();
     }
 
-    public <T extends AbstractUser> T findByContactInformation(String ci) throws EntityNotFoundException {
-        Assert.notNull(ci);
-        Optional<T> user = (Optional<T>) userService.findByContactInformation(ci);
-        VerifyEntity.isPresent(user,"cant find user with contact information: " + ci);
-        return user.get();
-    }
 
-    public <T extends AbstractUser> T findById(Serializable id) throws EntityNotFoundException {
-        Assert.notNull(id);
-        Optional<T> user = (Optional<T>) userService.findById(id);
-        VerifyEntity.isPresent(user,"cant find user with id: " + id);
-        return user.get();
-    }
-
-
-
-    @Autowired
-    public void setIdConverter(IdConverter idConverter) {
-        this.idConverter = idConverter;
-    }
-
-    @Lazy
-    @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
-    }
 }

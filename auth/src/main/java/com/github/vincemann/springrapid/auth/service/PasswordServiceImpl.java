@@ -41,8 +41,6 @@ public class PasswordServiceImpl implements PasswordService {
 
     private PasswordValidator passwordValidator;
 
-    private UserUtils userUtils;
-
 
 
 
@@ -84,7 +82,7 @@ public class PasswordServiceImpl implements PasswordService {
         VerifyEntity.notEmpty(dto.getOldPassword(),"old password");
         VerifyEntity.notEmpty(dto.getContactInformation(),"contact-information");
 
-        AbstractUser<Serializable> user = userUtils.findByContactInformation(dto.getContactInformation());
+        AbstractUser<Serializable> user = userService.findPresentByContactInformation(dto.getContactInformation());
         String oldPassword = user.getPassword();
 
         VerifyEntity.isTrue(
@@ -130,7 +128,7 @@ public class PasswordServiceImpl implements PasswordService {
         Serializable id = idConverter.toId(claims.getSubject());
         Assert.notNull(id);
         // fetch the user
-        return userUtils.findById(id);
+        return userService.findPresentById(id);
     }
 
 
@@ -169,8 +167,4 @@ public class PasswordServiceImpl implements PasswordService {
         this.passwordValidator = passwordValidator;
     }
 
-    @Autowired
-    public void setUserUtils(UserUtils userUtils) {
-        this.userUtils = userUtils;
-    }
 }

@@ -4,6 +4,7 @@ import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.annotation.CustomToString;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -27,6 +28,7 @@ public interface RapidSecurityContext
 
     @LogInteraction(Severity.DEBUG)
     @CustomToString(key = "ret", toStringMethod = "shortToString")
+    @Nullable
     RapidPrincipal currentPrincipal();
 
     public static void unsetAuthenticated(){

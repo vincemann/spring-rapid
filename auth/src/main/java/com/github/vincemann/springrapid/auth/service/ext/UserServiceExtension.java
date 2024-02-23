@@ -34,6 +34,16 @@ public interface UserServiceExtension extends NextLinkAware<UserService>, UserSe
     }
 
     @Override
+    default AbstractUser findPresentByContactInformation(String contactInformation) throws EntityNotFoundException {
+        return getNext().findPresentByContactInformation(contactInformation);
+    }
+
+    @Override
+    default AbstractUser blockUser(String contactInformation) throws EntityNotFoundException, BadEntityException {
+        return getNext().blockUser(contactInformation);
+    }
+
+    @Override
     default AbstractUser updateContactInformation(Serializable userId, String contactInformation) throws EntityNotFoundException, BadEntityException {
         return getNext().updateContactInformation(userId,contactInformation);
     }

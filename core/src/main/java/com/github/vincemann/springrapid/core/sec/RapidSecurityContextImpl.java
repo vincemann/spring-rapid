@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.sec;
 
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,6 +28,7 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
         setAuthenticated(getAnonUser());
     }
 
+    @Nullable
     @Override
     public RapidPrincipal currentPrincipal() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

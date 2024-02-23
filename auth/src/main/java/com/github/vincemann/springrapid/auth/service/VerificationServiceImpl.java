@@ -12,13 +12,16 @@ import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
 import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.Serializable;
 import java.util.Optional;
 
 @Slf4j
@@ -32,16 +35,14 @@ public class VerificationServiceImpl implements VerificationService {
 
     private MessageSender messageSender;
 
-    private UserService userService;
+    private UserService<AbstractUser<Serializable>,Serializable> userService;
 
-    private UserUtils userUtils;
+    private IdConverter idConverter;
 
     @Transactional
     @Override
     public AbstractUser makeUnverified(AbstractUser user) throws BadEntityException, EntityNotFoundException {
-        if (user.getRoles().contains(AuthRoles.UNVERIFIED)){
-            throw new BadEntityException("Already unverified");
-        }
+        VerifyEntity.isTrue(!user.getRoles().contains(AuthRoles.UNVERIFIED),"Already unverified");
         AbstractUser updated = userService.addRole(user.getId(), AuthRoles.UNVERIFIED);
         TransactionalUtils.afterCommit(() -> sendVerificationMessage(updated));
         return updated;
@@ -51,10 +52,7 @@ public class VerificationServiceImpl implements VerificationService {
     @Transactional
     @Override
     public AbstractUser makeVerified(AbstractUser user) throws BadEntityException, EntityNotFoundException {
-        if (!user.getRoles().contains(AuthRoles.UNVERIFIED)){
-            throw new BadEntityException("Already verified");
-        }
-
+        VerifyEntity.isTrue(!user.getRoles().contains(AuthRoles.UNVERIFIED),"Already unverified");
         return userService.removeRole(user.getId(),AuthRoles.UNVERIFIED);
     }
 
@@ -84,14 +82,13 @@ public class VerificationServiceImpl implements VerificationService {
     @Transactional
     @Override
     public AbstractUser resendVerificationMessage(String contactInformation) throws EntityNotFoundException, BadEntityException {
-
-        Optional<AbstractUser> user = userService.findByContactInformation(contactInformation);
-        VerifyEntity.isPresent(user,"no user found with contactInformation: "+ contactInformation);
+        VerifyEntity.notEmpty(contactInformation,"contact-information");
+        AbstractUser user = userService.findPresentByContactInformation(contactInformation);
         // must be unverified
-        VerifyEntity.isTrue(user.get().getRoles().contains(AuthRoles.UNVERIFIED), " Already verified");
+        VerifyEntity.isTrue(user.getRoles().contains(AuthRoles.UNVERIFIED), " Already verified");
 
-        TransactionalUtils.afterCommit(() -> sendVerificationMessage(user.get()));
-        return user.get();
+        TransactionalUtils.afterCommit(() -> sendVerificationMessage(user));
+        return user;
     }
 
 
@@ -101,7 +98,7 @@ public class VerificationServiceImpl implements VerificationService {
     @Override
     public AbstractUser verifyUser(String code) throws EntityNotFoundException, BadTokenException, BadEntityException {
         JWTClaimsSet claims = jweTokenService.parseToken(code);
-        AbstractUser user = userUtils.extractUserFromClaims(claims);
+        AbstractUser user = extractUserFromClaims(claims);
         RapidJwt.validate(claims, VERIFY_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
 
 
@@ -113,6 +110,13 @@ public class VerificationServiceImpl implements VerificationService {
         //no login needed bc token of user is appended in controller -> we avoid dynamic logins in a stateless env
         //also to be able to use read-only security test -> generic principal type does not need to be passed into this class
         return makeVerified(user);
+    }
+
+    protected AbstractUser extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException {
+        Serializable id = idConverter.toId(claims.getSubject());
+        Assert.notNull(id);
+        // fetch the user
+        return userService.findPresentById(id);
     }
 
     @Autowired public void setJweTokenService(JweTokenService jweTokenService) {
@@ -131,8 +135,8 @@ public class VerificationServiceImpl implements VerificationService {
         this.userService = userService;
     }
 
-
-    @Autowired public void setUserUtils(UserUtils userUtils) {
-        this.userUtils = userUtils;
+    @Autowired
+    public void setIdConverter(IdConverter idConverter) {
+        this.idConverter = idConverter;
     }
 }

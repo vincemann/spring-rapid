@@ -35,11 +35,6 @@ public class VerifyEntity {
         }
     }
 
-    public static void isNot(boolean expression, String msg) throws BadEntityException {
-        if(expression){
-            throw new BadEntityException(msg);
-        }
-    }
 
     public static <T> T isPresent(T entity, String msg) throws EntityNotFoundException {
         if (entity==null){

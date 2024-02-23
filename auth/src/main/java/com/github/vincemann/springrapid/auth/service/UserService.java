@@ -14,12 +14,12 @@ import java.io.Serializable;
 import java.util.Optional;
 
 // only do validation on highest level, that is exposed to user, not when only using internally
-@Validated
 public interface UserService<U extends AbstractUser<ID>, ID extends Serializable>
         extends CrudService<U,ID>, AopLoggable
 {
 
-    public Optional<U> findByContactInformation(@NotBlank String contactInformation);
+    public Optional<U> findByContactInformation(String contactInformation);
+    public U findPresentByContactInformation(String contactInformation) throws EntityNotFoundException;
 
     U addRole(ID userId, String role) throws EntityNotFoundException, BadEntityException;
 
@@ -42,7 +42,7 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
     U createUser();
 
-    U createAdmin(@Valid AuthProperties.Admin admin);
+    U createAdmin(AuthProperties.Admin admin);
 
-    U blockUser(@NotBlank String contactInformation) throws EntityNotFoundException, BadEntityException;
+    U blockUser(String contactInformation) throws EntityNotFoundException, BadEntityException;
 }

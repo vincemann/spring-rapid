@@ -9,7 +9,6 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
 
-@Validated
 public interface VerificationService {
 
 
@@ -17,7 +16,7 @@ public interface VerificationService {
 
     AbstractUser makeVerified(AbstractUser user) throws BadEntityException, EntityNotFoundException;
 
-    AbstractUser resendVerificationMessage(@NotBlank String contactInformation) throws EntityNotFoundException, BadEntityException;
+    AbstractUser resendVerificationMessage(String contactInformation) throws EntityNotFoundException, BadEntityException;
 
-    AbstractUser verifyUser(@NotBlank String code) throws EntityNotFoundException, BadTokenException, BadEntityException;
+    AbstractUser verifyUser(String code) throws EntityNotFoundException, BadTokenException, BadEntityException;
 }

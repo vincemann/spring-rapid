@@ -19,12 +19,7 @@ import java.util.Set;
 @Setter
 public class SignupDto implements Serializable {
 
-    @NotBlank
-    @ValidContactInformation
     private String contactInformation;
-
-    @NotBlank
-    @ValidPassword
     private String password;
 
 

@@ -35,6 +35,8 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
 
         Optional<E> findById(Id id);
 
+        E findPresentById(Id id);
+
 
 
         /**

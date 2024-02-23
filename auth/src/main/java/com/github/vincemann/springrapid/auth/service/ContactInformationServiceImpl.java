@@ -7,20 +7,24 @@ import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
+import com.github.vincemann.springrapid.auth.service.val.ContactInformationValidator;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
 import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.util.*;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.Serializable;
 import java.util.Optional;
 
 import static com.github.vincemann.springrapid.core.util.MethodNameUtil.propertyName;
@@ -30,7 +34,7 @@ public class ContactInformationServiceImpl implements ContactInformationService 
 
     public static final String CHANGE_CONTACT_INFORMATION_AUDIENCE = "change-contactInformation";
 
-    private UserService userService;
+    private UserService<AbstractUser<Serializable>,Serializable> userService;
 
     private JweTokenService jweTokenService;
 
@@ -40,28 +44,32 @@ public class ContactInformationServiceImpl implements ContactInformationService 
 
     private VerificationService verificationService;
 
-    private UserUtils userUtils;
+    private ContactInformationValidator contactInformationValidator;
+
+    private IdConverter idConverter;
 
     @Transactional
     @Override
     public AbstractUser changeContactInformation(String code) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException, BadTokenException {
 
+        VerifyEntity.notEmpty(code,"code");
+
         JWTClaimsSet claims = jweTokenService.parseToken(code);
-        AbstractUser user = userUtils.extractUserFromClaims(claims);
+        AbstractUser user = extractUserFromClaims(claims);
 
         RapidJwt.validate(claims, CHANGE_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
 
-        VerifyEntity.isTrue(StringUtils.isNotBlank(user.getNewContactInformation()), "No new contactInformation found. Looks like you have already changed.");
+        VerifyEntity.notEmpty(user.getNewContactInformation(), "new contact-information");
 
-
-        VerifyAccess.condition(
+        VerifyEntity.isTrue(
                 claims.getClaim("newContactInformation").equals(user.getNewContactInformation()),
                 Message.get("com.github.vincemann.wrong.changeContactInformationCode"));
 
-        // Ensure that the contactInformation would be unique
-        checkUniqueContactInformation(user.getNewContactInformation());
-        // update the fields
+        contactInformationValidator.validate(user.getNewContactInformation());
 
+        checkUniqueContactInformation(user.getNewContactInformation());
+
+        // update the fields
         userService.updateContactInformation(user.getId(), user.getNewContactInformation());
 
         // changing newContactInformation to null is too high level to put into low level updateContactInformation method -> need two update calls
@@ -81,15 +89,19 @@ public class ContactInformationServiceImpl implements ContactInformationService 
     @Transactional
     @Override
     public AbstractUser requestContactInformationChange(RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException {
-        Optional<AbstractUser> oldUser = userService.findByContactInformation(dto.getOldContactInformation());
-        VerifyEntity.isPresent(oldUser, dto.getOldContactInformation(), userService.getEntityClass());
-
-
         String newContactInformation = dto.getNewContactInformation();
+        VerifyEntity.notEmpty(dto.getOldContactInformation(),"old contact-information");
+        VerifyEntity.notEmpty(dto.getNewContactInformation(),"new contact-information");
+
+        contactInformationValidator.validate(newContactInformation);
+
+        AbstractUser oldUser = userService.findPresentByContactInformation(dto.getOldContactInformation());
+
+
         checkUniqueContactInformation(newContactInformation);
 
 //        // preserves the new contactInformation id
-        AbstractUser update = Entity.createUpdate(oldUser.get());
+        AbstractUser update = Entity.createUpdate(oldUser);
         update.setNewContactInformation(newContactInformation);
 
         AbstractUser updated = userService.partialUpdate(update);
@@ -131,6 +143,13 @@ public class ContactInformationServiceImpl implements ContactInformationService 
         log.debug("Change contactInformation link mail queued.");
     }
 
+    protected AbstractUser extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException {
+        Serializable id = idConverter.toId(claims.getSubject());
+        Assert.notNull(id);
+        // fetch the user
+        return userService.findPresentById(id);
+    }
+
     @Autowired public void setUserService(UserService userService) {
         this.userService = userService;
     }
@@ -151,7 +170,13 @@ public class ContactInformationServiceImpl implements ContactInformationService 
         this.verificationService = verificationService;
     }
 
-    @Autowired public void setUserUtils(UserUtils userUtils) {
-        this.userUtils = userUtils;
+    @Autowired
+    public void setContactInformationValidator(ContactInformationValidator contactInformationValidator) {
+        this.contactInformationValidator = contactInformationValidator;
+    }
+
+    @Autowired
+    public void setIdConverter(IdConverter idConverter) {
+        this.idConverter = idConverter;
     }
 }

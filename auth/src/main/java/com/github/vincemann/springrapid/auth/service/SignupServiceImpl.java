@@ -3,9 +3,11 @@ package com.github.vincemann.springrapid.auth.service;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
+import com.github.vincemann.springrapid.auth.service.val.ContactInformationValidator;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,25 +20,29 @@ public class SignupServiceImpl implements SignupService {
     private UserService<AbstractUser<?>,?> userService;
     private VerificationService verificationService;
     private PasswordValidator passwordValidator;
+    private ContactInformationValidator contactInformationValidator;
 
 
 
     @Transactional
     @Override
     public AbstractUser signup(SignupDto dto) throws BadEntityException, AlreadyRegisteredException {
-        AbstractUser user = userService.createUser();
-        user.getRoles().add(AuthRoles.USER);
+        VerifyEntity.notEmpty(dto.getContactInformation(),"contact-information");
+        VerifyEntity.notEmpty(dto.getPassword(),"password");
 
+        contactInformationValidator.validate(dto.getContactInformation());
+        passwordValidator.validate(dto.getPassword()); // fail fast
 
         checkUniqueContactInformation(dto.getContactInformation());
-        passwordValidator.validate(dto.getPassword()); // fail fast
-        user.setContactInformation(dto.getContactInformation());
 
-        // will be encoded by user service downstream
-        user.setPassword(dto.getPassword());
+
+        AbstractUser user = userService.createUser();
+        user.getRoles().add(AuthRoles.USER);
+        user.setContactInformation(dto.getContactInformation());
+        user.setPassword(dto.getPassword()); // will be encoded by user service downstream
 
         AbstractUser saved = userService.create(user);
-        // is done in same transaction -> so applied directly, but message sent after transaction to make sure it
+        // is done in same transaction -> so applied directly, but message is sent after transaction to make sure it
         // is not sent when transaction fails
         try {
             verificationService.makeUnverified(saved);
@@ -65,5 +71,10 @@ public class SignupServiceImpl implements SignupService {
     @Autowired
     public void setPasswordValidator(PasswordValidator passwordValidator) {
         this.passwordValidator = passwordValidator;
+    }
+
+    @Autowired
+    public void setContactInformationValidator(ContactInformationValidator contactInformationValidator) {
+        this.contactInformationValidator = contactInformationValidator;
     }
 }

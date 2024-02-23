@@ -12,10 +12,6 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @Data
 public class RequestContactInformationChangeDto {
-    @NotBlank
     private String oldContactInformation;
-
-    @NotBlank
-    @ValidContactInformation
     private String newContactInformation;
 }

@@ -12,7 +12,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Data
 public class ResetPasswordDto implements Serializable {
-
     String newPassword;
     String code;
 }

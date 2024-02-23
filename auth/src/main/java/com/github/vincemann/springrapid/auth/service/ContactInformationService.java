@@ -10,10 +10,9 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
-@Validated
 public interface ContactInformationService {
 
-    public AbstractUser changeContactInformation(@NotBlank String code) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException, BadTokenException;
+    public AbstractUser changeContactInformation(String code) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException, BadTokenException;
 
-    public AbstractUser requestContactInformationChange(@Valid RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException;
+    public AbstractUser requestContactInformationChange(RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException;
 }

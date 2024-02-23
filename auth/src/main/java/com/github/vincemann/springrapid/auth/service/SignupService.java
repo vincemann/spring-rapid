@@ -7,8 +7,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 
-@Validated
 public interface SignupService {
 
-    public AbstractUser signup(@Valid SignupDto signupDto) throws BadEntityException, AlreadyRegisteredException;
+    public AbstractUser signup(SignupDto signupDto) throws BadEntityException, AlreadyRegisteredException;
 }
