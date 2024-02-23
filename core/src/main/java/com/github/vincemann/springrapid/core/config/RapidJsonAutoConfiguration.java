@@ -38,8 +38,6 @@ public class RapidJsonAutoConfiguration implements WebMvcConfigurer {
     @ConditionalOnMissingBean(ObjectMapper.class)
     @Bean
     public ObjectMapper objectMapper(){
-        if (log.isDebugEnabled())
-            log.debug("Created Rapid Logging JsonMapper.");
         ObjectMapper mapper= new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.configure(ACCEPT_SINGLE_VALUE_AS_ARRAY,true);
