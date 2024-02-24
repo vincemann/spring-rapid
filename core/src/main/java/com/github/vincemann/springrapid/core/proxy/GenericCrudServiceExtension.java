@@ -41,6 +41,10 @@ public interface GenericCrudServiceExtension
         return getNext().findAll(jpqlFilters,entityFilters,sortingStrategies);
     }
 
+    @Override
+    default E findPresentById(Id id) throws EntityNotFoundException {
+        return getNext().findPresentById(id);
+    }
 
     @Override
     default Set<E> findSome(Set<Id> ids) {

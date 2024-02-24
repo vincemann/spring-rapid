@@ -16,7 +16,11 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Does basic acl permission checks on crud Methods defined in {@link com.github.vincemann.springrapid.core.service.CrudService}.
+ * Does basic acl permission checks on crud Methods defined in {@link com.github.vincemann.springrapid.core.service.CrudService}
+ * create is allowed by default (you can combine with {@link NeedCreatePermissionOnParentForCreateExtension}.
+ * update operations require write permission
+ * read operations required read permission
+ * delete operations required delete permission
  */
 @DefaultExtension(qualifier = Secured.class, service = CrudService.class)
 public class CrudAclChecksExtension
@@ -52,7 +56,6 @@ public class CrudAclChecksExtension
     public Set<IdentifiableEntity> findSome(Set ids) {
         Set<IdentifiableEntity> entities = getNext().findSome(ids);
         entities.stream().forEach(entity -> getAclTemplate().checkPermission(entity,BasePermission.READ));
-//        return getSecurityChecker().filter(entities,BasePermission.READ);
         return entities;
     }
 
