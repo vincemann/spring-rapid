@@ -67,13 +67,6 @@ public class RapidUserServiceAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(UserUtils.class)
-    public UserUtils userUtils(){
-        return new UserUtils();
-    }
-
-
-    @Bean
     @ConditionalOnMissingBean(PasswordEncoder.class)
     public RapidPasswordEncoder passwordEncoder() {
         return new BcryptRapidPasswordEncoder();

@@ -62,6 +62,7 @@ public interface RapidSecurityContext
         return result;
     }
 
+    @Nullable
     public static String getName(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication==null){
@@ -84,5 +85,9 @@ public interface RapidSecurityContext
             }
             return true;
         }
+    }
+
+    public static void clear(){
+        SecurityContextHolder.clearContext();
     }
 }

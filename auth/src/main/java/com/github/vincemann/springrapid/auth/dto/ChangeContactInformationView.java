@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.dto;
 
-import com.github.vincemann.springrapid.auth.service.val.ValidContactInformation;
+
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;

@@ -8,5 +8,5 @@ import javax.validation.constraints.NotBlank;
 
 public interface UserAuthTokenService {
     public String createNewAuthToken(String contactInformation) throws EntityNotFoundException, BadEntityException;
-    public String createNewAuthToken() throws EntityNotFoundException, BadEntityException;
+    public String createNewAuthToken() throws EntityNotFoundException;
 }

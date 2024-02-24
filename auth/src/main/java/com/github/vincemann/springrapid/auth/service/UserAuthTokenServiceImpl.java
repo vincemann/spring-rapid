@@ -31,12 +31,16 @@ public class UserAuthTokenServiceImpl implements UserAuthTokenService {
         return authorizationTokenService.createToken(authenticatedPrincipalFactory.create(byContactInformation));
     }
 
-    public String createNewAuthToken() throws EntityNotFoundException, BadEntityException {
+    public String createNewAuthToken() throws EntityNotFoundException {
         Assert.isTrue(!RapidSecurityContext.getRoles().contains(AuthRoles.ANON),"cannot create token for anon user");
         Assert.isTrue(!RapidSecurityContext.getRoles().contains(AuthRoles.SYSTEM),"cannot create token for system user");
         RapidPrincipal authenticated = securityContext.currentPrincipal();
-        VerifyEntity.isTrue(authenticated != null,"must be authenticated");
-        return createNewAuthToken(authenticated.getName());
+        Assert.isTrue(authenticated != null,"must be authenticated");
+        try {
+            return createNewAuthToken(authenticated.getName());
+        } catch (BadEntityException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Autowired

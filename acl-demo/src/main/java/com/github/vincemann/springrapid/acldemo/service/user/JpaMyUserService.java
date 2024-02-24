@@ -23,8 +23,6 @@ public class JpaMyUserService
 	}
 
 
-
-
 	@Override
 	public Class<?> getTargetClass() {
 		return JpaMyUserService.class;

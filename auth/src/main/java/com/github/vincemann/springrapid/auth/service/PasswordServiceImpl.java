@@ -99,8 +99,8 @@ public class PasswordServiceImpl implements PasswordService {
      * @param user
      */
     protected void sendForgotPasswordMessage(AbstractUser user) {
-        Assert.notNull(user.getId());
-        Assert.notNull(user.getContactInformation());
+        Assert.notNull(user.getId(),"user id must not be null");
+        Assert.notNull(user.getContactInformation(), "users contact information must not be null");
 
         log.debug("Sending forgot password link to user: " + user);
         JWTClaimsSet claims = RapidJwt.create(FORGOT_PASSWORD_AUDIENCE,

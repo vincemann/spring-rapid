@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,6 @@ public class RapidAuthenticationSuccessHandler
         // Instead of handle(request, response, authentication),
 		// the statements below are introduced
     	response.setStatus(HttpServletResponse.SC_OK);
-//    	response.setContentType(properties.getController().getMediaType());
 		String token;
 		try {
 			token = authTokenService.createNewAuthToken();
@@ -49,10 +49,6 @@ public class RapidAuthenticationSuccessHandler
 			throw new RuntimeException("No authenticated Principal found",e);
 		}
 		response.addHeader(HttpHeaders.AUTHORIZATION, token);
-
-//    	// write current-user data to the response
-//    	response.getOutputStream().print(
-//    			objectMapper.writeValueAsString(currentUser));
 
     	// as done in the base class
     	clearAuthenticationAttributes(request);

@@ -1,9 +1,6 @@
 package com.github.vincemann.springrapid.auth.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.github.vincemann.springrapid.auth.service.val.ValidContactInformation;
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
@@ -11,6 +8,7 @@ import org.springframework.lang.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,7 +22,7 @@ public class AbstractUser<Id extends Serializable>
 {
 	public static final int CONTACT_INFORMATION_MAX = 250;
 
-	// contactInformation can be email or phone number - dont hardcode to email
+	// contactInformation can be email or phone number - dont hardcode to email constraint
 	@NotBlank
 	@Column(nullable = false, unique = true, length = CONTACT_INFORMATION_MAX)
 	protected String contactInformation;
@@ -49,6 +47,7 @@ public class AbstractUser<Id extends Serializable>
 
 
 	// A JWT issued before this won't be valid
+	@NotNull
 	@Column(nullable = false)
 	protected Long credentialsUpdatedMillis = System.currentTimeMillis();
 

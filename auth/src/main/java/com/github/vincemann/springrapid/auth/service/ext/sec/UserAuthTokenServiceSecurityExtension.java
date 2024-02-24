@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.sec.Roles;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.Message;
 import com.github.vincemann.springrapid.core.util.VerifyAccess;
@@ -19,7 +20,7 @@ public class UserAuthTokenServiceSecurityExtension extends SecurityExtension<Use
 
 
     @Override
-    public String createNewAuthToken(String contactInformation) throws EntityNotFoundException {
+    public String createNewAuthToken(String contactInformation) throws EntityNotFoundException, BadEntityException {
         VerifyAccess.condition(RapidSecurityContext.getName().equals(contactInformation) ||
                 RapidSecurityContext.getRoles().contains(Roles.ADMIN),
                 Message.get("com.github.vincemann.notGoodAdminOrSameUser"));

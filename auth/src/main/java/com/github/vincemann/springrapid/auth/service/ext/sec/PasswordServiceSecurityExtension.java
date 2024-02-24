@@ -21,7 +21,7 @@ public class PasswordServiceSecurityExtension extends SecurityExtension<Password
     private UserService userService;
 
     @Override
-    public AbstractUser forgotPassword(String contactInformation) throws EntityNotFoundException {
+    public AbstractUser forgotPassword(String contactInformation) throws EntityNotFoundException, BadEntityException {
         // anon has to be able to reset password without being logged in
         return getNext().forgotPassword(contactInformation);
     }
