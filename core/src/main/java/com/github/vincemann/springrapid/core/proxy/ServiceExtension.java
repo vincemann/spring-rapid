@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.util.Assert;
 
 /**
  * Baseclass for all extensions managed by {@link ExtensionProxy}.
@@ -35,14 +34,19 @@ public abstract class ServiceExtension<T>
     private Chain chain;
 
 
+    /**
+     * Representing the most abstract class that is supported.
+     * Usually set to the type parameter class.
+     * Used to perform "type safety" in a dynamic fashion when generic checks are not possible.
+     */
     @Setter
     @Getter
-    private Class<?> targetClass;
+    private Class<?> supportedClass;
 
 
 
     public ServiceExtension() {
-        this.targetClass = findTargetClass();
+        this.supportedClass = findTargetClass();
     }
 
     protected Class<?> findTargetClass(){
@@ -73,11 +77,11 @@ public abstract class ServiceExtension<T>
     }
 
     public boolean matchesProxy(ExtensionProxy proxy){
-        if (targetClass == null){
+        if (supportedClass == null){
             log.debug("target class is null, ignoring dynamic type safety check");
             return true;
         }
-        return targetClass.isAssignableFrom(proxy.getProxied().getClass());
+        return supportedClass.isAssignableFrom(proxy.getProxied().getClass());
     }
 
     /**
@@ -137,7 +141,7 @@ public abstract class ServiceExtension<T>
     public String toString() {
         return "ServiceExtension{" +
                 "type=" +this.getClass().getSimpleName()+", "+
-                "targetClass=" + targetClass +
+                "targetClass=" + supportedClass +
                 '}';
     }
 }

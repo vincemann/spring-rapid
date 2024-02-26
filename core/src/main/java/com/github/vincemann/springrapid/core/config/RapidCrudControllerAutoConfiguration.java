@@ -42,7 +42,7 @@ public class RapidCrudControllerAutoConfiguration {
 
     @ConditionalOnMissingBean(EndpointService.class)
     @Bean
-    public EndpointService endpointService(@Autowired RequestMappingHandlerMapping requestMappingHandlerMapping){
+    public EndpointService endpointService(RequestMappingHandlerMapping requestMappingHandlerMapping){
         return new EndpointService(requestMappingHandlerMapping);
     }
 

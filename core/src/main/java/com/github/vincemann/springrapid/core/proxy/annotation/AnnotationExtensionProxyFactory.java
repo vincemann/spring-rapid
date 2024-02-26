@@ -5,13 +5,10 @@ import com.github.vincemann.springrapid.core.proxy.ExtensionProxy;
 import com.github.vincemann.springrapid.core.proxy.ExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.util.ContainerAnnotationUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -29,12 +26,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-import static org.springframework.beans.factory.support.AutowireCandidateQualifier.VALUE_KEY;
-
 /**
  * Parses {@link DefineProxy} and creates and stores respective Extension Proxies.
  * Parses {@link CreateProxy} and creates respective proxy chains and publishes them to context.
- * Parses {@link AutowireProxy} annotations and inject respective proxy chains into fields or via setter injection (constructor injection is not supported).
+ * Parses {@link AutowireProxy} annotations and inject proxy chains into fields or via setter injection (constructor injection is not supported).
  * see {@link ExtensionProxy}.
  */
 @Slf4j
@@ -42,20 +37,11 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
 
     private DefaultListableBeanFactory beanFactory;
 
+    private Set<ProxyMetaData> proxyMetaData = new HashSet<>();
+
     // stores mapping of proxied class to proxy info (all proxy definitions like "acl","secured" stubs + root proxied obj)
     // with this info proxy chains can be created
-    private Map<Class<?>, ProxyInfo> proxyInfos = new HashMap<>();
 
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.beanFactory = ((DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory());
-    }
-
-    @Override
-    public int getOrder() {
-        return Ordered.HIGHEST_PRECEDENCE;
-    }
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
@@ -71,13 +57,12 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
             createProxies(beanName, toCreate);
         }
 
-
         autowireProxyChains(bean);
         return bean;
     }
 
 
-    private void autowireProxyChains(Object bean) {
+    protected void autowireProxyChains(Object bean) {
         Class<?> targetClass = bean.getClass();
 
         // Handle field injection
@@ -159,7 +144,7 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
     }
 
     protected Object createProxyChain(Object root, String[] proxies){
-        ProxyInfo proxyInfo = findProxyInfo(unwrap(root).getClass());
+        ProxyMetaData proxyInfo = findProxyMetaData(unwrap(root).getClass());
 
         Object lastProxiedBean = root;
         for (String proxyName : proxies) {
@@ -180,21 +165,18 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
     }
 
     protected Object createProxyChain(Class<?> proxiedClass, String[] proxies) {
-        ProxyInfo proxyInfo = findProxyInfo(proxiedClass);
+        ProxyMetaData metaData = findProxyMetaData(proxiedClass);
 
-        Object root = proxyInfo.getRootProxied();
+        Object root = metaData.getRootProxied();
         return createProxyChain(root,proxies);
     }
 
-    protected Optional<DefineProxy> findProxyDefinition(ProxyInfo info, String proxyName) {
-        return info.getProxyDefinitions().stream()
+    protected Optional<DefineProxy> findProxyDefinition(ProxyMetaData metaData, String proxyName) {
+        return metaData.getProxyDefinitions().stream()
                 .filter(p -> p.name().equals(proxyName))
                 .findFirst();
     }
 
-    protected ProxyInfo findProxyInfo(Class<?> proxiedClass) {
-        return proxyInfos.get(proxiedClass);
-    }
 
     protected Object unwrap(Object bean) {
         Object unwrappedBean = AopProxyUtils.getSingletonTarget(bean);
@@ -213,15 +195,9 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         }
         // this will make sure root proxied bean is wrapped with aop proxy
 
-        this.proxyInfos.put(proxiedClass, new ProxyInfo(proxied, proxyDefinitions));
+        proxyMetaData.add(new ProxyMetaData(proxiedClass,proxied, proxyDefinitions));
     }
 
-    @AllArgsConstructor
-    @Getter
-    private static class ProxyInfo {
-        private Object rootProxied;
-        private List<DefineProxy> proxyDefinitions;
-    }
 
     protected <T> T createProxy(T proxied, DefineProxy proxyDefinition) {
         Assert.isTrue(!proxyDefinition.name().isEmpty(), "must provide name for proxy");
@@ -343,5 +319,22 @@ public class AnnotationExtensionProxyFactory implements BeanPostProcessor, Appli
         Assert.isTrue(beanNamesForType.length == 1,"must find at least one bean for extension class: " + clazz);
         String beanName = beanNamesForType[0];
         assertPrototype(beanName);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.beanFactory = ((DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory());
+    }
+
+    @Override
+    public int getOrder() {
+        return Ordered.HIGHEST_PRECEDENCE;
+    }
+
+    protected ProxyMetaData findProxyMetaData(Class<?> proxiedClass){
+        Optional<ProxyMetaData> result = proxyMetaData.stream().filter(info -> info.getProxiedClass().equals(proxiedClass))
+                .findFirst();
+        Assert.isTrue(result.isPresent(),"cant find proxy info for proxied class: " + proxiedClass);
+        return result.get();
     }
 }
