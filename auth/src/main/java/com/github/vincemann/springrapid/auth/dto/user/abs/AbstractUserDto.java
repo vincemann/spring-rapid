@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.dto.user;
+package com.github.vincemann.springrapid.auth.dto.user.abs;
 
 import com.github.vincemann.springrapid.core.dto.IdAwareDto;
 import lombok.Getter;
@@ -11,18 +11,14 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @Setter
-public class AbstractUserDto extends IdAwareDto<String> {
+public class AbstractUserDto {
 
     private String contactInformation;
     private Set<String> roles = new HashSet<String>();
 
-    public AbstractUserDto(String contactInformation, Set<String> roles, String id) {
+    public AbstractUserDto(String contactInformation, Set<String> roles) {
         this.contactInformation = contactInformation;
-        if (roles==null){
-            this.setRoles(new HashSet<>());
-        }else {
+        if (roles != null)
             this.roles = roles;
-        }
-        this.setId(id);
     }
 }

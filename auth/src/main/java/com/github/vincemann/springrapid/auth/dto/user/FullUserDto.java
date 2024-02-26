@@ -1,16 +1,15 @@
 package com.github.vincemann.springrapid.auth.dto.user;
 
+import com.github.vincemann.springrapid.auth.dto.user.abs.AbstractFindUserDto;
 import lombok.*;
 
-import java.io.Serializable;
 import java.util.Set;
 
 
-@Getter @NoArgsConstructor @Setter
-public class FullUserDto extends AbstractFindUserDto implements Serializable {
-
-	private static final long serialVersionUID = -9134054705405149534L;
-	
+@Getter
+@NoArgsConstructor
+@Setter
+public class FullUserDto extends AbstractFindUserDto {
 	private String password;
 
 	@Builder
@@ -19,5 +18,17 @@ public class FullUserDto extends AbstractFindUserDto implements Serializable {
 		this.password = password;
 	}
 
-
+	@Override
+	public String toString() {
+		return "FullUserDto{" +
+				"password='" + password + '\'' +
+				", verified=" + isVerified() +
+				", blocked=" + isBlocked() +
+				", admin=" + isAdmin() +
+				", goodUser=" + isGoodUser() +
+				", id='" + getId() + '\'' +
+				", contactInformation='" + getContactInformation() + '\'' +
+				", roles=" + getRoles() +
+				'}';
+	}
 }
