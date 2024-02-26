@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,24 +31,36 @@ public class CrudAclChecksExtension
 
     @Override
     public Optional findById(Serializable id) {
+        Optional byId = getLast().findById(id);
+        if (byId.isEmpty())
+            return getNext().findById(id);
         getAclTemplate().checkPermission(id,getLast().getEntityClass(), BasePermission.READ);
         return getNext().findById(id);
     }
 
     @Override
     public IdentifiableEntity findPresentById(Serializable id) throws EntityNotFoundException {
+        Optional byId = getLast().findById(id);
+        if (byId.isEmpty())
+            throw new EntityNotFoundException(id,getLast().getEntityClass());
         getAclTemplate().checkPermission(id,getLast().getEntityClass(), BasePermission.READ);
         return getNext().findPresentById(id);
     }
 
     @Override
     public IdentifiableEntity partialUpdate(IdentifiableEntity entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
+        Optional byId = getLast().findById(entity.getId());
+        if (byId.isEmpty())
+            throw new EntityNotFoundException(entity.getId(),getLast().getEntityClass());
         getAclTemplate().checkPermission(entity,BasePermission.WRITE);
         return getNext().partialUpdate(entity, fieldsToUpdate);
     }
 
     @Override
     public IdentifiableEntity fullUpdate(IdentifiableEntity entity) throws BadEntityException, EntityNotFoundException {
+        Optional byId = getLast().findById(entity.getId());
+        if (byId.isEmpty())
+            throw new EntityNotFoundException(entity.getId(),getLast().getEntityClass());
         getAclTemplate().checkPermission(entity,BasePermission.WRITE);
         return getNext().fullUpdate(entity);
     }
@@ -75,6 +88,9 @@ public class CrudAclChecksExtension
 
     @Override
     public void deleteById(Serializable id) throws EntityNotFoundException {
+        Optional byId = getLast().findById(id);
+        if (byId.isEmpty())
+            throw new EntityNotFoundException(id,getLast().getEntityClass());
         getAclTemplate().checkPermission(id,getLast().getEntityClass(),BasePermission.DELETE);
         getNext().deleteById(id);
     }

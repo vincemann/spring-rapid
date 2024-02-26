@@ -70,7 +70,7 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
         try {
             Optional<IdentifiableEntity> entity = entityLocator.findEntity(Class.forName(targetType), idConverter.toId(targetId.toString()));
             if (entity.isEmpty())
-                throw new IllegalArgumentException("entity permission gets checked for does not exist, check before checking acl info");
+                throw new IllegalArgumentException("entity permission is checked for does not exist, check before checking acl info");
             Boolean allowAccess = performGlobalSecurityChecks(entity.get(),permission);
             if (allowAccess != null)
                 return allowAccess;
