@@ -43,7 +43,6 @@
         <module>acl</module>
         <module>core-test</module>
         <module>core-demo</module>
-        <module>limit</module>
         <module>exceptions-api</module>
         <module>acl-demo</module>
         <module>acl-test</module>
@@ -81,13 +80,6 @@
             <version>${guava.version}</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.slf4j</groupId>-->
-<!--            <artifactId>slf4j-simple</artifactId>-->
-<!--            <version>2.0.0-alpha0</version>-->
-<!--            <optional>true</optional>-->
-<!--        </dependency>-->
-
         <!-- Junit 5-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -95,18 +87,6 @@
             <scope>provided</scope>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.junit.jupiter</groupId>-->
-<!--            <artifactId>junit-jupiter-api</artifactId>-->
-<!--            <version>5.8.1</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.junit.jupiter</groupId>-->
-<!--            <artifactId>junit-jupiter-engine</artifactId>-->
-<!--            <version>5.8.1</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
