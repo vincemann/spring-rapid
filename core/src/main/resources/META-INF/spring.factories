@@ -12,5 +12,4 @@ com.github.vincemann.springrapid.core.config.RapidServiceAutoConfiguration, \
 com.github.vincemann.springrapid.core.config.RapidRepoAutoConfiguration, \
 com.github.vincemann.springrapid.core.config.RapidAuditAutoConfiguration, \
 com.github.vincemann.springrapid.core.config.RapidDefaultExtensionsAutoConfiguration, \
-com.github.vincemann.springrapid.core.config.RapidContextControllerAutoConfiguration, \
-com.github.vincemann.springrapid.core.config.CustomPostProcessorConfigurator
+com.github.vincemann.springrapid.core.config.RapidContextControllerAutoConfiguration

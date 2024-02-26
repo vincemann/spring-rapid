@@ -45,11 +45,5 @@ public @interface AutowireProxy {
      * Can be either the {@link DefineProxy#name()} or bean name.
      */
     String[] value();
-
-    /**
-     * If set to true, and somewhere else the same proxy cain is injected (with also reuse set to true),
-     * then the same instance is used instead of creating new proxy
-     */
-    boolean reuse() default false;
 }
 

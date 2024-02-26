@@ -52,7 +52,7 @@ public class VerificationServiceImpl implements VerificationService {
     @Transactional
     @Override
     public AbstractUser makeVerified(AbstractUser user) throws BadEntityException, EntityNotFoundException {
-        VerifyEntity.isTrue(!user.getRoles().contains(AuthRoles.UNVERIFIED),"Already unverified");
+        VerifyEntity.isTrue(user.getRoles().contains(AuthRoles.UNVERIFIED),"Already verified");
         return userService.removeRole(user.getId(),AuthRoles.UNVERIFIED);
     }
 
