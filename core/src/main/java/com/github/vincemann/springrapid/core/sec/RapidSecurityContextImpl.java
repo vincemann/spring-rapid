@@ -10,13 +10,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.function.Supplier;
 
-// use springs authentication.getDetails to store more info then already given in RapidAuthenticatedPrincipal
 @Slf4j
 public class RapidSecurityContextImpl implements RapidSecurityContext
 {
-
-
-
     @Override
     public void setAuthenticated(RapidPrincipal principal) {
         SecurityContextHolder.getContext().setAuthentication(createToken(principal));
@@ -38,7 +34,7 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
         try {
             return (RapidPrincipal) authentication.getPrincipal();
         }catch (ClassCastException e){
-            throw new IllegalArgumentException("Security Context is malformed. Create with RapidSecurityContext.login(...)");
+            throw new IllegalArgumentException("Security Context is malformed. Needs to have RapidPrincipal as authenticatation object");
         }
     }
 

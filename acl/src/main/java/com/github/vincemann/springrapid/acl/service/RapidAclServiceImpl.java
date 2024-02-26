@@ -365,7 +365,7 @@ public class RapidAclServiceImpl implements RapidAclService {
                 .build());
 
         if (removed != permissions.length && !ignoreNotFound)
-            throw new AceNotFoundException("Cant remove permissions on target:  " + AclUtils.permissionsToString(permissions) + " for sid: " + AclUtils.sidToString(sid) + " on target: " + targetObj + ", bc not all matching aces found");
+            throw new AceNotFoundException("Cant remove permissions: " + AclUtils.permissionsToString(permissions) + " for sid: " + AclUtils.sidToString(sid) + " on target: " + targetObj + ", bc not all matching aces found");
     }
 
     protected int removeAces(MutableAcl acl, AceFilter aceFilter) {

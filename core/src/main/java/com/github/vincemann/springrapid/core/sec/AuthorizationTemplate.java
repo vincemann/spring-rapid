@@ -3,9 +3,6 @@ package com.github.vincemann.springrapid.core.sec;
 import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import org.springframework.security.access.AccessDeniedException;
 
-/**
- * Convenience wrapper for accessing data from {@link RapidSecurityContext}.
- */
 public class AuthorizationTemplate {
 
     private AuthorizationTemplate(){}

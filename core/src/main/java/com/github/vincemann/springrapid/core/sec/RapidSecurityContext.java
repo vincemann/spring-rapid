@@ -23,7 +23,6 @@ public interface RapidSecurityContext
     void setAuthenticated(RapidPrincipal principal);
 
     @LogInteraction(Severity.DEBUG)
-    @CustomToString(key = "arg1", toStringMethod = "shortToString")
     void setAnonAuthenticated();
 
     @LogInteraction(Severity.DEBUG)
