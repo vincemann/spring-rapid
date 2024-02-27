@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.service;
 
+import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
@@ -11,6 +12,7 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -21,6 +23,7 @@ public class SignupServiceImpl implements SignupService {
     private VerificationService verificationService;
     private PasswordValidator passwordValidator;
     private ContactInformationValidator contactInformationValidator;
+    private RapidAclService aclService;
 
 
 
@@ -51,7 +54,12 @@ public class SignupServiceImpl implements SignupService {
         }
 
         log.debug("saved and send verification mail for unverified new user: " + saved);
+        saveAclInfo(saved);
         return saved;
+    }
+
+    protected void saveAclInfo(AbstractUser saved){
+        aclService.savePermissionForUserOverEntity(saved.getContactInformation(),saved, BasePermission.ADMINISTRATION);
     }
 
 
@@ -71,6 +79,11 @@ public class SignupServiceImpl implements SignupService {
     @Autowired
     public void setPasswordValidator(PasswordValidator passwordValidator) {
         this.passwordValidator = passwordValidator;
+    }
+
+    @Autowired
+    public void setAclService(RapidAclService aclService) {
+        this.aclService = aclService;
     }
 
     @Autowired

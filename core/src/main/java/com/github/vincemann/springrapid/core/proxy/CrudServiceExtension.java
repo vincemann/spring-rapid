@@ -25,8 +25,8 @@ public interface CrudServiceExtension<S extends CrudService>
     }
 
     @Override
-    default IdentifiableEntity partialUpdate(IdentifiableEntity entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
-        return getNext().partialUpdate(entity, fieldsToUpdate);
+    default IdentifiableEntity partialUpdate(IdentifiableEntity update, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
+        return getNext().partialUpdate(update, fieldsToUpdate);
     }
 
 //    @Override
@@ -45,8 +45,8 @@ public interface CrudServiceExtension<S extends CrudService>
 
 
     @Override
-    default IdentifiableEntity fullUpdate(IdentifiableEntity entity) throws BadEntityException, EntityNotFoundException {
-        return getNext().fullUpdate(entity);
+    default IdentifiableEntity fullUpdate(IdentifiableEntity update) throws BadEntityException, EntityNotFoundException {
+        return getNext().fullUpdate(update);
     }
 
     @Override

@@ -16,12 +16,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public class SecurityCrudServiceDecorator<S extends CrudService<E, Id>, E extends IdentifiableEntity<Id>, Id extends Serializable>
+/**
+ * adds basic acl permission checks to crud operations
+ *
+ * @param <S> decorated crud service
+ * @param <E> entity type of crud service
+ * @param <Id> id type of entity
+ */
+public class SecuredCrudServiceDecorator<S extends CrudService<E, Id>, E extends IdentifiableEntity<Id>, Id extends Serializable>
         extends CrudServiceDecorator<S, E, Id> {
 
     private AclTemplate aclTemplate;
 
-    public SecurityCrudServiceDecorator(S decorated) {
+    public SecuredCrudServiceDecorator(S decorated) {
         super(decorated);
     }
 

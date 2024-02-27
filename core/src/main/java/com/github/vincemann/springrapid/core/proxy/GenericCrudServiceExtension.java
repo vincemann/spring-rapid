@@ -32,8 +32,8 @@ public interface GenericCrudServiceExtension
     }
 
     @Override
-    default E partialUpdate(E entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
-        return getNext().partialUpdate(entity, fieldsToUpdate);
+    default E partialUpdate(E update, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
+        return getNext().partialUpdate(update, fieldsToUpdate);
     }
 
     @Override
@@ -52,8 +52,8 @@ public interface GenericCrudServiceExtension
     }
 
     @Override
-    default E fullUpdate(E entity) throws BadEntityException, EntityNotFoundException {
-        return getNext().fullUpdate(entity);
+    default E fullUpdate(E update) throws BadEntityException, EntityNotFoundException {
+        return getNext().fullUpdate(update);
     }
 
     @Override

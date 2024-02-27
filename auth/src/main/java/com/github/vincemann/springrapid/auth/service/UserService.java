@@ -32,13 +32,13 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
     // keep it like that, otherwise the AbstractUser type wont be in impl methods
     @Override
-    U partialUpdate(U entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException;
+    U partialUpdate(U update, String... fieldsToUpdate) throws EntityNotFoundException;
 
     @Override
-    U fullUpdate(U entity) throws BadEntityException, EntityNotFoundException;
+    U fullUpdate(U update) throws EntityNotFoundException;
 
     @Override
-    U softUpdate(U entity) throws EntityNotFoundException, BadEntityException;
+    U softUpdate(U entity) throws EntityNotFoundException;
 
     U createUser();
 

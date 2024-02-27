@@ -69,7 +69,7 @@ public abstract class JpaCrudService
 
     @Transactional
     @Override
-    public E softUpdate(E update) throws EntityNotFoundException, BadEntityException {
+    public E softUpdate(E update) throws EntityNotFoundException {
         Assert.notNull(update.getId(),"id must not be null");
         return getRepository().save(update);
     }
@@ -80,16 +80,17 @@ public abstract class JpaCrudService
         return new HashSet<>(getRepository().findAllById(ids));
     }
 
+
+    // be aware of when placing breakpoint within this method, this triggers unexpected double execution of advices
+    // always check logs to see if this method was executed twice
+    // intellij idea says first breakpoint skipped because it happened in debugger evaluation, so the first execution never halts
+    // the second invocation (that should never occur in the first place) halts then
+//            System.err.println("managed entity: " + managedEntity);
     @Transactional
     @Override
-    public E partialUpdate(E update, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
+    public E partialUpdate(E update, String... fieldsToUpdate) throws EntityNotFoundException {
         Assert.notNull(update.getId(),"id must not be null");
         E managedEntity = findOldEntity(update.getId());
-        // never place breakpoint within this method, this triggers unexpected double execution of advices
-        // always check logs to see if this method was executed twice
-        // intellij idea says first breakpoint skipped because it happened in debugger evaluation, so the first execution never halts
-        // the second invocation (that should never occur in the first place) halts then
-//            System.err.println("managed entity: " + managedEntity);
         E detachedUpdateEntity = JpaUtils.deepDetachOrGet(update);
         Set<String> propertiesToUpdate = Entity.findPartialUpdatedFields(update,fieldsToUpdate);
         NullAwareBeanUtils.copyProperties(managedEntity, detachedUpdateEntity, propertiesToUpdate);
@@ -99,7 +100,7 @@ public abstract class JpaCrudService
 
     @Transactional
     @Override
-    public E fullUpdate(E update) throws BadEntityException, EntityNotFoundException {
+    public E fullUpdate(E update) throws EntityNotFoundException {
         Assert.notNull(update.getId(),"id must not be null");
         return getRepository().save(update);
     }

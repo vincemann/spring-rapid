@@ -22,7 +22,7 @@ import java.util.Set;
 
 
 /**
- * Interface for a service offering crud operations for entities of type E.
+ * Interface for service offering crud operations for one entity type
  * @param <E>       Type of entity
  * @param <Id>      Id type of entity
  */
@@ -38,23 +38,34 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
         E findPresentById(Id id) throws EntityNotFoundException;
 
 
-
         /**
-         * Expects that no entity relationships need to be updated by other framework logic.
-         * Use this i.E. if you just update a long field and String field of entity, to reduce overhead.
-         */
-        E softUpdate(E entity) throws EntityNotFoundException, BadEntityException;
-        /**
-         * Only fieldsToUpdate are updated. When not supplied, all non null fields of entity are updated.
-         * Collections need to always be explicitly listed in fieldsToUpdate.
-         * Same for fields that are null in entity and should be null in target.
+         * Only use for properties that do not involve other entities.
+         * All properties must be set.
          *
-         *  Note: make sure to not accidentally have emtpy collections, that you dont want to update.
-         *        Set the ignored collections to null or name fields to update explicitly
+         * @param entity update entity having updated fields and not updated fields set
+         * @return updated entity
+         * @throws EntityNotFoundException
          */
-        E partialUpdate(E entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException;
+        E softUpdate(E entity) throws EntityNotFoundException;
 
-        E fullUpdate(E entity) throws BadEntityException, EntityNotFoundException;
+        /**
+         * Only {@param fieldsToUpdate} are updated. When not supplied, all non {@code null} fields of entity are updated.
+         * Updated collections need to always be explicitly listed in {@param fieldsToUpdate}.
+         * Same for fields that should be set to {@code null} in target.
+         *
+         * Note:
+         * If you dont supply {@param fieldsToUpdate}, make sure to not accidentally have emtpy collections set in {@param update}, that you don't want to update.
+         * Set the ignored collections to null or name fields to update explicitly.
+         * It best to use {@link com.github.vincemann.springrapid.core.util.Entity#createUpdate(IdentifiableEntity)} to create {@param update} entity
+         * @param update update entity, containing all fields that should be updated
+         * @param fieldsToUpdate all field names that should be updated. Optional if <strong>not</strong> setting values to null or updating collections
+         * @return updated entity
+         * @throws EntityNotFoundException
+         */
+        E partialUpdate(E update, String... fieldsToUpdate) throws EntityNotFoundException;
+
+
+        E fullUpdate(E update) throws EntityNotFoundException;
 
         E create(E entity) throws BadEntityException;
 

@@ -48,21 +48,21 @@ public class CrudAclChecksExtension
     }
 
     @Override
-    public IdentifiableEntity partialUpdate(IdentifiableEntity entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
-        Optional byId = getLast().findById(entity.getId());
+    public IdentifiableEntity partialUpdate(IdentifiableEntity update, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
+        Optional byId = getLast().findById(update.getId());
         if (byId.isEmpty())
-            throw new EntityNotFoundException(entity.getId(),getLast().getEntityClass());
-        getAclTemplate().checkPermission(entity,BasePermission.WRITE);
-        return getNext().partialUpdate(entity, fieldsToUpdate);
+            throw new EntityNotFoundException(update.getId(),getLast().getEntityClass());
+        getAclTemplate().checkPermission(update,BasePermission.WRITE);
+        return getNext().partialUpdate(update, fieldsToUpdate);
     }
 
     @Override
-    public IdentifiableEntity fullUpdate(IdentifiableEntity entity) throws BadEntityException, EntityNotFoundException {
-        Optional byId = getLast().findById(entity.getId());
+    public IdentifiableEntity fullUpdate(IdentifiableEntity update) throws BadEntityException, EntityNotFoundException {
+        Optional byId = getLast().findById(update.getId());
         if (byId.isEmpty())
-            throw new EntityNotFoundException(entity.getId(),getLast().getEntityClass());
-        getAclTemplate().checkPermission(entity,BasePermission.WRITE);
-        return getNext().fullUpdate(entity);
+            throw new EntityNotFoundException(update.getId(),getLast().getEntityClass());
+        getAclTemplate().checkPermission(update,BasePermission.WRITE);
+        return getNext().fullUpdate(update);
     }
 
     @Override

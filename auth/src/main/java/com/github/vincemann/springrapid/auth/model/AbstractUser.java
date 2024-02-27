@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.auth.model;
 
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
@@ -16,9 +17,9 @@ import java.util.Set;
 
 @Getter @Setter
 @MappedSuperclass
+@NoArgsConstructor
 public class AbstractUser<Id extends Serializable>
-	extends AuditingEntity<Id>
-		implements AuthenticatingEntity<Id>
+		extends AuditingEntity<Id>
 {
 	public static final int CONTACT_INFORMATION_MAX = 250;
 
@@ -64,12 +65,5 @@ public class AbstractUser<Id extends Serializable>
 		return roles.contains(role);
 	}
 
-	public AbstractUser() {
-	}
-
-	@Override
-	public String getAuthenticationName() {
-		return this.contactInformation;
-	}
 }
 

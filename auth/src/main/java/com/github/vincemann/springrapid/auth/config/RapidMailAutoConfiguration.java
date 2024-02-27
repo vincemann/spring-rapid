@@ -10,8 +10,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @Configuration
+@EnableAsync
 public class RapidMailAutoConfiguration {
 
 

@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.auth.service;
 
 
+import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.*;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
@@ -41,6 +43,7 @@ public abstract class JpaUserService
 
     private RapidPasswordEncoder passwordEncoder;
     private PasswordValidator passwordValidator;
+    private RapidAclService aclService;
 
 
     //only called internally
@@ -70,7 +73,13 @@ public abstract class JpaUserService
         if (user.getPassword() != null && !passwordEncoder.isEncoded(user.getPassword()))
             passwordValidator.validate(user.getPassword());
         user.setPassword(encodePasswordIfNeeded(user.getPassword()));
-        return super.create(user);
+        U saved = super.create(user);
+        saveAclInfo(saved);
+        return saved;
+    }
+
+    protected void saveAclInfo(U saved){
+        aclService.savePermissionForUserOverEntity(saved.getContactInformation(),saved, BasePermission.ADMINISTRATION);
     }
 
     @Transactional(readOnly = true)
@@ -184,6 +193,10 @@ public abstract class JpaUserService
         this.passwordValidator = passwordValidator;
     }
 
+    @Autowired
+    public void setAclService(RapidAclService aclService) {
+        this.aclService = aclService;
+    }
 
     //    protected boolean rolesUpdated(U update) throws EntityNotFoundException {
 //        U old = findOldEntity(update.getId());

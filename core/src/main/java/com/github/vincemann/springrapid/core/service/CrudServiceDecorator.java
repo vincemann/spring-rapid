@@ -12,6 +12,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Base class of decorators of crud services.
+ * Provides delegating implementations of all methods of {@link CrudService}, so implementors can
+ * overwrite only the methods they want to decorate.
+ *
+ * @param <S> decorated crud service
+ * @param <E> entity type of crud service
+ * @param <Id> id type of entity
+ */
 public abstract class CrudServiceDecorator<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable>
     implements CrudService<E,Id>
 {
@@ -43,18 +52,18 @@ public abstract class CrudServiceDecorator<S extends CrudService<E,Id>,E extends
     }
 
     @Override
-    public E softUpdate(E entity) throws EntityNotFoundException, BadEntityException {
+    public E softUpdate(E entity) throws EntityNotFoundException {
         return decorated.softUpdate(entity);
     }
 
     @Override
-    public E partialUpdate(E entity, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
-        return decorated.partialUpdate(entity,fieldsToUpdate);
+    public E partialUpdate(E update, String... fieldsToUpdate) throws EntityNotFoundException {
+        return decorated.partialUpdate(update,fieldsToUpdate);
     }
 
     @Override
-    public E fullUpdate(E entity) throws BadEntityException, EntityNotFoundException {
-        return decorated.fullUpdate(entity);
+    public E fullUpdate(E update) throws EntityNotFoundException {
+        return decorated.fullUpdate(update);
     }
 
     @Override
