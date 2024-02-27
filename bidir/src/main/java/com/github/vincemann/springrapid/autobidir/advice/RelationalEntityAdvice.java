@@ -130,9 +130,6 @@ public class RelationalEntityAdvice {
      * check if enabled by looking for {@link DisableAutoBiDir} and {@link EnableAutoBiDir}.
      */
     protected boolean skip(JoinPoint joinPoint) {
-        // the ignore pointcuts sometimes dont work as expected
-        if (!ProxyUtils.isRootService(joinPoint.getTarget()))
-            return true;
         return isEnabled(joinPoint);
     }
 

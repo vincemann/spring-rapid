@@ -1,9 +1,8 @@
-package com.github.vincemann.springrapid.coredemo.dto.pet;
+package com.github.vincemann.springrapid.coredemo.dto.pet.abs;
 
 import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildIdCollection;
 import com.github.vincemann.springrapid.autobidir.id.annotation.child.UniDirChildId;
 import com.github.vincemann.springrapid.autobidir.id.annotation.parent.BiDirParentId;
-import com.github.vincemann.springrapid.coredemo.dto.abs.MyIdDto;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.PetType;
 import com.github.vincemann.springrapid.coredemo.model.Toy;
@@ -11,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,19 +17,9 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-public abstract class AbstractPetDto extends MyIdDto<Long>
+public abstract class AbstractPetDto
 {
 
-    public AbstractPetDto(@Size(min = 2, max = 20) String name, Long petTypeId, Set<Long> toyIds, Long ownerId, LocalDate birthDate) {
-        this.name = name;
-        this.petTypeId = petTypeId;
-        if (toyIds!=null)
-            this.toyIds = toyIds;
-        this.ownerId = ownerId;
-        this.birthDate = birthDate;
-    }
-
-    @Size(min = 2, max = 20)
     private String name;
 
     @UniDirChildId(PetType.class)
@@ -44,4 +32,15 @@ public abstract class AbstractPetDto extends MyIdDto<Long>
     private Long ownerId;
 
     private LocalDate birthDate;
+
+    public AbstractPetDto(String name, Long petTypeId, Set<Long> toyIds, Long ownerId, LocalDate birthDate) {
+        this.name = name;
+        this.petTypeId = petTypeId;
+        if (toyIds!=null)
+            this.toyIds = toyIds;
+        this.ownerId = ownerId;
+        this.birthDate = birthDate;
+    }
+
+
 }

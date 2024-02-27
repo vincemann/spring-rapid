@@ -9,37 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ReflectionUtils {
 
 
-    public static void initializeNullCollectionFields(Object object) {
-
-
-
-        Class<?> clazz = object.getClass();
-        Field[] fields = clazz.getDeclaredFields();
-
-        for (Field field : fields) {
-            if (Collection.class.isAssignableFrom(field.getType())) {
-                try {
-                    field.setAccessible(true);
-                    Collection<?> fieldValue = (Collection<?>) field.get(object);
-
-                    if (fieldValue == null) {
-                        // Instantiate a HashSet for Set type, ArrayList for List, and ArrayList for other Collection types
-                        if (Set.class.isAssignableFrom(field.getType())) {
-                            field.set(object, new HashSet<>());
-                        } else if (List.class.isAssignableFrom(field.getType())) {
-                            field.set(object, new ArrayList<>());
-                        } else {
-                            // Default to ArrayList for other Collection types
-                            field.set(object, new ArrayList<>());
-                        }
-                    }
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
     public static void setFinal(Field field, Object target, Object newValue) throws Exception {
         field.setAccessible(true);
 
@@ -110,15 +79,12 @@ public class ReflectionUtils {
         Set<String> result = new HashSet<>();
         org.springframework.util.ReflectionUtils.doWithFields(entity.getClass(), f -> {
             result.add(f.getName());
-        }, new org.springframework.util.ReflectionUtils.FieldFilter() {
-            @Override
-            public boolean matches(Field field) {
-                if (isStaticOrInnerField(field)){
-                    return false;
-                }
-                field.setAccessible(true);
-                return org.springframework.util.ReflectionUtils.getField(field,entity) != null;
+        }, field -> {
+            if (isStaticOrInnerField(field)){
+                return false;
             }
+            field.setAccessible(true);
+            return org.springframework.util.ReflectionUtils.getField(field,entity) != null;
         });
 
         return result;

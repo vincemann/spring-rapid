@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.dto.owner;
 
 
+import com.github.vincemann.springrapid.coredemo.dto.owner.abs.AbstractOwnerDto;
 import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
@@ -12,13 +13,14 @@ import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Null;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
 @NoArgsConstructor
 @Getter @Setter
-public class CreateOwnerDto extends AbstractOwnerDto  {
+public class CreateOwnerDto extends AbstractOwnerDto {
 
     @NotBlank
     @Size(min = 2, max = 20)
@@ -28,18 +30,35 @@ public class CreateOwnerDto extends AbstractOwnerDto  {
     @Size(min = 2, max = 20)
     private String lastName;
 
+    @Nullable
     @BiDirChildIdCollection(Pet.class)
     private Set<Long> petIds = new HashSet<>();
 
-    @Null
-    @Override
-    public Long getId() {
-        return super.getId();
-    }
-
-
+    @Nullable
+    @Positive
     @BiDirChildId(ClinicCard.class)
     private Long clinicCardId;
+
+    @NotBlank
+    @Size(min = 10, max = 255)
+    @Override
+    public String getAddress() {
+        return super.getAddress();
+    }
+
+    @NotBlank
+    @Size(min=3,max=255)
+    @Override
+    public String getCity() {
+        return super.getCity();
+    }
+
+    @Nullable
+    @Size(min = 10, max = 10)
+    @Override
+    public String getTelephone() {
+        return super.getTelephone();
+    }
 
     @Builder
     public CreateOwnerDto(@Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone, @NotBlank @Size(min = 2, max = 20) String firstName, @NotBlank @Size(min = 2, max = 20) String lastName,Set<String> hobbies, Long clinicCardId) {
@@ -53,23 +72,5 @@ public class CreateOwnerDto extends AbstractOwnerDto  {
         super(owner.getAddress(), owner.getCity(), owner.getTelephone(),owner.getHobbies());
         this.firstName = owner.getFirstName();
         this.lastName = owner.getLastName();
-    }
-
-    @NotBlank
-    @Override
-    public @Size(min = 10, max = 255) String getAddress() {
-        return super.getAddress();
-    }
-
-    @NotBlank
-    @Override
-    public @Size(min=3,max=255) String getCity() {
-        return super.getCity();
-    }
-
-    @Nullable
-    @Override
-    public @Size(min = 10, max = 10) String getTelephone() {
-        return super.getTelephone();
     }
 }

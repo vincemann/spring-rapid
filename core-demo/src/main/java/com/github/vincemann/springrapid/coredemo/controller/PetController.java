@@ -6,8 +6,7 @@ import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuild
 import com.github.vincemann.springrapid.coredemo.dto.pet.UpdatePetDto;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import org.springframework.stereotype.Controller;
-import com.github.vincemann.springrapid.coredemo.dto.ClinicCardDto;
-import com.github.vincemann.springrapid.coredemo.dto.pet.PetDto;
+import com.github.vincemann.springrapid.coredemo.dto.pet.ReadPetDto;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.service.filter.PetsParentFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ public class PetController extends CrudController<Pet, Long, PetService> {
                 .thenReturn(UpdatePetDto.class);
 
         builder.when(any())
-                .thenReturn(PetDto.class);
+                .thenReturn(ReadPetDto.class);
     }
 
 

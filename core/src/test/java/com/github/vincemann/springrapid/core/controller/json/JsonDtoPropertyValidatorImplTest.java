@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.vincemann.springrapid.core.RapidTestUtil;
+import com.github.vincemann.springrapid.core.util.JsonPatchUtil;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -75,10 +75,10 @@ class JsonDtoPropertyValidatorImplTest {
 
     @Test
     public void validPatch() throws BadEntityException, AccessDeniedException, JsonProcessingException {
-        String jsonPatch = RapidTestUtil.createUpdateJsonRequest(
-                RapidTestUtil.createUpdateJsonLine("replace", "/name", "newName"),
-                RapidTestUtil.createUpdateJsonLine("add", "/userIds/-", "3"),
-                RapidTestUtil.createUpdateJsonLine("replace", "/userId/", "42")
+        String jsonPatch = JsonPatchUtil.createUpdateJsonRequest(
+                JsonPatchUtil.createUpdateJsonLine("replace", "/name", "newName"),
+                JsonPatchUtil.createUpdateJsonLine("add", "/userIds/-", "3"),
+                JsonPatchUtil.createUpdateJsonLine("replace", "/userId/", "42")
         );
         Assertions.assertDoesNotThrow(() -> jsonDtoPropertyValidator.validatePatch(jsonPatch,TestDto.class));
 
@@ -96,10 +96,10 @@ class JsonDtoPropertyValidatorImplTest {
 
     @Test
     public void invalidPatch_forbiddenProperty() throws BadEntityException, AccessDeniedException, JsonProcessingException {
-        String jsonPatch = RapidTestUtil.createUpdateJsonRequest(
-                RapidTestUtil.createUpdateJsonLine("replace", "/name", "newName"),
-                RapidTestUtil.createUpdateJsonLine("replace", "/secret", "newSecret"),
-                RapidTestUtil.createUpdateJsonLine("remove", "/userIds/-", "3")
+        String jsonPatch = JsonPatchUtil.createUpdateJsonRequest(
+                JsonPatchUtil.createUpdateJsonLine("replace", "/name", "newName"),
+                JsonPatchUtil.createUpdateJsonLine("replace", "/secret", "newSecret"),
+                JsonPatchUtil.createUpdateJsonLine("remove", "/userIds/-", "3")
         );
         Assertions.assertThrows(AccessDeniedException.class, () -> jsonDtoPropertyValidator.validatePatch(jsonPatch,TestDto.class));
 

@@ -1,36 +1,51 @@
 package com.github.vincemann.springrapid.coredemo.dto;
 
 
-import com.github.vincemann.springrapid.coredemo.dto.abs.MyIdDto;
+import com.github.vincemann.springrapid.autobidir.id.annotation.parent.BiDirParentIdCollection;
+import com.github.vincemann.springrapid.coredemo.dto.abs.IdAwareDto;
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import com.github.vincemann.springrapid.autobidir.id.annotation.parent.BiDirParentIdCollection;
-import lombok.*;
-
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class SpecialtyDto extends MyIdDto<Long> {
+public class SpecialtyDto extends IdAwareDto {
+
+    @NotEmpty
+    @Size(min = 2, max = 20)
+    private String description;
+
+    @BiDirParentIdCollection(Vet.class)
+    private Set<Long> vetIds = new HashSet<>();
 
     @Builder
-    public SpecialtyDto(@Size(min = 2, max = 255) String description, Set<Long> vetIds) {
+    public SpecialtyDto(String description, Set<Long> vetIds, Long id) {
+        super(id);
         this.description = description;
         if (vetIds!=null)
             this.vetIds = vetIds;
     }
 
     public SpecialtyDto(Specialty specialty){
-        this.description=specialty.getDescription();
+        this(specialty.getDescription(),specialty.getVets().stream().map(Vet::getId).collect(Collectors.toSet()),specialty.getId());
     }
 
-    @Size(min = 2, max = 255)
-    private String description;
-
-    @BiDirParentIdCollection(Vet.class)
-    private Set<Long> vetIds = new HashSet<>();
+    @Override
+    public String toString() {
+        return "SpecialtyDto{" +
+                "description='" + description + '\'' +
+                ", vetIds=" + vetIds +
+                ", id=" + getId() +
+                '}';
+    }
 }

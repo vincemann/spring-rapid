@@ -1,25 +1,6 @@
-package com.github.vincemann.springrapid.core;
+package com.github.vincemann.springrapid.core.util;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import org.springframework.data.repository.CrudRepository;
-
-import java.io.Serializable;
-import java.util.Optional;
-import java.util.Set;
-
-public class RapidTestUtil {
-
-    public static <E extends IdentifiableEntity> E mustBePresentIn(CrudRepository repo, Serializable id){
-        Optional byId = repo.findById(id);
-        if (byId.isEmpty()){
-            throw new IllegalArgumentException("No Entity found with id: " + id);
-        }
-        return (E) byId.get();
-    }
-
+public class JsonPatchUtil {
 
     public static String createUpdateJsonLine(String operation, String path, String value){
         return "  {\"op\": \""+operation+"\", \"path\": \""+path+"\", \"value\": \""+value+"\"}";

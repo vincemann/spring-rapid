@@ -1,9 +1,12 @@
 package com.github.vincemann.springrapid.coredemo.dto.pet;
 
+import com.github.vincemann.springrapid.coredemo.dto.pet.abs.AbstractPetDto;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.model.Toy;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -12,25 +15,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
+@Getter
+@Setter
 @NoArgsConstructor
+public class ReadPetDto extends AbstractPetDto {
 
-public class PetDto extends AbstractPetDto {
-
-
-
-    @NotBlank
-    @Override
-    public @Size(min = 2, max = 20) String getName() {
-        return super.getName();
-    }
-
+    private Long id;
 
     @Builder
-    public PetDto(@Size(min = 2, max = 20) String name, Long petTypeId, Set<Long> toyIds, Long ownerId, LocalDate birthDate) {
+    public ReadPetDto(String name, Long petTypeId, Set<Long> toyIds, Long ownerId, LocalDate birthDate, Long id) {
         super(name, petTypeId, toyIds, ownerId, birthDate);
+        this.id = id;
     }
 
-    public PetDto(Pet pet){
+    public ReadPetDto(Pet pet){
         super(
                 pet.getName(),
                 pet.getPetType()==null? null: pet.getPetType().getId(),
@@ -38,5 +36,16 @@ public class PetDto extends AbstractPetDto {
                 pet.getOwner()==null? null: pet.getOwner().getId(),
                 pet.getBirthDate()
         );
+    }
+    @Override
+    public String toString() {
+        return "ReadPetDto{" +
+                "id=" + id +
+                ", name='" + getName() + '\'' +
+                ", petTypeId=" + getPetTypeId() +
+                ", toyIds=" + getToyIds() +
+                ", ownerId=" + getOwnerId() +
+                ", birthDate=" + getBirthDate() +
+                '}';
     }
 }

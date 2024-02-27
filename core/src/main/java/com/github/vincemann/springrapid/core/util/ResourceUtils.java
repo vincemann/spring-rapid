@@ -14,7 +14,7 @@ public class ResourceUtils {
     public static String toStr(Resource resource) throws IOException {
 
         String text = null;
-        try (Scanner scanner = new Scanner(resource.getInputStream(), StandardCharsets.UTF_8.name())) {
+        try (Scanner scanner = new Scanner(resource.getInputStream(), StandardCharsets.UTF_8)) {
             text = scanner.useDelimiter("\\A").next();
         }
 
