@@ -2,10 +2,9 @@ package com.github.vincemann.springrapid.core.service;
 
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
+import com.github.vincemann.springrapid.core.util.Lists;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import com.github.vincemann.springrapid.core.util.Lists;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -16,7 +15,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.util.Assert;
 
 import java.lang.annotation.Annotation;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -43,10 +44,6 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationLi
     @Override
     public void loadServices() {
         List<String> beanNames = Lists.newArrayList(beanFactory.getBeanNamesForType(CrudService.class));
-        List<String> extensionNames = Lists.newArrayList(beanFactory.getBeanNamesForType(ServiceExtension.class));
-
-        //skip extensions
-        beanNames.removeAll(extensionNames);
 
         Map<Class<? extends CrudService>, List<CrudService>> nonPrimaryServices = new HashMap<>();
         for (String beanName : beanNames) {

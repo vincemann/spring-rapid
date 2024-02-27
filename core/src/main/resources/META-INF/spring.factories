@@ -4,12 +4,5 @@ com.github.vincemann.springrapid.core.config.RapidAopLogAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidCrudControllerAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidCoreAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration,\
-com.github.vincemann.springrapid.core.config.RapidSecurityAutoConfiguration,\
-com.github.vincemann.springrapid.core.config.RapidDtoLocatorAutoConfiguration,\
-com.github.vincemann.springrapid.core.config.RapidExtensionProxyFactoryAutoConfiguration,\
-com.github.vincemann.springrapid.core.config.RapidExceptionHandlerAutoConfiguration, \
 com.github.vincemann.springrapid.core.config.RapidServiceAutoConfiguration, \
-com.github.vincemann.springrapid.core.config.RapidRepoAutoConfiguration, \
-com.github.vincemann.springrapid.core.config.RapidAuditAutoConfiguration, \
-com.github.vincemann.springrapid.core.config.RapidDefaultExtensionsAutoConfiguration, \
 com.github.vincemann.springrapid.core.config.RapidContextControllerAutoConfiguration
