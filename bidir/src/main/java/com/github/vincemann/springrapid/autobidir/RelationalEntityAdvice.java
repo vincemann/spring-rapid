@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.autobidir.advice;
+package com.github.vincemann.springrapid.autobidir;
 
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManager;
@@ -58,9 +58,9 @@ public class RelationalEntityAdvice {
         Optional<IdentifiableEntity> entity = findById(joinPoint, id);
         if (entity.isPresent()) {
             relationalEntityManager.delete(entity.get());
-            System.err.println("done");
         } else {
-            log.warn("preDelete BiDirEntity could not be done, because for id: " + id + " was no entity found");
+            if (log.isWarnEnabled())
+                log.warn("pre-delete auto relationship handling could not be executed, because no entity found with id:  " + id);
         }
 
     }

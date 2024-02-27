@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.sync.advice;
+package com.github.vincemann.springrapid.sync;
 
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.core.util.Entity;

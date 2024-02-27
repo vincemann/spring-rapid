@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
  *
  * barService.partialUpdate(barEntity) -> does not update timestamp of fooEntity even with annotation present, bc only indirect update
  *
- * Is implemented via aop {@link com.github.vincemann.springrapid.sync.advice.AuditCollectionAdvice}.
+ * Is implemented via aop {@link AuditCollectionAdvice}.
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
