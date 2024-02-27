@@ -4,15 +4,20 @@ import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.core.util.Entity;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import com.github.vincemann.springrapid.sync.AuditCollection;
+import com.github.vincemann.springrapid.sync.EnableAuditCollection;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Set;
 
@@ -32,8 +37,6 @@ public class AuditCollectionAdvice {
     @AfterReturning(
             value = "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.partialUpdateOperation() && " +
-                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
-                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
                     "args(update,fieldsToUpdate)", returning = "result")
     public void afterPartialUpdate(JoinPoint joinPoint, AuditingEntity result, AuditingEntity update, String... fieldsToUpdate) {
         if (skip(joinPoint))
@@ -58,9 +61,27 @@ public class AuditCollectionAdvice {
 
 
 
+    /**
+     * check if join point should be skipped
+     * skip if current bean is not root service
+     * check if enabled by looking for {@link com.github.vincemann.springrapid.sync.EnableAuditCollection}.
+     */
     protected boolean skip(JoinPoint joinPoint) {
-        // the ignore pointcuts sometimes dont work as expected
-        if (!ProxyUtils.isRootService(joinPoint.getTarget()))
+        return !isEnabled(joinPoint);
+    }
+
+    protected boolean isEnabled(JoinPoint joinPoint){
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Method method = signature.getMethod();
+        // check for class annotation first
+        boolean enabledForClass = AnnotationUtils.findAnnotation(AopProxyUtils.ultimateTargetClass(joinPoint.getTarget()), EnableAuditCollection.class) != null;
+        if (enabledForClass){
+            // is enabled
+            return true;
+        }
+
+        // maybe only enabled on method level
+        if (method.isAnnotationPresent(EnableAuditCollection.class))
             return true;
         return false;
     }

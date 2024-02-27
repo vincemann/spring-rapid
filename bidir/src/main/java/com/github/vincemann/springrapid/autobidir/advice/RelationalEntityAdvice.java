@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.autobidir.advice;
 
-import com.github.vincemann.springrapid.autobidir.DisableAutoBiDir;
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManager;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
@@ -8,7 +7,10 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.*;
+import com.github.vincemann.springrapid.core.util.Entity;
+import com.github.vincemann.springrapid.core.util.JpaUtils;
+import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
+import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -46,8 +48,6 @@ public class RelationalEntityAdvice {
             value =
                     "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.deleteOperation() && " +
-                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
-                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
                     "args(id)")
     public void beforeDeleteById(JoinPoint joinPoint, Serializable id) throws EntityNotFoundException, BadEntityException {
         if (skip(joinPoint))
@@ -69,8 +69,6 @@ public class RelationalEntityAdvice {
             value =
                     "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.fullUpdateOperation() && " +
-                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
-                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
                     "args(update)")
     public void beforeFullUpdate(JoinPoint joinPoint, IdentifiableEntity update) throws EntityNotFoundException, BadEntityException {
         if (skip(joinPoint))
@@ -88,8 +86,6 @@ public class RelationalEntityAdvice {
             value =
                     "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.partialUpdateOperation() && " +
-                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
-                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
                     "args(update,fieldsToUpdate)")
     public void beforePartialUpdate(JoinPoint joinPoint, IdentifiableEntity update, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
         if (skip(joinPoint))
@@ -112,8 +108,6 @@ public class RelationalEntityAdvice {
             value =
                     "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.createOperation() && " +
-                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreExtensions() && " +
-                    "com.github.vincemann.springrapid.core.RapidArchitecture.ignoreJdkProxies() && " +
                     "args(entity)")
     public void beforeCreate(JoinPoint joinPoint, IdentifiableEntity entity) {
         if (skip(joinPoint))
@@ -127,10 +121,10 @@ public class RelationalEntityAdvice {
     /**
      * check if join point should be skipped
      * skip if current bean is not root service
-     * check if enabled by looking for {@link DisableAutoBiDir} and {@link EnableAutoBiDir}.
+     * check if enabled by looking for {@link EnableAutoBiDir}.
      */
     protected boolean skip(JoinPoint joinPoint) {
-        return isEnabled(joinPoint);
+        return !isEnabled(joinPoint);
     }
 
     protected boolean isEnabled(JoinPoint joinPoint){
@@ -139,17 +133,14 @@ public class RelationalEntityAdvice {
         // check for class annotation first
         boolean enabledForClass = AnnotationUtils.findAnnotation(AopProxyUtils.ultimateTargetClass(joinPoint.getTarget()), EnableAutoBiDir.class) != null;
         if (enabledForClass){
-            // maybe its disabled for this method
-            if (method.isAnnotationPresent(DisableAutoBiDir.class))
-                return true;
             // is enabled
-            return false;
+            return true;
         }
 
         // maybe only enabled on method level
         if (method.isAnnotationPresent(EnableAutoBiDir.class))
-            return false;
-        return true;
+            return true;
+        return false;
     }
 
     protected void assertTransactionActive(){

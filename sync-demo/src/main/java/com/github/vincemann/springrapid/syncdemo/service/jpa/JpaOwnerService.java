@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.syncdemo.service.jpa;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.core.service.JpaCrudService;
+import com.github.vincemann.springrapid.sync.EnableAuditCollection;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
 import com.github.vincemann.springrapid.syncdemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.syncdemo.service.OwnerService;
@@ -15,6 +16,7 @@ import java.util.Optional;
 @Root
 @Service
 @EnableAutoBiDir
+@EnableAuditCollection
 public class JpaOwnerService
         extends JpaCrudService<Owner,Long, OwnerRepository>
                 implements OwnerService  {

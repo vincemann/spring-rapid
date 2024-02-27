@@ -22,18 +22,6 @@ public class RapidArchitecture {
     @Pointcut("execution(* findById(..))")
     public void findByIdOperation(){}
 
-    @Pointcut("!execution(* getEntityClass(..))" +
-            " && !execution(* getTargetClass(..))" +
-            " && !execution(* toString(..))" +
-            " && !execution(* getBeanName(..))"
-    )
-    public void ignoreHelperServiceMethods(){}
-
-    @Pointcut("!this(com.github.vincemann.springrapid.core.proxy.ServiceExtension+)")
-    public void ignoreExtensions(){}
-
-    @Pointcut("!target(java.lang.reflect.Proxy)")
-    public void ignoreJdkProxies(){}
 
     @Pointcut("this(com.github.vincemann.springrapid.core.service.CrudService+)")
     public void serviceOperation(){}
