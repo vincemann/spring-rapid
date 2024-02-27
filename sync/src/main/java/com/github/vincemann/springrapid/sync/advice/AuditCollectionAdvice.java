@@ -15,6 +15,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.util.Assert;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -88,9 +89,7 @@ public class AuditCollectionAdvice {
 
 
     protected void assertTransactionActive() {
-        boolean actualTransactionActive = TransactionSynchronizationManager.isActualTransactionActive();
-        if (!actualTransactionActive)
-            throw new IllegalArgumentException("service method must be called within transaction, otherwise auto bidir wont work. User @DisableAutoBiDir to disable auto bidir management for this method, if you want to ignore");
+        Assert.isTrue(TransactionSynchronizationManager.isActualTransactionActive(),"service method must be called within transaction, otherwise auto bidir wont work. User @DisableAutoBiDir to disable auto bidir management for this method, if you want to ignore");
     }
 
 }
