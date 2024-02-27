@@ -17,11 +17,11 @@ import java.util.Set;
 @Setter
 @Validated
 
-public class FullVetDto extends PersonDto  {
+public class FullVetDto  {
 
 
     @Builder
-    public FullVetDto(@Size(min = 2, max = 20) String firstName, @Size(min = 2, max = 20) String lastName, Set<Long> specialtyIds) {
+    public FullVetDto( String firstName, @Size(min = 2, max = 20) String lastName, Set<Long> specialtyIds) {
         super(firstName, lastName);
         if(specialtyIds!=null)
             this.specialtyIds = specialtyIds;

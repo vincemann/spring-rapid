@@ -32,17 +32,6 @@ import java.util.Set;
 @Entity
 public class Pet extends IdentifiableEntityImpl<Long> {
 
-
-    @Builder
-    public Pet( String name, PetType petType, Set<Illness> illnesss, Owner owner, LocalDate birthDate) {
-        this.name = name;
-        this.petType = petType;
-        if (illnesss !=null)
-            this.illnesss = illnesss;
-        this.owner = owner;
-        this.birthDate = birthDate;
-    }
-
     @NotEmpty
     @Column(name = "name", nullable = false, unique = true)
     private String name;
@@ -67,10 +56,20 @@ public class Pet extends IdentifiableEntityImpl<Long> {
     @BiDirParentEntity
     private Owner owner;
 
-
     @Column(name = "birth_date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
+
+    @Builder
+    public Pet( String name, PetType petType, Set<Illness> illnesss, Owner owner, LocalDate birthDate) {
+        this.name = name;
+        this.petType = petType;
+        if (illnesss !=null)
+            this.illnesss = illnesss;
+        this.owner = owner;
+        this.birthDate = birthDate;
+    }
+
 
     @Override
     public String toString() {

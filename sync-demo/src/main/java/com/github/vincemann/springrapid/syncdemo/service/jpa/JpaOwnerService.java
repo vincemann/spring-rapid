@@ -31,13 +31,6 @@ public class JpaOwnerService
     }
 
 
-
-    public Class<?> getTargetClass(){
-        return JpaOwnerService.class;
-    }
-
-
-
     @Transactional(readOnly = true)
     @Override
     public Optional<Owner> findOwnerOfTheYear() {
@@ -45,5 +38,10 @@ public class JpaOwnerService
             return owner.getFirstName().equals(OWNER_OF_THE_YEAR_NAME);
         }).findFirst();
     }
+
+    public Class<?> getTargetClass(){
+        return JpaOwnerService.class;
+    }
+
 
 }

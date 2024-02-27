@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.dto.owner;
 
 
+import com.github.vincemann.springrapid.acldemo.dto.owner.abs.AbstractOwnerDto;
 import lombok.*;
 
 import javax.validation.constraints.Size;

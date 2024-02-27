@@ -21,13 +21,6 @@ import java.util.Set;
 public class Specialty extends IdentifiableEntityImpl<Long>
 {
 
-    @Builder
-    public Specialty(String description, Set<Vet> vets) {
-        this.description = description;
-        if (vets!=null)
-            this.vets = vets;
-    }
-
     @NotEmpty
     @Column(name = "description", nullable = false, unique = true)
     private String description;
@@ -36,6 +29,13 @@ public class Specialty extends IdentifiableEntityImpl<Long>
     @ManyToMany(mappedBy = "specialtys", fetch = FetchType.EAGER)
     @BiDirParentCollection(Vet.class)
     private Set<Vet> vets = new HashSet<>();
+
+    @Builder
+    public Specialty(String description, Set<Vet> vets) {
+        this.description = description;
+        if (vets!=null)
+            this.vets = vets;
+    }
 
     @Override
     public String toString() {

@@ -10,10 +10,5 @@ public class AclProperties {
     public AclProperties() {
     }
 
-    public boolean defaultAclChecks = true;
     public boolean adminFullAccess = true;
-    public boolean cleanupAcl = true;
-
-    public boolean defaultAclExtensions = true;
-    public boolean defaultSecurityExtensions = true;
 }

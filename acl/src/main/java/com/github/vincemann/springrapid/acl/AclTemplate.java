@@ -13,7 +13,6 @@ import java.util.Collection;
 /**
  * API for dynamic programmatic acl permission checking.
  */
-
 @LogInteraction
 public interface AclTemplate extends AopLoggable {
 

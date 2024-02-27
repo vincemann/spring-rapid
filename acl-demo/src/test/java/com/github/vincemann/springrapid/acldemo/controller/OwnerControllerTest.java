@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acldemo.controller;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTest;
 import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
-import com.github.vincemann.springrapid.acldemo.dto.owner.FullOwnerDto;
+import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerCreatesPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
@@ -43,7 +43,7 @@ public class OwnerControllerTest extends MyIntegrationTest {
 
 
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(kahn, uuid);
-        FullOwnerDto createdDto = performDs2xx(ownerController.create(createOwnerDto), FullOwnerDto.class);
+        ReadOwnOwnerDto createdDto = performDs2xx(ownerController.create(createOwnerDto), ReadOwnOwnerDto.class);
 
         compare(createOwnerDto).with(createdDto)
                 .properties()
@@ -52,7 +52,7 @@ public class OwnerControllerTest extends MyIntegrationTest {
                 .ignore(createOwnerDto::getUuid)
                 .assertEqual();
 
-        Assertions.assertEquals(FullOwnerDto.DIRTY_SECRET, createdDto.getDirtySecret());
+        Assertions.assertEquals(ReadOwnOwnerDto.DIRTY_SECRET, createdDto.getDirtySecret());
 
         byUuid = userService.findByUuid(uuid);
         Assertions.assertFalse(byUuid.isPresent());

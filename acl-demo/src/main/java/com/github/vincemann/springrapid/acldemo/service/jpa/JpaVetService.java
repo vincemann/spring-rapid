@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.service.ext.acl.UserGainsAdminPermissionOnContainedCreatedUser;
+import com.github.vincemann.springrapid.auth.service.JpaUserService;
 import com.github.vincemann.springrapid.auth.service.ext.acl.UserGainsAdminPermissionOnCreated;
 import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
 import com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy;
@@ -15,6 +16,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.repo.VetRepository;
 import com.github.vincemann.springrapid.acldemo.service.VetService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,17 +27,18 @@ import java.util.Optional;
 
 
 
-@DefineProxy(name = "acl", extensionClasses = {
-        UserGainsAdminPermissionOnCreated.class,
-        UserGainsAdminPermissionOnContainedCreatedUser.class
-})
-@DefineProxy(name = "secured")
-@CreateProxy(qualifiers = Acl.class,proxies = "acl")
-@CreateProxy(qualifiers = Secured.class,proxies = {"acl","secured"})
+//@DefineProxy(name = "acl", extensionClasses = {
+//        UserGainsAdminPermissionOnCreated.class,
+//        UserGainsAdminPermissionOnContainedCreatedUser.class
+//})
+//@DefineProxy(name = "secured")
+//@CreateProxy(qualifiers = Acl.class,proxies = "acl")
+//@CreateProxy(qualifiers = Secured.class,proxies = {"acl","secured"})
+@Qualifier("vet")
 @Primary
 @Service
 public class JpaVetService
-        extends JpaCrudService<Vet,Long, VetRepository>
+        extends JpaUserService<Vet,Long, VetRepository>
                 implements VetService {
 
 

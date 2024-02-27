@@ -3,13 +3,13 @@ package com.github.vincemann.springrapid.acldemo.model;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 
 import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentCollection;
+import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import lombok.*;
 import org.checkerframework.common.aliasing.qual.Unique;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,10 +17,13 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "illnesss")
+@Table(name = "illnesss", uniqueConstraints = @UniqueConstraint(name = "unique name", columnNames = "name"))
 @Entity
 public class Illness extends IdentifiableEntityImpl<Long> {
-    @Unique
+
+    @NotBlank
+    @Size(min = 2, max = 30)
+    @Column(name = "name", unique = true, nullable = false, length = 30)
     private String name;
 
 
@@ -29,7 +32,7 @@ public class Illness extends IdentifiableEntityImpl<Long> {
     private Set<Pet> pets = new HashSet<>();
 
     @Builder
-    public Illness(@Unique String name, Set<Pet> pets) {
+    public Illness(String name, Set<Pet> pets) {
         this.name = name;
         if (pets !=null)
             this.pets = pets;
@@ -38,8 +41,9 @@ public class Illness extends IdentifiableEntityImpl<Long> {
     @Override
     public String toString() {
         return "Illness{" +
-                "name='" + name + '\'' +
-                ", pets=" +  Arrays.toString(pets.stream().map(Pet::getName).toArray()) +
+                "id=" + (getId() == null ? "null" : getId().toString()) +
+                ", name='" + name + '\'' +
+                ", pets=" + LazyToStringUtil.toStringIfLoaded(pets,Pet::getName) +
                 '}';
     }
 }

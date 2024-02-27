@@ -27,12 +27,13 @@ import java.util.HashSet;
 
 @Slf4j
 /**
- * Copied an modified from:
- * https://gist.github.com/matteocedroni/b0e5a935127316603dfb
+ *
  *
  * DefaultImpl of {@link AclTemplate}.
- * Uses {@link MethodSecurityExpressionHandler} for expression evaluation
+ * Evaluates {@link MethodSecurityExpressionHandler} in a programmatic fashion.
  *
+ * Copied an modified from:
+ * https://gist.github.com/matteocedroni/b0e5a935127316603dfb
  *
  */
 public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
@@ -57,11 +58,9 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
     public <E extends IdentifiableEntity<? extends Serializable>, C extends Collection<E>> C filter(C toFilter, Permission permission) {
         AuthorizationTemplate.assertAuthenticated();
         Collection<E> filtered = new HashSet<>();
-//        String permissionString = permissionStringConverter.convert(permission);
         for (E entity : toFilter) {
 
             boolean permitted = _checkPermission(entity.getId(), entity.getClass(), permission);
-//            boolean permitted = checkExpression("hasPermission(" + entity.getId() + ",'" + entity.getClass().getName() + "','" + permissionString + "')");
             if (permitted) {
                 filtered.add(entity);
             } else {
@@ -93,7 +92,6 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
 
         AuthorizationTemplate.assertAuthenticated();
 
-//        RapidAuthenticatedPrincipal p = rapidSecurityContext.currentPrincipal();
         String permissionString = permissionStringConverter.convert(permission);
         return checkExpression("hasPermission(" + id + ",'" + clazz.getName() + "','" + permissionString + "')");
     }
@@ -145,26 +143,5 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
     public void setSecurityContext(RapidSecurityContext securityContext) {
         this.securityContext = securityContext;
     }
-
-    //i dont want two ways of checking roles or authenticated
-//    @LogInteraction(Severity.TRACE)
-//    @Override
-//    public void checkAuthenticated(){
-//        boolean authenticated = checkExpression("isAuthenticated()");
-//        if(!authenticated){
-//            throw new AccessDeniedException("User must be authenticated");
-//        }
-//    }
-
-
-    //@Override
-////    public void checkHasRoles(String... role){
-////        boolean permitted = checkExpression("hasRole('" + role + "')");
-////        if(!permitted){
-////            throw new AccessDeniedException("Permission not Granted! Principal : " + rapidSecurityContext.currentPrincipal()
-////                    + " does not have requested role: " + role);
-////        }
-//    }
-
 
 }

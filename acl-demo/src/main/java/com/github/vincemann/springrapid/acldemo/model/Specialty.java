@@ -3,10 +3,12 @@ package com.github.vincemann.springrapid.acldemo.model;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 
 import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentCollection;
+import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import lombok.*;
 import org.checkerframework.common.aliasing.qual.Unique;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,10 +16,19 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "specialties")
+@Table(name = "specialties", uniqueConstraints = @UniqueConstraint(name = "unique description", columnNames = "description"))
 @Entity
 public class Specialty extends IdentifiableEntityImpl<Long>
-         {
+{
+
+    @NotEmpty
+    @Column(name = "description", nullable = false, unique = true)
+    private String description;
+
+
+    @ManyToMany(mappedBy = "specialtys", fetch = FetchType.EAGER)
+    @BiDirParentCollection(Vet.class)
+    private Set<Vet> vets = new HashSet<>();
 
     @Builder
     public Specialty(String description, Set<Vet> vets) {
@@ -26,20 +37,14 @@ public class Specialty extends IdentifiableEntityImpl<Long>
             this.vets = vets;
     }
 
-    @Unique
-    @Column(name = "description")
-    private String description;
 
-
-    @ManyToMany(mappedBy = "specialtys", fetch = FetchType.EAGER)
-    @BiDirParentCollection(Vet.class)
-    private Set<Vet> vets = new HashSet<>();
 
     @Override
     public String toString() {
         return "Specialty{" +
-                "description='" + description + '\'' +
-                ", vets=" + Arrays.toString(vets.stream().map(Vet::getLastName).toArray())  +
+                "id=" + (getId() == null ? "null" : getId().toString()) +
+                ", description='" + description + '\'' +
+                ", vets=" + LazyToStringUtil.toStringIfLoaded(vets,Vet::getLastName) +
                 '}';
     }
 }

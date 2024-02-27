@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VetCo
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VisitControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.dto.VisitDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
-import com.github.vincemann.springrapid.acldemo.dto.owner.FullOwnerDto;
+import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerCreatesPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
@@ -441,7 +441,7 @@ public class MyIntegrationTest extends AclMvcTest
         String uuid = signedUpDto.getUuid();
 
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner,uuid);
-        FullOwnerDto fullOwnerDto = performDs2xx(ownerController.create(createOwnerDto), FullOwnerDto.class);
+        ReadOwnOwnerDto fullOwnerDto = performDs2xx(ownerController.create(createOwnerDto), ReadOwnOwnerDto.class);
         return ownerService.findById(fullOwnerDto.getId()).get();
     }
 

@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.acldemo.model;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.UniDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.UniDirChildEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,17 +22,6 @@ import java.util.Set;
 @Table(name = "visits")
 @Entity
 public class Visit extends IdentifiableEntityImpl<Long> {
-
-
-    @Builder
-    public Visit(Set<Pet> pets, Owner owner, Vet vet, LocalDate date, String reason) {
-        if(pets!=null)
-            this.pets = pets;
-        this.owner = owner;
-        this.vet = vet;
-        this.date = date;
-        this.reason = reason;
-    }
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "pet_id")
@@ -55,12 +45,24 @@ public class Visit extends IdentifiableEntityImpl<Long> {
     @Column(name = "reason")
     private String reason;
 
+    @Builder
+    public Visit(Set<Pet> pets, Owner owner, Vet vet, LocalDate date, String reason) {
+        if(pets!=null)
+            this.pets = pets;
+        this.owner = owner;
+        this.vet = vet;
+        this.date = date;
+        this.reason = reason;
+    }
+
+
     @Override
     public String toString() {
         return "Visit{" +
-                "pets=" + Arrays.toString(pets.stream().map(Pet::getName).toArray())  +
-                ", owner=" + (owner==null? "null": owner.getLastName()) +
-                ", vet=" + (vet==null? "null": vet.getLastName()) +
+                "id=" + (getId() == null ? "null" : getId().toString()) +
+                ", pets=" + LazyToStringUtil.toStringIfLoaded(pets,Pet::getName) +
+                ", owner=" + LazyToStringUtil.toStringIfLoaded(owner,Owner::getLastName) +
+                ", vet=" + LazyToStringUtil.toStringIfLoaded(vet,Vet::getLastName) +
                 ", date=" + date +
                 ", reason='" + reason + '\'' +
                 '}';
