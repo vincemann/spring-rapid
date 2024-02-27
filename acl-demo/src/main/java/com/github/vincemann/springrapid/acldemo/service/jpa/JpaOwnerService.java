@@ -25,7 +25,8 @@ import java.util.Optional;
 @Qualifier("owner")
 public class JpaOwnerService
         extends JpaUserService<Owner,Long, OwnerRepository>
-                implements OwnerService, AopLoggable, TargetClassAware {
+                implements OwnerService
+{
 
     public static final String OWNER_OF_THE_YEARS_NAME = "Chad";
 
@@ -59,7 +60,7 @@ public class JpaOwnerService
         String ci = owner.getUser().getContactInformation();
         rapidAclService.savePermissionForUserOverEntity(ci,containedUser, BasePermission.ADMINISTRATION);
     }
-    
+
     @Transactional
     @Override
     public Optional<Owner> findOwnerOfTheYear() {

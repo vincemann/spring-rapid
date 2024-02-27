@@ -42,12 +42,6 @@ public class JpaVetService
                 implements VetService {
 
 
-
-    @Override
-    public Class<?> getTargetClass() {
-        return JpaVetService.class;
-    }
-
     @LogInteraction
     @Transactional
     @Override
@@ -64,6 +58,11 @@ public class JpaVetService
         }
         user.getRoles().add(MyRoles.NEW_VET);
         return super.create(entity);
+    }
+
+    @Override
+    public Class<?> getTargetClass() {
+        return JpaVetService.class;
     }
 
 }
