@@ -9,7 +9,6 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 @NoArgsConstructor
-@Builder
 public class PetTypeDto extends IdAwareDto {
 
     @NotEmpty

@@ -16,9 +16,11 @@ public class AbstractReadOwnerDto extends AbstractOwnerDto{
 
     @BiDirChildIdCollection(Pet.class)
     private Set<Long> petIds = new HashSet<>();
+    private Long id;
 
-    public AbstractReadOwnerDto(String address, String city, String telephone, Set<String> hobbies, Set<Long> petIds) {
+    public AbstractReadOwnerDto(String address, String city, String telephone, Set<String> hobbies, Set<Long> petIds, Long id) {
         super(address, city, telephone, hobbies);
         this.petIds = petIds;
+        this.id = id;
     }
 }

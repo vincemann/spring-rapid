@@ -19,8 +19,8 @@ import java.util.Set;
 public class ReadForeignOwnerDto extends AbstractReadOwnerDto {
 
     @Builder
-    public ReadForeignOwnerDto(String address, String city, String telephone, Set<String> hobbies, Set<Long> petIds) {
-        super(address, city, telephone, hobbies, petIds);
+    public ReadForeignOwnerDto(String address, String city, String telephone, Set<String> hobbies, Set<Long> petIds, Long id) {
+        super(address, city, telephone, hobbies, petIds, id);
     }
 
     @Override

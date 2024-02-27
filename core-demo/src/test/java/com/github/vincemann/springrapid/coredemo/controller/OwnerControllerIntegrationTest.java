@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
@@ -406,9 +407,9 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(2,responseDtos.size());
-        ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos, savedKahn);
+        ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
         Assertions.assertEquals(Owner.DIRTY_SECRET,kahnDto.getDirtySecret());
-        ReadOwnOwnerDto meierDto = assertCanFindInCollection(responseDtos, savedMeier);
+        ReadOwnOwnerDto meierDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedMeier.getId()));
         Assertions.assertNull(meierDto.getDirtySecret());
     }
 
@@ -450,9 +451,9 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         Assertions.assertEquals(savedKahn.getId(),responseDtos.get(1).getId());
 
         // content
-        ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos, savedKahn);
+        ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
         Assertions.assertEquals(Owner.DIRTY_SECRET,kahnDto.getDirtySecret());
-        ReadOwnOwnerDto meierDto = assertCanFindInCollection(responseDtos, savedMeier);
+        ReadOwnOwnerDto meierDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedMeier.getId()));
         Assertions.assertNull(meierDto.getDirtySecret());
 
 
@@ -472,9 +473,9 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         Assertions.assertEquals(savedMeier.getId(),responseDtos.get(1).getId());
 
         // content
-        kahnDto = assertCanFindInCollection(responseDtos, savedKahn);
+        kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
         Assertions.assertEquals(Owner.DIRTY_SECRET,kahnDto.getDirtySecret());
-        meierDto = assertCanFindInCollection(responseDtos, savedMeier);
+        meierDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedMeier.getId()));
         Assertions.assertNull(meierDto.getDirtySecret());
     }
 
@@ -514,7 +515,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(1,responseDtos.size());
-        ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos, savedKahn);
+        ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
         Assertions.assertEquals(Owner.DIRTY_SECRET,kahnDto.getDirtySecret());
     }
 
@@ -558,7 +559,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(1,responseDtos.size());
-        ReadForeignOwnerDto gilDto = assertCanFindInCollection(responseDtos, savedGil);
+        ReadForeignOwnerDto gilDto = assertCanFindInCollection(responseDtos, dto -> dto.getId().equals(savedGil.getId()));
 
         compare(gilDto).with(savedGil)
                 .properties()
@@ -609,7 +610,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(1,responseDtos.size());
-        ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos, savedKahn);
+        ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
         Assertions.assertNotNull(kahnDto.getDirtySecret());
         Assertions.assertEquals(Owner.DIRTY_SECRET,kahnDto.getDirtySecret());
 

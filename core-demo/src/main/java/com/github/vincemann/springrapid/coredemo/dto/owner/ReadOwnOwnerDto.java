@@ -22,11 +22,28 @@ public class ReadOwnOwnerDto extends AbstractReadOwnerDto {
     private Long clinicCardId;
 
     @Builder
-    public ReadOwnOwnerDto(String address, String city, String telephone, Set<String> hobbies, Set<Long> petIds, String dirtySecret, String firstName, String lastName, Long clinicCardId) {
-        super(address, city, telephone, hobbies, petIds);
+    public ReadOwnOwnerDto(String address, String city, String telephone, Set<String> hobbies, Set<Long> petIds, Long id, String dirtySecret, String firstName, String lastName, Long clinicCardId) {
+        super(address, city, telephone, hobbies, petIds, id);
         this.dirtySecret = dirtySecret;
         this.firstName = firstName;
         this.lastName = lastName;
         this.clinicCardId = clinicCardId;
+    }
+
+    @Override
+    public String toString() {
+        return "ReadOwnOwnerDto{" +
+                "dirtySecret='" + dirtySecret + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", clinicCardId=" + clinicCardId +
+                ", city='" + city + '\'' +
+                ", petIds=" + getPetIds() +
+                ", id=" + getId() +
+                ", address='" + getAddress() + '\'' +
+                ", city='" + getCity() + '\'' +
+                ", telephone='" + getTelephone() + '\'' +
+                ", hobbies=" + getHobbies() +
+                '}';
     }
 }

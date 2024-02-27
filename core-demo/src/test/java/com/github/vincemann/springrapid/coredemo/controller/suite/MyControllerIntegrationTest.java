@@ -8,7 +8,6 @@ import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.coredemo.repo.*;
 import com.github.vincemann.springrapid.coredemo.service.*;
-import com.github.vincemann.springrapid.coredemo.service.ext.OwnerOfTheYearExtension;
 import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -123,8 +122,6 @@ public class MyControllerIntegrationTest extends AbstractMvcTest
     @Autowired
     protected VisitService visitService;
 
-    @SpyBean
-    protected OwnerOfTheYearExtension ownerOfTheYearExtension;
 
     @Autowired
     protected OwnerRepository ownerRepository;
