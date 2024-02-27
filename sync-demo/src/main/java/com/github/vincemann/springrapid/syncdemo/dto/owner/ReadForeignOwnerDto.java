@@ -1,34 +1,32 @@
 package com.github.vincemann.springrapid.syncdemo.dto.owner;
 
-import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildIdCollection;
-import com.github.vincemann.springrapid.syncdemo.model.Pet;
+import com.github.vincemann.springrapid.coredemo.dto.owner.abs.AbstractReadOwnerDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.lang.Nullable;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import java.util.HashSet;
 import java.util.Set;
 
-@NoArgsConstructor
 @Getter
 @Setter
-
-public class ReadForeignOwnerDto extends AbstractOwnerDto {
-
-    @Nullable
-    @BiDirChildIdCollection(Pet.class)
-    private Set<Long> petIds = new HashSet<>();
+@NoArgsConstructor
+public class ReadForeignOwnerDto extends AbstractReadOwnerDto {
 
     @Builder
-    public ReadForeignOwnerDto(Set<Long> petIds, @Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone,Set<String> hobbies) {
-        super(address, city, telephone,hobbies);
-        this.petIds=petIds;
+    public ReadForeignOwnerDto(String address, String city, String telephone, Set<String> hobbies, Set<Long> petIds, Long id) {
+        super(address, city, telephone, hobbies, petIds, id);
     }
 
-
-
+    @Override
+    public String toString() {
+        return "ReadForeignOwnerDto{" +
+                "city='" + city + '\'' +
+                ", petIds=" + getPetIds() +
+                ", address='" + getAddress() + '\'' +
+                ", city='" + getCity() + '\'' +
+                ", telephone='" + getTelephone() + '\'' +
+                ", hobbies=" + getHobbies() +
+                '}';
+    }
 }

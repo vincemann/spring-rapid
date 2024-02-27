@@ -10,13 +10,14 @@ import lombok.Setter;
 import org.checkerframework.common.aliasing.qual.Unique;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "specialties")
+@Table(name = "specialties", uniqueConstraints = @UniqueConstraint(name = "unique description", columnNames = "description"))
 @Entity
 public class Specialty extends IdentifiableEntityImpl<Long>
 {
@@ -28,8 +29,8 @@ public class Specialty extends IdentifiableEntityImpl<Long>
             this.vets = vets;
     }
 
-    @Unique
-    @Column(name = "description")
+    @NotEmpty
+    @Column(name = "description", nullable = false, unique = true)
     private String description;
 
 

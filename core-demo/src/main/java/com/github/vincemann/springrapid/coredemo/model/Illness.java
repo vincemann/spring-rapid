@@ -7,19 +7,23 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.checkerframework.common.aliasing.qual.Unique;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "illnesss")
+@Table(name = "illnesss", uniqueConstraints = @UniqueConstraint(name = "unique name", columnNames = "name"))
 @Entity
 public class Illness extends IdentifiableEntityImpl<Long> {
-    @Unique
-    private String name;
 
+
+    @NotBlank
+    @Size(min = 2, max = 30)
+    @Column(name = "name", unique = true, nullable = false, length = 30)
+    private String name;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @BiDirParentEntity
@@ -28,7 +32,7 @@ public class Illness extends IdentifiableEntityImpl<Long> {
     private Pet pet;
 
     @Builder
-    public Illness(@Unique String name, Pet pet) {
+    public Illness(String name, Pet pet) {
         this.name = name;
         this.pet = pet;
     }
@@ -36,7 +40,8 @@ public class Illness extends IdentifiableEntityImpl<Long> {
     @Override
     public String toString() {
         return "Illness{" +
-                "name='" + name + '\'' +
+                "id=" + (getId() == null ? "null" : getId().toString()) +
+                ", name='" + name + '\'' +
                 ", pets=" +  pet == null ? "null" : pet.getName() +
                 '}';
     }

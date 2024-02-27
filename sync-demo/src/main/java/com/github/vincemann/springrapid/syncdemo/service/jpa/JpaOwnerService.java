@@ -38,11 +38,6 @@ public class JpaOwnerService
 
 
 
-
-    /**
-     * Owner named "chad" is owner of the year
-     * @return
-     */
     @Transactional
     @Override
     public Optional<Owner> findOwnerOfTheYear() {
@@ -50,13 +45,5 @@ public class JpaOwnerService
             return owner.getFirstName().equals(OWNER_OF_THE_YEARS_NAME);
         }).findFirst();
     }
-
-//    @Override
-//    @Transactional
-//    public Owner lazyLoadFindById(Long id) {
-//        Owner owner = getRepository().findById(id).get();
-//        owner.getLazyLoadedItems().size();
-//        return owner;
-//    }
 
 }

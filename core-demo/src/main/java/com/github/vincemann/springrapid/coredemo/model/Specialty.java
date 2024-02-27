@@ -7,23 +7,19 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.checkerframework.common.aliasing.qual.Unique;
-import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "specialties")
+@Table(name = "specialties", uniqueConstraints = @UniqueConstraint(name = "unique description", columnNames = "description"))
 @Entity
 public class Specialty extends IdentifiableEntityImpl<Long>
 {
-    @Unique
-    @Column(name = "description")
-    private String description;
 
     @Builder
     public Specialty(String description, Set<Vet> vets) {
@@ -31,6 +27,10 @@ public class Specialty extends IdentifiableEntityImpl<Long>
         if (vets!=null)
             this.vets = vets;
     }
+
+    @NotEmpty
+    @Column(name = "description", nullable = false, unique = true)
+    private String description;
 
 
     @ManyToMany(mappedBy = "specialtys", fetch = FetchType.EAGER)
@@ -40,7 +40,8 @@ public class Specialty extends IdentifiableEntityImpl<Long>
     @Override
     public String toString() {
         return "Specialty{" +
-                "description='" + description + '\'' +
+                "id=" + (getId() == null ? "null" : getId().toString()) +
+                ", description='" + description + '\'' +
                 ", vets=" + LazyToStringUtil.toStringIfLoaded(vets,Vet::getLastName) +
                 '}';
     }

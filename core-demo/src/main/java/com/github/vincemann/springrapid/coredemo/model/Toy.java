@@ -5,22 +5,22 @@ import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDir
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import lombok.*;
-import org.checkerframework.common.aliasing.qual.Unique;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "toys")
+@Table(name = "toys",uniqueConstraints = @UniqueConstraint(name = "unique name", columnNames = "name"))
 @Entity
 @Builder
 public class Toy extends IdentifiableEntityImpl<Long> {
-    @Unique
+
+
+    @NotEmpty
+    @Column(nullable = false, unique = true)
     private String name;
 
     @ManyToOne
@@ -32,7 +32,8 @@ public class Toy extends IdentifiableEntityImpl<Long> {
     @Override
     public String toString() {
         return "Toy{" +
-                "name='" + name + '\'' +
+                "id=" + (getId() == null ? "null" : getId().toString()) +
+                ", name='" + name + '\'' +
                 ", pet=" + LazyToStringUtil.toStringIfLoaded(pet,Pet::getName) +
                 '}';
     }

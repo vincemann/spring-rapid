@@ -16,9 +16,15 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "vets")
+@Table(name = "vets", uniqueConstraints = @UniqueConstraint(name = "unique last name", columnNames = "last_name"))
 public class Vet extends Person
 {
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "vet_specialtys",
+            joinColumns = @JoinColumn(name = "vet_id"),
+            inverseJoinColumns = @JoinColumn(name = "speciality_id"))
+    @BiDirChildCollection(Specialty.class)
+    private Set<Specialty> specialtys = new HashSet<>();
 
     @Builder
     public Vet(String firstName, String lastName, Set<Specialty> specialtys) {
@@ -28,17 +34,11 @@ public class Vet extends Person
     }
 
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "vet_specialtys",
-            joinColumns = @JoinColumn(name = "vet_id"),
-            inverseJoinColumns = @JoinColumn(name = "speciality_id"))
-    @BiDirChildCollection(Specialty.class)
-    private Set<Specialty> specialtys = new HashSet<>();
-
     @Override
     public String toString() {
         return "Vet{" +
-                "firstName='" + getFirstName() + '\'' +
+                "id=" + (getId() == null ? "null" : getId().toString()) +
+                ", firstName='" + getFirstName() + '\'' +
                 ", lastName='" + getLastName() + '\'' +
                 ", specialtys=" + LazyToStringUtil.toStringIfLoaded(specialtys,Specialty::getDescription) +
                 '}';

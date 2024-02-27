@@ -22,17 +22,6 @@ import java.util.Set;
 @Table(name = "visits")
 public class Visit extends IdentifiableEntityImpl<Long> {
 
-
-    @Builder
-    public Visit(Set<Pet> pets, Owner owner, Vet vet, LocalDate date, String reason) {
-        if(pets!=null)
-            this.pets = pets;
-        this.owner = owner;
-        this.vet = vet;
-        this.date = date;
-        this.reason = reason;
-    }
-
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "pet_id")
     @UniDirChildCollection(Pet.class)
@@ -54,6 +43,17 @@ public class Visit extends IdentifiableEntityImpl<Long> {
 
     @Column(name = "reason")
     private String reason;
+
+    @Builder
+    public Visit(Set<Pet> pets, Owner owner, Vet vet, LocalDate date, String reason) {
+        if(pets!=null)
+            this.pets = pets;
+        this.owner = owner;
+        this.vet = vet;
+        this.date = date;
+        this.reason = reason;
+    }
+
 
     @Override
     public String toString() {

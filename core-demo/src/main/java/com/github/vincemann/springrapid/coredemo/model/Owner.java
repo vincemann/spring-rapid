@@ -1,28 +1,56 @@
 package com.github.vincemann.springrapid.coredemo.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
-import com.github.vincemann.springrapid.coredemo.model.abs.Person;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildEntity;
-
-import lombok.*;
+import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
+import com.github.vincemann.springrapid.coredemo.model.abs.Person;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
-import java.util.*;
-
-import static javax.persistence.CascadeType.*;
+import javax.validation.constraints.NotEmpty;
+import java.util.HashSet;
+import java.util.Set;
 
 @Setter
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "owners")
+@Table(name = "owners", uniqueConstraints = @UniqueConstraint(name = "unique last name", columnNames = "last_name"))
 public class Owner extends Person {
+    
+    public static final String DIRTY_SECRET = "myDirtSecret";
 
-    public static final String DIRTY_SECRET = "can you see this?";
+    @OneToMany(mappedBy = "owner",fetch = FetchType.EAGER)
+    @JsonManagedReference
+    @BiDirChildCollection(Pet.class)
+    private Set<Pet> pets = new HashSet<>();
+
+    @BiDirChildEntity
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "clinic_card_id",referencedColumnName = "id")
+    private ClinicCard clinicCard;
 
 
+    @ElementCollection(targetClass = String.class,fetch = FetchType.EAGER)
+    private Set<String> hobbies = new HashSet<>();
+
+
+    @NotEmpty
+    @Column(name = "adress", nullable = false)
+    private String address;
+
+    @NotEmpty
+    @Column(name = "city", nullable = false)
+    private String city;
+
+    @Nullable
+    @Column(name = "telephone", nullable = true)
+    private String telephone;
 
     @Builder
     public Owner(String firstName, String lastName, Set<Pet> pets, String address, String city, String telephone, Set<String> hobbies) {
@@ -42,38 +70,11 @@ public class Owner extends Person {
         this.telephone = telephone;
     }
 
-    // dont use remove cascade to showcase unlink on remove owner,
-    @OneToMany(mappedBy = "owner",fetch = FetchType.EAGER)
-    @JsonManagedReference
-    @BiDirChildCollection(Pet.class)
-    private Set<Pet> pets = new HashSet<>();
-
-    @BiDirChildEntity
-    // dont use remove cascade to showcase unlink on remove owner
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "clinic_card_id",referencedColumnName = "id")
-    private ClinicCard clinicCard;
-
-
-    @ElementCollection(targetClass = String.class,fetch = FetchType.EAGER)
-    private Set<String> hobbies = new HashSet<>();
-
-
-    @Column(name = "adress")
-    private String address;
-
-    @Column(name = "city")
-    private String city;
-
-    @Column(name = "telephone")
-    private String telephone;
-
-    @Column(name = "dirty_secret")
-    private String dirtySecret = DIRTY_SECRET;
 
     @Override
     public String toString() {
         return "Owner{" +
+                "id=" + (getId() == null ? "null" : getId().toString()) +
                 "firstName='" + getFirstName() + '\'' +
                 ", lastName='" + getLastName() + '\'' +
                 ", pets=" + LazyToStringUtil.toStringIfLoaded(pets,Pet::getName) +

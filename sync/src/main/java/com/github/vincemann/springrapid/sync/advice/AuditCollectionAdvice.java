@@ -25,7 +25,7 @@ import java.util.Set;
 import static com.github.vincemann.springrapid.core.util.ReflectionUtils.findFieldsAnnotatedWith;
 
 /**
- * Implements logic related to {@link AuditCollection}.
+ * Implements logic related to {@link AuditCollection} and {@link EnableAuditCollection}.
  */
 @Aspect
 // should get executed within transaction of service, so when anything fails, the timestamp update is rolled back

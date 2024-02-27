@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.coredemo.dto.owner;
 import com.github.vincemann.springrapid.coredemo.dto.owner.abs.AbstractReadOwnerDto;
 import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
 import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildId;
+import com.github.vincemann.springrapid.coredemo.model.Owner;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
@@ -14,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class ReadOwnOwnerDto extends AbstractReadOwnerDto {
 
-    private String dirtySecret;
+    private String dirtySecret = Owner.DIRTY_SECRET;
     private String firstName;
     private String lastName;
 

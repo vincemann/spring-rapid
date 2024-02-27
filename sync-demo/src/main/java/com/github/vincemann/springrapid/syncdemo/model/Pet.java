@@ -16,6 +16,7 @@ import org.checkerframework.common.aliasing.qual.Unique;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,23 +24,12 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "pets")
+@Table(name = "pets", uniqueConstraints = @UniqueConstraint(name = "unique name", columnNames = "name"))
 @Entity
 public class Pet extends AuditingEntity<Long> {
 
-
-    @Builder
-    public Pet(@Unique String name, PetType petType, Set<Toy> toys, Owner owner, LocalDate birthDate) {
-        this.name = name;
-        this.petType = petType;
-        if (toys !=null)
-            this.toys = toys;
-        this.owner = owner;
-        this.birthDate = birthDate;
-    }
-
-    @Column(name = "name")
-    @Unique
+    @NotEmpty
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
 
@@ -60,7 +50,6 @@ public class Pet extends AuditingEntity<Long> {
     @BiDirChildCollection(Illness.class)
     private Set<Illness> illnesss = new HashSet<>();
 
-
     @ManyToOne
     @JoinColumn(name = "owner_id")
     @JsonBackReference
@@ -71,6 +60,18 @@ public class Pet extends AuditingEntity<Long> {
     @Column(name = "birth_date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
+
+
+
+    @Builder
+    public Pet(String name, PetType petType, Set<Toy> toys, Owner owner, LocalDate birthDate) {
+        this.name = name;
+        this.petType = petType;
+        if (toys !=null)
+            this.toys = toys;
+        this.owner = owner;
+        this.birthDate = birthDate;
+    }
 
     @Override
     public String toString() {

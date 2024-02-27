@@ -17,12 +17,11 @@ import javax.validation.constraints.NotBlank;
 @MappedSuperclass
 @AllArgsConstructor
 public abstract class Person extends AuditingEntity<Long> {
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false)
     @NotBlank
     private String firstName;
 
-    @Unique
     @NotBlank
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false, unique = true)
     private String lastName;
 }

@@ -7,20 +7,21 @@ import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import lombok.*;
 import org.checkerframework.common.aliasing.qual.Unique;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "toys")
+@Table(name = "toys",uniqueConstraints = @UniqueConstraint(name = "unique name", columnNames = "name"))
 @Entity
 @Builder
 public class Toy extends IdentifiableEntityImpl<Long> {
-    @Unique
+
+
+    @NotEmpty
+    @Column(nullable = false, unique = true)
     private String name;
 
     @ManyToOne

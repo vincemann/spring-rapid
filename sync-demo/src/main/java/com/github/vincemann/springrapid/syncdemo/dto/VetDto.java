@@ -1,36 +1,57 @@
 package com.github.vincemann.springrapid.syncdemo.dto;
 
 import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildIdCollection;
-import com.github.vincemann.springrapid.syncdemo.model.Specialty;
-import com.github.vincemann.springrapid.syncdemo.model.Vet;
+import com.github.vincemann.springrapid.coredemo.dto.abs.IdAwareDto;
+import com.github.vincemann.springrapid.coredemo.model.Specialty;
+import com.github.vincemann.springrapid.coredemo.model.Vet;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @Getter
 @Setter
 @Validated
-public class VetDto extends PersonDto  {
+public class VetDto extends IdAwareDto {
 
+
+    @NotEmpty
+    @Size(min = 2, max = 20)
+    private String firstName;
+    @NotEmpty
+    @Size(min = 2, max = 20)
+    private String lastName;
+    @BiDirChildIdCollection(Specialty.class)
+    private Set<Long> specialtyIds = new HashSet<>();
 
     @Builder
-    public VetDto(@Size(min = 2, max = 20) String firstName, @Size(min = 2, max = 20) String lastName,Set<Long> specialtyIds) {
-        super(firstName, lastName);
+    public VetDto(String firstName, String lastName,Set<Long> specialtyIds, Long id) {
+        super(id);
+        this.firstName = firstName;
+        this.lastName = lastName;
         if(specialtyIds!=null)
             this.specialtyIds = specialtyIds;
     }
 
     public VetDto(Vet vet){
-        super(vet.getFirstName(),vet.getLastName());
+        this(vet.getFirstName(),vet.getLastName(),vet.getSpecialtys().stream().map(Specialty::getId).collect(Collectors.toSet()), vet.getId());
     }
 
-    @BiDirChildIdCollection(Specialty.class)
-    private Set<Long> specialtyIds = new HashSet<>();
+    @Override
+    public String toString() {
+        return "VetDto{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", specialtyIds=" + specialtyIds +
+                ", id=" + getId() +
+                '}';
+    }
 }

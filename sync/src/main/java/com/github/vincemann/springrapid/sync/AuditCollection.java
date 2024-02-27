@@ -10,21 +10,25 @@ import java.lang.annotation.Target;
 
 
 /**
- * annotate collection fields of entity x, that are normally not detected by springs auditing, that when changed, trigger the update of {@link AuditingEntity#getLastModifiedDate()}
+ * Needs to be combined with {@link EnableAuditCollection}.
+ * Annotate collection fields of entity x, that is normally not detected by springs auditing. When changed, triggers the update of {@link AuditingEntity#getLastModifiedDate()}
  * and {@link AuditingEntity#getLastModifiedById()} .
- * This could be foreign relationships with entities or other collections
+ * Usually used to detect changes to foreign-key relations with other entities.
  *
  * Only works for direct updates via {@link com.github.vincemann.springrapid.core.service.CrudService#partialUpdate(IdentifiableEntity, String...)}
  * example:
- * class EntityX{
+ * class FooEntity{
  *     @AuditCollection
- *     private Set<EntityY> subEntities;
+ *     private Set<BarEntity> subEntities;
  * }
  *
  *
- * entityXService.partialUpdate(entityX,"subEntities") -> works
+ * fooService.partialUpdate(fooEntity,"subEntities") -> works
  *
- * entityYService.partialUpdate(entityY) -> does not update timestamp of entityX even with annotation present, bc no direct update on EntityX
+ *
+ * barService.partialUpdate(barEntity) -> does not update timestamp of fooEntity even with annotation present, bc only indirect update
+ *
+ * Is implemented via aop {@link com.github.vincemann.springrapid.sync.advice.AuditCollectionAdvice}.
  *
  */
 @Retention(RetentionPolicy.RUNTIME)

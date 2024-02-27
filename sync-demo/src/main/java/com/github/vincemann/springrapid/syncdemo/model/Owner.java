@@ -10,8 +10,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,8 +21,36 @@ import java.util.Set;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "owners")
+@Table(name = "owners", uniqueConstraints = @UniqueConstraint(name = "unique last name", columnNames = "lastName"))
 public class Owner extends Person {
+
+    @OneToMany(mappedBy = "owner",fetch = FetchType.EAGER)
+    @JsonManagedReference
+    @BiDirChildCollection(Pet.class)
+    private Set<Pet> pets = new HashSet<>();
+
+    @BiDirChildEntity
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "clinic_card_id",referencedColumnName = "id")
+    private ClinicCard clinicCard;
+
+
+    @ElementCollection(targetClass = String.class,fetch = FetchType.EAGER)
+    @AuditCollection
+    private Set<String> hobbies = new HashSet<>();
+
+
+    @NotEmpty
+    @Column(name = "adress", nullable = false)
+    private String address;
+
+    @NotEmpty
+    @Column(name = "city", nullable = false)
+    private String city;
+
+    @Nullable
+    @Column(name = "telephone", nullable = true)
+    private String telephone;
 
     @Builder
     public Owner(String firstName, String lastName, Set<Pet> pets, String address, String city, String telephone, Set<String> hobbies) {
@@ -39,31 +69,6 @@ public class Owner extends Person {
         this.city = city;
         this.telephone = telephone;
     }
-
-    @OneToMany(mappedBy = "owner",fetch = FetchType.EAGER)
-    @JsonManagedReference
-    @BiDirChildCollection(Pet.class)
-    private Set<Pet> pets = new HashSet<>();
-
-    @BiDirChildEntity
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "clinic_card_id",referencedColumnName = "id")
-    private ClinicCard clinicCard;
-
-
-    @ElementCollection(targetClass = String.class,fetch = FetchType.EAGER)
-    @AuditCollection
-    private Set<String> hobbies = new HashSet<>();
-
-
-    @Column(name = "adress")
-    private String address;
-
-    @Column(name = "city")
-    private String city;
-
-    @Column(name = "telephone")
-    private String telephone;
 
 
     @Override

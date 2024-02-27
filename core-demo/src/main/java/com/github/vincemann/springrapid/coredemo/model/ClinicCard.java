@@ -10,6 +10,7 @@ import lombok.Setter;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Setter
@@ -23,7 +24,9 @@ public class ClinicCard extends IdentifiableEntityImpl<Long> {
     @BiDirParentEntity
     @OneToOne(mappedBy = "clinicCard")
     private Owner owner;
+    @NotNull
     private Date registrationDate;
+    @NotNull
     private String registrationReason;
 
     @Builder
@@ -36,7 +39,8 @@ public class ClinicCard extends IdentifiableEntityImpl<Long> {
     @Override
     public String toString() {
         return "ClinicCard{" +
-                "owner=" + ((owner ==  null) ? "null" : owner.getLastName()) +
+                "id=" + (getId() == null ? "null" : getId().toString()) +
+                ", owner=" + ((owner ==  null) ? "null" : owner.getLastName()) +
                 ", registrationDate=" + registrationDate +
                 ", registrationReason='" + registrationReason + '\'' +
                 ", id=" + getId() +
