@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.autobidir.config;
 
-import com.github.vincemann.springrapid.autobidir.id.RelationalDtoManagerImpl;
-import com.github.vincemann.springrapid.autobidir.id.RelationalDtoManager;
+import com.github.vincemann.springrapid.autobidir.id.RelationalDtoManagerUtilImpl;
+import com.github.vincemann.springrapid.autobidir.id.RelationalDtoManagerUtil;
 import com.github.vincemann.springrapid.core.config.RapidDtoAutoConfiguration;
 import com.github.vincemann.springrapid.core.config.RapidServiceAutoConfiguration;
 import com.github.vincemann.springrapid.core.controller.dto.MergeUpdateStrategy;
@@ -39,9 +39,9 @@ public class RapidIdResolvingDtoMapperAutoConfiguration {
 
 
     @Bean
-    @ConditionalOnMissingBean(RelationalDtoManager.class)
-    public RelationalDtoManager relationalDtoManager(){
-        return new RelationalDtoManagerImpl();
+    @ConditionalOnMissingBean(RelationalDtoManagerUtil.class)
+    public RelationalDtoManagerUtil relationalDtoManager(){
+        return new RelationalDtoManagerUtilImpl();
     }
 
     @ConditionalOnMissingBean(name = "biDiChildIdResolver")
@@ -64,8 +64,8 @@ public class RapidIdResolvingDtoMapperAutoConfiguration {
 
     @ConditionalOnMissingBean(name = "idResolvingDtoPostProcessor")
     @Bean
-    public IdResolvingDtoPostProcessor idResolvingDtoPostProcessor(List<EntityIdResolver> entityIdResolvers, RelationalDtoManager relationalDtoManager){
-        return new IdResolvingDtoPostProcessor(entityIdResolvers, relationalDtoManager);
+    public IdResolvingDtoPostProcessor idResolvingDtoPostProcessor(List<EntityIdResolver> entityIdResolvers, RelationalDtoManagerUtil relationalDtoManagerUtil){
+        return new IdResolvingDtoPostProcessor(entityIdResolvers, relationalDtoManagerUtil);
     }
 
 }

@@ -4,7 +4,6 @@ import com.github.vincemann.springrapid.core.controller.dto.EntityDtoPostProcess
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,22 +22,16 @@ import java.util.Set;
 public class IdResolvingDtoPostProcessor implements EntityDtoPostProcessor<Object, IdentifiableEntity<?>> {
 
     private List<EntityIdResolver> entityIdResolvers;
-    private RelationalDtoManager relationalDtoManager;
+    private RelationalDtoManagerUtil relationalDtoManagerUtil;
 
-    public IdResolvingDtoPostProcessor(List<EntityIdResolver> entityIdResolvers, RelationalDtoManager relationalDtoManager) {
+    public IdResolvingDtoPostProcessor(List<EntityIdResolver> entityIdResolvers, RelationalDtoManagerUtil relationalDtoManagerUtil) {
         this.entityIdResolvers = entityIdResolvers;
-        this.relationalDtoManager = relationalDtoManager;
+        this.relationalDtoManagerUtil = relationalDtoManagerUtil;
     }
 
     @Override
-    public boolean supports(Class<?>entityClass, Class<?> dtoClass) {
-        Set<RelationalDtoType> relationalDtoTypes = relationalDtoManager.inferTypes(dtoClass);
-
-        return relationalDtoTypes.contains(RelationalDtoType.BiDirChildDto)
-                ||
-                relationalDtoTypes.contains(RelationalDtoType.BiDirParentDto)
-                ||
-                relationalDtoTypes.contains(RelationalDtoType.UniDirParentDto);
+    public boolean supports(Class<?> entityClass, Class<?> dtoClass) {
+        return true;
     }
 
     @Override
@@ -60,7 +53,7 @@ public class IdResolvingDtoPostProcessor implements EntityDtoPostProcessor<Objec
 
     public List<EntityIdResolver> findResolvers(Class<?> dstClass) {
         List<EntityIdResolver> resolvers = new ArrayList<>();
-        Set<RelationalDtoType> relationalDtoTypes = relationalDtoManager.inferTypes(dstClass);
+        Set<RelationalDtoType> relationalDtoTypes = relationalDtoManagerUtil.inferTypes(dstClass);
         for (RelationalDtoType relationalDtoType : relationalDtoTypes) {
             for (EntityIdResolver entityIdResolver : entityIdResolvers) {
                 if (entityIdResolver.getDtoType().equals(relationalDtoType)) {
@@ -68,9 +61,6 @@ public class IdResolvingDtoPostProcessor implements EntityDtoPostProcessor<Objec
                 }
             }
         }
-
-        if (resolvers.isEmpty())
-            throw new IllegalArgumentException("No " + EntityIdResolver.class.getSimpleName() + " found for dstClass: " + dstClass.getSimpleName());
         return resolvers;
     }
 }

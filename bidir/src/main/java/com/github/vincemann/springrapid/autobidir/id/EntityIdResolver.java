@@ -13,79 +13,42 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 
+import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Optional;
 
 @Getter
 /**
  *
- *  Resolves parent- or child-id's from a Dto to their mapped Entities.
+ *  Baseclass for components resolving entity to id and vice versa
  *
- *  These id fields must be annotated with on of these Annotations:
- *  {@link BiDirChildId}, {@link BiDirParentId},
- *  {@link UniDirParentId}, {@link UniDirChildId}
- *  {@link UniDirChildIdCollection}, {@link BiDirChildIdCollection}
+
  *
- *  The resolving of the ids is done, by calling {@link CrudService#findById(Serializable)} of the {@link CrudService}, that belongs to the Annotated Id's Entity Type.
+ *  The resolving of the ids is done, by calling {@link CrudService#findById(Serializable)} of the {@link CrudService},
+ *  that belongs to the Annotated Id's Entity Type.
  *  The needed CrudService is found with {@link CrudServiceLocator}.
  *
+ * @see com.github.vincemann.springrapid.autobidir.id.biDir.BiDirChildIdResolver
+ * @see RelationalDtoManagerImpl
  */
-@LogInteraction(value = Severity.TRACE)
-//@LogConfig(ignoreSetters = true, ignoreGetters = true)
-public abstract class EntityIdResolver implements AopLoggable {
-
-    private RelationalDtoType dtoType;
-    protected RelationalDtoManager relationalDtoManager;
-    protected RelationalEntityManagerUtil relationalEntityManagerUtil;
-    protected CrudServiceLocator crudServiceLocator;
+public interface EntityIdResolver {
 
 
-    public EntityIdResolver(RelationalDtoType dtoType) {
-        this.dtoType = dtoType;
-    }
+    boolean supports(Class<?> dtoClass);
 
     /**
      * Resolve entities by id from dto and inject (set) them into target Entity
      * -> target entity now has all entities set
      */
-    public abstract void setResolvedEntities(IdentifiableEntity mappedEntity, Object dto) throws BadEntityException, EntityNotFoundException;
+    void setResolvedEntities(IdentifiableEntity mappedEntity, Object dto, String... fieldsToCheck) throws BadEntityException, EntityNotFoundException;
 
     /**
      * Resolve Id's from entities in entity and inject (set) ids into target Dto
      */
-    public abstract void setResolvedIds(Object mappedDto, IdentifiableEntity entity, String... fieldsToCheck);
+    void setResolvedIds(Object mappedDto, IdentifiableEntity entity, String... fieldsToCheck);
 
 
-    // could be replaced by EntityLocator, but tests would need refactoring as well...
-    protected <T> T findEntityFromService(Class<IdentifiableEntity> entityClass, Serializable id) throws EntityNotFoundException, BadEntityException {
-        CrudService entityService = crudServiceLocator.find(entityClass);
-        if (entityService == null) {
-            throw new IllegalArgumentException("No Service found for entityClass: " + entityClass.getSimpleName());
-        }
-        Optional optionalParent;
-        try {
-            optionalParent = entityService.findById(id);
-        } catch (ClassCastException e) {
-            throw new IllegalArgumentException("ParentId: " + id + " was of wrong type for Service: " + entityService, e);
-        }
-        VerifyEntity.isPresent(optionalParent, "No Parent of Type: " +entityClass.getSimpleName() + " found with id: " + id);
-        return (T) optionalParent.get();
-    }
 
-
-    @Autowired
-    public void setCrudServiceLocator(CrudServiceLocator crudServiceLocator) {
-        this.crudServiceLocator = crudServiceLocator;
-    }
-
-    @Autowired
-    public void setRelationalDtoManager(RelationalDtoManager relationalDtoManager) {
-        this.relationalDtoManager = relationalDtoManager;
-    }
-
-    @Autowired
-    public void setRelationalEntityManagerUtil(RelationalEntityManagerUtil relationalEntityManagerUtil) {
-        this.relationalEntityManagerUtil = relationalEntityManagerUtil;
-    }
 }
