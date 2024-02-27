@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.autobidir.controller.map.biDir.testEnti
 
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.autobidir.id.annotation.parent.BiDirParentId;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.parent.BiDirParentId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

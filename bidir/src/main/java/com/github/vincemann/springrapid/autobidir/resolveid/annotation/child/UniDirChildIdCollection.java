@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.autobidir.id.annotation.child;
+package com.github.vincemann.springrapid.autobidir.resolveid.annotation.child;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

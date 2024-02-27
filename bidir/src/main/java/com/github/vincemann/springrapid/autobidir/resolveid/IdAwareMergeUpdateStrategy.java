@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.autobidir.id;
+package com.github.vincemann.springrapid.autobidir.resolveid;
 
 import com.github.vincemann.springrapid.core.controller.dto.MergeUpdateStrategyImpl;
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;

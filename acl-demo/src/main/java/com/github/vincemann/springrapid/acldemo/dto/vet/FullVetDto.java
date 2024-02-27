@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acldemo.dto.vet;
 import com.github.vincemann.springrapid.acldemo.dto.PersonDto;
 import com.github.vincemann.springrapid.acldemo.model.Specialty;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
-import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildIdCollection;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.BiDirChildIdCollection;
 
 import lombok.*;
 import org.springframework.validation.annotation.Validated;

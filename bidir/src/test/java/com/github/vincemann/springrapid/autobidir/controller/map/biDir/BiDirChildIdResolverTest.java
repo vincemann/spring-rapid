@@ -1,9 +1,9 @@
 package com.github.vincemann.springrapid.autobidir.controller.map.biDir;
 
 
-import com.github.vincemann.springrapid.autobidir.id.RelationalDtoManagerUtilImpl;
+import com.github.vincemann.springrapid.autobidir.resolveid.RelationalDtoManagerUtilImpl;
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerUtilImpl;
-import com.github.vincemann.springrapid.autobidir.id.biDir.BiDirChildIdResolver;
+import com.github.vincemann.springrapid.autobidir.resolveid.bidir.BiDirChildIdResolver;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.autobidir.controller.map.biDir.abs.BiDirEntityResolverTest;
 import com.github.vincemann.springrapid.autobidir.controller.map.biDir.testEntities.BiDirEntityChild;

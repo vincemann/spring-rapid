@@ -1,16 +1,9 @@
 package com.github.vincemann.springrapid.coredemo.dto.owner;
 
-import com.github.vincemann.springrapid.coredemo.dto.owner.abs.AbstractOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.abs.AbstractReadOwnerDto;
-import com.github.vincemann.springrapid.coredemo.model.Pet;
-import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildIdCollection;
 
 import lombok.*;
-import org.springframework.lang.Nullable;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import java.util.HashSet;
 import java.util.Set;
 
 @Getter

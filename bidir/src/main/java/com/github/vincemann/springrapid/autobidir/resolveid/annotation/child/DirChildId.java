@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.autobidir.id.annotation.parent;
+package com.github.vincemann.springrapid.autobidir.resolveid.annotation.child;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,5 +7,5 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DirParentId {
+public @interface DirChildId {
 }

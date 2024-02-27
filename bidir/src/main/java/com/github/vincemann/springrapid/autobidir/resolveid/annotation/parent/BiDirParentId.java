@@ -1,5 +1,4 @@
-package com.github.vincemann.springrapid.autobidir.id.annotation.child;
-
+package com.github.vincemann.springrapid.autobidir.resolveid.annotation.parent;
 
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
@@ -11,11 +10,10 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@DirChildId
-public @interface BiDirChildId {
-
+@DirParentId
+public @interface BiDirParentId {
     /**
-     * Type of Child which belongs to the annotated child id
+     * Type of Parent which belongs to the annotated parent id
      * @return
      */
     Class<? extends IdentifiableEntity> value();

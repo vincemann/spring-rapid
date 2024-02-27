@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.autobidir.id;
+package com.github.vincemann.springrapid.autobidir.resolveid;
 
 public enum RelationalDtoType {
     BiDirParentDto,

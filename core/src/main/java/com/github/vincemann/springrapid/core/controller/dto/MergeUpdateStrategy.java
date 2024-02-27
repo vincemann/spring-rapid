@@ -13,7 +13,6 @@ public interface MergeUpdateStrategy extends AopLoggable {
      * Only merges fields from dtoClass.
      *
      * @return merged Entity
-     * @throws BadEntityException
      */
     public <E extends IdentifiableEntity<?>> E merge(E patch, E saved, Class<?> dtoClass) throws BadEntityException;
 }

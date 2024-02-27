@@ -2,12 +2,9 @@ package com.github.vincemann.springrapid.coredemo.dto.owner;
 
 import com.github.vincemann.springrapid.coredemo.dto.owner.abs.AbstractReadOwnerDto;
 import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
-import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildId;
-import com.github.vincemann.springrapid.coredemo.model.Owner;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.BiDirChildId;
 import lombok.*;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.util.Set;
 
 @Getter

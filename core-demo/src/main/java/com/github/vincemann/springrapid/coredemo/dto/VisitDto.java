@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.dto;
 
-import com.github.vincemann.springrapid.autobidir.id.annotation.child.UniDirChildId;
-import com.github.vincemann.springrapid.autobidir.id.annotation.child.UniDirChildIdCollection;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.UniDirChildId;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.UniDirChildIdCollection;
 import com.github.vincemann.springrapid.coredemo.dto.abs.IdAwareDto;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;

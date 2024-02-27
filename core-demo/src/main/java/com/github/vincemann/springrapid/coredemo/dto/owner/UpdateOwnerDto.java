@@ -3,8 +3,8 @@ package com.github.vincemann.springrapid.coredemo.dto.owner;
 import com.github.vincemann.springrapid.coredemo.dto.owner.abs.AbstractOwnerDto;
 import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
-import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildId;
-import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildIdCollection;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.BiDirChildId;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.BiDirChildIdCollection;
 
 import lombok.*;
 import org.springframework.lang.Nullable;

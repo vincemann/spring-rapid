@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.syncdemo.dto;
 
-import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildIdCollection;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.BiDirChildIdCollection;
 import com.github.vincemann.springrapid.syncdemo.dto.abs.IdAwareDto;
 import com.github.vincemann.springrapid.syncdemo.model.Specialty;
 import com.github.vincemann.springrapid.syncdemo.model.Vet;

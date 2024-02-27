@@ -8,58 +8,43 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 
-@Slf4j
-@Setter
-@Getter
 public class MergeUpdateStrategyImpl implements MergeUpdateStrategy {
 
-    private CoreProperties coreProperties;
 
-    ////@LogInteraction
+    /**
+     * Copies all field values from {@param patch} to {@param saved}, that are present in {@param dtoClass}.
+     * Allows transformation of field name via {@link #transform(String)}.
+     * So dtos field name and target field name in entity class might differ.
+     *
+     * @param patch patch entity, containing all updated values
+     * @param saved saved entity, representing current managed state of entity to update
+     * @param dtoClass dtoClass used for current update operation
+     * @return merged entity (saved)
+     * @param <E> entity type
+     */
     @Override
-    public <E extends IdentifiableEntity<?>> E merge(E patch, E saved, Class<?> dtoClass) throws BadEntityException {
-        try {
-            ReflectionUtils.doWithFields(dtoClass, dtoField -> {
-                Class<? extends IdentifiableEntity> entityClass = patch.getClass();
-                String propertyName = transform(dtoField.getName());
+    public <E extends IdentifiableEntity<?>> E merge(E patch, E saved, Class<?> dtoClass) {
+        ReflectionUtils.doWithFields(dtoClass, dtoField -> {
+            Class<? extends IdentifiableEntity> entityClass = patch.getClass();
+            String propertyName = transform(dtoField.getName());
 
-                Field entityField = ReflectionUtils.findField(entityClass, propertyName);
-                // managed by Controller, cant happen
-                if (entityField == null) {
-                    throw new IllegalArgumentException("Unknown Update Property: " + propertyName);
-                }
-//                    if (entityField == null) {
-//                        if (coreProperties.getController().isStrictUpdateMerge()) {
-//                            //gets translated to checked exception below
-//                            throw new IllegalArgumentException("Unknown Update Property: " + propertyName);
-//                        } else {
-//                            log.warn("Dto property: " + propertyName + " is not known in entity. skipping");
-//                            return;
-//                        }
-//                    }
-                ReflectionUtils.makeAccessible(entityField);
-                Object patchedValue = entityField.get(patch);
-                entityField.set(saved, patchedValue);
+            Field entityField = ReflectionUtils.findField(entityClass, propertyName);
+            // managed by Controller, cant happen
+            Assert.notNull(entityField, "Unknown Update Property: " + propertyName);
+            ReflectionUtils.makeAccessible(entityField);
+            Object patchedValue = entityField.get(patch);
+            entityField.set(saved, patchedValue);
 
-            }, ReflectionUtils.COPYABLE_FIELDS);
-            //I have to do this exception disaster bc i cant throw checked exceptions in lambda expressions
-        } catch (IllegalArgumentException e) {
-            throw new BadEntityException(e);
-        }
-
+        }, ReflectionUtils.COPYABLE_FIELDS);
         return saved;
     }
 
     protected String transform(String propertyName) {
         return propertyName;
-    }
-
-    @Autowired
-    public void setCoreProperties(CoreProperties coreProperties) {
-        this.coreProperties = coreProperties;
     }
 }

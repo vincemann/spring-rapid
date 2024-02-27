@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.dto.owner.abs;
 
-import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildIdCollection;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.BiDirChildIdCollection;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

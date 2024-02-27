@@ -22,7 +22,8 @@ public class DelegatingDtoMapperImpl implements DelegatingDtoMapper{
     private List<DtoPostProcessor> dtoPostProcessors = new ArrayList<>();
     private EntityManager entityManager;
 
-    //@LogInteraction
+
+    @Transactional
     @Override
     public <T extends IdentifiableEntity<?>> T mapToEntity(Object dto, Class<T> destinationClass) throws EntityNotFoundException, BadEntityException {
         T mapped = (T) findMapper(dto.getClass())
@@ -53,6 +54,7 @@ public class DelegatingDtoMapperImpl implements DelegatingDtoMapper{
     @Transactional(readOnly = true)
     @Override
     public <T> Set<T> mapToDto(Set<? extends IdentifiableEntity<?>> source, Class<T> destinationClass, String... fieldsToMap) throws BadEntityException {
+        entityManager.merge(source);
         Set<T> result = new HashSet<>();
         for (IdentifiableEntity<?> entity : source) {
             result.add(mapToDto(entity,destinationClass,fieldsToMap));
@@ -62,6 +64,7 @@ public class DelegatingDtoMapperImpl implements DelegatingDtoMapper{
 
     @Transactional(readOnly = true)
     public <T> List<T> mapToDto(List<? extends IdentifiableEntity<?>> source, Class<T> destinationClass, String... fieldsToMap) throws BadEntityException {
+        entityManager.merge(source);
         List<T> result = new ArrayList<>();
         for (IdentifiableEntity<?> entity : source) {
             result.add(mapToDto(entity,destinationClass,fieldsToMap));
@@ -73,8 +76,7 @@ public class DelegatingDtoMapperImpl implements DelegatingDtoMapper{
     @Transactional(readOnly = true)
     public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass,String... fieldsToMap) throws BadEntityException {
         // source entity is detached and might not have all collections lazy loaded for this dto mapping -> merge
-        if (entityManager!=null)
-            entityManager.merge(source);
+        entityManager.merge(source);
         T dto = (T) findMapper(destinationClass)
                 .mapToDto(source, destinationClass,fieldsToMap);
         for (DtoPostProcessor pp : dtoPostProcessors) {
@@ -85,7 +87,7 @@ public class DelegatingDtoMapperImpl implements DelegatingDtoMapper{
         return dto;
     }
 
-    private DtoMapper findMapper(Class<?> dtoClass) {
+    protected DtoMapper findMapper(Class<?> dtoClass) {
         Optional<DtoMapper<?, ?>> matchingMapper =
                 delegates.stream()
                         .filter(mapper -> mapper.supports(dtoClass))
@@ -97,14 +99,9 @@ public class DelegatingDtoMapperImpl implements DelegatingDtoMapper{
         }
     }
 
-    // webtests dont have entity manager available
-    @Autowired(required = false)
+    @Autowired
     public void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
-//    public <E extends IdentifiableEntity<ID>> Object mapToDto(E saved, Class<?> dtoClass, Set<String> updatedFields) {
-//
-//
-//    }
 }

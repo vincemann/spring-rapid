@@ -1,11 +1,11 @@
-package com.github.vincemann.springrapid.autobidir.id;
+package com.github.vincemann.springrapid.autobidir.resolveid;
 
-import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildId;
-import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildIdCollection;
-import com.github.vincemann.springrapid.autobidir.id.annotation.child.UniDirChildId;
-import com.github.vincemann.springrapid.autobidir.id.annotation.child.UniDirChildIdCollection;
-import com.github.vincemann.springrapid.autobidir.id.annotation.parent.BiDirParentId;
-import com.github.vincemann.springrapid.autobidir.id.annotation.parent.BiDirParentIdCollection;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.BiDirChildId;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.BiDirChildIdCollection;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.UniDirChildId;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.UniDirChildIdCollection;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.parent.BiDirParentId;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.parent.BiDirParentIdCollection;
 import com.github.vincemann.springrapid.autobidir.util.RelationalEntityReflectionUtils;
 import com.github.vincemann.springrapid.autobidir.util.RelationalEntityIdAnnotationUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;

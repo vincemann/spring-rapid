@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.syncdemo.dto.owner;
 
 
-import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildId;
-import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildIdCollection;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.BiDirChildId;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.BiDirChildIdCollection;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.abs.AbstractOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.model.ClinicCard;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;

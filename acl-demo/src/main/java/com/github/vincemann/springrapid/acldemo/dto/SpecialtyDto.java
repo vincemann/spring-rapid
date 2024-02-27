@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acldemo.dto;
 
 import com.github.vincemann.springrapid.acldemo.model.Specialty;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
-import com.github.vincemann.springrapid.autobidir.id.annotation.parent.BiDirParentIdCollection;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.parent.BiDirParentIdCollection;
 import com.github.vincemann.springrapid.core.dto.IdAwareDto;
 import lombok.Builder;
 import lombok.Getter;

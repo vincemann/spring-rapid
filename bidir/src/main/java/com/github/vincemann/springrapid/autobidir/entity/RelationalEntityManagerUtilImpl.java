@@ -1,8 +1,6 @@
 package com.github.vincemann.springrapid.autobidir.entity;
 
-import com.github.vincemann.springrapid.autobidir.exception.UnknownChildTypeException;
-import com.github.vincemann.springrapid.autobidir.exception.UnknownEntityTypeException;
-import com.github.vincemann.springrapid.autobidir.exception.UnknownParentTypeException;
+import com.github.vincemann.springrapid.autobidir.AutoHandleEntityRelationShipException;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildEntity;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.UniDirChildCollection;
@@ -15,6 +13,7 @@ import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.UnknownEntityTypeException;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -114,7 +113,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
 
 
     @Override
-    public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent, String... membersToCheck) throws UnknownParentTypeException {
+    public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent, String... membersToCheck) throws AutoHandleEntityRelationShipException {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         linkEntity(child, parent, BiDirParentEntity.class, BiDirParentCollection.class, membersToCheck);
@@ -122,7 +121,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
 
 
     @Override
-    public void unlinkBiDirParentsFrom(IdentifiableEntity child, String... membersToCheck) throws UnknownChildTypeException, UnknownParentTypeException {
+    public void unlinkBiDirParentsFrom(IdentifiableEntity child, String... membersToCheck) throws AutoHandleEntityRelationShipException {
         for (IdentifiableEntity parent : findAllBiDirParents(child, membersToCheck)) {
             if (parent != null) {
                 unlinkBiDirParent(child, parent, membersToCheck);
@@ -134,7 +133,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
 
 
     @Override
-    public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent, String... membersToCheck) throws UnknownParentTypeException {
+    public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent, String... membersToCheck) throws AutoHandleEntityRelationShipException {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         unlinkEntity(child, parent, BiDirParentEntity.class, BiDirParentCollection.class, membersToCheck);
@@ -188,14 +187,14 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
 
 
     @Override
-    public void linkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToSet, String... membersToCheck) throws UnknownChildTypeException {
+    public void linkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToSet, String... membersToCheck) throws AutoHandleEntityRelationShipException {
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         assertEntityRelationType(childToSet, RelationalEntityType.BiDirChild);
         linkEntity(parent, childToSet, BiDirChildEntity.class, BiDirChildCollection.class, membersToCheck);
     }
 
 
-    public void unlinkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToDelete, String... membersToCheck) throws UnknownChildTypeException {
+    public void unlinkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToDelete, String... membersToCheck) throws AutoHandleEntityRelationShipException {
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         assertEntityRelationType(childToDelete, RelationalEntityType.BiDirChild);
         unlinkEntity(parent, childToDelete, BiDirChildEntity.class, BiDirChildCollection.class, membersToCheck);
@@ -207,7 +206,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      * @param parent and unlink it from them
      *               -> remove childrens backreference
      */
-    public void unlinkBiDirChildrensParent(IdentifiableEntity parent, String... membersToCheck) throws UnknownParentTypeException {
+    public void unlinkBiDirChildrensParent(IdentifiableEntity parent, String... membersToCheck) throws AutoHandleEntityRelationShipException {
         for (IdentifiableEntity child : findAllBiDirChildren(parent, membersToCheck)) {
             unlinkBiDirParent(child, parent, membersToCheck);
         }
@@ -247,12 +246,12 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      * Add a new Child to this parent.
      * Call this, when saving a UniDirChild of this parent.
      * child will be added to fields with {@link UniDirChildCollection} and fields with {@link UniDirChildEntity} will be set with newChild, when most specific type matches of newChild matches the field.
-     * Child wont be added and UnknownChildTypeException will be thrown when corresponding {@link UniDirChildCollection} is null.
+     * Child wont be added and {code AutoHandleEntityRelationShipException} will be thrown when corresponding {@link UniDirChildCollection} is null.
      *
      * @param newChild
-     * @throws UnknownChildTypeException
+     * @throws AutoHandleEntityRelationShipException
      */
-    public void linkUniDirChild(IdentifiableEntity parent, IdentifiableEntity newChild, String... membersToCheck) throws UnknownChildTypeException {
+    public void linkUniDirChild(IdentifiableEntity parent, IdentifiableEntity newChild, String... membersToCheck) throws AutoHandleEntityRelationShipException {
         assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
         linkEntity(parent, newChild, UniDirChildEntity.class, UniDirChildCollection.class, membersToCheck);
     }
@@ -264,9 +263,9 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      * Case 2: Set {@link UniDirChildEntity}Field to null if child is not saved in a collection in this parent.
      *
      * @param toRemove
-     * @throws UnknownChildTypeException
+     * @throws AutoHanldeEntityRelationShipException
      */
-    public void unlinkUniDirChild(IdentifiableEntity parent, IdentifiableEntity toRemove, String... membersToCheck) throws UnknownChildTypeException {
+    public void unlinkUniDirChild(IdentifiableEntity parent, IdentifiableEntity toRemove, String... membersToCheck) throws AutoHandleEntityRelationShipException {
         assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
         unlinkEntity(parent, toRemove, UniDirChildEntity.class, UniDirChildCollection.class, membersToCheck);
     }
@@ -338,7 +337,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
     }
 
 
-    protected void linkEntity(IdentifiableEntity<?> entity, IdentifiableEntity newEntity, Class<? extends Annotation> entityAnnotationClass, Class<? extends Annotation> entityCollectionAnnotationClass, String... membersToCheck) throws UnknownEntityTypeException {
+    protected void linkEntity(IdentifiableEntity<?> entity, IdentifiableEntity newEntity, Class<? extends Annotation> entityAnnotationClass, Class<? extends Annotation> entityCollectionAnnotationClass, String... membersToCheck) {
         AtomicBoolean added = new AtomicBoolean(false);
         //add to matching entity collections
         for (Map.Entry<Class<IdentifiableEntity>, Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity, entityCollectionAnnotationClass, membersToCheck).entrySet()) {
@@ -374,7 +373,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
 
         });
         if (!added.get()) {
-            throw new UnknownEntityTypeException(entity.getClass(), newEntity.getClass());
+            throw new AutoHandleEntityRelationShipException("Error while trying to link entity " + newEntity + " to " + entity + ". " + entity.getClass().getSimpleName() + " does not have annotated field containing entities of type: " + newEntity.getClass());
         }
     }
 
@@ -420,7 +419,9 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
         if (!deleted.get()) {
             if (log.isErrorEnabled())
                 log.error("it is also possible, that entity to unlink was not found in collection");
-            throw new UnknownEntityTypeException(entity.getClass(), entityToRemove.getClass());
+            throw new AutoHandleEntityRelationShipException("Error while trying to unlink entity " + entityToRemove + " from " + entity + ". " + entity.getClass().getSimpleName() + " does not have annotated field containing entities of type: " + entityToRemove.getClass()
+            + ", or entity to unlink not found in source entity."
+            );
         }
     }
 
