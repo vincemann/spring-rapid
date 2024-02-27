@@ -2,11 +2,11 @@ package com.github.vincemann.springrapid.syncdemo.dto;
 
 import com.github.vincemann.springrapid.autobidir.id.annotation.child.UniDirChildId;
 import com.github.vincemann.springrapid.autobidir.id.annotation.child.UniDirChildIdCollection;
-import com.github.vincemann.springrapid.coredemo.dto.abs.IdAwareDto;
-import com.github.vincemann.springrapid.coredemo.model.Owner;
-import com.github.vincemann.springrapid.coredemo.model.Pet;
-import com.github.vincemann.springrapid.coredemo.model.Vet;
-import com.github.vincemann.springrapid.coredemo.model.Visit;
+import com.github.vincemann.springrapid.syncdemo.dto.abs.IdAwareDto;
+import com.github.vincemann.springrapid.syncdemo.model.Owner;
+import com.github.vincemann.springrapid.syncdemo.model.Pet;
+import com.github.vincemann.springrapid.syncdemo.model.Vet;
+import com.github.vincemann.springrapid.syncdemo.model.Visit;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

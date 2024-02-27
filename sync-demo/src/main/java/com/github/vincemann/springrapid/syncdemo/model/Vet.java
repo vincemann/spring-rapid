@@ -16,7 +16,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "vets", uniqueConstraints = @UniqueConstraint(name = "unique last name", columnNames = "lastName"))
+@Table(name = "vets", uniqueConstraints = @UniqueConstraint(name = "unique last name", columnNames = "last_name"))
 public class Vet extends Person
 {
     @ManyToMany(fetch = FetchType.EAGER)

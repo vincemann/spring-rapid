@@ -13,7 +13,7 @@ import com.github.vincemann.springrapid.syncdemo.controller.suite.template.Owner
 import com.github.vincemann.springrapid.syncdemo.controller.suite.template.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.controller.suite.template.PetSyncControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnOwnerDto;
-import com.github.vincemann.springrapid.syncdemo.dto.pet.PetDto;
+import com.github.vincemann.springrapid.syncdemo.dto.pet.ReadPetDto;
 import com.github.vincemann.springrapid.syncdemo.model.ClinicCard;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
@@ -634,11 +634,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.unsetAuthenticated();
 
-        Set<PetDto> updatedPets = deserializeToSet(json,PetDto.class);
+        Set<ReadPetDto> updatedPets = deserializeToSet(json,ReadPetDto.class);
 
         Assertions.assertEquals(1,updatedPets.size());
 
-        PetDto belloDto = updatedPets.stream().filter(s -> s.getId().equals(savedBello.getId())).findFirst().get();
+        ReadPetDto belloDto = updatedPets.stream().filter(s -> s.getId().equals(savedBello.getId())).findFirst().get();
         Assertions.assertEquals(belloDto.getBirthDate(),updateBello.getBirthDate());
     }
 
@@ -652,7 +652,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Toy rubberDuck = toyRepository.save(this.rubberDuck);
         Toy ball = toyRepository.save(this.ball);
 
-        PetDto belloDto = savePetLinkedToOwnerAndToys(bello, null, rubberDuck, ball);
+        ReadPetDto belloDto = savePetLinkedToOwnerAndToys(bello, null, rubberDuck, ball);
 
         assertPetHasToys(BELLO,RUBBER_DUCK,BALL);
 
@@ -683,11 +683,11 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         RapidSecurityContext.unsetAuthenticated();
 
-        Set<PetDto> updatedPets = deserializeToSet(json,PetDto.class);
+        Set<ReadPetDto> updatedPets = deserializeToSet(json,ReadPetDto.class);
 
         Assertions.assertEquals(1,updatedPets.size());
 
-        PetDto dto = updatedPets.stream().filter(s -> s.getId().equals(belloDto.getId())).findFirst().get();
+        ReadPetDto dto = updatedPets.stream().filter(s -> s.getId().equals(belloDto.getId())).findFirst().get();
         Assertions.assertEquals(1,dto.getToyIds().size());
         Assertions.assertTrue(dto.getToyIds().stream().anyMatch(toyId -> toyId.equals(rubberDuck.getId())));
     }
@@ -701,7 +701,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Toy rubberDuck = toyRepository.save(this.rubberDuck);
         Toy ball = toyRepository.save(this.ball);
 
-        PetDto belloDto = savePetLinkedToOwnerAndToys(bello, null, rubberDuck, ball);
+        ReadPetDto belloDto = savePetLinkedToOwnerAndToys(bello, null, rubberDuck, ball);
 
         assertPetHasToys(BELLO,RUBBER_DUCK,BALL);
 

@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.syncdemo.dto.pet;
 
-import com.github.vincemann.springrapid.coredemo.dto.pet.abs.AbstractPetDto;
-import com.github.vincemann.springrapid.coredemo.model.Pet;
-import com.github.vincemann.springrapid.coredemo.model.Toy;
+import com.github.vincemann.springrapid.syncdemo.dto.pet.abs.AbstractPetDto;
+import com.github.vincemann.springrapid.syncdemo.model.Pet;
+import com.github.vincemann.springrapid.syncdemo.model.Toy;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

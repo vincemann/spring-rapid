@@ -29,7 +29,7 @@ import static com.github.vincemann.springrapid.core.util.ReflectionUtils.findFie
  */
 @Aspect
 // should get executed within transaction of service, so when anything fails, the timestamp update is rolled back
-@Order(Ordered.LOWEST_PRECEDENCE-1)
+@Order(Ordered.LOWEST_PRECEDENCE)
 @Slf4j
 public class AuditCollectionAdvice {
 
@@ -89,7 +89,7 @@ public class AuditCollectionAdvice {
 
 
     protected void assertTransactionActive() {
-        Assert.isTrue(TransactionSynchronizationManager.isActualTransactionActive(),"service method must be called within transaction, otherwise auto bidir wont work. User @DisableAutoBiDir to disable auto bidir management for this method, if you want to ignore");
+        Assert.isTrue(TransactionSynchronizationManager.isActualTransactionActive(),"service method must be called within transaction, otherwise auto bidir wont work");
     }
 
 }

@@ -146,7 +146,7 @@ public class RelationalEntityAdvice {
     protected void assertTransactionActive(){
         boolean actualTransactionActive = TransactionSynchronizationManager.isActualTransactionActive();
         if (!actualTransactionActive)
-            throw new IllegalArgumentException("service method must be called within transaction, otherwise auto bidir wont work. User @DisableAutoBiDir to disable auto bidir management for this method, if you want to ignore");
+            throw new IllegalArgumentException("service method must be called within transaction, otherwise auto bidir wont work");
     }
 
     protected Optional<IdentifiableEntity> findById(JoinPoint joinPoint, Serializable id) {

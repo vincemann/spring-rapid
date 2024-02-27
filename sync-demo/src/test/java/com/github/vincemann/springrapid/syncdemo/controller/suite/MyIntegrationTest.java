@@ -6,11 +6,11 @@ import com.github.vincemann.springrapid.syncdemo.controller.suite.template.Owner
 import com.github.vincemann.springrapid.syncdemo.controller.suite.template.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnOwnerDto;
-import com.github.vincemann.springrapid.syncdemo.dto.pet.PetDto;
+import com.github.vincemann.springrapid.syncdemo.dto.pet.CreatePetDto;
+import com.github.vincemann.springrapid.syncdemo.dto.pet.ReadPetDto;
 import com.github.vincemann.springrapid.syncdemo.model.*;
 import com.github.vincemann.springrapid.syncdemo.repo.*;
 import com.github.vincemann.springrapid.syncdemo.service.*;
-import com.github.vincemann.springrapid.syncdemo.service.ext.OwnerOfTheYearExtension;
 import com.google.common.collect.Lists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -125,9 +125,6 @@ public class MyIntegrationTest extends AbstractMvcTest {
     protected VisitRepository visitRepository;
     @Autowired
     protected VisitService visitService;
-
-    @SpyBean
-    protected OwnerOfTheYearExtension ownerOfTheYearExtension;
 
     @Autowired
     protected OwnerRepository ownerRepository;
@@ -445,8 +442,8 @@ public class MyIntegrationTest extends AbstractMvcTest {
         return performDs2xx(ownerController.create(createOwnerDto), ReadOwnOwnerDto.class);
     }
 
-    protected PetDto savePetLinkedToOwnerAndToys(Pet pet, Long ownerId, Toy... toys) throws Exception {
-        PetDto createPetDto = new PetDto(pet);
+    protected ReadPetDto savePetLinkedToOwnerAndToys(Pet pet, Long ownerId, Toy... toys) throws Exception {
+        CreatePetDto createPetDto = new CreatePetDto(pet);
         if (ownerId != null)
             createPetDto.setOwnerId(ownerId);
         if (toys.length > 0)
@@ -455,7 +452,7 @@ public class MyIntegrationTest extends AbstractMvcTest {
         return deserialize(getMvc().perform(petController.create(createPetDto))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn()
-                .getResponse().getContentAsString(), PetDto.class);
+                .getResponse().getContentAsString(), ReadPetDto.class);
     }
 
 

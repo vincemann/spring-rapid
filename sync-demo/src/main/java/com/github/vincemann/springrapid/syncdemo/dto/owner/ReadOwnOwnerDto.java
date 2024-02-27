@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.syncdemo.dto.owner;
 
 import com.github.vincemann.springrapid.autobidir.id.annotation.child.BiDirChildId;
-import com.github.vincemann.springrapid.coredemo.dto.owner.abs.AbstractReadOwnerDto;
-import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
+import com.github.vincemann.springrapid.syncdemo.dto.owner.abs.AbstractReadOwnerDto;
+import com.github.vincemann.springrapid.syncdemo.model.ClinicCard;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

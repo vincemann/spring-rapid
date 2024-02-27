@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.syncdemo.dto.owner;
 
-import com.github.vincemann.springrapid.coredemo.dto.owner.abs.AbstractReadOwnerDto;
+import com.github.vincemann.springrapid.syncdemo.dto.owner.abs.AbstractReadOwnerDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

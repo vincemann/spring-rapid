@@ -15,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class ReadOwnOwnerDto extends AbstractReadOwnerDto {
 
-    private String dirtySecret = Owner.DIRTY_SECRET;
+    private String dirtySecret;
     private String firstName;
     private String lastName;
 

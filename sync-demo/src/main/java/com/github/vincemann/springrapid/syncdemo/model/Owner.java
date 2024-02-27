@@ -21,8 +21,10 @@ import java.util.Set;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "owners", uniqueConstraints = @UniqueConstraint(name = "unique last name", columnNames = "lastName"))
+@Table(name = "owners", uniqueConstraints = @UniqueConstraint(name = "unique last name", columnNames = "last_name"))
 public class Owner extends Person {
+
+    public static final String DIRTY_SECRET = "myDirtSecret";
 
     @OneToMany(mappedBy = "owner",fetch = FetchType.EAGER)
     @JsonManagedReference

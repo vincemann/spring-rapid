@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.syncdemo.dto;
 
-import com.github.vincemann.springrapid.coredemo.dto.abs.IdAwareDto;
+import com.github.vincemann.springrapid.syncdemo.dto.abs.IdAwareDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

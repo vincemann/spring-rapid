@@ -21,10 +21,10 @@ public class JpaOwnerService
         extends JpaCrudService<Owner,Long, OwnerRepository>
                 implements OwnerService  {
 
-    public static final String OWNER_OF_THE_YEARS_NAME = "Chad";
+    public static final String OWNER_OF_THE_YEAR_NAME = "Chad";
 
     @LogInteraction
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Optional<Owner> findByLastName(String lastName) {
         return getRepository().findByLastName(lastName);
@@ -38,11 +38,11 @@ public class JpaOwnerService
 
 
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Optional<Owner> findOwnerOfTheYear() {
         return getRepository().findAll().stream().filter(owner -> {
-            return owner.getFirstName().equals(OWNER_OF_THE_YEARS_NAME);
+            return owner.getFirstName().equals(OWNER_OF_THE_YEAR_NAME);
         }).findFirst();
     }
 

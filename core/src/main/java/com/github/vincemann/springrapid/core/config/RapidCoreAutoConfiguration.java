@@ -22,41 +22,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
 @EnableConfigurationProperties
-// @Transactional annotations are placed with glibc proxy creation in mind
-@EnableTransactionManagement(proxyTargetClass = true)
-@Slf4j
+@EnableTransactionManagement(proxyTargetClass = true) // @Transactional annotations are placed with glibc proxy creation in mind
 @EnableAspectJAutoProxy(proxyTargetClass = true)
+@EnableJpaAuditing
 public class RapidCoreAutoConfiguration {
-
-    public RapidCoreAutoConfiguration() {
-
-    }
-
 
     @Bean
     @ConditionalOnMissingBean(Validator.class)
     public javax.validation.Validator localValidatorFactoryBean() {
         return new LocalValidatorFactoryBean();
     }
-
-
-
-    // is already autodefined by spring, dont override by redefining
-//    @Bean
-//    public MessageSource messageSource() {
-//        ReloadableResourceBundleMessageSource messageSource
-//                = new ReloadableResourceBundleMessageSource();
-//
-//        messageSource.setBasename("classpath:messages");
-//        messageSource.setDefaultEncoding("UTF-8");
-//        return messageSource;
-//    }
 
     @ConditionalOnMissingBean(name = "idConverter")
     @Bean
