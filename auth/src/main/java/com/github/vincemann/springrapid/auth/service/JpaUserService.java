@@ -182,6 +182,13 @@ public abstract class JpaUserService
         return getRepository().findByContactInformation(contactInformation);
     }
 
+    @Transactional
+    @Override
+    public void deleteById(Id id) throws EntityNotFoundException {
+        aclService.deleteAclOfEntity(getEntityClass(),id,false);
+        super.deleteById(id);
+    }
+
     @Autowired
     public void setPasswordEncoder(RapidPasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;

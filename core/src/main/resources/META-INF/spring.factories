@@ -1,8 +1,8 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration,\
+com.github.vincemann.springrapid.core.config.RapidDtoAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidAopLogAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidCrudControllerAutoConfiguration,\
-com.github.vincemann.springrapid.core.config.RapidGeneralAutoConfiguration,\
+com.github.vincemann.springrapid.core.config.RapidCoreAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidSecurityAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidDtoLocatorAutoConfiguration,\

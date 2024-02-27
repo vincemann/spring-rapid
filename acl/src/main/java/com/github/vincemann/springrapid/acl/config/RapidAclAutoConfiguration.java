@@ -42,8 +42,6 @@ import javax.sql.DataSource;
  */
 @Configuration
 @Slf4j
-//@ConditionalOnClass(DataSource.class)
-@AutoConfigureBefore({RapidAclExtensionsAutoConfiguration.class})
 public class RapidAclAutoConfiguration {
 
     public RapidAclAutoConfiguration() {

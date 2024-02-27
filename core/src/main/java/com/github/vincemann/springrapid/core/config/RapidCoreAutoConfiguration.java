@@ -3,6 +3,11 @@ package com.github.vincemann.springrapid.core.config;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.controller.UrlParamWebExtensionParser;
 import com.github.vincemann.springrapid.core.controller.WebExtensionParser;
+import com.github.vincemann.springrapid.core.controller.dto.map.PrincipalFactory;
+import com.github.vincemann.springrapid.core.controller.dto.map.PrincipalFactoryImpl;
+import com.github.vincemann.springrapid.core.model.audit.LongIdSecurityAuditorAware;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContextImpl;
 import com.github.vincemann.springrapid.core.service.ctx.ContextService;
 import com.github.vincemann.springrapid.core.service.ctx.CoreContextService;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
@@ -16,6 +21,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -26,9 +32,9 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 @EnableTransactionManagement(proxyTargetClass = true)
 @Slf4j
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-public class RapidGeneralAutoConfiguration {
+public class RapidCoreAutoConfiguration {
 
-    public RapidGeneralAutoConfiguration() {
+    public RapidCoreAutoConfiguration() {
 
     }
 
@@ -82,6 +88,24 @@ public class RapidGeneralAutoConfiguration {
     @ConditionalOnMissingBean(ContextService.class)
     public ContextService contextService(){
         return new CoreContextService();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(RapidSecurityContext.class)
+    public RapidSecurityContext rapidSecurityContext(){
+        return new RapidSecurityContextImpl();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PrincipalFactory.class)
+    public PrincipalFactory principalFactory(){
+        return new PrincipalFactoryImpl();
+    }
+
+    @ConditionalOnMissingBean(name = "rapidSecurityAuditorAware")
+    @Bean
+    public AuditorAware<Long> auditorAware(){
+        return new LongIdSecurityAuditorAware();
     }
 
 }

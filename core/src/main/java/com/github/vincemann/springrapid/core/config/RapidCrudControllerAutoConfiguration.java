@@ -11,14 +11,13 @@ import com.github.vincemann.springrapid.core.controller.json.patch.JsonPatchStra
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 @SuppressWarnings("rawtypes")
-@AutoConfigureAfter({RapidDtoMapperAutoConfiguration.class, RapidDtoLocatorAutoConfiguration.class})
+@AutoConfigureAfter({RapidDtoAutoConfiguration.class, RapidDtoAutoConfiguration.class})
 @Configuration
 @Slf4j
 public class RapidCrudControllerAutoConfiguration {
@@ -46,11 +45,6 @@ public class RapidCrudControllerAutoConfiguration {
         return new EndpointService(requestMappingHandlerMapping);
     }
 
-//    @ConditionalOnMissingBean(IdFetchingStrategy.class)
-//    @Bean
-//    public IdFetchingStrategy<Long> longIdFetchingStrategy(){
-//        return new LongUrlParamIdFetchingStrategy();
-//    }
 
     @ConditionalOnMissingBean(IdFetchingStrategy.class)
     @Bean
@@ -58,7 +52,6 @@ public class RapidCrudControllerAutoConfiguration {
 //        return new UrlParamIdFetchingStrategyImpl();
         return new LongUrlParamIdFetchingStrategy();
     }
-
 
     @ConditionalOnMissingBean(DtoValidationStrategy.class)
     @Bean

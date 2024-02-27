@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.sec.*;
 import com.github.vincemann.springrapid.auth.service.ctx.AuthContextService;
 import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.core.config.RapidGeneralAutoConfiguration;
+import com.github.vincemann.springrapid.core.config.RapidCoreAutoConfiguration;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.audit.LongIdAuthAuditorAwareImpl;
@@ -32,7 +32,7 @@ import java.util.List;
 @Configuration
 @Slf4j
 @EnableConfigurationProperties
-@AutoConfigureBefore({RapidGeneralAutoConfiguration.class,RapidAclAutoConfiguration.class}) // permission evaluator is overridden this way
+@AutoConfigureBefore({RapidCoreAutoConfiguration.class,RapidAclAutoConfiguration.class}) // permission evaluator is overridden this way
 public class RapidAuthAutoConfiguration {
 
     @ConfigurationProperties(prefix="rapid-auth")
