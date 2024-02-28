@@ -4,18 +4,27 @@ import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
+import com.github.vincemann.springrapid.acldemo.service.OwnerService;
+import com.github.vincemann.springrapid.acldemo.service.VetService;
+import com.github.vincemann.springrapid.auth.service.VerificationService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.google.common.collect.Sets;
+import org.springframework.stereotype.Service;
 
+@Service
 public class VetSignupServiceImpl implements VetSignupService {
+
+    private VetService vetService;
+    private VerificationService verificationService;
+
     @Override
     public Vet signup(SignupVetDto dto) throws BadEntityException {
-        Vet owner = Vet.builder()
+        Vet vet = Vet.builder()
                 .roles(Sets.newHashSet(MyRoles.VET,MyRoles.USER))
                 .build();
 
-        Owner saved = ownerService.create(owner);
+        Vet saved = vetService.create(vet);
         try {
             verificationService.makeUnverified(saved);
         } catch (EntityNotFoundException e) {

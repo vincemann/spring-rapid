@@ -9,10 +9,4 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class UserServiceConfig {
 
-    public VerificationService ownerVerificationService(OwnerService ownerService, JweTokenService jweTokenService){
-        VerificationServiceImpl verificationService = new VerificationServiceImpl();
-        verificationService.setUserService(ownerService);
-        verificationService.setJweTokenService(jweTokenService);
-        verificationService.setProperties(jweTokenService);
-    }
 }

@@ -2,20 +2,19 @@ package com.github.vincemann.springrapid.acldemo.service.user;
 
 import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
-import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
-import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
-import com.github.vincemann.springrapid.acldemo.service.VetService;
 import com.github.vincemann.springrapid.auth.service.VerificationService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.google.common.collect.Sets;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class OwnerSignupServiceImpl implements OwnerSignupService {
 
     private OwnerService ownerService;
-    private VetService vetService;
     private VerificationService verificationService;
 
     @Override
@@ -35,8 +34,13 @@ public class OwnerSignupServiceImpl implements OwnerSignupService {
         return saved;
     }
 
-    @Override
-    public Vet signupVet(SignupVetDto dto) {
-        return null;
+    @Autowired
+    public void setOwnerService(OwnerService ownerService) {
+        this.ownerService = ownerService;
+    }
+
+    @Autowired
+    public void setVerificationService(VerificationService verificationService) {
+        this.verificationService = verificationService;
     }
 }

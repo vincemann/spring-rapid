@@ -31,8 +31,6 @@ public class OwnerController extends CrudController<Owner, Long, OwnerService> {
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {
 
-
-
         builder.when(endpoint(getCreateUrl()).and(direction(Direction.REQUEST)))
                 .thenReturn(CreateOwnerDto.class);
 
