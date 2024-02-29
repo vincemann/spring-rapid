@@ -1,22 +1,16 @@
 package com.github.vincemann.springrapid.acldemo.service.jpa;
 
-import com.github.vincemann.springrapid.acl.proxy.Acl;
-import com.github.vincemann.springrapid.acl.proxy.Secured;
-import com.github.vincemann.springrapid.acl.service.AceNotFoundException;
-import com.github.vincemann.springrapid.acl.service.AclNotFoundException;
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
+import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
-import com.github.vincemann.springrapid.acldemo.repo.OwnerRepository;
+import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.repo.VisitRepository;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
-import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
-import com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy;
+import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import com.github.vincemann.springrapid.acldemo.model.Visit;
-import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.acls.domain.BasePermission;
@@ -25,57 +19,33 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 
-@DefineProxy(name = "acl", extensions = {
-        "authenticatedGainsAdminPermissionOnCreatedAclExtension",
-        "vetsGainReadPermissionOnCreated",
-        "ownerGainsReadPermissionOnCreated"
-})
-@DefineProxy(name = "secured", extensions = {
-        "onlyVetAndAdminCanCreate",
-        "vetCanOnlyCreateOwnVisits",
-        "needReadPermissionForSubscribing"
-})
-@CreateProxy(qualifiers = Acl.class, proxies = "acl")
-@CreateProxy(qualifiers = Secured.class, proxies = {"acl", "secured"})
 @Primary
 @Service
-
 public class JpaVisitService
         extends JpaCrudService<Visit, Long, VisitRepository>
         implements VisitService {
 
 
-    private RapidAclService rapidAclService;
-    private OwnerService ownerService;
+    private RapidAclService aclService;
 
 
     @Override
-    public void subscribeOwner(Long ownerId, Long visitId) throws EntityNotFoundException {
-        Optional<Owner> ownerById = ownerService.findById(ownerId);
-        Owner owner = VerifyEntity.isPresent(ownerById, ownerId, Owner.class);
-        Visit visit = VerifyEntity.isPresent(service.findById(visitId), visitId, Visit.class);
-
-        rapidAclService.savePermissionForUserOverEntity(owner.getUser().getContactInformation(), visit, BasePermission.READ);
+    public Visit create(Visit entity) throws BadEntityException {
+        Visit visit = super.create(entity);
+        saveAclInfo(visit);
+        return visit;
     }
 
-    @Override
-    public void unsubscribeOwner(Long ownerId, Long visitId) throws EntityNotFoundException {
-
-        Optional<Owner> ownerById = ownerService.findById(ownerId);
-        Owner owner = VerifyEntity.isPresent(ownerById, ownerId, Owner.class);
-        Visit visit = VerifyEntity.isPresent(service.findById(visitId), visitId, Visit.class);
-
-        rapidAclService.deletePermissionForUserOverEntityIfPresent(owner.getUser().getContactInformation(), visit, BasePermission.READ);
-    }
-
-    @Autowired
-    public void setOwnerService(OwnerService ownerService) {
-        this.ownerService = ownerService;
+    private void saveAclInfo(Visit visit) {
+        // participating vet gets admin permission for visit
+        aclService.grantUserPermissionForEntity(visit.getVet().getContactInformation(), visit, BasePermission.ADMINISTRATION);
+        // participating owner can read
+        aclService.grantUserPermissionForEntity(visit.getOwner().getContactInformation(), visit, BasePermission.READ);
     }
 
     @Autowired
     public void setAclPermissionService(RapidAclService rapidAclService) {
-        this.rapidAclService = rapidAclService;
+        this.aclService = rapidAclService;
     }
 
     @Override

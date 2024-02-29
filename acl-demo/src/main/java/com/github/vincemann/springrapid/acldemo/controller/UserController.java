@@ -34,7 +34,6 @@ public class UserController extends AbstractUserController<User, Long, UserServi
         super.configureDtoMappings(builder);
     }
 
-
     @Override
     public List<String> getIgnoredEndPoints() {
         return Lists.newArrayList(getSignupUrl(),getCreateUrl());

@@ -39,7 +39,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void savePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission... permissions) {
+    public void grantRolePermissionForEntity(IdentifiableEntity<?> entity, String role, Permission... permissions) {
         securityContext.executeAsSystemUser( () -> {
             final Sid sid = new GrantedAuthoritySid(role);
             addPermissionsForSid(entity, sid, permissions);
@@ -47,7 +47,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void deletePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+    public void revokeRolesPermissionForEntity(IdentifiableEntity<?> entity, String role, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         securityContext.executeAsSystemUser( () -> {
             final Sid sid = new GrantedAuthoritySid(role);
             deletePermissionForSid(entity, sid, false, permissions);
@@ -55,7 +55,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void deletePermissionForRoleOverEntityIfPresent(IdentifiableEntity<?> entity, String role, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+    public void revokeRolesPermissionForEntityIfGranted(IdentifiableEntity<?> entity, String role, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         securityContext.executeAsSystemUser( () -> {
             final Sid sid = new GrantedAuthoritySid(role);
             deletePermissionForSid(entity, sid, true, permissions);
@@ -64,18 +64,18 @@ public class RapidAclServiceImpl implements RapidAclService {
 
 
     @Override
-    public void savePermissionForAuthenticatedOverEntity(IdentifiableEntity<?> entity, Permission... permissions) {
+    public void grantAuthenticatedPermissionForEntity(IdentifiableEntity<?> entity, Permission... permissions) {
         securityContext.executeAsSystemUser( () -> {
             String authenticatedName = findAuthenticatedName();
-            savePermissionForUserOverEntity(authenticatedName, entity, permissions);
+            grantUserPermissionFor(authenticatedName, entity, permissions);
         });
     }
 
     @Override
-    public void deletePermissionForAuthenticatedOverEntity(IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+    public void revokeAuthenticatedPermissionForEntityIfGranted(IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         securityContext.executeAsSystemUser( () -> {
             String authenticatedName = findAuthenticatedName();
-            deletePermissionForUserOverEntity(authenticatedName, entity, permissions);
+            revokeUsersPermissionForEntity(authenticatedName, entity, permissions);
         });
     }
 
@@ -83,12 +83,12 @@ public class RapidAclServiceImpl implements RapidAclService {
     public void deletePermissionForAuthenticatedOverEntityIfPresent(IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         securityContext.executeAsSystemUser( () -> {
             String authenticatedName = findAuthenticatedName();
-            deletePermissionForUserOverEntityIfPresent(authenticatedName, entity, permissions);
+            revokeUsersPermissionForEntityIfGranted(authenticatedName, entity, permissions);
         });
     }
 
     @Override
-    public void savePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) {
+    public void grantUserPermissionFor(String user, IdentifiableEntity<?> entity, Permission... permissions) {
         securityContext.executeAsSystemUser( () -> {
             final Sid sid = new PrincipalSid(user);
             addPermissionsForSid(entity, sid, permissions);
@@ -96,7 +96,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+    public void revokeUsersPermissionForEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         securityContext.executeAsSystemUser( () -> {
             final Sid sid = new PrincipalSid(user);
             deletePermissionForSid(entity, sid, false, permissions);
@@ -104,7 +104,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void deletePermissionForUserOverEntityIfPresent(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+    public void revokeUsersPermissionForEntityIfGranted(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         securityContext.executeAsSystemUser( () -> {
             final Sid sid = new PrincipalSid(user);
             deletePermissionForSid(entity, sid, true, permissions);
@@ -143,7 +143,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     protected MutableAcl findAcl(ObjectIdentity oi) throws AclNotFoundException {
         try {
             return (MutableAcl) aclService.readAclById(oi);
-        } catch (final NotFoundException nfe) {
+        } catch (NotFoundException nfe) {
             throw new AclNotFoundException("Acl not found for oi: " + AclUtils.objectIdentityToString(oi));
         }
     }
@@ -151,7 +151,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     protected MutableAcl findOrCreateAcl(ObjectIdentity oi) {
         try {
             return (MutableAcl) aclService.readAclById(oi);
-        } catch (final NotFoundException nfe) {
+        } catch (NotFoundException nfe) {
             if (log.isDebugEnabled())
                 log.debug("Acl not found for oi: " + AclUtils.objectIdentityToString(oi) + ", creating new");
            return aclService.createAcl(oi);

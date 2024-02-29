@@ -10,28 +10,25 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-@LogInteraction(Severity.TRACE)
-public interface RapidAclService extends AopLoggable {
+public interface RapidAclService {
 
-    void savePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission... permissions);
+    void grantRolePermissionForEntity(String role, IdentifiableEntity<?> entity, Permission... permissions);
 
-    void deletePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
+    void revokeRolesPermissionForEntity(String role, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
 
-    void deletePermissionForRoleOverEntityIfPresent(IdentifiableEntity<?> entity, String role, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
+    void revokeRolesPermissionForEntityIfGranted(String role, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
 
-    void savePermissionForAuthenticatedOverEntity(IdentifiableEntity<?> entity, Permission... permissions);
+    void grantAuthenticatedPermissionForEntity(IdentifiableEntity<?> entity, Permission... permissions);
 
-    void deletePermissionForAuthenticatedOverEntity(IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
+    void revokeAuthenticatedPermissionForEntityIfGranted(IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
 
-    void deletePermissionForAuthenticatedOverEntityIfPresent(IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
-
-    void savePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission... permissions);
+    void grantUserPermissionForEntity(String user, IdentifiableEntity<?> entity, Permission... permissions);
 
     public void deleteAclOfEntity(IdentifiableEntity<?> entity, boolean deleteCascade);
 
-    void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
+    void revokeUsersPermissionForEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
 
-    void deletePermissionForUserOverEntityIfPresent(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
+    void revokeUsersPermissionForEntityIfGranted(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
 
     public void deleteAclOfEntity(Class<? extends IdentifiableEntity> clazz, Serializable id, boolean deleteCascade);
 

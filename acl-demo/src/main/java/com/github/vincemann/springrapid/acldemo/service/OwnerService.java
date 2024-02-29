@@ -10,5 +10,4 @@ import java.util.Optional;
 
 public interface OwnerService extends UserService<Owner,Long> {
     Optional<Owner> findByLastName(String lastName);
-    public Optional<Owner> findOwnerOfTheYear();
 }

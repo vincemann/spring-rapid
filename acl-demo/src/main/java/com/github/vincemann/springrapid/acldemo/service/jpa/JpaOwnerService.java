@@ -2,6 +2,8 @@ package com.github.vincemann.springrapid.acldemo.service.jpa;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
+import com.github.vincemann.springrapid.acl.service.RapidAclService;
+import com.github.vincemann.springrapid.acl.service.RapidAclServiceImpl;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.repo.OwnerRepository;
@@ -28,8 +30,6 @@ public class JpaOwnerService
                 implements OwnerService
 {
 
-    public static final String OWNER_OF_THE_YEARS_NAME = "Chad";
-
 
     @LogInteraction
     @Transactional(readOnly = true)
@@ -38,36 +38,6 @@ public class JpaOwnerService
         return getRepository().findByLastName(lastName);
     }
 
-
-
-    @Transactional
-    @Override
-    public Owner create(Owner entity) throws BadEntityException {
-
-
-        user.getRoles().add(MyRoles.OWNER);
-        try {
-            userService.fullUpdate(user);
-        } catch (EntityNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        Owner owner = super.create(entity);
-        saveAclInfo(owner);
-        return owner;
-    }
-
-    protected void saveAclInfo(Owner owner){
-        String ci = owner.getUser().getContactInformation();
-        rapidAclService.savePermissionForUserOverEntity(ci,containedUser, BasePermission.ADMINISTRATION);
-    }
-
-    @Transactional
-    @Override
-    public Optional<Owner> findOwnerOfTheYear() {
-        return getRepository().findAll().stream().filter(owner -> {
-            return owner.getFirstName().equals(OWNER_OF_THE_YEARS_NAME);
-        }).findFirst();
-    }
 
     public Class<?> getTargetClass(){
         return JpaOwnerService.class;

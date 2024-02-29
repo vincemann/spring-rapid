@@ -8,6 +8,4 @@ import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 
 public interface VisitService extends CrudService<Visit,Long> {
-    public void subscribeOwner(Long ownerId, Long visitId) throws EntityNotFoundException;
-    public void unsubscribeOwner(Long ownerId, Long visitId) throws BadEntityException, EntityNotFoundException;
 }

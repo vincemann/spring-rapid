@@ -17,7 +17,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-import org.springframework.validation.annotation.Validated;
 
 import java.io.Serializable;
 import java.util.*;
@@ -79,7 +78,7 @@ public abstract class JpaUserService
     }
 
     protected void saveAclInfo(U saved){
-        aclService.savePermissionForUserOverEntity(saved.getContactInformation(),saved, BasePermission.ADMINISTRATION);
+        aclService.grantUserPermissionFor(saved.getContactInformation(),saved, BasePermission.ADMINISTRATION);
     }
 
     @Transactional(readOnly = true)
