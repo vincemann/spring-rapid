@@ -18,6 +18,7 @@ import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuild
 import com.github.vincemann.springrapid.core.controller.dto.map.Principal;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.util.Lists;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,15 @@ import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappin
 @Controller
 public class OwnerController extends SecuredCrudController<Owner, Long, OwnerService> {
 
+    @Getter
+    private String signupUrl;
     private OwnerSignupService signupService;
+
+    @Override
+    protected void initUrls() {
+        super.initUrls();
+        this.signupUrl = "/api/core/owner/signup";
+    }
 
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {

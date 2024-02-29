@@ -25,7 +25,7 @@ public class VisitControllerTest extends MyIntegrationTest {
 
     @Test
     public void vetCanCreateVisit() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
         Pet savedBella = petRepository.findByName(BELLA).get();
         Owner savedKahn = ownerRepository.findByLastName(OWNER_KAHN).get();
         Vet savedVet = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
@@ -63,11 +63,11 @@ public class VisitControllerTest extends MyIntegrationTest {
 
     @Test
     public void vetCantCreateVisitForOtherVet() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
         Pet savedBella = petRepository.findByName(BELLA).get();
         Owner savedKahn = ownerRepository.findByLastName(OWNER_KAHN).get();
         Vet savedDicaprio = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
-        Vet savedVetMax = registerEnabledVet(vetMax, VET_MAX_CONTACT_INFORMATION, VET_MAX_PASSWORD);
+        Vet savedVetMax = registerEnabledVet(vetMax, VET_MAX_EMAIL, VET_MAX_PASSWORD);
         String dicaprioToken = userController.login2xx(VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
 
         VisitDto createVisitDto = new VisitDto(checkTeethVisit);
@@ -84,11 +84,11 @@ public class VisitControllerTest extends MyIntegrationTest {
 
     @Test
     public void ownerCantCreateVisit() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
         Pet savedBella = petRepository.findByName(BELLA).get();
         Owner savedKahn = ownerRepository.findByLastName(OWNER_KAHN).get();
-        Vet savedVetMax = registerEnabledVet(vetMax, VET_MAX_CONTACT_INFORMATION, VET_MAX_PASSWORD);
-        String ownerKahnToken = userController.login2xx(OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD);
+        Vet savedVetMax = registerEnabledVet(vetMax, VET_MAX_EMAIL, VET_MAX_PASSWORD);
+        String ownerKahnToken = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
 
         VisitDto createVisitDto = new VisitDto(checkTeethVisit);
         createVisitDto.setOwnerId(savedKahn.getId());
@@ -104,13 +104,13 @@ public class VisitControllerTest extends MyIntegrationTest {
 
     @Test
     public void vetCanReadForeignVisit() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
         Pet savedBella = petRepository.findByName(BELLA).get();
         Owner savedKahn = ownerRepository.findByLastName(OWNER_KAHN).get();
         Vet savedDicaprio = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
-        Vet savedVetMax = registerEnabledVet(vetMax, VET_MAX_CONTACT_INFORMATION, VET_MAX_PASSWORD);
+        Vet savedVetMax = registerEnabledVet(vetMax, VET_MAX_EMAIL, VET_MAX_PASSWORD);
         String dicaprioToken = userController.login2xx(VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
-        String maxToken = userController.login2xx(VET_MAX_CONTACT_INFORMATION, VET_MAX_PASSWORD);
+        String maxToken = userController.login2xx(VET_MAX_EMAIL, VET_MAX_PASSWORD);
 
         Visit visit = createVisit(dicaprioToken, savedKahn, savedDicaprio, checkTeethVisit, savedBella);
         mvc.perform(visitController.find(visit.getId().toString())
@@ -120,13 +120,13 @@ public class VisitControllerTest extends MyIntegrationTest {
 
     @Test
     public void ownerCanReadOwnVisit() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
 
         Pet savedBella = petRepository.findByName(BELLA).get();
         Owner savedKahn = ownerRepository.findByLastName(OWNER_KAHN).get();
         Vet savedDicaprio = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
         String vetDiCaprioToken = userController.login2xx(VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
-        String kahnToken = userController.login2xx(OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD);
+        String kahnToken = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
 
         Visit visit = createVisit(vetDiCaprioToken, savedKahn, savedDicaprio, checkTeethVisit, savedBella);
 
@@ -137,7 +137,7 @@ public class VisitControllerTest extends MyIntegrationTest {
 
     @Test
     public void ownerCantReadForeignVisit() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
         registerOwnerWithPets(meier, OWNER_MEIER_CONTACT_INFORMATION, OWNER_MEIER_PASSWORD, bello);
 
         Pet savedBella = petRepository.findByName(BELLA).get();
@@ -155,14 +155,14 @@ public class VisitControllerTest extends MyIntegrationTest {
 
     @Test
     public void vetCanSubscribeForeignOwnerToVisit() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
         registerOwnerWithPets(meier, OWNER_MEIER_CONTACT_INFORMATION, OWNER_MEIER_PASSWORD, bello);
         Pet savedBella = petRepository.findByName(BELLA).get();
         Owner savedKahn = ownerRepository.findByLastName(OWNER_KAHN).get();
         Owner savedMeier = ownerRepository.findByLastName(OWNER_MEIER).get();
         Vet savedDicaprio = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
         String vetDiCaprioToken = userController.login2xx(VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
-        String kahnToken = userController.login2xx(OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD);
+        String kahnToken = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
         String meierToken = userController.login2xx(OWNER_MEIER_CONTACT_INFORMATION, OWNER_MEIER_PASSWORD);
         Visit visit = createVisit(vetDiCaprioToken, savedKahn, savedDicaprio, checkTeethVisit, savedBella);
 
@@ -182,7 +182,7 @@ public class VisitControllerTest extends MyIntegrationTest {
 
     @Test
     public void vetCanRevokeSubscriptionFromForeignOwnerFromVisit() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
         registerOwnerWithPets(meier, OWNER_MEIER_CONTACT_INFORMATION, OWNER_MEIER_PASSWORD, bello);
 
         Pet savedBella = petRepository.findByName(BELLA).get();
@@ -192,7 +192,7 @@ public class VisitControllerTest extends MyIntegrationTest {
         Vet savedDicaprio = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
 
         String vetDiCaprioToken = userController.login2xx(VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
-        String kahnToken = userController.login2xx(OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD);
+        String kahnToken = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
         String meierToken = userController.login2xx(OWNER_MEIER_CONTACT_INFORMATION, OWNER_MEIER_PASSWORD);
 
         Visit visit = createVisit(vetDiCaprioToken, savedKahn, savedDicaprio, checkTeethVisit, savedBella);

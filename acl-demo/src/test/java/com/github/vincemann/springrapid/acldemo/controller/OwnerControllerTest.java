@@ -1,25 +1,20 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
-import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTest;
-import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerCreatesPetDto;
-import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
-import com.github.vincemann.springrapid.acldemo.model.*;
-import com.github.vincemann.springrapid.auth.model.AuthRoles;
-import com.github.vincemann.springrapid.auth.dto.SignupDto;
+import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.CreatePetDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.ReadPetDto;
+import com.github.vincemann.springrapid.acldemo.model.Illness;
+import com.github.vincemann.springrapid.acldemo.model.Owner;
+import com.github.vincemann.springrapid.acldemo.model.Pet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 
-import java.util.Optional;
-
-import static com.github.vincemann.ezcompare.Comparator.compare;
-import static com.github.vincemann.ezcompare.PropertyMatchers.propertyAssert;
-import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.*;
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -29,116 +24,95 @@ public class OwnerControllerTest extends MyIntegrationTest {
 
 
     @Test
-    public void canRegisterOwner() throws Exception {
-        SignupDto signupDto = SignupDto.builder()
-                .contactInformation(OWNER_KAHN_CONTACT_INFORMATION)
-                .password(OWNER_KAHN_PASSWORD)
-                .build();
-        UUIDSignupResponseDto signedUpDto = performDs2xx(userController.signup(signupDto), UUIDSignupResponseDto.class);
-        String uuid = signedUpDto.getUuid();
-        Assertions.assertNotNull(uuid);
+    public void signupOwner() throws Exception {
+        SignupOwnerDto dto = new SignupOwnerDto(kahn);
 
-        Optional<User> byUuid = userService.findByUuid(uuid);
-        Assertions.assertTrue(byUuid.isPresent());
+        ReadOwnOwnerDto response = ownerController.signup(dto);
+        Assertions.assertEquals(Owner.DIRTY_SECRET, response.getDirtySecret());
 
-
-        CreateOwnerDto createOwnerDto = new CreateOwnerDto(kahn, uuid);
-        ReadOwnOwnerDto createdDto = performDs2xx(ownerController.create(createOwnerDto), ReadOwnOwnerDto.class);
-
-        compare(createOwnerDto).with(createdDto)
-                .properties()
-                .all()
-                .ignore(createOwnerDto::getId)
-                .ignore(createOwnerDto::getUuid)
-                .assertEqual();
-
-        Assertions.assertEquals(ReadOwnOwnerDto.DIRTY_SECRET, createdDto.getDirtySecret());
-
-        byUuid = userService.findByUuid(uuid);
-        Assertions.assertFalse(byUuid.isPresent());
-
-        Optional<User> kahnUserByContactInformation = userService.findByContactInformation(OWNER_KAHN_CONTACT_INFORMATION);
-        Assertions.assertTrue(kahnUserByContactInformation.isPresent());
-        User dbUserKahn = kahnUserByContactInformation.get();
-
-        propertyAssert(dbUserKahn)
-                .assertContains(dbUserKahn::getRoles, MyRoles.OWNER, AuthRoles.UNVERIFIED, AuthRoles.USER)
-                .assertSize(dbUserKahn::getRoles, 3)
-                .assertEquals(dbUserKahn::getContactInformation, OWNER_KAHN_CONTACT_INFORMATION)
-                .assertNotNull(dbUserKahn::getPassword)
-                .assertNull(dbUserKahn::getUuid);
-
-
-        Optional<Owner> kahnByLastName = ownerService.findByLastName(OWNER_KAHN);
-        Assertions.assertTrue(kahnByLastName.isPresent());
-        Owner dbKahn = kahnByLastName.get();
-
-        Assertions.assertEquals(dbUserKahn, dbKahn.getUser());
-
+        Assertions.assertTrue(ownerService.findByLastName(OWNER_KAHN).isPresent());
+        Assertions.assertTrue(ownerService.findByContactInformation(OWNER_KAHN_EMAIL).isPresent());
     }
 
     @Test
-    public void canSavePetToOwnAccount() throws Exception {
-        Owner dbKahn = registerOwner(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD);
-        String token = userController.login2xx(dbKahn.getUser().getContactInformation(), OWNER_KAHN_PASSWORD);
-        OwnerCreatesPetDto createPetDto = new OwnerCreatesPetDto(bella, dbKahn.getId());
-        FullPetDto createdPet = performDs2xx(petController.create(createPetDto)
-                .header(HttpHeaders.AUTHORIZATION, token), FullPetDto.class);
-        Assertions.assertEquals(dbKahn.getId(), createdPet.getOwnerId());
+    public void ownerSavesPet() throws Exception {
+        // given
+        Owner kahn = signupOwner(this.kahn);
+
+        // when
+        String token = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        CreatePetDto createPetDto = new CreatePetDto(bella);
+        createPetDto.setOwnerId(kahn.getId());
+        ReadPetDto pet = performDs2xx(petController.create(createPetDto)
+                .header(HttpHeaders.AUTHORIZATION, token), ReadPetDto.class);
+
+        // then
+        Assertions.assertEquals(kahn.getId(), pet.getOwnerId());
         assertOwnerHasPets(OWNER_KAHN, BELLA);
         assertPetHasOwner(BELLA, OWNER_KAHN);
-
     }
 
     @Test
     public void cantSavePetToOtherOwner() throws Exception {
-        Owner dbKahn = registerOwner(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD);
-        Owner dbMeier = registerOwner(meier, OWNER_MEIER_CONTACT_INFORMATION, OWNER_MEIER_PASSWORD);
+        // given
+        Owner kahn = signupOwner(this.kahn);
+        Owner meier = signupOwner(this.meier);
 
-        String token = userController.login2xx(OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD);
-        OwnerCreatesPetDto createPetDto = new OwnerCreatesPetDto(bella, dbMeier.getId());
+        // when
+        String kahnToken = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        CreatePetDto createPetDto = new CreatePetDto(bella);
+        createPetDto.setOwnerId(meier.getId()); // using diff owners id here
         mvc.perform(petController.create(createPetDto)
-                .header(HttpHeaders.AUTHORIZATION, token))
+                .header(HttpHeaders.AUTHORIZATION, kahnToken))
+        // then
                 .andExpect(status().isForbidden());
 
         Assertions.assertFalse(petRepository.findByName(BELLA).isPresent());
     }
 
     @Test
-    public void canUpdateOwnPetsPetType() throws Exception {
-        String token = registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
+    public void canUpdateOwnPetsName() throws Exception {
+        // given
+        kahn.getPets().add(bella);
+        Owner kahn = signupOwner(this.kahn);
         Pet dbBella = petRepository.findByName(BELLA).get();
-        Owner dbOwner = ownerRepository.findByLastName(OWNER_KAHN).get();
+
+        // when
         String updateJson = createUpdateJsonRequest(
-                createUpdateJsonLine("replace", "/petTypeId", savedCatPetType.getId().toString())
+                createUpdateJsonLine("replace", "/name", "newName")
         );
-        FullPetDto updatedPetDto = performDs2xx(petController.update(updateJson, dbBella.getId().toString())
+        String token = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        ReadPetDto updatedPetDto = performDs2xx(petController.update(updateJson, dbBella.getId().toString())
                         .header(HttpHeaders.AUTHORIZATION, token),
-                        FullPetDto.class);
+                ReadPetDto.class);
 
-        dbBella = petRepository.findByName(BELLA).get();
-        com.github.vincemann.springrapid.acldemo.model.PetType dbCatType = petTypeRepository.findById(savedCatPetType.getId()).get();
-        Assertions.assertEquals(dbCatType, dbBella.getPetType());
+        // then
+        Pet updatedBella = petRepository.findByName(BELLA).get();
+        Assertions.assertEquals("newName",updatedBella.getName());
+        Assertions.assertEquals("newName",updatedPetDto.getName());
     }
-
 
 
     @Test
     public void ownerCantUpdateOwnPetsIllness() throws Exception {
-        String token = registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
+        // given
+        kahn.getPets().add(bella);
+        Owner kahn = signupOwner(this.kahn);
         Pet dbBella = petRepository.findByName(BELLA).get();
         Illness teethPain = illnessRepository.save(this.teethPain);
 
-        Owner dbOwner = ownerRepository.findByLastName(OWNER_KAHN).get();
+        // when
         String updateJson = createUpdateJsonRequest(
-                createUpdateJsonLine("add", "/illnessIds", savedDogPetType.getId().toString())
+                createUpdateJsonLine("add", "/illnessIds", teethPain.getId().toString())
         );
+        String token = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
         mvc.perform(petController.update(updateJson, dbBella.getId().toString())
                         .header(HttpHeaders.AUTHORIZATION, token))
+        // then
                 .andExpect(status().isForbidden());
 
-        com.github.vincemann.springrapid.acldemo.model.PetType dbDgoType = petTypeRepository.findById(savedDogPetType.getId()).get();
-        Assertions.assertEquals(dbDgoType, dbBella.getPetType());
+        dbBella = petRepository.findByName(BELLA).get();
+        Assertions.assertTrue(dbBella.getIllnesss().isEmpty());
     }
 
 
@@ -147,48 +121,65 @@ public class OwnerControllerTest extends MyIntegrationTest {
     public void ownerCantUpdateForeignPet() throws Exception {
         // kahn -> bella
         // meier -> kitty
-        String kahnToken = registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
-        String meierToken = registerOwnerWithPets(meier, OWNER_MEIER_CONTACT_INFORMATION, OWNER_MEIER_PASSWORD, kitty);
+        // given
+        Pet bella = petService.create(this.bella);
+        Pet kitty = petService.create(this.kitty);
 
-        Pet dbKitty = petRepository.findByName(KITTY).get();
-        Owner dbOwner = ownerRepository.findByLastName(OWNER_KAHN).get();
+        kahn.getPets().add(bella);
+        Owner kahn = signupOwner(this.kahn);
+        meier.getPets().add(kitty);
+        Owner meier = signupOwner(this.meier);
 
 
+        // when
         String updateJson = createUpdateJsonRequest(
-                createUpdateJsonLine("replace", "/petTypeId", savedDogPetType.getId().toString())
+                createUpdateJsonLine("replace", "/name", kitty.getId().toString())
         );
-        mvc.perform(petController.update(updateJson, dbKitty.getId().toString())
-                        .header(HttpHeaders.AUTHORIZATION, kahnToken))
+        String token = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        mvc.perform(petController.update(updateJson, kitty.getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, token))
+        // then
                 .andExpect(status().isForbidden());
 
-        com.github.vincemann.springrapid.acldemo.model.PetType dbCatType = petTypeRepository.findById(savedCatPetType.getId()).get();
-        Assertions.assertEquals(dbCatType, dbKitty.getPetType());
+        Pet dbKitty = petService.findById(kitty.getId()).get();
+        Assertions.assertEquals(KITTY, dbKitty.getName());
     }
 
     @Test
     public void ownerCanReadOwnPet() throws Exception {
-        String ownerToken = registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
-        Pet dbBella = petRepository.findByName(BELLA).get();
-        FullPetDto fullPetDto = performDs2xx(petController.find(dbBella.getId().toString())
-                .header(HttpHeaders.AUTHORIZATION, ownerToken),
-                FullPetDto.class);
+        // given
+        Pet bella = petService.create(this.bella);
+        kahn.getPets().add(bella);
+        Owner kahn = signupOwner(this.kahn);
 
-        compare(fullPetDto).with(dbBella)
-                .properties()
-                .all()
-                .ignore(dtoIdProperties(FullPetDto.class))
-                .assertEqual();
+        // when
+        String token = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        ReadPetDto dto = performDs2xx(petController.find(bella.getId())
+                .header(HttpHeaders.AUTHORIZATION, token),
+                ReadPetDto.class);
+
+        // then
+        Assertions.assertEquals(KITTY,dto.getName());
     }
 
     @Test
     public void ownerCantReadForeignPet() throws Exception {
-        String ownerToken = registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
-        String meierToken = registerOwnerWithPets(meier, OWNER_MEIER_CONTACT_INFORMATION, OWNER_MEIER_PASSWORD, kitty);
+        // kahn -> bella
+        // meier -> kitty
+        // given
+        Pet bella = petService.create(this.bella);
+        Pet kitty = petService.create(this.kitty);
 
-        Pet dbBella = petRepository.findByName(BELLA).get();
-        Pet dbKitty = petRepository.findByName(KITTY).get();
-        mvc.perform(petController.find(dbKitty.getId().toString())
+        kahn.getPets().add(bella);
+        signupOwner(this.kahn);
+        meier.getPets().add(kitty);
+        signupOwner(this.meier);
+
+        // when
+        String ownerToken = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        mvc.perform(petController.find(kitty.getId().toString())
                         .header(HttpHeaders.AUTHORIZATION, ownerToken))
+        // then
                 .andExpect(status().isForbidden());
     }
 

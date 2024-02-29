@@ -9,6 +9,7 @@ import com.github.vincemann.springrapid.acldemo.controller.suite.templates.Visit
 import com.github.vincemann.springrapid.acldemo.dto.VisitDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
+import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerCreatesPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
@@ -50,7 +51,6 @@ public class MyIntegrationTest extends AclMvcTest
     protected final Owner OwnerType = new Owner();
     protected final Pet PetType = new Pet();
     protected final Illness IllnessType = new Illness();
-    protected final User UserType = new User();
 
 
     protected static final String CONTACT_INFORMATION_SUFFIX = "@guerilla-mail.com";
@@ -62,7 +62,7 @@ public class MyIntegrationTest extends AclMvcTest
 
     protected static final String VET_MAX = "Max";
     protected static final String VET_MAX_PASSWORD = "MaxPassword123?";
-    protected static final String VET_MAX_CONTACT_INFORMATION = VET_MAX+CONTACT_INFORMATION_SUFFIX;
+    protected static final String VET_MAX_EMAIL = VET_MAX +CONTACT_INFORMATION_SUFFIX;
 
     protected static final String VET_POLDI = "Poldi";
     protected static final String VET_POLDI_PASSWORD = "PoldiPassword123?";
@@ -78,7 +78,7 @@ public class MyIntegrationTest extends AclMvcTest
 
     protected static final String OWNER_KAHN = "Kahn";
     protected static final String OWNER_KAHN_PASSWORD = "KahnPassword123?";
-    protected static final String OWNER_KAHN_CONTACT_INFORMATION = OWNER_KAHN+CONTACT_INFORMATION_SUFFIX;
+    protected static final String OWNER_KAHN_EMAIL = OWNER_KAHN+CONTACT_INFORMATION_SUFFIX;
 
     protected static final String MUSCLE = "Muscle";
     protected static final String DENTISM = "Dentism";
@@ -165,8 +165,6 @@ public class MyIntegrationTest extends AclMvcTest
     @Autowired
     protected OwnerService ownerService;
 
-    @Autowired
-    protected MyUserService userService;
 
     @Autowired
     protected UserControllerTestTemplate userController;
@@ -243,6 +241,8 @@ public class MyIntegrationTest extends AclMvcTest
         meier = Owner.builder()
                 .firstName("Max")
                 .lastName(OWNER_MEIER)
+                .contactInformation(OWNER_MEIER_CONTACT_INFORMATION)
+                .password(OWNER_MEIER_PASSWORD)
                 .address("asljnflksamfslkmf")
                 .city("n1 city")
                 .telephone("0123456789")
@@ -251,6 +251,8 @@ public class MyIntegrationTest extends AclMvcTest
         kahn = Owner.builder()
                 .firstName("Olli")
                 .lastName(OWNER_KAHN)
+                .contactInformation(OWNER_KAHN_EMAIL)
+                .password(OWNER_KAHN_PASSWORD)
                 .address("asljnflksamfslkmf")
                 .city("n1 city")
                 .telephone("1234567890")
@@ -380,16 +382,6 @@ public class MyIntegrationTest extends AclMvcTest
         Assertions.assertEquals(owner, pet.getOwner());
     }
 
-    protected String registerOwnerWithPets(Owner owner, String contactInformation, String password, Pet... pets) throws Exception {
-        Owner dbOwner = registerOwner(owner, contactInformation, password);
-        String token = userController.login2xx(contactInformation,password);
-        for (Pet pet : pets) {
-            OwnerCreatesPetDto createPetDto = new OwnerCreatesPetDto(pet,dbOwner.getId());
-            FullPetDto savedPetDto = performDs2xx(petController.create(createPetDto)
-                    .header(HttpHeaders.AUTHORIZATION, token), FullPetDto.class);
-        }
-        return token;
-    }
 
     protected Vet registerVet(Vet vet, String contactInformation, String password) throws Exception {
         SignupDto signupDto = SignupDto.builder()
@@ -432,17 +424,10 @@ public class MyIntegrationTest extends AclMvcTest
         return visitRepository.findById(responseDto.getId()).get();
     }
 
-    protected Owner registerOwner(Owner owner, String contactInformation, String password) throws Exception {
-        SignupDto signupDto = SignupDto.builder()
-                .contactInformation(contactInformation)
-                .password(password)
-                .build();
-        UUIDSignupResponseDto signedUpDto = performDs2xx(userController.signup(signupDto),UUIDSignupResponseDto.class);
-        String uuid = signedUpDto.getUuid();
-
-        CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner,uuid);
-        ReadOwnOwnerDto fullOwnerDto = performDs2xx(ownerController.create(createOwnerDto), ReadOwnOwnerDto.class);
-        return ownerService.findById(fullOwnerDto.getId()).get();
+    protected Owner signupOwner(Owner owner) throws Exception {
+        SignupOwnerDto dto = new SignupOwnerDto(owner);
+        ReadOwnOwnerDto response = ownerController.signup(dto);
+        return ownerService.findById(response.getId()).get();
     }
 
 //    @AfterEach

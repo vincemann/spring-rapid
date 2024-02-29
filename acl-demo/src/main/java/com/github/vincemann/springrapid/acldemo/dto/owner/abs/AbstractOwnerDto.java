@@ -17,21 +17,13 @@ import java.util.Set;
 public abstract class AbstractOwnerDto{
 
     private String firstName;
-
     private String lastName;
-
-    @Size(min=10,max=255)
     private String address;
-
-    @Size(min=3,max=255)
     private String city;
-
-    @Size(min=10,max=10)
     private String telephone;
 
     private Set<String> hobbies = new HashSet<>();
 
-    @Nullable
     @BiDirChildIdCollection(Pet.class)
     private Set<Long> petIds = new HashSet<>();
 

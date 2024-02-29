@@ -79,7 +79,7 @@ public class VetControllerTest extends MyIntegrationTest {
 
     @Test
     public void newVetCantReadPets() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
         Pet dbBella = petRepository.findByName(BELLA).get();
 
         Vet vet = registerVet(vetDiCaprio, VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
@@ -116,7 +116,7 @@ public class VetControllerTest extends MyIntegrationTest {
 
     @Test
     public void enabledVetCanReadPets() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
         Pet dbBella = petRepository.findByName(BELLA).get();
 
         Vet vet = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
@@ -133,7 +133,7 @@ public class VetControllerTest extends MyIntegrationTest {
 
     @Test
     public void enabledVetCanUpdatePetsIllnesses() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
         Pet dbBella = petRepository.findByName(BELLA).get();
         Illness dbTeethPain = illnessRepository.save(teethPain);
         Vet vet = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);

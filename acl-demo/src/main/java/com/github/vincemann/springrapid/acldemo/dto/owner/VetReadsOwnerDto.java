@@ -2,19 +2,20 @@ package com.github.vincemann.springrapid.acldemo.dto.owner;
 
 
 import com.github.vincemann.springrapid.acldemo.dto.owner.abs.AbstractOwnerDto;
+import com.github.vincemann.springrapid.acldemo.dto.owner.abs.AbstractReadOwnerDto;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.Size;
 import java.util.Set;
 
-@NoArgsConstructor
 @Getter
 @Setter
-public class VetReadsOwnerDto extends AbstractOwnerDto {
-
+@NoArgsConstructor
+public class VetReadsOwnerDto extends AbstractReadOwnerDto {
 
     @Builder
-    public VetReadsOwnerDto(@Size(min = 2, max = 20) String firstName, @Size(min = 2, max = 20) String lastName, @Size(min = 10, max = 255) String address, @Size(min = 3, max = 255) String city, @Size(min = 10, max = 10) String telephone, Set<String> hobbies, Set<Long> petIds) {
-        super(firstName, lastName, address, city, telephone, hobbies, petIds);
+    public VetReadsOwnerDto(String firstName, String lastName, String address, String city, String telephone, Set<String> hobbies, @Nullable Set<Long> petIds, Long id) {
+        super(firstName, lastName, address, city, telephone, hobbies, petIds, id);
     }
 }

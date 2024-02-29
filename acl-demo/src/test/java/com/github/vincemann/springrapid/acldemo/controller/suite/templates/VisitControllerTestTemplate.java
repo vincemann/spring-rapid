@@ -11,11 +11,4 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @Component
 public class VisitControllerTestTemplate extends CrudControllerTestTemplate<VisitController> {
 
-    public MockHttpServletRequestBuilder subscribe(String token, Long ownerId, Long visitId, boolean subscribe){
-        return get(getController().getSubscribeOwnerUrl())
-                .header(HttpHeaders.AUTHORIZATION,token)
-                .param("owner-id",ownerId.toString())
-                .param("visit-id",visitId.toString())
-                .param("subscribe",String.valueOf(subscribe));
-    }
 }
