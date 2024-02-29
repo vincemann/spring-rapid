@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.dto.owner;
 
-import com.github.vincemann.springrapid.acldemo.dto.AbstractSignupDto;
+import com.github.vincemann.springrapid.acldemo.dto.abs.AbstractSignupDto;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.BiDirChildIdCollection;
 import lombok.Builder;

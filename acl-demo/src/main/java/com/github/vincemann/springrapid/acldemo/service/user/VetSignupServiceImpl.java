@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.auth.service.VerificationService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.google.common.collect.Sets;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,5 +32,15 @@ public class VetSignupServiceImpl implements VetSignupService {
             throw new RuntimeException(e);
         }
         return saved;
+    }
+
+    @Autowired
+    public void setVetService(VetService vetService) {
+        this.vetService = vetService;
+    }
+
+    @Autowired
+    public void setVerificationService(VerificationService verificationService) {
+        this.verificationService = verificationService;
     }
 }

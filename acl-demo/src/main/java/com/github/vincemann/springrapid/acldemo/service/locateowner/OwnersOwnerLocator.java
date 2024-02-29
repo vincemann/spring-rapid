@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acldemo.service.owner;
+package com.github.vincemann.springrapid.acldemo.service.locateowner;
 
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;

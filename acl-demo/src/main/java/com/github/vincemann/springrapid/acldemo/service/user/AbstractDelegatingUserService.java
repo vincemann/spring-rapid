@@ -17,7 +17,7 @@ import org.springframework.util.Assert;
 import java.util.List;
 import java.util.Optional;
 
-public class AbstractDelegatingUserService
+public abstract class AbstractDelegatingUserService
         extends JpaUserService<User,Long, AbstractUserRepository<User,Long>>
         implements UserService<User,Long>
 {

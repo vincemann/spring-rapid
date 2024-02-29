@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acldemo.dto;
+package com.github.vincemann.springrapid.acldemo.dto.abs;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +14,7 @@ public class AbstractSignupDto {
     @NotEmpty
     @Email
     private String contactInformation;
+
     @NotEmpty
     private String password;
 
