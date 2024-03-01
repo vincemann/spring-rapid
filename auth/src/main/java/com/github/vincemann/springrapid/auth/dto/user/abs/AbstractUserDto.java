@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.dto.user.abs;
 
-import com.github.vincemann.springrapid.core.dto.IdAwareDto;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

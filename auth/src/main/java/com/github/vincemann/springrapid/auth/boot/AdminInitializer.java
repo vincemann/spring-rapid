@@ -4,8 +4,6 @@ import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.acl.proxy.Acl;
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +62,6 @@ public class AdminInitializer implements CommandLineRunner {
     }
 
     @Autowired
-    @Acl
     public void setUserService(UserService userService) {
         this.userService = userService;
     }

@@ -1,10 +1,11 @@
 package com.github.vincemann.springrapid.acldemo.dto;
 
 
+import com.github.vincemann.springrapid.acldemo.dto.abs.IdAwareDto;
 import com.github.vincemann.springrapid.acldemo.model.Specialty;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.autobidir.resolveid.annotation.parent.BiDirParentIdCollection;
-import com.github.vincemann.springrapid.core.dto.IdAwareDto;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,8 +19,13 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 
-public class SpecialtyDto extends IdAwareDto<Long> {
+public class SpecialtyDto extends IdAwareDto {
 
+    @Size(min = 2, max = 255)
+    private String description;
+
+    @BiDirParentIdCollection(Vet.class)
+    private Set<Long> vetIds = new HashSet<>();
     @Builder
     public SpecialtyDto(@Size(min = 2, max = 255) String description, Set<Long> vetIds) {
         this.description = description;
@@ -31,9 +37,5 @@ public class SpecialtyDto extends IdAwareDto<Long> {
         this.description=specialty.getDescription();
     }
 
-    @Size(min = 2, max = 255)
-    private String description;
 
-    @BiDirParentIdCollection(Vet.class)
-    private Set<Long> vetIds = new HashSet<>();
 }

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.acltest.AclMvcTest;
-import com.github.vincemann.springrapid.acl.proxy.Acl;
+
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.config.RapidAdminAutoConfiguration;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
@@ -61,12 +61,9 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
 
 
     @Autowired
-    @Acl
-    @Lazy
     private UserService<AbstractUser<Serializable>, Serializable> aclUserService;
 
     @Autowired
-    @Lazy
     private UserService<AbstractUser<Serializable>, Serializable> userService;
 
     @MockBean

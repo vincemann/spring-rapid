@@ -21,6 +21,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.Serializable;
+import java.util.function.Consumer;
 
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 import static org.hamcrest.Matchers.containsString;
@@ -149,15 +150,14 @@ public void cantChangeOwnContactInformationWithObsoleteCode() throws Exception {
 			new RequestContactInformationChangeDto(getUser().getContactInformation(),NEW_CONTACT_INFORMATION));
 	// credentials updated after the request for contactInformation change was made
 
-	transactionTemplate.execute(status -> {
+	transactionTemplate.executeWithoutResult(status -> {
 		AbstractUser<Serializable> user = getUserService().findById(getUser().getId()).get();
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		try {
 			getUserService().fullUpdate(user);
-		} catch (BadEntityException | EntityNotFoundException e) {
+		} catch (EntityNotFoundException e) {
 			throw new RuntimeException(e);
 		}
-		return null;
 	});
 
 	// A new auth token is needed, because old one would be obsolete!
@@ -197,14 +197,13 @@ public void cantChangeOwnContactInformationWhenNewContactInformationNotUnique() 
 
 	// Some other user changed to the same contactInformation, before i could issue my request
 
-	transactionTemplate.execute(new TransactionCallback<Object>() {
+	transactionTemplate.executeWithoutResult(new Consumer<TransactionStatus>() {
 		@SneakyThrows
 		@Override
-		public Object doInTransaction(TransactionStatus status) {
+		public void accept(TransactionStatus transactionStatus) {
 			AbstractUser<Serializable> user = getUserService().findById(getSecondUser().getId()).get();
 			user.setContactInformation(NEW_CONTACT_INFORMATION);
 			getUserService().fullUpdate(user);
-			return null;
 		}
 	});
 

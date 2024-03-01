@@ -78,7 +78,7 @@ public abstract class JpaUserService
     }
 
     protected void saveAclInfo(U saved){
-        aclService.grantUserPermissionFor(saved.getContactInformation(),saved, BasePermission.ADMINISTRATION);
+        aclService.grantUserPermissionForEntity(saved.getContactInformation(),saved, BasePermission.ADMINISTRATION);
     }
 
     @Transactional(readOnly = true)

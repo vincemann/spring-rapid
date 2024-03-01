@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acl.SecuredCrudController;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
-import com.github.vincemann.springrapid.acldemo.dto.vet.CreateVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.ReadVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.UpdateVetDto;
@@ -38,10 +37,6 @@ public class VetController extends SecuredCrudController<Vet, Long, VetService> 
     protected void configureDtoMappings(DtoMappingsBuilder builder) {
         builder.when(roles(AuthRoles.ADMIN))
                         .thenReturn(ReadVetDto.class);
-
-        builder.when(endpoint(getCreateUrl())
-                        .and(direction(Direction.REQUEST)))
-                .thenReturn(CreateVetDto.class);
 
         builder.when(endpoint(getUpdateUrl())
                         .and(roles(MyRoles.VET))

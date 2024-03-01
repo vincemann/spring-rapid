@@ -59,7 +59,7 @@ public class SignupServiceImpl implements SignupService {
     }
 
     protected void saveAclInfo(AbstractUser saved){
-        aclService.grantUserPermissionFor(saved.getContactInformation(),saved, BasePermission.ADMINISTRATION);
+        aclService.grantUserPermissionForEntity(saved.getContactInformation(),saved, BasePermission.ADMINISTRATION);
     }
 
 
