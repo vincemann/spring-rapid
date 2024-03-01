@@ -1,15 +1,10 @@
 package com.github.vincemann.springrapid.autobidir.config;
 
-import com.github.vincemann.springrapid.autobidir.resolveid.RelationalDtoManagerUtilImpl;
-import com.github.vincemann.springrapid.autobidir.resolveid.RelationalDtoManagerUtil;
+import com.github.vincemann.springrapid.autobidir.resolveid.*;
 import com.github.vincemann.springrapid.core.config.RapidDtoAutoConfiguration;
 import com.github.vincemann.springrapid.core.config.RapidServiceAutoConfiguration;
 import com.github.vincemann.springrapid.core.controller.dto.MergeUpdateStrategy;
 import org.springframework.context.annotation.Configuration;
-import com.github.vincemann.springrapid.autobidir.resolveid.IdAwareMergeUpdateStrategy;
-import com.github.vincemann.springrapid.autobidir.resolveid.EntityIdResolver;
-import com.github.vincemann.springrapid.autobidir.resolveid.IdResolvingDtoPostProcessor;
-import com.github.vincemann.springrapid.autobidir.resolveid.UniDirParentIdResolver;
 import com.github.vincemann.springrapid.autobidir.resolveid.bidir.BiDirChildIdResolver;
 import com.github.vincemann.springrapid.autobidir.resolveid.bidir.BiDirParentIdResolver;
 import lombok.extern.slf4j.Slf4j;
@@ -64,8 +59,14 @@ public class RapidIdResolvingDtoMapperAutoConfiguration {
 
     @ConditionalOnMissingBean(name = "idResolvingDtoPostProcessor")
     @Bean
-    public IdResolvingDtoPostProcessor idResolvingDtoPostProcessor(List<EntityIdResolver> entityIdResolvers, RelationalDtoManagerUtil relationalDtoManagerUtil){
-        return new IdResolvingDtoPostProcessor(entityIdResolvers, relationalDtoManagerUtil);
+    public IdResolvingDtoPostProcessor idResolvingDtoPostProcessor(DelegatingEntityIdResolver delegatingEntityIdResolver){
+        return new IdResolvingDtoPostProcessor(delegatingEntityIdResolver);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "delegatingEntityIdResolver")
+    public DelegatingEntityIdResolver delegatingEntityIdResolver(List<EntityIdResolver> idResolvers){
+        return new DelegatingEntityIdResolver(idResolvers);
     }
 
 }

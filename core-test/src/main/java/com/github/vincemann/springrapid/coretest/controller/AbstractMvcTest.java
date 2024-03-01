@@ -1,12 +1,8 @@
 package com.github.vincemann.springrapid.coretest.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JavaType;
-
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
 import com.github.vincemann.springrapid.coretest.MvcAware;
-import com.github.vincemann.springrapid.coretest.JsonHelper;
 import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.InitializingBean;
@@ -14,21 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.*;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 

@@ -1,16 +1,14 @@
 package com.github.vincemann.springrapid.autobidir.entity.biDir.child;
 
-import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerUtilImpl;
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerUtil;
+import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerUtilImpl;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildEntity;
+import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.autobidir.exception.UnknownEntityTypeException;
-
-import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
-
-import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildEntity;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.UnknownEntityTypeException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

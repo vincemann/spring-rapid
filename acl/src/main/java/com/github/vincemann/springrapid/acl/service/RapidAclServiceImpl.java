@@ -39,7 +39,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void grantRolePermissionForEntity(IdentifiableEntity<?> entity, String role, Permission... permissions) {
+    public void grantRolePermissionForEntity(String role, IdentifiableEntity<?> entity, Permission... permissions) {
         securityContext.executeAsSystemUser( () -> {
             final Sid sid = new GrantedAuthoritySid(role);
             addPermissionsForSid(entity, sid, permissions);
@@ -47,67 +47,43 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void revokeRolesPermissionForEntity(IdentifiableEntity<?> entity, String role, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+    public void revokeRolesPermissionForEntity(String role, IdentifiableEntity<?> entity, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         securityContext.executeAsSystemUser( () -> {
             final Sid sid = new GrantedAuthoritySid(role);
-            deletePermissionForSid(entity, sid, false, permissions);
+            deletePermissionForSid(entity, sid, ignoreNotFound, permissions);
+        });
+    }
+
+
+    @Override
+    public void grantUserPermissionForEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) {
+        securityContext.executeAsSystemUser( () -> {
+            final Sid sid = new PrincipalSid(user);
+            addPermissionsForSid(entity, sid, permissions);
         });
     }
 
     @Override
-    public void revokeRolesPermissionForEntityIfGranted(IdentifiableEntity<?> entity, String role, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+    public void revokeAuthenticatedPermissionForEntity(IdentifiableEntity<?> entity, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         securityContext.executeAsSystemUser( () -> {
-            final Sid sid = new GrantedAuthoritySid(role);
-            deletePermissionForSid(entity, sid, true, permissions);
+            String authenticatedName = findAuthenticatedName();
+            revokeUsersPermissionForEntity(authenticatedName, entity,ignoreNotFound, permissions);
         });
     }
 
+    @Override
+    public void revokeUsersPermissionForEntity(String user, IdentifiableEntity<?> entity, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+        securityContext.executeAsSystemUser( () -> {
+            final Sid sid = new PrincipalSid(user);
+            deletePermissionForSid(entity, sid, ignoreNotFound, permissions);
+        });
+    }
 
     @Override
     public void grantAuthenticatedPermissionForEntity(IdentifiableEntity<?> entity, Permission... permissions) {
         securityContext.executeAsSystemUser( () -> {
             String authenticatedName = findAuthenticatedName();
-            grantUserPermissionFor(authenticatedName, entity, permissions);
-        });
-    }
-
-    @Override
-    public void revokeAuthenticatedPermissionForEntityIfGranted(IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
-        securityContext.executeAsSystemUser( () -> {
-            String authenticatedName = findAuthenticatedName();
-            revokeUsersPermissionForEntity(authenticatedName, entity, permissions);
-        });
-    }
-
-    @Override
-    public void deletePermissionForAuthenticatedOverEntityIfPresent(IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
-        securityContext.executeAsSystemUser( () -> {
-            String authenticatedName = findAuthenticatedName();
-            revokeUsersPermissionForEntityIfGranted(authenticatedName, entity, permissions);
-        });
-    }
-
-    @Override
-    public void grantUserPermissionFor(String user, IdentifiableEntity<?> entity, Permission... permissions) {
-        securityContext.executeAsSystemUser( () -> {
-            final Sid sid = new PrincipalSid(user);
-            addPermissionsForSid(entity, sid, permissions);
-        });
-    }
-
-    @Override
-    public void revokeUsersPermissionForEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
-        securityContext.executeAsSystemUser( () -> {
-            final Sid sid = new PrincipalSid(user);
-            deletePermissionForSid(entity, sid, false, permissions);
-        });
-    }
-
-    @Override
-    public void revokeUsersPermissionForEntityIfGranted(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
-        securityContext.executeAsSystemUser( () -> {
-            final Sid sid = new PrincipalSid(user);
-            deletePermissionForSid(entity, sid, true, permissions);
+            grantUserPermissionForEntity(authenticatedName, entity, permissions);
         });
     }
 

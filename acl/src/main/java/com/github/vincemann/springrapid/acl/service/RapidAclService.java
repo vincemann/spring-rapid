@@ -14,21 +14,18 @@ public interface RapidAclService {
 
     void grantRolePermissionForEntity(String role, IdentifiableEntity<?> entity, Permission... permissions);
 
-    void revokeRolesPermissionForEntity(String role, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
-
-    void revokeRolesPermissionForEntityIfGranted(String role, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
+    void revokeRolesPermissionForEntity(String role, IdentifiableEntity<?> entity, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
 
     void grantAuthenticatedPermissionForEntity(IdentifiableEntity<?> entity, Permission... permissions);
 
-    void revokeAuthenticatedPermissionForEntityIfGranted(IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
+    void revokeAuthenticatedPermissionForEntity(IdentifiableEntity<?> entity,boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
 
     void grantUserPermissionForEntity(String user, IdentifiableEntity<?> entity, Permission... permissions);
 
     public void deleteAclOfEntity(IdentifiableEntity<?> entity, boolean deleteCascade);
 
-    void revokeUsersPermissionForEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
+    void revokeUsersPermissionForEntity(String user, IdentifiableEntity<?> entity, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
 
-    void revokeUsersPermissionForEntityIfGranted(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
 
     public void deleteAclOfEntity(Class<? extends IdentifiableEntity> clazz, Serializable id, boolean deleteCascade);
 
