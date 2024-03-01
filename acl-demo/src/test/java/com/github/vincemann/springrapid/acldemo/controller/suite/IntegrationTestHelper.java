@@ -78,19 +78,7 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
         visitController.setMvc(mvc);
     }
 
-//    public Owner findKahn(){
-//        Optional<Owner> kahn = findOptionalKahn();
-//        Assertions.assertTrue(kahn.isPresent());
-//        return kahn.get();
-//    }
-//
-//    public Optional<Owner> findOptionalKahn(){
-//        return ownerService.findByLastName(OWNER_KAHN);
-//    }
 
-    /**
-     * signup vet dicaprio with specialty heart and verify
-     */
     public Vet signupVetDiCaprioWithHeartAndVerify() throws Exception {
         Vet dicaprio = signupVetDiCaprioWithHeart();
         // verify
@@ -113,9 +101,6 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
         return saved;
     }
 
-    /**
-     * signup vet dicaprio with specialty heart
-     */
     public Vet signupVetDiCaprioWithHeart() throws Exception {
         // signup
         Vet diCaprio = testData.getVetDiCaprio();
@@ -136,9 +121,6 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
         return vetService.findById(response.getId()).get();
     }
 
-    /**
-     * sign up owner kahn with its pet bella
-     */
     public Owner signupKahnWithBella() throws Exception {
         Pet bella = petService.create(testData.getBella());
         testData.getKahn().getPets().add(bella);

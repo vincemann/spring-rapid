@@ -30,21 +30,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Activate spring Security, so login endpoint and auth web config is enabled, when using this template.
  *
- * @param <C>
- * @Override protected DefaultMockMvcBuilder createMvcBuilder() {
- * DefaultMockMvcBuilder mvcBuilder = super.createMvcBuilder();
- * mvcBuilder.apply(SecurityMockMvcConfigurers.springSecurity());
- * return mvcBuilder;
+ * @Override
+ * protected DefaultMockMvcBuilder createMvcBuilder() {
+ *      DefaultMockMvcBuilder mvcBuilder = super.createMvcBuilder();
+ *      mvcBuilder.apply(SecurityMockMvcConfigurers.springSecurity());
+ *      return mvcBuilder;
  * }
+ *
+ * @param <C> UserController type
  */
 public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserController>
         extends CrudControllerTestTemplate<C> {
-
-
     private MailSender<MailData> mailSenderMock;
-
-
-
 
     @Autowired
     public void setMailSenderMock(MailSender<MailData> mailSenderMock) {
@@ -74,23 +71,12 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .header(HttpHeaders.AUTHORIZATION, token);
     }
 
-//    public MockHttpServletRequestBuilder login(String contactInformation, String password) {
-//        return login(new LoginDto(contactInformation,password));
-//    }
-
     public String login(AbstractUser user) throws Exception {
         return mvc.perform(login(user.getContactInformation(),user.getPassword()))
                 .andReturn()
                 .getResponse()
                 .getHeader(HttpHeaders.AUTHORIZATION);
     }
-
-//    public String login(String user, String password) throws Exception {
-//        return mvc.perform(login_builder(user,password))
-//                .andReturn()
-//                .getResponse()
-//                .getHeader(HttpHeaders.AUTHORIZATION);
-//    }
 
 
     public MockHttpServletRequestBuilder changeContactInformation(String code, String token) {

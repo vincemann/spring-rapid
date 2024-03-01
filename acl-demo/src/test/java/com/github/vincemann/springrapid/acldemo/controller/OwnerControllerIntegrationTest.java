@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @Tag(value = "demo-projects")
-public class OwnerControllerTest extends MyIntegrationTest {
+public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
 
 

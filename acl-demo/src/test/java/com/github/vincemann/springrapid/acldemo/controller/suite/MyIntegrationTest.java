@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-// add admin before each test
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class MyIntegrationTest extends AclMvcTest
 {

@@ -15,6 +15,12 @@ public class VisitControllerTestTemplate extends CrudControllerTestTemplate<Visi
     public MockHttpServletRequestBuilder addSpectator(long visitId, long spectatorId){
         return get(getController().getAddSpectatorUrl())
                 .param("visit",String.valueOf(visitId))
-                .param("spectator",String.valueOf(visitId));
+                .param("spectator",String.valueOf(spectatorId));
+    }
+
+    public MockHttpServletRequestBuilder removeSpectator(long visitId, long spectatorId){
+        return get(getController().getRemoveSpectatorUrl())
+                .param("visit",String.valueOf(visitId))
+                .param("spectator",String.valueOf(spectatorId));
     }
 }

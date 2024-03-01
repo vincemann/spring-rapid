@@ -13,10 +13,8 @@ import org.springframework.http.HttpHeaders;
 import static com.github.vincemann.springrapid.acldemo.controller.suite.TestData.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class VisitControllerTest extends MyIntegrationTest {
-
-
-
+public class VisitControllerIntegrationTest extends MyIntegrationTest {
+    
 
     @Test
     public void vetCantCreateVisitForOtherVet() throws Exception {
@@ -174,40 +172,30 @@ public class VisitControllerTest extends MyIntegrationTest {
 
     @Test
     public void vetCanRemoveSpectatorFromVisit() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
-        registerOwnerWithPets(meier, OWNER_MEIER_CONTACT_INFORMATION, OWNER_MEIER_PASSWORD, bello);
-
-        Pet savedBella = petRepository.findByName(BELLA).get();
-        Owner savedKahn = ownerRepository.findByLastName(OWNER_KAHN).get();
-        Owner savedMeier = ownerRepository.findByLastName(OWNER_MEIER).get();
-
-        Vet savedDicaprio = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
-
-        String vetDiCaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
-        String kahnToken = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
-        String meierToken = userController.login2xx(OWNER_MEIER_CONTACT_INFORMATION, OWNER_MEIER_PASSWORD);
-
-        Visit visit = createVisit(vetDiCaprioToken, savedKahn, savedDicaprio, checkTeethVisit, savedBella);
-
-        // meier cant subscribe to visit
-        mvc.perform(visitController.find(visit.getId())
-                .header(HttpHeaders.AUTHORIZATION,meierToken))
-                .andExpect(status().isForbidden());
-
-        mvc.perform(visitController.subscribe(vetDiCaprioToken,savedMeier.getId(),visit.getId(),true))
-                .andExpect(status().is2xxSuccessful());
-        // now meier should be able to subscribe to visit
-
-        mvc.perform(visitController.find(visit.getId())
-                .header(HttpHeaders.AUTHORIZATION,meierToken))
+        // given
+        Owner kahn = helper.signupKahnWithBella();
+        Owner meier = helper.signupMeierWithBello();
+        Vet dicaprio = helper.signupVetDiCaprioWithHeartAndVerify();
+        Pet bella = petService.findByName(BELLA).get();
+        String dicaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        Visit visit = helper.createVisit(dicaprioToken, testData.getCheckTeethVisit(), kahn, dicaprio, bella);
+        String meierToken = userController.login2xx(meier.getContactInformation(), OWNER_MEIER_PASSWORD);
+        mvc.perform(visitController.addSpectator(visit.getId(),meier.getId()))
                 .andExpect(status().is2xxSuccessful());
 
-        // revoke
-        mvc.perform(visitController.subscribe(vetDiCaprioToken,savedMeier.getId(),visit.getId(),false))
-                        .andExpect(status().is2xxSuccessful());
-
+        // now meier is able to read visit
         mvc.perform(visitController.find(visit.getId())
-                .header(HttpHeaders.AUTHORIZATION,meierToken))
+                        .header(HttpHeaders.AUTHORIZATION,meierToken))
+                .andExpect(status().is2xxSuccessful());
+
+        // when
+        mvc.perform(visitController.removeSpectator(visit.getId(),meier.getId()))
+                .andExpect(status().is2xxSuccessful());
+
+        // then
+        // meier cant read visit anymore
+        mvc.perform(visitController.find(visit.getId())
+                        .header(HttpHeaders.AUTHORIZATION,meierToken))
                 .andExpect(status().isForbidden());
     }
 
