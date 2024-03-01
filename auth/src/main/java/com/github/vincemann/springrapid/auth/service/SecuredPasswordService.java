@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
 
@@ -36,8 +37,7 @@ public class SecuredPasswordService implements PasswordService {
     @Override
     public AbstractUser changePassword(ChangePasswordDto dto) throws EntityNotFoundException, BadEntityException {
         Optional<AbstractUser> user = userService.findByContactInformation(dto.getContactInformation());
-        if (user.isEmpty())
-            throw new EntityNotFoundException("user not found");
+        VerifyEntity.isPresent(user,"user not found");
         aclTemplate.checkPermission(user.get(), BasePermission.WRITE);
         return decorated.changePassword(dto);
     }

@@ -1,8 +1,7 @@
 package com.github.vincemann.springrapid.auth.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.vincemann.springrapid.acl.proxy.Acl;
-import com.github.vincemann.springrapid.acl.proxy.Secured;
+import com.github.vincemann.springrapid.acl.Secured;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.dto.*;
 import com.github.vincemann.springrapid.auth.dto.user.FindForeignUserDto;
@@ -30,7 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,9 +48,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 
 	private AuthProperties authProperties;
-
-
-	private S unsecuredService;	// getService() to get secured
+	private S unsecuredService;	// use getService() to get secured version
 
 	private UserAuthTokenService authTokenService;
 	private UserAuthTokenService unsecuredAuthTokenService;
@@ -59,10 +56,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	private SignupService signupService;
 	private ContactInformationService contactInformationService;
 	private VerificationService verificationService;
-
 	private AuthorizationTokenService authorizationTokenService;
-
-
 
 	//              CONTROLLER METHODS
 
@@ -458,52 +452,52 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	//              INJECT DEPENDENCIES
 
 	@Secured
-	@Lazy
 	@Override
 	@Autowired
 	public void setCrudService(S crudService) {
 		super.setCrudService(crudService);
 	}
-	@Lazy
+
 	@Autowired
 	public void setUnsecuredService(S Service) {
 		this.unsecuredService = Service;
 	}
+
 	@Autowired
 	public void setAuthProperties(AuthProperties authProperties) {
 		this.authProperties = authProperties;
 	}
+
 	@Autowired
 	@Secured
 	@Lazy
 	public void setUserAuthTokenService(UserAuthTokenService authTokenService) {
 		this.authTokenService = authTokenService;
 	}
+
 	@Autowired
-	@Lazy
 	public void setUnsecuredAuthTokenService(UserAuthTokenService unsecuredAuthTokenService) {
 		this.unsecuredAuthTokenService = unsecuredAuthTokenService;
 	}
+
 	@Autowired
 	@Secured
-	@Lazy
 	public void setPasswordService(PasswordService passwordService) {
 		this.passwordService = passwordService;
 	}
+
 	@Autowired
-	@Acl
-	@Lazy
 	public void setSignupService(SignupService signupService) {
 		this.signupService = signupService;
 	}
+
 	@Autowired
 	@Secured
-	@Lazy
 	public void setContactInformationService(ContactInformationService contactInformationService) {
 		this.contactInformationService = contactInformationService;
 	}
+
 	@Autowired
-	@Lazy
 	public void setVerificationService(VerificationService verificationService) {
 		this.verificationService = verificationService;
 	}

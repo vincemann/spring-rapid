@@ -86,7 +86,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         visit.getPets().add(bella);
         CreateVisitDto dto = new CreateVisitDto(visit);
         String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
-        ReadVisitDto response = visitController.performDs2xx(visitController.create(dto)
+        ReadVisitDto response = visitController.perform2xxAndDeserialize(visitController.create(dto)
                         .header(HttpHeaders.AUTHORIZATION,token)
                 , ReadVisitDto.class);
         // then
@@ -149,7 +149,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
                 createUpdateJsonLine("add", "/illnessIds", teethPain.getId().toString())
         );
         String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
-        ReadPetDto responsePetDto = petController.performDs2xx(petController.update(updateJson,bella.getId())
+        ReadPetDto responsePetDto = petController.perform2xxAndDeserialize(petController.update(updateJson,bella.getId())
                 .header(HttpHeaders.AUTHORIZATION, token), ReadPetDto.class);
 
         // then

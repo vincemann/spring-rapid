@@ -44,7 +44,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         String token = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
         CreatePetDto createPetDto = new CreatePetDto(testData.getBella());
         createPetDto.setOwnerId(kahn.getId());
-        ReadPetDto pet = petController.performDs2xx(petController.create(createPetDto)
+        ReadPetDto pet = petController.perform2xxAndDeserialize(petController.create(createPetDto)
                 .header(HttpHeaders.AUTHORIZATION, token), ReadPetDto.class);
 
         // then
@@ -82,7 +82,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
                 createUpdateJsonLine("replace", "/name", "newName")
         );
         String token = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
-        ReadPetDto updatedPetDto = petController.performDs2xx(petController.update(updateJson, bella.getId().toString())
+        ReadPetDto updatedPetDto = petController.perform2xxAndDeserialize(petController.update(updateJson, bella.getId().toString())
                         .header(HttpHeaders.AUTHORIZATION, token),
                 ReadPetDto.class);
 
@@ -149,7 +149,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
         // when
         String token = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
-        ReadPetDto dto = petController.performDs2xx(petController.find(bella.getId())
+        ReadPetDto dto = petController.perform2xxAndDeserialize(petController.find(bella.getId())
                 .header(HttpHeaders.AUTHORIZATION, token),
                 ReadPetDto.class);
 

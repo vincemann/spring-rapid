@@ -21,7 +21,11 @@ import java.util.Set;
  * @param <E> entity type of crud service
  * @param <Id> id type of entity
  */
-public abstract class CrudServiceDecorator<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable>
+public abstract class CrudServiceDecorator
+        <
+                S extends CrudService<E,Id>,
+                E extends IdentifiableEntity<Id>,
+                Id extends Serializable>
     implements CrudService<E,Id>
 {
 
@@ -31,10 +35,6 @@ public abstract class CrudServiceDecorator<S extends CrudService<E,Id>,E extends
         this.decorated = decorated;
     }
 
-    @Override
-    public String getBeanName() {
-        return decorated.getBeanName();
-    }
 
     @Override
     public Class<E> getEntityClass() {
@@ -89,11 +89,6 @@ public abstract class CrudServiceDecorator<S extends CrudService<E,Id>,E extends
     @Override
     public void deleteById(Id id) throws EntityNotFoundException {
         decorated.deleteById(id);
-    }
-
-    @Override
-    public void setBeanName(String name) {
-        decorated.setBeanName(name);
     }
 
     public S getDecorated() {

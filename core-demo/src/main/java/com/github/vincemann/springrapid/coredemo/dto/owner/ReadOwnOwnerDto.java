@@ -12,7 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class ReadOwnOwnerDto extends AbstractReadOwnerDto {
 
-    private String dirtySecret;
+    private String secret;
     private String firstName;
     private String lastName;
 
@@ -20,9 +20,9 @@ public class ReadOwnOwnerDto extends AbstractReadOwnerDto {
     private Long clinicCardId;
 
     @Builder
-    public ReadOwnOwnerDto(String address, String city, String telephone, Set<String> hobbies, Set<Long> petIds, Long id, String dirtySecret, String firstName, String lastName, Long clinicCardId) {
+    public ReadOwnOwnerDto(String address, String city, String telephone, Set<String> hobbies, Set<Long> petIds, Long id, String secret, String firstName, String lastName, Long clinicCardId) {
         super(address, city, telephone, hobbies, petIds, id);
-        this.dirtySecret = dirtySecret;
+        this.secret = secret;
         this.firstName = firstName;
         this.lastName = lastName;
         this.clinicCardId = clinicCardId;
@@ -31,7 +31,7 @@ public class ReadOwnOwnerDto extends AbstractReadOwnerDto {
     @Override
     public String toString() {
         return "ReadOwnOwnerDto{" +
-                "dirtySecret='" + dirtySecret + '\'' +
+                "dirtySecret='" + secret + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", clinicCardId=" + clinicCardId +

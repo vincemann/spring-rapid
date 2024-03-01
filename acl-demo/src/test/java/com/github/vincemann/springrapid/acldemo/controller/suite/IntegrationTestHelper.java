@@ -23,8 +23,6 @@ import org.springframework.boot.test.context.TestComponent;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static com.github.vincemann.springrapid.acldemo.controller.suite.TestData.*;
-
 @TestComponent
 public class IntegrationTestHelper implements TestMethodInitializable, MvcAware {
 
@@ -147,7 +145,7 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
             dto.getPetIds().add(pet.getId());
         }
 
-        ReadVisitDto response = visitController.performDs2xx(visitController.create(dto)
+        ReadVisitDto response = visitController.perform2xxAndDeserialize(visitController.create(dto)
                         .header(HttpHeaders.AUTHORIZATION,token)
                 , ReadVisitDto.class);
         return visitService.findById(response.getId()).get();

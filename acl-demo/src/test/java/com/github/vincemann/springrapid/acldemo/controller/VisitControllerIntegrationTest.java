@@ -14,7 +14,7 @@ import static com.github.vincemann.springrapid.acldemo.controller.suite.TestData
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class VisitControllerIntegrationTest extends MyIntegrationTest {
-    
+
 
     @Test
     public void vetCantCreateVisitForOtherVet() throws Exception {

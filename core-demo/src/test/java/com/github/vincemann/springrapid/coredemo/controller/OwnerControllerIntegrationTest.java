@@ -18,6 +18,7 @@ import com.github.vincemann.springrapid.coretest.util.TestPrincipal;
 import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Arrays;
@@ -38,18 +39,9 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
     @Test
     public void canSaveOwnerWithoutPets() throws Exception {
-        CreateOwnerDto createKahnDto = new CreateOwnerDto(kahn);
-
-
-        MvcResult result = getMvc().perform(ownerController.create(createKahnDto))
-                .andExpect(status().isOk())
-                .andReturn();
-        String json = result.getResponse().getContentAsString();
-        System.err.println(json);
-
-
-        ReadOwnOwnerDto responseDto = deserialize(json, ReadOwnOwnerDto.class);
-        compare(createKahnDto).with(responseDto)
+        CreateOwnerDto createDto = new CreateOwnerDto(kahn);
+        ReadOwnOwnerDto responseDto = ownerController.create2xx(createDto, ReadOwnOwnerDto.class);
+        compare(createDto).with(responseDto)
                 .properties()
                 .all()
                 .ignore(OwnerType::getId)
@@ -57,12 +49,12 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         Assertions.assertTrue(ownerRepository.findByLastName(KAHN).isPresent());
         Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
 
-        compare(createKahnDto).with(dbKahn)
+        compare(createDto).with(dbKahn)
                 .properties()
                 .all()
                 .ignore(OwnerType::getId)
-                .ignore(createKahnDto::getPetIds)
-                .ignore(createKahnDto::getClinicCardId)
+                .ignore(createDto::getPetIds)
+                .ignore(createDto::getClinicCardId)
                 .assertEqual();
 
         Assertions.assertEquals(responseDto.getId(),dbKahn.getId());
@@ -130,10 +122,8 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         String newCity = kahn.getCity()+"new";
 
         String updateJson = createUpdateJsonLine("replace", "/city",newCity);
-        String jsonResponse = getMvc().perform(ownerController.update(createUpdateJsonRequest(updateJson),createdKahnDto.getId()))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString();
-        ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = ownerController.update2xx(
+                createUpdateJsonRequest(updateJson),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         Assertions.assertEquals(newCity,responseDto.getCity());
 
         Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
@@ -149,11 +139,8 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         String updateCityJson = createUpdateJsonLine("replace", "/city",newCity);
         String updateAdrJson = createUpdateJsonLine("replace", "/address",newAdr);
         String updateJsonRequest = createUpdateJsonRequest(updateCityJson, updateAdrJson);
-        System.err.println(updateJsonRequest);
-        String jsonResponse = getMvc().perform(ownerController.update(updateJsonRequest,createdKahnDto.getId()))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString();
-        ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = ownerController.update2xx(
+                createUpdateJsonRequest(updateJsonRequest),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         Assertions.assertEquals(newCity,responseDto.getCity());
         Assertions.assertEquals(newAdr,responseDto.getAddress());
 
@@ -169,10 +156,8 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId());
 
         String updateJson = createUpdateJsonLine("remove", "/petIds");
-        String jsonResponse = getMvc().perform(ownerController.update(createUpdateJsonRequest(updateJson), createdKahnDto.getId()))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString();
-        ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = ownerController.update2xx(
+                createUpdateJsonRequest(updateJson),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         Assertions.assertTrue(responseDto.getPetIds().isEmpty());
 
         assertOwnerHasPets(KAHN);
@@ -185,7 +170,8 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
         ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToClinicCard(kahn,savedClinicCard);
         String updateJson = createUpdateJsonLine("remove", "/clinicCardId");
-        ReadOwnOwnerDto responseDto = performDs2xx(ownerController.update(createUpdateJsonRequest(updateJson), createdKahnDto.getId()),ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = ownerController.update2xx(
+                createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         Assertions.assertNull(responseDto.getClinicCardId());
 
         assertOwnerHasClinicCard(KAHN,null);
@@ -198,7 +184,8 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
         ReadOwnOwnerDto createdKahnDto = saveOwner(kahn);
         String updateJson = createUpdateJsonLine("add", "/clinicCardId",savedClinicCard.getId().toString());
-        ReadOwnOwnerDto responseDto = performDs2xx(ownerController.update(createUpdateJsonRequest(updateJson), createdKahnDto.getId()),ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = ownerController.update2xx(
+                createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         Assertions.assertEquals(savedClinicCard.getId(),responseDto.getClinicCardId());
 
         assertOwnerHasClinicCard(KAHN,savedClinicCard.getId());
@@ -212,7 +199,8 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
         ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToClinicCard(kahn,savedClinicCard);
         String updateJson = createUpdateJsonLine("replace", "/clinicCardId",savedSecondClinicCard.getId().toString());
-        ReadOwnOwnerDto responseDto = performDs2xx(ownerController.update(createUpdateJsonRequest(updateJson), createdKahnDto.getId()),ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = ownerController.update2xx(
+                createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         Assertions.assertEquals(savedSecondClinicCard.getId(),responseDto.getClinicCardId());
 
         assertOwnerHasClinicCard(KAHN,savedSecondClinicCard.getId());
@@ -226,10 +214,8 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId());
 
         String updateJson = createUpdateJsonLine("remove", "/petIds",savedBello.getId().toString());
-        String jsonResponse = getMvc().perform(ownerController.update(createUpdateJsonRequest(updateJson), createdKahnDto.getId()))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString();
-        ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = ownerController.update2xx(
+                createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         Assertions.assertTrue(responseDto.getPetIds().isEmpty());
 
         assertOwnerHasPets(KAHN);
@@ -243,10 +229,8 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
 
         String updateJson = createUpdateJsonLine("remove", "/petIds");
-        String jsonResponse = getMvc().perform(ownerController.update(createUpdateJsonRequest(updateJson), createdKahnDto.getId()))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString();
-        ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = ownerController.update2xx(
+                createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         Assertions.assertTrue(responseDto.getPetIds().isEmpty());
 
         assertOwnerHasPets(KAHN);
@@ -261,10 +245,8 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
 
         String updateJson = createUpdateJsonLine("remove", "/petIds",savedBello.getId().toString());
-        String jsonResponse = getMvc().perform(ownerController.update(createUpdateJsonRequest(updateJson), createdKahnDto.getId()))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString();
-        ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = ownerController.update2xx(
+                createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         Assertions.assertTrue(responseDto.getPetIds().contains(savedKitty.getId()));
         Assertions.assertEquals(1,responseDto.getPetIds().size());
 
@@ -284,10 +266,8 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         String removeKittyJson = createUpdateJsonLine("remove", "/petIds",savedKitty.getId().toString());
         String removePetsJson = createUpdateJsonRequest(removeBelloJson, removeKittyJson);
 
-        String jsonResponse = getMvc().perform(ownerController.update(removePetsJson, createdKahnDto.getId()))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString();
-        ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = ownerController.update2xx(
+                createUpdateJsonRequest(createUpdateJsonRequest(removePetsJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         Assertions.assertTrue(responseDto.getPetIds().contains(savedBella.getId()));
         Assertions.assertEquals(1,responseDto.getPetIds().size());
 
@@ -308,10 +288,9 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         String removeKittyJson = createUpdateJsonLine("remove", "/petIds",savedBella.getId().toString());
         String removePetsJson = createUpdateJsonRequest(removeBelloJson, removeKittyJson);
 
-        String jsonResponse = getMvc().perform(ownerController.update(removePetsJson, createdKahnDto.getId()))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString();
-        ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = ownerController.update2xx(
+                createUpdateJsonRequest(createUpdateJsonRequest(removePetsJson)),
+                createdKahnDto.getId(),ReadOwnOwnerDto.class);
         Assertions.assertTrue(responseDto.getPetIds().contains(savedKitty.getId()));
         Assertions.assertEquals(1,responseDto.getPetIds().size());
 
@@ -329,10 +308,8 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn);
 
         String updateJson = createUpdateJsonLine("remove", "/hobbies", hobbyToRemove);
-        String jsonResponse = getMvc().perform(ownerController.update(createUpdateJsonRequest(updateJson), createdKahnDto.getId()))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString();
-        ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = ownerController.update2xx(
+                createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         Assertions.assertFalse(responseDto.getHobbies().contains(hobbyToRemove));
         Assertions.assertEquals(hobbies.size()-1,responseDto.getHobbies().size());
 
@@ -348,10 +325,8 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn);
 
         String updateJson = createUpdateJsonLine("add", "/petIds", savedBello.getId().toString());
-        String jsonResponse = getMvc().perform(ownerController.update(createUpdateJsonRequest(updateJson),createdKahnDto.getId()))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString();
-        ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = ownerController.update2xx(
+                createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         Assertions.assertTrue(responseDto.getPetIds().contains(savedBello.getId()));
 
         assertOwnerHasPets(KAHN,BELLO);
@@ -363,15 +338,13 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
     public void canFindOwnOwner() throws Exception {
         securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         ReadOwnOwnerDto kahn = saveOwnerLinkedToPets(this.kahn);
-        ReadOwnOwnerDto responseDto = deserialize(getMvc().perform(ownerController.find(kahn.getId()))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.lastName").value(KAHN))
-                .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto response = ownerController.find2xx(kahn.getId(), ReadOwnOwnerDto.class);
+        Assertions.assertEquals(kahn.getLastName(),response.getLastName());
 
-        compare(kahn).with(responseDto)
+        compare(kahn).with(response)
                 .properties().all()
                 .assertEqual();
-        Assertions.assertEquals(Owner.SECRET,responseDto.getDirtySecret());
+        Assertions.assertEquals(Owner.SECRET,response.getSecret());
 
         RapidSecurityContext.unsetAuthenticated();
     }
@@ -398,18 +371,16 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
         securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
-        Set<ReadOwnOwnerDto> responseDtos = deserializeToSet(
-                perform(ownerController.findAll(new UrlWebExtension(HasPetsFilter.class)))
-                        .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
+        UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
+        List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class, hasPetsFilter);
         RapidSecurityContext.unsetAuthenticated();
 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(2,responseDtos.size());
         ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
-        Assertions.assertEquals(Owner.SECRET,kahnDto.getDirtySecret());
+        Assertions.assertEquals(Owner.SECRET,kahnDto.getSecret());
         ReadOwnOwnerDto meierDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedMeier.getId()));
-        Assertions.assertNull(meierDto.getDirtySecret());
+        Assertions.assertNull(meierDto.getSecret());
     }
 
     @Test
@@ -437,10 +408,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         // memory filter
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
         UrlWebExtension sortByNameDesc = new UrlWebExtension(LastNameDescSorting.class);
-        List<ReadOwnOwnerDto> responseDtos = deserializeToList(
-                perform(ownerController.findAll(hasPetsFilter,sortByNameDesc))
-                        .andExpect(status().is2xxSuccessful())
-                        .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
+        List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class, hasPetsFilter, sortByNameDesc);
         RapidSecurityContext.unsetAuthenticated();
 
         // one dto findOwnDto and one findForeign
@@ -451,18 +419,15 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
         // content
         ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
-        Assertions.assertEquals(Owner.SECRET,kahnDto.getDirtySecret());
+        Assertions.assertEquals(Owner.SECRET,kahnDto.getSecret());
         ReadOwnOwnerDto meierDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedMeier.getId()));
-        Assertions.assertNull(meierDto.getDirtySecret());
+        Assertions.assertNull(meierDto.getSecret());
 
 
         // diff sorting
         UrlWebExtension sortByNameAsc = new UrlWebExtension(LastNameAscSorting.class);
         securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
-        responseDtos = deserializeToList(
-                perform(ownerController.findAll(hasPetsFilter,sortByNameAsc))
-                        .andExpect(status().is2xxSuccessful())
-                        .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
+        responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class, hasPetsFilter, sortByNameAsc);
         RapidSecurityContext.unsetAuthenticated();
 
         // one dto findOwnDto and one findForeign
@@ -473,9 +438,9 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
         // content
         kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
-        Assertions.assertEquals(Owner.SECRET,kahnDto.getDirtySecret());
+        Assertions.assertEquals(Owner.SECRET,kahnDto.getSecret());
         meierDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedMeier.getId()));
-        Assertions.assertNull(meierDto.getDirtySecret());
+        Assertions.assertNull(meierDto.getSecret());
     }
 
     // can combine jpql filter with memory filter
@@ -507,15 +472,13 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         // memory filter
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
         UrlWebExtension telNrPrefixFilter = new UrlWebExtension(OwnerTelNumberFilter.class,telnrPrefix);
-        Set<ReadOwnOwnerDto> responseDtos = deserializeToSet(getMvc().perform(ownerController.findAll(telNrPrefixFilter,hasPetsFilter))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
+        List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class,telNrPrefixFilter, hasPetsFilter);
         RapidSecurityContext.unsetAuthenticated();
 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(1,responseDtos.size());
         ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
-        Assertions.assertEquals(Owner.SECRET,kahnDto.getDirtySecret());
+        Assertions.assertEquals(Owner.SECRET,kahnDto.getSecret());
     }
 
     // combine jpql filter with two memory filters
@@ -551,19 +514,27 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         UrlWebExtension petNameEndsWithAFilter = new UrlWebExtension(PetNameEndsWithFilter.class,"a");
         // jpql query filters (always come first)
         UrlWebExtension telNrPrefixFilter = new UrlWebExtension(OwnerTelNumberFilter.class,telnrPrefix);
-        Set<ReadForeignOwnerDto> responseDtos = deserializeToSet(getMvc().perform(ownerController.findAll(telNrPrefixFilter,hasPetsFilter,petNameEndsWithAFilter))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString(), ReadForeignOwnerDto.class);
+        List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class,telNrPrefixFilter, hasPetsFilter,petNameEndsWithAFilter);
         RapidSecurityContext.unsetAuthenticated();
 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(1,responseDtos.size());
-        ReadForeignOwnerDto gilDto = assertCanFindInCollection(responseDtos, dto -> dto.getId().equals(savedGil.getId()));
+        ReadOwnOwnerDto gilDto = assertCanFindInCollection(responseDtos, dto -> dto.getId().equals(savedGil.getId()));
+        ReadForeignOwnerDto dto = assertIsEffectivelyReadForeignDto(gilDto);
 
-        compare(gilDto).with(savedGil)
+
+        compare(dto).with(savedGil)
                 .properties()
                 .all()
                 .assertEqual();
+    }
+
+    private ReadForeignOwnerDto assertIsEffectivelyReadForeignDto(ReadOwnOwnerDto dto){
+        Assertions.assertNull(dto.getSecret());
+        Assertions.assertNull(dto.getFirstName());
+        Assertions.assertNull(dto.getLastName());
+        Assertions.assertNull(dto.getClinicCardId());
+        return new ModelMapper().map(dto, ReadForeignOwnerDto.class);
     }
 
     // combine multiple jpql filters with memory filter
@@ -602,16 +573,12 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         // jpql filters (always come first)
         UrlWebExtension telNrPrefixFilter = new UrlWebExtension(OwnerTelNumberFilter.class,telnrPrefix);
         UrlWebExtension cityPrefixFilter = new UrlWebExtension(CityPrefixFilter.class, niceCityPrefix);
-        Set<ReadOwnOwnerDto> responseDtos = deserializeToSet(getMvc().perform(ownerController.findAll(telNrPrefixFilter,cityPrefixFilter,hasPetsFilter))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
+        List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class,telNrPrefixFilter,cityPrefixFilter, hasPetsFilter);
         RapidSecurityContext.unsetAuthenticated();
 
-        // one dto findOwnDto and one findForeign
         Assertions.assertEquals(1,responseDtos.size());
         ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
-        Assertions.assertNotNull(kahnDto.getDirtySecret());
-        Assertions.assertEquals(Owner.SECRET,kahnDto.getDirtySecret());
+        Assertions.assertEquals(Owner.SECRET,kahnDto.getSecret());
 
         compare(kahnDto).with(savedKahn)
                 .properties()
@@ -626,9 +593,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         Pet savedKitty = petRepository.save(kitty);
         ReadOwnOwnerDto savedKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
         securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
-        ReadOwnOwnerDto responseDto = deserialize(getMvc().perform(ownerController.find(savedKahnDto.getId()))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = ownerController.find2xx(savedKahnDto.getId(),ReadOwnOwnerDto.class);
         Assertions.assertEquals(2,responseDto.getPetIds().size());
         Assertions.assertTrue(responseDto.getPetIds().contains(savedBello.getId()));
         Assertions.assertTrue(responseDto.getPetIds().contains(savedKitty.getId()));

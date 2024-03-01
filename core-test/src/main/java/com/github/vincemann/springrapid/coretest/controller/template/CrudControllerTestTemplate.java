@@ -5,9 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.controller.CrudController;
-import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
-import com.github.vincemann.springrapid.coretest.JsonHelper;
-import com.github.vincemann.springrapid.coretest.MvcHelper;
 import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import lombok.Getter;
@@ -48,11 +45,19 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
                 .param("id",id.toString());
     }
 
+    public <D> D find2xx(Serializable id, Class<D> dtoClass) throws Exception {
+        return perform2xxAndDeserialize(find(id),dtoClass);
+    }
+
     public MockHttpServletRequestBuilder update(String patchString,Serializable id) throws Exception {
         return put(controller.getUpdateUrl())
                 .param("id",id.toString())
                 .content(patchString)
                 .contentType(MediaType.APPLICATION_JSON_VALUE);
+    }
+
+    public <D> D update2xx(String patchString,Serializable id, Class<D> dtoClass) throws Exception {
+        return perform2xxAndDeserialize(update(patchString,id),dtoClass);
     }
 
 
@@ -62,8 +67,17 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
                 .contentType(MediaType.APPLICATION_JSON_VALUE);
     }
 
+    public <D> D create2xx(Object dto, Class<D> dtoClass) throws Exception {
+        return perform2xxAndDeserialize(create(dto),dtoClass);
+    }
+
+
     public  MockHttpServletRequestBuilder findAll() throws Exception {
         return get(getController().getFindAllUrl());
+    }
+
+    public <D> Set<D> findAll2xx(Class<D> dtoClass) throws Exception {
+        return perform2xxAndDeserializeToSet(findAll(),dtoClass);
     }
 
     public  MockHttpServletRequestBuilder findSome(Set<String> ids) throws Exception {
@@ -79,6 +93,10 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
         return requestBuilder;
     }
 
+    public <D> List<D> findAll2xx(Class<D> dtoClass, UrlWebExtension... extensions) throws Exception {
+        return perform2xxAndDeserializeToList(findAll(extensions),dtoClass);
+    }
+
 
     // MVC PERFORM
 
@@ -86,22 +104,22 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
     /**
      * perform, expect 2xx and deserialize result to dtoClass
      */
-    public <Dto> Dto performDs2xx(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
-        return performDsWithStatus(requestBuilder,status().is2xxSuccessful(),dtoClass);
+    public <Dto> Dto perform2xxAndDeserialize(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
+        return performAndDeserialize(requestBuilder,status().is2xxSuccessful(),dtoClass);
     }
 
-    public <Dto> Dto performDsWithStatus(RequestBuilder requestBuilder, ResultMatcher status, Class<Dto> dtoClass) throws Exception {
+    public <Dto> Dto performAndDeserialize(RequestBuilder requestBuilder, ResultMatcher status, Class<Dto> dtoClass) throws Exception {
         return deserialize(mvc.perform(requestBuilder)
                 .andExpect(status)
                 .andReturn().getResponse().getContentAsString(),dtoClass);
     }
 
-    public <Dto> Set<Dto> performDs2xxSet(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
+    public <Dto> Set<Dto> perform2xxAndDeserializeToSet(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
         return deserializeToSet(mvc.perform(requestBuilder)
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(),dtoClass);
     }
-    public <Dto> List<Dto> performDs2xxList(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
+    public <Dto> List<Dto> perform2xxAndDeserializeToList(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
         return deserializeToList(mvc.perform(requestBuilder)
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(),dtoClass);

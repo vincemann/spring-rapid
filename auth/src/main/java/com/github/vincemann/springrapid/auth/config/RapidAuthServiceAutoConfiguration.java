@@ -1,21 +1,16 @@
 package com.github.vincemann.springrapid.auth.config;
 
-import com.github.vincemann.springrapid.acl.proxy.Secured;
-import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
-import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactoryImpl;
-import com.github.vincemann.springrapid.auth.sec.JwtPrincipalConverter;
-import com.github.vincemann.springrapid.auth.sec.JwtPrincipalConverterImpl;
+
+import com.github.vincemann.springrapid.acl.Secured;
 import com.github.vincemann.springrapid.auth.service.*;
-import com.github.vincemann.springrapid.auth.service.token.*;
+import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
+import com.github.vincemann.springrapid.auth.service.token.JwtAuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.val.ContactInformationValidator;
 import com.github.vincemann.springrapid.auth.service.val.EmailContactInformationValidator;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidatorImpl;
 import com.github.vincemann.springrapid.core.service.pass.BcryptRapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.service.pass.RapidPasswordEncoder;
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.KeyLengthException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
