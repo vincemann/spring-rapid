@@ -13,6 +13,7 @@ import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 
 
 @Primary
@@ -29,6 +30,12 @@ public class JpaPetService
         Pet pet = super.create(entity);
         saveAclInfo(pet);
         return pet;
+    }
+
+    @Transactional
+    @Override
+    public Optional<Pet> findNyName(String name) {
+        return getRepository().findByName(name);
     }
 
     private void saveAclInfo(Pet pet){

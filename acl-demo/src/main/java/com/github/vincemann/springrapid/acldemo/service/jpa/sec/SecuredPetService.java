@@ -9,6 +9,9 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Secured
 @Service
@@ -21,11 +24,20 @@ public class SecuredPetService
         super(decorated);
     }
 
+    @Transactional
     @Override
     public Pet create(Pet pet) throws BadEntityException {
         // need create permission on owner in order to create pet for him
         VerifyEntity.notNull(pet.getOwner(),"pet needs to have owner set");
         getAclTemplate().checkPermission(pet.getOwner(), BasePermission.CREATE);
         return super.create(pet);
+    }
+
+    @Transactional
+    @Override
+    public Optional<Pet> findNyName(String name) {
+        Optional<Pet> pet = getDecorated().findNyName(name);
+        pet.ifPresent(p -> getAclTemplate().checkPermission(p,BasePermission.READ));
+        return pet;
     }
 }

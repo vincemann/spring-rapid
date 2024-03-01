@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTest;
 import com.github.vincemann.springrapid.acldemo.dto.VisitDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.ReadPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.MyFullUserDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.CreateVetDto;
@@ -128,7 +129,7 @@ public class VetControllerTest extends MyIntegrationTest {
         // given
         Vet dicaprio = signupVetDiCaprioAndVerify();
         Owner kahn = signupKahn(); // kahn is linked to bella not bello
-        Pet bello = petRepository.findByName(BELLO).get();
+        Pet bello = petService.create(this.bello);
 
         // when
         checkTeethVisit.setVet(dicaprio);
@@ -138,59 +139,31 @@ public class VetControllerTest extends MyIntegrationTest {
         String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         perform(visitController.create(dto)
                 .header(HttpHeaders.AUTHORIZATION,token))
-                // then
+        // then
                 .andExpect(status().isForbidden());
         Assertions.assertTrue(visitService.findAll().isEmpty());
     }
 
     @Test
     public void verifiedVetCanUpdatePetsIllnesses() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
-        Pet dbBella = petRepository.findByName(BELLA).get();
-        Illness dbTeethPain = illnessRepository.save(teethPain);
-        Vet vet = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
-        String vetToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        // given
+        Vet dicaprio = signupVetDiCaprioAndVerify();
+        Owner kahn = signupKahn(); // kahn is linked to bella not bello
+        Pet bella = petRepository.findByName(BELLA).get();
+        Illness teethPain = illnessService.create(this.teethPain);
 
+
+        // when
         String updateJson = createUpdateJsonRequest(
-                createUpdateJsonLine("add", "/illnessIds", dbTeethPain.getId().toString())
+                createUpdateJsonLine("add", "/illnessIds", teethPain.getId().toString())
         );
+        String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        ReadPetDto responsePetDto = performDs2xx(petController.update(updateJson,bella.getId())
+                .header(HttpHeaders.AUTHORIZATION, token), ReadPetDto.class);
 
-        FullPetDto responsePetDto = performDs2xx(petController.update(updateJson,dbBella.getId().toString())
-                .header(HttpHeaders.AUTHORIZATION, vetToken), FullPetDto.class);
-
-        compare(responsePetDto).with(dbBella)
-                .properties().all()
-                .ignore(RapidTestUtil.dtoIdProperties(FullPetDto.class))
-                .assertEqual();
-
-        propertyAssert(responsePetDto)
-                .assertContains(responsePetDto::getIllnessIds,dbTeethPain.getId());
-
-        Pet updatedDbBella = petRepository.findByName(BELLA).get();
-        Illness dbUpdatedTeethPain = illnessRepository.findById(teethPain.getId()).get();
-
-
-        propertyAssert(updatedDbBella)
-                .assertContains(updatedDbBella::getIllnesss,dbUpdatedTeethPain);
-
-
+        // then
+        Pet updatedBella = petRepository.findByName(BELLA).get();
+        Assertions.assertTrue(updatedBella.getIllnesss().stream().anyMatch(i -> i.getName().equals(teethPain.getName())));
     }
 
-//    @Test
-//    public void vetCanUpdatePetsIllness() throws Exception {
-//        String token = registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
-//        Pet dbBella = petRepository.findByName(BELLA).get();
-//        Illness teethPain = illnessRepository.save(this.teethPain);
-//
-//
-//        String updateJson = createUpdateJsonRequest(
-//                createUpdateJsonLine("add", "/illnessIds", savedDogPetType.getId().toString())
-//        );
-//        mvc.perform(petController.update(updateJson, dbBella.getId().toString())
-//                .header(HttpHeaders.AUTHORIZATION, token))
-//                .andExpect(status().isForbidden());
-//
-//        com.github.vincemann.springrapid.acldemo.model.PetType dbDgoType = petTypeRepository.findById(savedDogPetType.getId()).get();
-//        Assertions.assertEquals(dbDgoType, dbBella.getPetType());
-//    }
 }

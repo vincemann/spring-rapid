@@ -126,41 +126,25 @@ public class MyIntegrationTest extends AclMvcTest
 
     @Autowired
     protected SpecialtyService specialtyService;
-    @Autowired
-    protected SpecialtyRepository specialtyRepository;
 
-
-    @Autowired
-    protected VetRepository vetRepository;
     @Autowired
     protected VetService vetService;
 
 
     @Autowired
     protected IllnessService illnessService;
-    @Autowired
-    protected IllnessRepository illnessRepository;
 
     @Autowired
     protected PetService petService;
-    @Autowired
-    protected PetRepository petRepository;
 
 
 
     @Autowired
     protected PetTypeService petTypeService;
-    @Autowired
-    protected PetTypeRepository petTypeRepository;
 
-    @Autowired
-    protected VisitRepository visitRepository;
     @Autowired
     protected VisitService visitService;
 
-
-    @Autowired
-    protected OwnerRepository ownerRepository;
     @Autowired
     protected OwnerService ownerService;
 
@@ -180,8 +164,6 @@ public class MyIntegrationTest extends AclMvcTest
     @Autowired
     protected VisitControllerTestTemplate visitController;
 
-    @Autowired
-    protected RapidSecurityContext securityContext;
 
     @Autowired
     private AdminInitializer adminInitializer;
@@ -349,13 +331,13 @@ public class MyIntegrationTest extends AclMvcTest
     }
 
     protected void assertVetHasSpecialties(String vetName, String... descriptions) {
-        Optional<Vet> vetOptional = vetRepository.findByLastName(vetName);
+        Optional<Vet> vetOptional = vetService.findByLastName(vetName);
         Assertions.assertTrue(vetOptional.isPresent());
         Vet vet = vetOptional.get();
 
         Set<Specialty> specialtys = new HashSet<>();
         for (String description : descriptions) {
-            Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
+            Optional<Specialty> optionalSpecialty = specialtyService.findByDescription(description);
             Assertions.assertTrue(optionalSpecialty.isPresent());
             specialtys.add(optionalSpecialty.get());
         }
@@ -364,13 +346,13 @@ public class MyIntegrationTest extends AclMvcTest
     }
 
     protected void assertSpecialtyHasVets(String description, String... vetNames) {
-        Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
+        Optional<Specialty> optionalSpecialty = specialtyService.findByDescription(description);
         Assertions.assertTrue(optionalSpecialty.isPresent());
         Specialty specialty = optionalSpecialty.get();
 
         Set<Vet> vets = new HashSet<>();
         for (String vetName : vetNames) {
-            Optional<Vet> optionalVet = vetRepository.findByLastName(vetName);
+            Optional<Vet> optionalVet = vetService.findByLastName(vetName);
             Assertions.assertTrue(optionalVet.isPresent());
             vets.add(optionalVet.get());
         }
@@ -379,7 +361,7 @@ public class MyIntegrationTest extends AclMvcTest
     }
 
     protected void assertPetHasIllnesses(String petName, String... illnessNames) {
-        Optional<Pet> petOptional = petRepository.findByName(petName);
+        Optional<Pet> petOptional = petService.findByName(petName);
         Assertions.assertTrue(petOptional.isPresent());
         Pet pet = petOptional.get();
 
