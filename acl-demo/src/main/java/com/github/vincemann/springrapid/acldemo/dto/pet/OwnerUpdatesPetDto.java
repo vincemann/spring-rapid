@@ -7,17 +7,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.Set;
 
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class UpdatePetDto extends AbstractPetDto {
+public class OwnerUpdatesPetDto extends AbstractPetDto {
 
+    @NotNull
+    @Positive
     private Long id;
 
     @NotBlank
@@ -27,31 +29,26 @@ public class UpdatePetDto extends AbstractPetDto {
         return super.getName();
     }
 
+    @NotNull
     @Positive
     @Override
     public Long getPetTypeId() {
         return super.getPetTypeId();
     }
 
-    @Positive
-    @Override
-    public Long getOwnerId() {
-        return super.getOwnerId();
-    }
 
     @Builder
-    public UpdatePetDto(String name, Long petTypeId, Long ownerId, LocalDate birthDate, Long id) {
-        super(name, petTypeId, ownerId, birthDate);
+    public OwnerUpdatesPetDto(String name, Long petTypeId, LocalDate birthDate, Long id) {
+        super(name, petTypeId, birthDate);
         this.id = id;
     }
 
     @Override
     public String toString() {
-        return "UpdatePetDto{" +
+        return "OwnerUpdatesPetDto{" +
                 "id=" + id +
                 ", name='" + getName() + '\'' +
                 ", petTypeId=" + getPetTypeId() +
-                ", ownerId=" + getOwnerId() +
                 ", birthDate=" + getBirthDate() +
                 '}';
     }

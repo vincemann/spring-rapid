@@ -21,15 +21,11 @@ public abstract class AbstractPetDto
     @UniDirChildId(PetType.class)
     private Long petTypeId;
 
-    @BiDirParentId(Owner.class)
-    private Long ownerId;
-
     private LocalDate birthDate;
 
-    public AbstractPetDto(String name, Long petTypeId, Long ownerId, LocalDate birthDate) {
+    public AbstractPetDto(String name, Long petTypeId, LocalDate birthDate) {
         this.name = name;
         this.petTypeId = petTypeId;
-        this.ownerId = ownerId;
         this.birthDate = birthDate;
     }
 

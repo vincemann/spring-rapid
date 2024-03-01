@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-@Service
 @Secured
+@Service
 public class SecuredVetService
         extends AbstractSecuredUserServiceDecorator<VetService, Vet, Long>
         implements VetService

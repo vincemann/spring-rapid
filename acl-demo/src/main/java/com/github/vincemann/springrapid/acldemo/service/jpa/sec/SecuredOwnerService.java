@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -15,8 +16,8 @@ import java.util.Optional;
 /**
  * decorator securing owner Service
  */
-@Component
 @Secured
+@Service
 public class SecuredOwnerService
         extends AbstractSecuredUserServiceDecorator<OwnerService, Owner,Long>
         implements OwnerService{

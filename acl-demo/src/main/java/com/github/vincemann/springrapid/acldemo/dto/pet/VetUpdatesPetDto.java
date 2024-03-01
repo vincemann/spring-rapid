@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.acldemo.dto.pet;
 
 import com.github.vincemann.springrapid.acldemo.dto.pet.abs.AbstractPetDto;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
-import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.autobidir.resolveid.annotation.parent.BiDirParentId;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,14 +13,19 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
-public class CreatePetDto extends AbstractPetDto {
+public class VetUpdatesPetDto extends AbstractPetDto {
 
+    @NotNull
+    @Positive
+    private Long id;
+
+    private Set<Long> illnessIds = new HashSet<>();
 
     @NotNull
     @Positive
@@ -35,36 +39,19 @@ public class CreatePetDto extends AbstractPetDto {
         return super.getName();
     }
 
-    @NotNull
     @Positive
+    @NotNull
     @Override
     public Long getPetTypeId() {
         return super.getPetTypeId();
     }
 
 
-    @Builder
-    public CreatePetDto(String name, Long petTypeId, LocalDate birthDate, Long ownerId) {
+    public VetUpdatesPetDto(String name, Long petTypeId, LocalDate birthDate, Long id, Set<Long> illnessIds, Long ownerId) {
         super(name, petTypeId, birthDate);
+        this.id = id;
+        if (illnessIds != null)
+            this.illnessIds = illnessIds;
         this.ownerId = ownerId;
-    }
-
-    public CreatePetDto(Pet pet){
-        this(
-                pet.getName(),
-                pet.getPetType().getId(),
-                pet.getBirthDate(),
-                pet.getOwner().getId()
-        );
-    }
-
-    @Override
-    public String toString() {
-        return "CreatePetDto{" +
-                "name='" + getName() + '\'' +
-                ", petTypeId=" + getPetTypeId() +
-                ", ownerId=" + getOwnerId() +
-                ", birthDate=" + getBirthDate() +
-                '}';
     }
 }

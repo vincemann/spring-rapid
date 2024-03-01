@@ -14,14 +14,20 @@ import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerCreatesPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.CreateVetDto;
-import com.github.vincemann.springrapid.acldemo.dto.vet.FullVetDto;
+import com.github.vincemann.springrapid.acldemo.dto.vet.ReadVetDto;
+import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
+import com.github.vincemann.springrapid.acldemo.dto.visit.CreateVisitDto;
+import com.github.vincemann.springrapid.acldemo.dto.visit.ReadVisitDto;
 import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.repo.*;
 import com.github.vincemann.springrapid.acldemo.service.*;
 import com.github.vincemann.springrapid.auth.boot.AdminInitializer;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
+import com.github.vincemann.springrapid.auth.mail.MailData;
+import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,13 +51,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class MyIntegrationTest extends AclMvcTest
 {
 
-    //Types
-    protected final Vet VetType = new Vet();
-    protected final Specialty SpecialtyType = new Specialty();
-    protected final Owner OwnerType = new Owner();
-    protected final Pet PetType = new Pet();
-    protected final Illness IllnessType = new Illness();
-
 
     protected static final String CONTACT_INFORMATION_SUFFIX = "@guerilla-mail.com";
 
@@ -70,7 +69,7 @@ public class MyIntegrationTest extends AclMvcTest
 
     protected static final String VET_DICAPRIO = "Dicaprio";
     protected static final String VET_DICAPRIO_PASSWORD = "DicaprioPassword123?";
-    protected static final String VET_DICAPRIO_CONTACT_INFORMATION = VET_DICAPRIO+CONTACT_INFORMATION_SUFFIX;
+    protected static final String VET_DICAPRIO_EMAIL = VET_DICAPRIO+CONTACT_INFORMATION_SUFFIX;
 
     protected static final String OWNER_MEIER = "Meier";
     protected static final String OWNER_MEIER_PASSWORD = "MeierPassword123?";
@@ -307,6 +306,48 @@ public class MyIntegrationTest extends AclMvcTest
         adminInitializer.run();
     }
 
+    /**
+     * signup vet dicaprio with specialty heart and verify
+     */
+    protected Vet signupVetDiCaprioAndVerify() throws Exception {
+        signupVetDiCaprio();
+        // verify
+        MailData mailData = userController.verifyMailWasSend();
+        perform(userController.verifyContactInformationWithLink(mailData.getLink()))
+                .andExpect(status().is2xxSuccessful());
+
+        Vet saved = vetService.findByLastName(VET_DICAPRIO).get();
+        Assertions.assertFalse(saved.getRoles().contains(AuthRoles.UNVERIFIED));
+        return saved;
+    }
+
+    /**
+     * signup vet dicaprio with specialty heart
+     */
+    protected Vet signupVetDiCaprio() throws Exception {
+        // signup
+        vetDiCaprio.getSpecialtys().add(specialtyService.create(heart));
+        SignupVetDto dto = new SignupVetDto(vetDiCaprio);
+        ReadVetDto response = vetController.signup(dto);
+        Assertions.assertTrue(response.getRoles().contains(AuthRoles.UNVERIFIED));
+        return vetService.findById(response.getId()).get();
+    }
+
+    /**
+     * sign up owner kahn with its pet bella
+     */
+    protected Owner signupKahn() throws Exception {
+        Pet bella = petService.create(this.bella);
+        kahn.getPets().add(bella);
+        return signupOwner(kahn);
+    }
+
+    protected Owner signupOwner(Owner owner) throws Exception {
+        SignupOwnerDto dto = new SignupOwnerDto(owner);
+        ReadOwnOwnerDto response = ownerController.signup(dto);
+        return ownerService.findById(response.getId()).get();
+    }
+
     protected void assertVetHasSpecialties(String vetName, String... descriptions) {
         Optional<Vet> vetOptional = vetRepository.findByLastName(vetName);
         Assertions.assertTrue(vetOptional.isPresent());
@@ -383,65 +424,15 @@ public class MyIntegrationTest extends AclMvcTest
     }
 
 
-    protected Vet registerVet(Vet vet, String contactInformation, String password) throws Exception {
-        SignupDto signupDto = SignupDto.builder()
-                .contactInformation(contactInformation)
-                .password(password)
-                .build();
-        UUIDSignupResponseDto signedUpDto = performDs2xx(userController.signup(signupDto),UUIDSignupResponseDto.class);
-        String uuid = signedUpDto.getUuid();
 
-        CreateVetDto createVetDto = new CreateVetDto(vet,uuid);
-        FullVetDto fullVetDto = performDs2xx(vetController.create(createVetDto), FullVetDto.class);
-        return vetService.findById(fullVetDto.getId()).get();
-    }
+    protected Visit createVisit(String token, Visit visit) throws Exception {
+        CreateVisitDto dto = new CreateVisitDto(visit);
 
-    protected Vet registerEnabledVet(Vet vet, String contactInformation, String password) throws Exception {
-        Vet registerVet = registerVet(vet, contactInformation, password);
-        String adminToken = userController.login2xx(ADMIN_CONTACT_INFORMATION, ADMIN_PASSWORD);
-        String verifyVetJson = createUpdateJsonRequest(
-                createUpdateJsonLine("add", "/roles/-", MyRoles.VET),
-                createUpdateJsonLine("remove", "/roles", MyRoles.NEW_VET)
-        );
-
-        mvc.perform(userController.update(verifyVetJson, registerVet.getUser().getId().toString())
-                .header(HttpHeaders.AUTHORIZATION, adminToken))
-                .andExpect(status().is2xxSuccessful());
-
-        return vetRepository.findById(registerVet.getId()).get();
-    }
-
-
-    protected Visit createVisit(String token, Owner owner, Vet vet,Visit visit, Pet... pets) throws Exception {
-        VisitDto createVisitDto = new VisitDto(visit);
-        createVisitDto.setOwnerId(owner.getId());
-        createVisitDto.setPetIds(Arrays.stream(pets).map(Pet::getId).collect(Collectors.toSet()));
-        createVisitDto.setVetId(vet.getId());
-
-        VisitDto responseDto = performDs2xx(visitController.create(createVisitDto)
+        ReadVisitDto response = performDs2xx(visitController.create(dto)
                         .header(HttpHeaders.AUTHORIZATION,token)
-                , VisitDto.class);
-        return visitRepository.findById(responseDto.getId()).get();
+                , ReadVisitDto.class);
+        return visitRepository.findById(response.getId()).get();
     }
 
-    protected Owner signupOwner(Owner owner) throws Exception {
-        SignupOwnerDto dto = new SignupOwnerDto(owner);
-        ReadOwnOwnerDto response = ownerController.signup(dto);
-        return ownerService.findById(response.getId()).get();
-    }
 
-//    @AfterEach
-//    public void tearDown() {
-////        clearAclCache();
-////        aclCache.clearCache();
-//
-////        TransactionalRapidTestUtil.clear(visitService);
-////        TransactionalRapidTestUtil.clear(petService);
-////        TransactionalRapidTestUtil.clear(illnessService);
-////        TransactionalRapidTestUtil.clear(ownerService);
-////        TransactionalRapidTestUtil.clear(petTypeService);
-////        TransactionalRapidTestUtil.clear(specialtyService);
-////        TransactionalRapidTestUtil.clear(vetService);
-////        TransactionalRapidTestUtil.clear(userService);
-//    }
 }

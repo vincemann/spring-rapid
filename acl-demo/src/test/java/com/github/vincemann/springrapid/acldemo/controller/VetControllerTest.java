@@ -2,22 +2,24 @@ package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTest;
+import com.github.vincemann.springrapid.acldemo.dto.VisitDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.MyFullUserDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.CreateVetDto;
-import com.github.vincemann.springrapid.acldemo.dto.vet.FullVetDto;
+import com.github.vincemann.springrapid.acldemo.dto.vet.ReadVetDto;
+import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
+import com.github.vincemann.springrapid.acldemo.dto.visit.CreateVisitDto;
+import com.github.vincemann.springrapid.acldemo.dto.visit.ReadVisitDto;
 import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.service.VetService;
+import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
-import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-
-import java.util.Optional;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
 import static com.github.vincemann.ezcompare.PropertyMatchers.propertyAssert;
@@ -31,113 +33,123 @@ public class VetControllerTest extends MyIntegrationTest {
     VetService vetService;
 
     @Test
-    public void canRegisterVet() throws Exception {
-        SignupDto signupDto = SignupDto.builder()
-                .contactInformation(VET_DICAPRIO_CONTACT_INFORMATION)
-                .password(VET_DICAPRIO_PASSWORD)
-                .build();
-        UUIDSignupResponseDto signedUpDto = performDs2xx(userController.signup(signupDto), UUIDSignupResponseDto.class);
-        String uuid = signedUpDto.getUuid();
-        Assertions.assertNotNull(uuid);
+    public void canSignupVet() throws Exception {
+        // when
+        vetDiCaprio.getSpecialtys().add(specialtyService.create(heart));
+        SignupVetDto dto = new SignupVetDto(vetDiCaprio);
+        ReadVetDto response = vetController.signup(dto);
 
-        Optional<User> byUuid = userService.findByUuid(uuid);
-        Assertions.assertTrue(byUuid.isPresent());
+        // then
+        Assertions.assertEquals(VET_DICAPRIO,response.getLastName());
+        Assertions.assertEquals(VET_DICAPRIO,response.getContactInformation());
+        Assertions.assertTrue(response.getRoles().contains(MyRoles.VET));
+        Assertions.assertTrue(response.getRoles().contains(AuthRoles.USER));
+        Assertions.assertTrue(response.getRoles().contains(AuthRoles.UNVERIFIED));
+        Assertions.assertEquals(2,response.getRoles().size());
 
-
-        CreateVetDto createVetDto = new CreateVetDto(vetDiCaprio, uuid);
-        FullVetDto createdDto = performDs2xx(vetController.create(createVetDto), FullVetDto.class);
-
-        compare(createVetDto).with(createdDto)
-                .properties()
-                .all()
-                .ignore(createVetDto::getId)
-                .ignore(createVetDto::getUuid)
-                .assertEqual();
-
-
-        byUuid = userService.findByUuid(uuid);
-        Assertions.assertFalse(byUuid.isPresent());
-
-        Optional<User> vetDiCaprioUserByContactInformation = userService.findByContactInformation(VET_DICAPRIO_CONTACT_INFORMATION);
-        Assertions.assertTrue(vetDiCaprioUserByContactInformation.isPresent());
-        User dbUserDiCaprio = vetDiCaprioUserByContactInformation.get();
-
-        propertyAssert(dbUserDiCaprio)
-                .assertContains(dbUserDiCaprio::getRoles, MyRoles.NEW_VET, AuthRoles.UNVERIFIED, AuthRoles.USER)
-                .assertSize(dbUserDiCaprio::getRoles, 3)
-                .assertEquals(dbUserDiCaprio::getContactInformation, VET_DICAPRIO_CONTACT_INFORMATION)
-                .assertNotNull(dbUserDiCaprio::getPassword)
-                .assertNull(dbUserDiCaprio::getUuid);
-
-
-        Optional<Vet> vetDiCaprioByLastName = vetService.findByLastName(VET_DICAPRIO);
-        Assertions.assertTrue(vetDiCaprioByLastName.isPresent());
-        Vet dbDiCaprio = vetDiCaprioByLastName.get();
-
-        Assertions.assertEquals(dbUserDiCaprio, dbDiCaprio.getUser());
+        Assertions.assertTrue(vetService.findByLastName(VET_DICAPRIO).isPresent());
+        Assertions.assertTrue(vetService.findByContactInformation(VET_DICAPRIO_EMAIL).isPresent());
     }
 
     @Test
-    public void newVetCantReadPets() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
-        Pet dbBella = petRepository.findByName(BELLA).get();
+    public void givenVetSignedUp_canVerify() throws Exception {
+        // given
+        signupVetDiCaprio();
 
-        Vet vet = registerVet(vetDiCaprio, VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
-        String dicaprioToken = userController.login2xx(VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
+        // when
+        MailData mailData = userController.verifyMailWasSend();
+        perform(userController.verifyContactInformationWithLink(mailData.getLink()))
+        // then
+                .andExpect(status().is2xxSuccessful());
 
-        mvc.perform(petController.find(dbBella.getId().toString())
-                .header(HttpHeaders.AUTHORIZATION, dicaprioToken))
+        Vet saved = vetService.findByLastName(VET_DICAPRIO).get();
+        Assertions.assertFalse(saved.getRoles().contains(AuthRoles.UNVERIFIED));
+    }
+
+    @Test
+    public void unverifiedVetCanReadPets() throws Exception {
+        // given
+        signupVetDiCaprio();
+        Pet bella = petService.create(this.bella);
+
+        // when
+        String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+
+        mvc.perform(petController.find(bella.getId().toString())
+                .header(HttpHeaders.AUTHORIZATION, token))
+        // then
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    public void verifiedVetCanCreateVisit() throws Exception {
+        // given
+        Vet dicaprio = signupVetDiCaprioAndVerify();
+        Owner kahn = signupKahn();
+        Pet bella = petRepository.findByName(BELLA).get();
+
+
+        // when
+        checkTeethVisit.setVet(dicaprio);
+        checkTeethVisit.setOwner(kahn);
+        checkTeethVisit.getPets().add(bella);
+        CreateVisitDto dto = new CreateVisitDto(checkTeethVisit);
+        String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        ReadVisitDto response = performDs2xx(visitController.create(dto)
+                        .header(HttpHeaders.AUTHORIZATION,token)
+                , ReadVisitDto.class);
+        // then
+        Assertions.assertNotNull(response.getId());
+        Assertions.assertEquals(checkHeartVisit.getReason(),response.getReason());
+    }
+
+    @Test
+    public void unverifiedVetCantCreateVisit() throws Exception {
+        // given
+        Vet dicaprio = signupVetDiCaprio();
+        Owner kahn = signupKahn();
+        Pet bella = petRepository.findByName(BELLA).get();
+
+        // when
+        checkTeethVisit.setVet(dicaprio);
+        checkTeethVisit.setOwner(kahn);
+        checkTeethVisit.getPets().add(bella);
+        CreateVisitDto dto = new CreateVisitDto(checkTeethVisit);
+        String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        perform(visitController.create(dto)
+                        .header(HttpHeaders.AUTHORIZATION,token))
+        // then
                 .andExpect(status().isForbidden());
-    }
-
-
-
-    @Test
-    public void canRegisterVet_andAdminEnables() throws Exception {
-        Vet vet = registerVet(vetDiCaprio, VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
-        String adminToken = userController.login2xx(ADMIN_CONTACT_INFORMATION, ADMIN_PASSWORD);
-        String verifyVetJson = createUpdateJsonRequest(
-                createUpdateJsonLine("add", "/roles/-", MyRoles.VET),
-                createUpdateJsonLine("remove", "/roles", MyRoles.NEW_VET)
-        );
-
-        MyFullUserDto responseVetUserDto = performDs2xx(userController.update(verifyVetJson, vet.getUser().getId().toString())
-                .header(HttpHeaders.AUTHORIZATION, adminToken), MyFullUserDto.class);
-
-        Vet updatedDbVet = vetRepository.findById(vet.getId()).get();
-        propertyAssert(responseVetUserDto)
-                .assertContains(responseVetUserDto::getRoles, MyRoles.VET, AuthRoles.UNVERIFIED, AuthRoles.USER)
-                .assertSize(responseVetUserDto::getRoles, 3);
-
-        propertyAssert(updatedDbVet.getUser())
-                .assertContains(UserType::getRoles, MyRoles.VET, AuthRoles.UNVERIFIED, AuthRoles.USER)
-                .assertSize(UserType::getRoles, 3);
+        Assertions.assertTrue(visitService.findAll().isEmpty());
     }
 
     @Test
-    public void enabledVetCanReadPets() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
-        Pet dbBella = petRepository.findByName(BELLA).get();
+    public void cantCreateVisitForOwnerAndPetsNotOwnedByOwner() throws Exception {
+        // given
+        Vet dicaprio = signupVetDiCaprioAndVerify();
+        Owner kahn = signupKahn(); // kahn is linked to bella not bello
+        Pet bello = petRepository.findByName(BELLO).get();
 
-        Vet vet = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
-        String dicaprioToken = userController.login2xx(VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
-
-        FullPetDto responsePetDto = performDs2xx(petController.find(dbBella.getId().toString())
-                .header(HttpHeaders.AUTHORIZATION, dicaprioToken), FullPetDto.class);
-
-        compare(responsePetDto).with(dbBella)
-                .properties().all()
-                .ignore(RapidTestUtil.dtoIdProperties(FullPetDto.class))
-                .assertEqual();
+        // when
+        checkTeethVisit.setVet(dicaprio);
+        checkTeethVisit.setOwner(kahn);
+        checkTeethVisit.getPets().add(bello); // setting bello here, which is not owner by kahn
+        CreateVisitDto dto = new CreateVisitDto(checkTeethVisit);
+        String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        perform(visitController.create(dto)
+                .header(HttpHeaders.AUTHORIZATION,token))
+                // then
+                .andExpect(status().isForbidden());
+        Assertions.assertTrue(visitService.findAll().isEmpty());
     }
 
     @Test
-    public void enabledVetCanUpdatePetsIllnesses() throws Exception {
+    public void verifiedVetCanUpdatePetsIllnesses() throws Exception {
         registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
         Pet dbBella = petRepository.findByName(BELLA).get();
         Illness dbTeethPain = illnessRepository.save(teethPain);
-        Vet vet = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
-        String vetToken = userController.login2xx(VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
+        Vet vet = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String vetToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
 
         String updateJson = createUpdateJsonRequest(
                 createUpdateJsonLine("add", "/illnessIds", dbTeethPain.getId().toString())
