@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
@@ -372,7 +371,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         compare(kahn).with(responseDto)
                 .properties().all()
                 .assertEqual();
-        Assertions.assertEquals(Owner.DIRTY_SECRET,responseDto.getDirtySecret());
+        Assertions.assertEquals(Owner.SECRET,responseDto.getDirtySecret());
 
         RapidSecurityContext.unsetAuthenticated();
     }
@@ -408,7 +407,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(2,responseDtos.size());
         ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
-        Assertions.assertEquals(Owner.DIRTY_SECRET,kahnDto.getDirtySecret());
+        Assertions.assertEquals(Owner.SECRET,kahnDto.getDirtySecret());
         ReadOwnOwnerDto meierDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedMeier.getId()));
         Assertions.assertNull(meierDto.getDirtySecret());
     }
@@ -452,7 +451,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
         // content
         ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
-        Assertions.assertEquals(Owner.DIRTY_SECRET,kahnDto.getDirtySecret());
+        Assertions.assertEquals(Owner.SECRET,kahnDto.getDirtySecret());
         ReadOwnOwnerDto meierDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedMeier.getId()));
         Assertions.assertNull(meierDto.getDirtySecret());
 
@@ -474,7 +473,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
 
         // content
         kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
-        Assertions.assertEquals(Owner.DIRTY_SECRET,kahnDto.getDirtySecret());
+        Assertions.assertEquals(Owner.SECRET,kahnDto.getDirtySecret());
         meierDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedMeier.getId()));
         Assertions.assertNull(meierDto.getDirtySecret());
     }
@@ -516,7 +515,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(1,responseDtos.size());
         ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
-        Assertions.assertEquals(Owner.DIRTY_SECRET,kahnDto.getDirtySecret());
+        Assertions.assertEquals(Owner.SECRET,kahnDto.getDirtySecret());
     }
 
     // combine jpql filter with two memory filters
@@ -612,7 +611,7 @@ public class OwnerControllerIntegrationTest extends MyControllerIntegrationTest 
         Assertions.assertEquals(1,responseDtos.size());
         ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
         Assertions.assertNotNull(kahnDto.getDirtySecret());
-        Assertions.assertEquals(Owner.DIRTY_SECRET,kahnDto.getDirtySecret());
+        Assertions.assertEquals(Owner.SECRET,kahnDto.getDirtySecret());
 
         compare(kahnDto).with(savedKahn)
                 .properties()

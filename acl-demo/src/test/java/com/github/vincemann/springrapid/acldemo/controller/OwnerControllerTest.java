@@ -29,7 +29,7 @@ public class OwnerControllerTest extends MyIntegrationTest {
         SignupOwnerDto dto = new SignupOwnerDto(testData.getKahn());
 
         ReadOwnOwnerDto response = ownerController.signup(dto);
-        Assertions.assertEquals(Owner.DIRTY_SECRET, response.getDirtySecret());
+        Assertions.assertEquals(Owner.SECRET, response.getDirtySecret());
 
         Assertions.assertTrue(ownerService.findByLastName(OWNER_KAHN).isPresent());
         Assertions.assertTrue(ownerService.findByContactInformation(OWNER_KAHN_EMAIL).isPresent());

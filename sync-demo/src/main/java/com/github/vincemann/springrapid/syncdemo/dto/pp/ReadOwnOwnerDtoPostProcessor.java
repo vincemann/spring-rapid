@@ -16,6 +16,6 @@ public class ReadOwnOwnerDtoPostProcessor implements DtoPostProcessor<ReadOwnOwn
 
     @Override
     public void postProcessDto(ReadOwnOwnerDto readOwnOwnerDto, Owner entity, String... fieldsToMap) throws BadEntityException {
-        readOwnOwnerDto.setDirtySecret(Owner.DIRTY_SECRET);
+        readOwnOwnerDto.setDirtySecret(Owner.SECRET);
     }
 }

@@ -24,6 +24,10 @@ public abstract class MvcControllerTestTemplate<C> implements MvcAware {
         this.mvc = mvc;
     }
 
+    public ResultActions perform(RequestBuilder requestBuilder) throws Exception {
+        return mvc.perform(requestBuilder);
+    }
+
     public ResultActions perform2xx(RequestBuilder requestBuilder) throws Exception {
         return mvc.perform(requestBuilder).andExpect(status().is2xxSuccessful());
     }

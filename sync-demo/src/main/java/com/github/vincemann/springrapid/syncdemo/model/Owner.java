@@ -24,7 +24,7 @@ import java.util.Set;
 @Table(name = "owners", uniqueConstraints = @UniqueConstraint(name = "unique last name", columnNames = "last_name"))
 public class Owner extends Person {
 
-    public static final String DIRTY_SECRET = "myDirtSecret";
+    public static final String SECRET = "mySecret";
 
     @OneToMany(mappedBy = "owner",fetch = FetchType.EAGER)
     @JsonManagedReference

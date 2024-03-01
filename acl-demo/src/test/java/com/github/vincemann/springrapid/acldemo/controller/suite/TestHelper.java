@@ -93,7 +93,7 @@ public class TestHelper implements TestMethodInitializable, MvcAware {
     /**
      * signup vet dicaprio with specialty heart and verify
      */
-    protected Vet signupVetDiCaprioWithHeartAndVerify() throws Exception {
+    public Vet signupVetDiCaprioWithHeartAndVerify() throws Exception {
         signupVetDiCaprioWithHeart();
         // verify
         MailData mailData = userController.verifyMailWasSend();
@@ -107,7 +107,7 @@ public class TestHelper implements TestMethodInitializable, MvcAware {
     /**
      * signup vet dicaprio with specialty heart
      */
-    protected Vet signupVetDiCaprioWithHeart() throws Exception {
+    public Vet signupVetDiCaprioWithHeart() throws Exception {
         // signup
         Vet diCaprio = testData.getVetDiCaprio();
         diCaprio.getSpecialtys().add(specialtyService.create(testData.getHeart()));

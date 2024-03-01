@@ -73,7 +73,7 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
     }
 
 
-    public  MockHttpServletRequestBuilder findAll(UrlWebExtension... extensions) throws Exception {
+    public MockHttpServletRequestBuilder findAll(UrlWebExtension... extensions) throws Exception {
         MockHttpServletRequestBuilder requestBuilder = get(controller.getFindAllUrl());
         RapidTestUtil.addUrlExtensionsToRequest(applicationContext,requestBuilder,extensions);
         return requestBuilder;
