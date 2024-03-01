@@ -47,11 +47,6 @@ public class JpaPetService
         aclService.grantRolePermissionForEntity(MyRoles.VET, pet, BasePermission.READ, BasePermission.WRITE);
     }
 
-    @Override
-    public Class<?> getTargetClass() {
-        return JpaPetService.class;
-    }
-
     @Autowired
     public void setAclService(RapidAclService aclService) {
         this.aclService = aclService;

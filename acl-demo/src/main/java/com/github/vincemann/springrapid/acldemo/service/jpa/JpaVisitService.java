@@ -39,7 +39,7 @@ public class JpaVisitService
     public void removeSpectator(Long spectatorId, Long visitId) throws EntityNotFoundException {
         User spectator = ownerService.findPresentById(spectatorId);
         Visit visit = findPresentById(visitId);
-        aclService.revokeUsersPermissionForEntityIfGranted(spectator.getContactInformation(),visit,BasePermission.READ);
+        aclService.revokeRolesPermissionForEntity(spectator.getContactInformation(),visit,true,BasePermission.READ);
     }
 
     @Transactional

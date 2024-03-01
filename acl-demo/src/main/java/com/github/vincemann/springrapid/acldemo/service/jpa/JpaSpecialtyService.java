@@ -19,9 +19,4 @@ public class JpaSpecialtyService
     public Optional<Specialty> findByDescription(String description) {
         return getRepository().findByDescription(description);
     }
-
-    @Override
-    public Class<?> getTargetClass() {
-        return JpaSpecialtyService.class;
-    }
 }

@@ -24,19 +24,10 @@ public class JpaVetService
         extends JpaUserService<Vet,Long, VetRepository>
                 implements VetService {
 
-
     @LogInteraction
     @Transactional
     @Override
     public Optional<Vet> findByLastName(String lastName) {
         return getRepository().findByLastName(lastName);
     }
-
-
-
-    @Override
-    public Class<?> getTargetClass() {
-        return JpaVetService.class;
-    }
-
 }

@@ -10,10 +10,7 @@ import javax.persistence.PersistenceContext;
 import java.util.Optional;
 
 @Component
-public class PetOwnerLocator implements OwnerLocator<Pet> {
-
-    @PersistenceContext
-    private EntityManager entityManager;
+public class PetsOwnerLocator implements OwnerLocator<Pet> {
 
     @Override
     public boolean supports(Class clazz) {
@@ -23,6 +20,6 @@ public class PetOwnerLocator implements OwnerLocator<Pet> {
     @Transactional
     @Override
     public Optional<String> find(Pet pet) {
-        return Optional.of(pet.getOwner().getUser().getContactInformation());
+        return Optional.of(pet.getOwner().getContactInformation());
     }
 }

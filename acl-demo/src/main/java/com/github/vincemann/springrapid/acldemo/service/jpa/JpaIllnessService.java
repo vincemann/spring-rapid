@@ -20,8 +20,4 @@ public class JpaIllnessService
         return getRepository().findByName(name);
     }
 
-    @Override
-    public Class<?> getTargetClass() {
-        return JpaIllnessService.class;
-    }
 }
