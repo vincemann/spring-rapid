@@ -3,11 +3,10 @@ package com.github.vincemann.springrapid.coretest.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
 import com.github.vincemann.springrapid.coretest.MvcAware;
+import com.github.vincemann.springrapid.coretest.JsonHelper;
 import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.InitializingBean;
@@ -31,7 +30,6 @@ import java.util.function.Predicate;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @Getter
@@ -44,7 +42,6 @@ public abstract class AbstractMvcTest extends InitializingTest implements Initia
 
     protected MockMvc mvc;
     private WebApplicationContext wac;
-    protected JsonMapper jsonMapper;
 
 
     @Override
@@ -75,57 +72,6 @@ public abstract class AbstractMvcTest extends InitializingTest implements Initia
     }
 
 
-    public ResultActions perform2xx(RequestBuilder requestBuilder) throws Exception {
-        return getMvc().perform(requestBuilder).andExpect(status().is2xxSuccessful());
-    }
-
-    public ResultActions perform(RequestBuilder requestBuilder) throws Exception {
-        return getMvc().perform(requestBuilder);
-    }
-
-
-    /**
-     * perform, expect 2xx and deserialize result to dtoClass
-     */
-    public <Dto> Dto performDs2xx(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
-       return performDsWithStatus(requestBuilder,status().is2xxSuccessful(),dtoClass);
-    }
-
-    public <Dto> Set<Dto> performDs2xxSet(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
-        return deserializeToSet(getMvc().perform(requestBuilder)
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString(),dtoClass);
-    }
-    public <Dto> List<Dto> performDs2xxList(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
-        return deserializeToList(getMvc().perform(requestBuilder)
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString(),dtoClass);
-    }
-
-
-    public <Dto> Dto performDsWithStatus(RequestBuilder requestBuilder, ResultMatcher status, Class<Dto> dtoClass) throws Exception {
-        return deserialize(getMvc().perform(requestBuilder)
-                .andExpect(status)
-                .andReturn().getResponse().getContentAsString(),dtoClass);
-    }
-
-
-    public  <Dto> Dto deserialize(String s, Class<Dto> dtoClass) throws IOException {
-        return (Dto) jsonMapper.readDto(s,dtoClass);
-    }
-
-    public  <Dto> Set<Dto> deserializeToSet(String s, Class<Dto> dtoClass) throws IOException {
-        CollectionType setType = jsonMapper.getObjectMapper()
-                .getTypeFactory().constructCollectionType(Set.class, dtoClass);
-        return deserialize(s, setType);
-    }
-
-    public  <Dto> List<Dto> deserializeToList(String s, Class<Dto> dtoClass) throws IOException {
-        CollectionType setType = jsonMapper.getObjectMapper()
-                .getTypeFactory().constructCollectionType(List.class, dtoClass);
-        return deserialize(s, setType);
-    }
-
     public <E> E assertCanFindInCollection(Collection<E> collection, Predicate<E> predicate){
         Optional<E> entity = collection.stream().filter(predicate::test).findFirst();
         Assertions.assertTrue(entity.isPresent(),"could not find entity in collection");
@@ -138,18 +84,6 @@ public abstract class AbstractMvcTest extends InitializingTest implements Initia
         return filtered.get();
     }
 
-    public  <Dto> Dto deserialize(String s, TypeReference<?> dtoClass) throws IOException {
-        return (Dto) jsonMapper.readDto(s,dtoClass);
-    }
-
-    public  <Dto> Dto deserialize(String s, JavaType dtoClass) throws IOException {
-        return (Dto) jsonMapper.readDto(s,dtoClass);
-    }
-
-    @Autowired
-    public void setJsonMapper(JsonMapper jsonMapper) {
-        this.jsonMapper = jsonMapper;
-    }
 
     @Autowired
     public void setWac(WebApplicationContext wac) {

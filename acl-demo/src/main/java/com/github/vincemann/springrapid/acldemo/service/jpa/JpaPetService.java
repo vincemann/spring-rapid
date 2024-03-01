@@ -34,7 +34,7 @@ public class JpaPetService
 
     @Transactional
     @Override
-    public Optional<Pet> findNyName(String name) {
+    public Optional<Pet> findByName(String name) {
         return getRepository().findByName(name);
     }
 

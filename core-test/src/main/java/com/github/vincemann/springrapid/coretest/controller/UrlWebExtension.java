@@ -28,10 +28,10 @@ import java.util.List;
 @Getter
 public class UrlWebExtension {
 
-    Class<? extends WebExtension> extensionType;
+    Class<? extends WebExtension<?>> extensionType;
     String[] args;
 
-    public UrlWebExtension(Class<? extends WebExtension> extensionType, String... args) {
+    public UrlWebExtension(Class<? extends WebExtension<?>> extensionType, String... args) {
         this.extensionType = extensionType;
         this.args = args;
     }

@@ -35,8 +35,8 @@ public class SecuredPetService
 
     @Transactional
     @Override
-    public Optional<Pet> findNyName(String name) {
-        Optional<Pet> pet = getDecorated().findNyName(name);
+    public Optional<Pet> findByName(String name) {
+        Optional<Pet> pet = getDecorated().findByName(name);
         pet.ifPresent(p -> getAclTemplate().checkPermission(p,BasePermission.READ));
         return pet;
     }

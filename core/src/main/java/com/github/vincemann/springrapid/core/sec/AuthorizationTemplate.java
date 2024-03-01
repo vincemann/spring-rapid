@@ -8,26 +8,23 @@ public class AuthorizationTemplate {
     private AuthorizationTemplate(){}
 
     public static void assertAuthenticated() throws AccessDeniedException {
-        boolean authenticated = RapidSecurityContext.isAuthenticated();
-        VerifyAccess.condition(authenticated,"No Authenticated User");
+        VerifyAccess.condition(RapidSecurityContext.isAuthenticated(),"Must be authenticated");
     }
 
 
     public static void assertHasRoles(String... roles) throws AccessDeniedException {
         assertAuthenticated();
-        for (String required : roles) {
-            if (!RapidSecurityContext.hasRole(required)){
-                throw new AccessDeniedException("User does not have requested role: " + required);
-            }
+        for (String role : roles) {
+            VerifyAccess.condition(
+                    RapidSecurityContext.hasRole(role),"User does not have required role: " + role);
         }
     }
 
     public static void assertNotHasRoles(String... roles) throws AccessDeniedException {
         assertAuthenticated();
-        for (String required : roles) {
-            if (RapidSecurityContext.hasRole(required)){
-                throw new AccessDeniedException("User has forbidden role: " + required);
-            }
+        for (String role : roles) {
+            VerifyAccess.condition(
+                    !RapidSecurityContext.hasRole(role),"User has forbidden role: " + role);
         }
     }
 

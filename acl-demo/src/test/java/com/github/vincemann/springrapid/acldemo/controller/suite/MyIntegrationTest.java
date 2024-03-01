@@ -1,333 +1,77 @@
 package com.github.vincemann.springrapid.acldemo.controller.suite;
 
 import com.github.vincemann.acltest.AclMvcTest;
-import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VisitControllerTestTemplate;
-import com.github.vincemann.springrapid.acldemo.dto.VisitDto;
-import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
-import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
-import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerCreatesPetDto;
-import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
-import com.github.vincemann.springrapid.acldemo.dto.vet.CreateVetDto;
-import com.github.vincemann.springrapid.acldemo.dto.vet.ReadVetDto;
-import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
-import com.github.vincemann.springrapid.acldemo.dto.visit.CreateVisitDto;
-import com.github.vincemann.springrapid.acldemo.dto.visit.ReadVisitDto;
 import com.github.vincemann.springrapid.acldemo.model.*;
-import com.github.vincemann.springrapid.acldemo.repo.*;
 import com.github.vincemann.springrapid.acldemo.service.*;
 import com.github.vincemann.springrapid.auth.boot.AdminInitializer;
-import com.github.vincemann.springrapid.auth.dto.SignupDto;
-import com.github.vincemann.springrapid.auth.mail.MailData;
-import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
-import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
-import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 // add admin before each test
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class MyIntegrationTest extends AclMvcTest
 {
 
-
-    protected static final String CONTACT_INFORMATION_SUFFIX = "@guerilla-mail.com";
-
-    // admin created via AdminInitializer before each test, see config
-    protected static final String ADMIN = "admin";
-    protected static final String ADMIN_PASSWORD = "AdminPassword123!";
-    protected static final String ADMIN_CONTACT_INFORMATION = "admin@example.com";
-
-    protected static final String VET_MAX = "Max";
-    protected static final String VET_MAX_PASSWORD = "MaxPassword123?";
-    protected static final String VET_MAX_EMAIL = VET_MAX +CONTACT_INFORMATION_SUFFIX;
-
-    protected static final String VET_POLDI = "Poldi";
-    protected static final String VET_POLDI_PASSWORD = "PoldiPassword123?";
-    protected static final String VET_POLDI_CONTACT_INFORMATION = VET_POLDI+CONTACT_INFORMATION_SUFFIX;
-
-    protected static final String VET_DICAPRIO = "Dicaprio";
-    protected static final String VET_DICAPRIO_PASSWORD = "DicaprioPassword123?";
-    protected static final String VET_DICAPRIO_EMAIL = VET_DICAPRIO+CONTACT_INFORMATION_SUFFIX;
-
-    protected static final String OWNER_MEIER = "Meier";
-    protected static final String OWNER_MEIER_PASSWORD = "MeierPassword123?";
-    protected static final String OWNER_MEIER_CONTACT_INFORMATION = OWNER_MEIER+CONTACT_INFORMATION_SUFFIX;
-
-    protected static final String OWNER_KAHN = "Kahn";
-    protected static final String OWNER_KAHN_PASSWORD = "KahnPassword123?";
-    protected static final String OWNER_KAHN_EMAIL = OWNER_KAHN+CONTACT_INFORMATION_SUFFIX;
-
-    protected static final String MUSCLE = "Muscle";
-    protected static final String DENTISM = "Dentism";
-    protected static final String GASTRO = "Gastro";
-    protected static final String HEART = "Heart";
-
-
-
-    protected static final String BELLO = "Bello";
-    protected static final String BELLA = "Bella";
-    protected static final String KITTY = "Kitty";
-
-    protected static final String GASTRITIS = "Gastritis";
-    protected static final String TEETH_PAIN = "teeth pain";
-    protected static final String WEAK_HEART = "wek heart";
-
-
-
-
-    protected Vet vetMax;
-    protected Vet vetPoldi;
-    protected Vet vetDiCaprio;
-
-    protected Specialty dentism;
-    protected Specialty gastro;
-    protected Specialty heart;
-    protected Specialty muscle;
-
-    protected Owner meier;
-    protected Owner kahn;
-
-    protected Pet bello;
-    protected Pet kitty;
-    protected Pet bella;
-
-    protected Illness gastritis;
-    protected Illness teethPain;
-    protected Illness weakHeart;
-
-    protected com.github.vincemann.springrapid.acldemo.model.PetType savedDogPetType;
-    protected PetType savedCatPetType;
-
-
-    protected Visit checkTeethVisit;
-    protected Visit checkHeartVisit;
-
     @Autowired
-    protected SpecialtyService specialtyService;
-
+    protected TestData testData;
     @Autowired
-    protected VetService vetService;
-
-
-    @Autowired
-    protected IllnessService illnessService;
-
-    @Autowired
-    protected PetService petService;
-
-
-
-    @Autowired
-    protected PetTypeService petTypeService;
-
-    @Autowired
-    protected VisitService visitService;
-
-    @Autowired
-    protected OwnerService ownerService;
-
-
-    @Autowired
-    protected UserControllerTestTemplate userController;
-
-    @Autowired
-    protected OwnerControllerTestTemplate ownerController;
-
-    @Autowired
-    protected PetControllerTestTemplate petController;
-
-    @Autowired
-    protected VetControllerTestTemplate vetController;
-
-    @Autowired
-    protected VisitControllerTestTemplate visitController;
-
-
+    protected TestHelper helper;
     @Autowired
     private AdminInitializer adminInitializer;
 
 
+    // services
+    @Autowired
+    protected SpecialtyService specialtyService;
+    @Autowired
+    protected VetService vetService;
+    @Autowired
+    protected IllnessService illnessService;
+    @Autowired
+    protected PetService petService;
+    @Autowired
+    protected PetTypeService petTypeService;
+    @Autowired
+    protected VisitService visitService;
+    @Autowired
+    protected OwnerService ownerService;
+
+    // controller
+    @Autowired
+    protected UserControllerTestTemplate userController;
+    @Autowired
+    protected OwnerControllerTestTemplate ownerController;
+    @Autowired
+    protected PetControllerTestTemplate petController;
+    @Autowired
+    protected VetControllerTestTemplate vetController;
+    @Autowired
+    protected VisitControllerTestTemplate visitController;
+
+
+    @BeforeEach
+    public void setup() throws Exception {
+        adminInitializer.run();
+    }
 
     @Override
     protected DefaultMockMvcBuilder createMvcBuilder() {
         DefaultMockMvcBuilder mvcBuilder = super.createMvcBuilder();
         mvcBuilder.apply(SecurityMockMvcConfigurers.springSecurity());
         return mvcBuilder;
-    }
-
-    @BeforeEach
-    public void setupTestData() throws Exception {
-
-        savedDogPetType = petTypeService.create(new PetType("Dog"));
-        savedCatPetType = petTypeService.create(new PetType("Cat"));
-
-
-        gastritis = Illness.builder()
-                .name(GASTRITIS)
-                .pets(new HashSet<>())
-                .build();
-
-        teethPain = Illness.builder()
-                .name(TEETH_PAIN)
-                .pets(new HashSet<>())
-                .build();
-
-        weakHeart = Illness.builder()
-                .name(WEAK_HEART)
-                .pets(new HashSet<>())
-                .build();
-
-
-
-        bello = Pet.builder()
-                .petType(savedDogPetType)
-                .name(BELLO)
-                .birthDate(LocalDate.now())
-                .build();
-
-        bella = Pet.builder()
-                .petType(savedDogPetType)
-                .name(BELLA)
-                .birthDate(LocalDate.now())
-                .build();
-
-        kitty = Pet.builder()
-                .petType(savedCatPetType)
-                .name(KITTY)
-                .birthDate(LocalDate.now())
-                .build();
-
-        meier = Owner.builder()
-                .firstName("Max")
-                .lastName(OWNER_MEIER)
-                .contactInformation(OWNER_MEIER_CONTACT_INFORMATION)
-                .password(OWNER_MEIER_PASSWORD)
-                .address("asljnflksamfslkmf")
-                .city("n1 city")
-                .telephone("0123456789")
-                .build();
-
-        kahn = Owner.builder()
-                .firstName("Olli")
-                .lastName(OWNER_KAHN)
-                .contactInformation(OWNER_KAHN_EMAIL)
-                .password(OWNER_KAHN_PASSWORD)
-                .address("asljnflksamfslkmf")
-                .city("n1 city")
-                .telephone("1234567890")
-                .build();
-
-        dentism = Specialty.builder()
-                .description(DENTISM)
-                .build();
-
-        heart = Specialty.builder()
-                .description(HEART)
-                .build();
-
-        muscle = Specialty.builder()
-                .description(MUSCLE)
-                .build();
-
-        gastro = Specialty.builder()
-                .description(GASTRO)
-                .build();
-
-        vetMax = Vet.builder()
-                .firstName("Max")
-                .lastName(VET_MAX)
-                .specialtys(new HashSet<>())
-                .build();
-
-        vetDiCaprio = Vet.builder()
-                .firstName("michael")
-                .lastName(VET_DICAPRIO)
-                .specialtys(new HashSet<>())
-                .build();
-
-        vetPoldi = Vet.builder()
-                .firstName("Olli")
-                .lastName(VET_POLDI)
-                .specialtys(new HashSet<>())
-                .build();
-
-        checkHeartVisit = Visit.builder()
-                .date(LocalDate.now())
-                .pets(new HashSet<>())
-                .reason("heart problems")
-                .build();
-
-        checkTeethVisit = Visit.builder()
-                .date(LocalDate.now())
-                .pets(new HashSet<>())
-                .reason("teeth hurt")
-                .build();
-
-        adminInitializer.run();
-    }
-
-    /**
-     * signup vet dicaprio with specialty heart and verify
-     */
-    protected Vet signupVetDiCaprioAndVerify() throws Exception {
-        signupVetDiCaprio();
-        // verify
-        MailData mailData = userController.verifyMailWasSend();
-        perform(userController.verifyContactInformationWithLink(mailData.getLink()))
-                .andExpect(status().is2xxSuccessful());
-
-        Vet saved = vetService.findByLastName(VET_DICAPRIO).get();
-        Assertions.assertFalse(saved.getRoles().contains(AuthRoles.UNVERIFIED));
-        return saved;
-    }
-
-    /**
-     * signup vet dicaprio with specialty heart
-     */
-    protected Vet signupVetDiCaprio() throws Exception {
-        // signup
-        vetDiCaprio.getSpecialtys().add(specialtyService.create(heart));
-        SignupVetDto dto = new SignupVetDto(vetDiCaprio);
-        ReadVetDto response = vetController.signup(dto);
-        Assertions.assertTrue(response.getRoles().contains(AuthRoles.UNVERIFIED));
-        return vetService.findById(response.getId()).get();
-    }
-
-    /**
-     * sign up owner kahn with its pet bella
-     */
-    protected Owner signupKahn() throws Exception {
-        Pet bella = petService.create(this.bella);
-        kahn.getPets().add(bella);
-        return signupOwner(kahn);
-    }
-
-    protected Owner signupOwner(Owner owner) throws Exception {
-        SignupOwnerDto dto = new SignupOwnerDto(owner);
-        ReadOwnOwnerDto response = ownerController.signup(dto);
-        return ownerService.findById(response.getId()).get();
     }
 
     protected void assertVetHasSpecialties(String vetName, String... descriptions) {
@@ -367,7 +111,7 @@ public class MyIntegrationTest extends AclMvcTest
 
         Set<Illness> illnesses = new HashSet<>();
         for (String illness : illnessNames) {
-            Optional<Illness> optionalIllness = illnessRepository.findByName(illness);
+            Optional<Illness> optionalIllness = illnessService.findByName(illness);
             Assertions.assertTrue(optionalIllness.isPresent());
             illnesses.add(optionalIllness.get());
         }
@@ -376,13 +120,13 @@ public class MyIntegrationTest extends AclMvcTest
     }
 
     protected void assertOwnerHasPets(String ownerName, String... petNames) {
-        Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
+        Optional<Owner> ownerOptional = ownerService.findByLastName(ownerName);
         Assertions.assertTrue(ownerOptional.isPresent());
         Owner owner = ownerOptional.get();
 
         Set<Pet> pets = new HashSet<>();
         for (String petName : petNames) {
-            Optional<Pet> optionalPet = petRepository.findByName(petName);
+            Optional<Pet> optionalPet = petService.findByName(petName);
             Assertions.assertTrue(optionalPet.isPresent());
             pets.add(optionalPet.get());
         }
@@ -394,27 +138,14 @@ public class MyIntegrationTest extends AclMvcTest
     protected void assertPetHasOwner(String petName, String ownerName) {
         Owner owner = null;
         if (ownerName!=null){
-            Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
+            Optional<Owner> ownerOptional = ownerService.findByLastName(ownerName);
             Assertions.assertTrue(ownerOptional.isPresent());
             owner = ownerOptional.get();
         }
-        Optional<Pet> optionalPet = petRepository.findByName(petName);
+        Optional<Pet> optionalPet = petService.findByName(petName);
         Assertions.assertTrue(optionalPet.isPresent());
         Pet pet = optionalPet.get();
         System.err.println("Checking pet: " + petName);
         Assertions.assertEquals(owner, pet.getOwner());
     }
-
-
-
-    protected Visit createVisit(String token, Visit visit) throws Exception {
-        CreateVisitDto dto = new CreateVisitDto(visit);
-
-        ReadVisitDto response = performDs2xx(visitController.create(dto)
-                        .header(HttpHeaders.AUTHORIZATION,token)
-                , ReadVisitDto.class);
-        return visitRepository.findById(response.getId()).get();
-    }
-
-
 }

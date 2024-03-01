@@ -15,6 +15,6 @@ public interface JsonMapper {
     <T> T readDto(String json, JavaType dtoClass) throws JsonProcessingException;
     <T> T readDto(String json, TypeReference<?> dtoClass) throws JsonProcessingException;
     String writeDto(Object dto) throws JsonProcessingException;
-    // todo only temporary workaround, maybe hust use ObjectMapper without interface
+    // todo only temporary workaround
     public ObjectMapper getObjectMapper();
 }

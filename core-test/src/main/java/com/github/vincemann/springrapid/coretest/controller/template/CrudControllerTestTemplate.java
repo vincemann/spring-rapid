@@ -5,9 +5,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.controller.CrudController;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
+import com.github.vincemann.springrapid.coretest.JsonHelper;
+import com.github.vincemann.springrapid.coretest.MvcHelper;
 import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import lombok.Getter;
@@ -29,25 +29,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Getter
 public abstract class CrudControllerTestTemplate<C extends CrudController>
-        extends MvcControllerTestTemplate<C> {
+        extends MvcControllerTestTemplate<C>
+{
 
     @Autowired
     private ApplicationContext applicationContext;
 
+
+    // CRUD CONTROLLER METHODS
+
     public MockHttpServletRequestBuilder delete(Serializable id) throws Exception {
         return MockMvcRequestBuilders.delete(controller.getDeleteUrl())
-                /*.contentType(getContentType())*/
                 .param("id",id.toString());
     }
 
     public MockHttpServletRequestBuilder find(Serializable id) throws Exception {
         return get(controller.getFindUrl())
-                /*.contentType(getContentType())*/
                 .param("id",id.toString());
     }
 
     public MockHttpServletRequestBuilder update(String patchString,Serializable id) throws Exception {
-//        String fullUpdateQueryParam = getController().getFullUpdateQueryParam();
         return put(controller.getUpdateUrl())
                 .param("id",id.toString())
                 .content(patchString)
@@ -61,27 +62,8 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
                 .contentType(MediaType.APPLICATION_JSON_VALUE);
     }
 
-
-    public <Dto> Dto performDs2xx(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
-        return performDsWithStatus(requestBuilder,status().is2xxSuccessful(),dtoClass);
-    }
-
-    public <Dto> Dto performDsWithStatus(RequestBuilder requestBuilder, ResultMatcher status, Class<Dto> dtoClass) throws Exception {
-        return deserialize(getMvc().perform(requestBuilder)
-                .andExpect(status)
-                .andReturn().getResponse().getContentAsString(),dtoClass);
-    }
-
-    public ResultActions perform2xx(RequestBuilder requestBuilder) throws Exception {
-        return getMvc().perform(requestBuilder).andExpect(status().is2xxSuccessful());
-    }
-
-    public ResultActions perform(RequestBuilder requestBuilder) throws Exception {
-        return getMvc().perform(requestBuilder);
-    }
-
     public  MockHttpServletRequestBuilder findAll() throws Exception {
-        return get(getController().getFindAllUrl())/*.contentType(getContentType())*/;
+        return get(getController().getFindAllUrl());
     }
 
     public  MockHttpServletRequestBuilder findSome(Set<String> ids) throws Exception {
@@ -97,34 +79,64 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
         return requestBuilder;
     }
 
-    public <E extends IdentifiableEntity<?>> E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {
-        return (E) getController().getDtoMapper().mapToEntity(dto, controller.getEntityClass());
+
+    // MVC PERFORM
+
+
+    /**
+     * perform, expect 2xx and deserialize result to dtoClass
+     */
+    public <Dto> Dto performDs2xx(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
+        return performDsWithStatus(requestBuilder,status().is2xxSuccessful(),dtoClass);
     }
+
+    public <Dto> Dto performDsWithStatus(RequestBuilder requestBuilder, ResultMatcher status, Class<Dto> dtoClass) throws Exception {
+        return deserialize(mvc.perform(requestBuilder)
+                .andExpect(status)
+                .andReturn().getResponse().getContentAsString(),dtoClass);
+    }
+
+    public <Dto> Set<Dto> performDs2xxSet(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
+        return deserializeToSet(mvc.perform(requestBuilder)
+                .andExpect(status().is2xxSuccessful())
+                .andReturn().getResponse().getContentAsString(),dtoClass);
+    }
+    public <Dto> List<Dto> performDs2xxList(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
+        return deserializeToList(mvc.perform(requestBuilder)
+                .andExpect(status().is2xxSuccessful())
+                .andReturn().getResponse().getContentAsString(),dtoClass);
+    }
+
+
+    // SERIALIZATION
+
 
     public  <Dto> Dto deserialize(String s, Class<Dto> dtoClass) throws IOException {
-        return getController().getJsonMapper().readDto(s, dtoClass);
+        return controller.getJsonMapper().readDto(s,dtoClass);
     }
 
-    public  <Dto> Dto deserialize(String s, TypeReference<?> dtoClass) throws IOException {
-        return getController().getJsonMapper().readDto(s, dtoClass);
+    public  <Dto> Set<Dto> deserializeToSet(String s, Class<Dto> dtoClass) throws IOException {
+        CollectionType setType = controller.getJsonMapper().getObjectMapper()
+                .getTypeFactory().constructCollectionType(Set.class, dtoClass);
+        return deserialize(s, setType);
     }
 
     public  <Dto> List<Dto> deserializeToList(String s, Class<Dto> dtoClass) throws IOException {
-        CollectionType setType = getController().getJsonMapper().getObjectMapper()
+        CollectionType setType = controller.getJsonMapper().getObjectMapper()
                 .getTypeFactory().constructCollectionType(List.class, dtoClass);
         return deserialize(s, setType);
     }
 
+    public  <Dto> Dto deserialize(String s, TypeReference<?> dtoClass) throws IOException {
+        return controller.getJsonMapper().readDto(s,dtoClass);
+    }
+
     public  <Dto> Dto deserialize(String s, JavaType dtoClass) throws IOException {
-        return getController().getJsonMapper().readDto(s, dtoClass);
+        return controller.getJsonMapper().readDto(s,dtoClass);
     }
 
     public  String serialize(Object o) throws JsonProcessingException {
-        return getController().getJsonMapper().writeDto(o);
+        return controller.getJsonMapper().writeDto(o);
     }
 
-
-    public  <Dto> Dto readDto(MvcResult mvcResult, Class<Dto> dtoClass) throws Exception {
-        return deserialize(mvcResult.getResponse().getContentAsString(), dtoClass);
-    }
 }
