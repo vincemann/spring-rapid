@@ -1,22 +1,19 @@
 package com.github.vincemann.springrapid.acldemo.service.jpa;
 
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
-import com.github.vincemann.springrapid.acldemo.MyRoles;
-import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
+import com.github.vincemann.springrapid.acldemo.model.abs.User;
 import com.github.vincemann.springrapid.acldemo.repo.VisitRepository;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Primary
@@ -27,8 +24,25 @@ public class JpaVisitService
 
 
     private RapidAclService aclService;
+    private OwnerService ownerService;
 
+    @Transactional
+    @Override
+    public void addSpectator(Long spectatorId, Long visitId) throws EntityNotFoundException {
+        User spectator = ownerService.findPresentById(spectatorId);
+        Visit visit = findPresentById(visitId);
+        aclService.grantUserPermissionForEntity(spectator.getContactInformation(),visit,BasePermission.READ);
+    }
 
+    @Transactional
+    @Override
+    public void removeSpectator(Long spectatorId, Long visitId) throws EntityNotFoundException {
+        User spectator = ownerService.findPresentById(spectatorId);
+        Visit visit = findPresentById(visitId);
+        aclService.revokeUsersPermissionForEntityIfGranted(spectator.getContactInformation(),visit,BasePermission.READ);
+    }
+
+    @Transactional
     @Override
     public Visit create(Visit entity) throws BadEntityException {
         Visit visit = super.create(entity);
@@ -48,9 +62,10 @@ public class JpaVisitService
         this.aclService = rapidAclService;
     }
 
-    @Override
-    public Class<?> getTargetClass() {
-        return JpaVisitService.class;
+    @Autowired
+    public void setOwnerService(OwnerService ownerService) {
+        this.ownerService = ownerService;
     }
+
 }
 

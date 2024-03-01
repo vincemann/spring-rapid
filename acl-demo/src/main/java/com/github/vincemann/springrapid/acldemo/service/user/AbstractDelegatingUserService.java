@@ -104,10 +104,4 @@ public abstract class AbstractDelegatingUserService
     public void setVetService(VetService vetService) {
         this.vetService = vetService;
     }
-
-    @Nullable
-    @Override
-    public Class<?> getTargetClass() {
-        return DelegatingUserService.class;
-    }
 }

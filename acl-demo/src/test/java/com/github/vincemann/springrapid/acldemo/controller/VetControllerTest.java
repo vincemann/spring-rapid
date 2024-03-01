@@ -8,12 +8,10 @@ import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.visit.CreateVisitDto;
 import com.github.vincemann.springrapid.acldemo.dto.visit.ReadVisitDto;
 import com.github.vincemann.springrapid.acldemo.model.*;
-import com.github.vincemann.springrapid.acldemo.service.VetService;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 
 import static com.github.vincemann.springrapid.acldemo.controller.suite.TestData.*;
@@ -22,9 +20,6 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.creat
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class VetControllerTest extends MyIntegrationTest {
-
-    @Autowired
-    VetService vetService;
 
     @Test
     public void canSignupVet() throws Exception {

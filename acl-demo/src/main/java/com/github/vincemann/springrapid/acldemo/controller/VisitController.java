@@ -5,7 +5,6 @@ import com.github.vincemann.springrapid.acldemo.dto.VisitDto;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.Getter;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,9 @@ import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappin
 public class VisitController extends SecuredCrudController<Visit, Long, VisitService>
 {
     @Getter
-    private String subscribeOwnerUrl;
+    private String addSpectatorUrl;
+    @Getter
+    private String removeSpectatorUrl;
 
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {
@@ -30,16 +31,19 @@ public class VisitController extends SecuredCrudController<Visit, Long, VisitSer
     @Override
     protected void initUrls() {
         super.initUrls();
-        this.subscribeOwnerUrl = getEntityBaseUrl() + "subscribe-owner";
+        this.addSpectatorUrl = "/api/core/visit/add-spectator";
+        this.removeSpectatorUrl = "/api/core/visit/remove-spectator";
     }
 
-    @RequestMapping(value = "/api/core/visit/subscribe-owner", method = RequestMethod.GET)
-    public ResponseEntity<?> subscribeOwner(@RequestParam(value = "subscribe") boolean subscribe, @RequestParam("owner-id") long ownerId, @RequestParam("visit-id") long visitId) throws BadEntityException, EntityNotFoundException {
-        if (subscribe){
-            getService().subscribeOwner(ownerId,visitId);
-        }else {
-            getService().unsubscribeOwner(ownerId,visitId);
-        }
+    @RequestMapping(value = "/api/core/visit/add-spectator", method = RequestMethod.GET)
+    public ResponseEntity<?> addSpectator(@RequestParam("spectatorId") long spectatorId, @RequestParam("visit") long visitId) throws EntityNotFoundException {
+        getService().addSpectator(spectatorId,visitId);
+        return ResponseEntity.ok().build();
+    }
+
+    @RequestMapping(value = "/api/core/visit/add-spectator", method = RequestMethod.GET)
+    public ResponseEntity<?> removeSpectator(@RequestParam("spectatorId") long spectatorId, @RequestParam("visit") long visitId) throws EntityNotFoundException {
+        getService().removeSpectator(spectatorId,visitId);
         return ResponseEntity.ok().build();
     }
 

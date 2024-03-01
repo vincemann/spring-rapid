@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
+import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.core.sec.AuthorizationTemplate;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -25,9 +26,25 @@ public class SecuredVisitService
     implements VisitService
 {
 
+    private UserService userService;
+
     @Autowired
-    public SecuredVisitService(VisitService decorated) {
+    public SecuredVisitService(VisitService decorated, UserService userService) {
         super(decorated);
+        this.userService = userService;
+    }
+
+
+    @Override
+    public void addSpectator(Long spectatorId, Long visitId) throws EntityNotFoundException {
+        getAclTemplate().checkPermission(visitId,Visit.class, BasePermission.ADMINISTRATION);
+        getDecorated().addSpectator(spectatorId,visitId);
+    }
+
+    @Override
+    public void removeSpectator(Long spectatorId, Long visitId) throws EntityNotFoundException {
+        getAclTemplate().checkPermission(visitId,Visit.class, BasePermission.ADMINISTRATION);
+        getDecorated().removeSpectator(spectatorId,visitId);
     }
 
     @Transactional

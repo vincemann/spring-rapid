@@ -1,18 +1,12 @@
 package com.github.vincemann.springrapid.core.service;
 
-import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.IBeanNameAware;
-import com.github.vincemann.aoplog.api.annotation.LogConfig;
-import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
-import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.util.Lists;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,10 +20,8 @@ import java.util.Set;
  * @param <E>       Type of entity
  * @param <Id>      Id type of entity
  */
-@LogInteraction
-@LogConfig(logAllChildrenMethods = true)
 public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Serializable>
-        extends AopLoggable, IBeanNameAware {
+{
 
         Class<E> getEntityClass();
 

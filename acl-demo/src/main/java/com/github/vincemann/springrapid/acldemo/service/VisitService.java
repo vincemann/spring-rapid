@@ -8,4 +8,7 @@ import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 
 public interface VisitService extends CrudService<Visit,Long> {
+
+    public void addSpectator(Long spectatorId, Long visitId) throws EntityNotFoundException;
+    public void removeSpectator(Long spectatorId, Long visitId) throws EntityNotFoundException;
 }

@@ -5,12 +5,13 @@ import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.ReadVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
+import org.springframework.boot.test.context.TestComponent;
 import org.springframework.stereotype.Component;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Component
+@TestComponent
 public class VetControllerTestTemplate extends CrudControllerTestTemplate<VetController> {
 
     public ReadVetDto signup(SignupVetDto dto) throws Exception {

@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.service.jpa;
 
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
+import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.repo.VetRepository;
 import com.github.vincemann.springrapid.acldemo.service.VetService;
@@ -23,12 +24,15 @@ public class JpaVetService
         extends JpaUserService<Vet,Long, VetRepository>
                 implements VetService {
 
+
     @LogInteraction
     @Transactional
     @Override
     public Optional<Vet> findByLastName(String lastName) {
         return getRepository().findByLastName(lastName);
     }
+
+
 
     @Override
     public Class<?> getTargetClass() {

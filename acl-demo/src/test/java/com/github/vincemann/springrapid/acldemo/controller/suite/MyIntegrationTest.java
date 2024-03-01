@@ -28,7 +28,7 @@ public class MyIntegrationTest extends AclMvcTest
     @Autowired
     protected TestData testData;
     @Autowired
-    protected TestHelper helper;
+    protected IntegrationTestHelper helper;
     @Autowired
     private AdminInitializer adminInitializer;
 
