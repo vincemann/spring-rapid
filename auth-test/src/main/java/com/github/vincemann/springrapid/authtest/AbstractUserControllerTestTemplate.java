@@ -208,7 +208,8 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
     public MailData verifyMailWasSend() {
         ArgumentCaptor<MailData> captor = ArgumentCaptor.forClass(MailData.class);
-        verify(ProxyUtils.aopUnproxy(mailSenderMock), times(1)).send(captor.capture());
+        verify(ProxyUtils.aopUnproxy(mailSenderMock), times(1))
+                .send(captor.capture());
         MailData sentData = captor.getValue();
         Mockito.reset(ProxyUtils.aopUnproxy(mailSenderMock));
         return sentData;

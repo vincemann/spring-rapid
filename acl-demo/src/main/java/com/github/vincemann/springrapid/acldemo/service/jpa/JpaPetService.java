@@ -27,10 +27,10 @@ public class JpaPetService
 
     @Transactional
     @Override
-    public Pet create(Pet entity) throws BadEntityException {
-        Pet pet = super.create(entity);
-        VerifyEntity.notNull(entity.getOwner(),"owner");
-        saveAclInfo(pet);
+    public Pet create(Pet pet) throws BadEntityException {
+        VerifyEntity.notNull(pet.getOwner(),"owner");
+        Pet saved = super.create(pet);
+        saveAclInfo(saved);
         return pet;
     }
 

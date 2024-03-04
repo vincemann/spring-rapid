@@ -42,7 +42,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
-    public void givenVetSignedUp_canVerify() throws Exception {
+    public void canVerifyVetAfterSignup() throws Exception {
         // given
         helper.signupVetDiCaprioWithHeart();
 
@@ -60,7 +60,8 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
     public void unverifiedVetCanReadPets() throws Exception {
         // given
         helper.signupVetDiCaprioWithHeart();
-        Pet bella = petService.create(testData.getBella());
+        helper.signupKahnWithBella();
+        Pet bella = petService.findByName(BELLA).get();
 
         // when
         String token = vetController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
@@ -116,7 +117,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
-    public void cantCreateVisitForOwnerAndPetsNotOwnedByOwner() throws Exception {
+    public void givenSelectedPetsDoNotBelongToSelectedOwner_whenCreatingVisit_thenForbidden() throws Exception {
         // given
         Vet dicaprio = helper.signupVetDiCaprioWithHeartAndVerify();
         Owner kahn = helper.signupKahnWithBella();  // kahn is linked to bella not bello
@@ -151,6 +152,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         String token = vetController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         VetReadsPetDto responsePetDto = petController.perform2xxAndDeserialize(petController.update(updateJson,bella.getId())
                 .header(HttpHeaders.AUTHORIZATION, token), VetReadsPetDto.class);
+        Assertions.assertFalse(responsePetDto.getIllnessIds().isEmpty());
 
         // then
         Pet updatedBella = petService.findByName(BELLA).get();
