@@ -4,8 +4,8 @@ import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTe
 import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.CreatePetDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerReadsForeignPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerReadsOwnPetDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.ReadPetDto;
 import com.github.vincemann.springrapid.acldemo.model.Illness;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import static com.github.vincemann.springrapid.acldemo.controller.suite.TestData.*;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -45,8 +46,8 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         String token = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
         CreatePetDto createPetDto = new CreatePetDto(testData.getBella());
         createPetDto.setOwnerId(kahn.getId());
-        ReadPetDto pet = petController.perform2xxAndDeserialize(petController.create(createPetDto)
-                .header(HttpHeaders.AUTHORIZATION, token), ReadPetDto.class);
+        OwnerReadsOwnPetDto pet = petController.perform2xxAndDeserialize(petController.create(createPetDto)
+                .header(HttpHeaders.AUTHORIZATION, token), OwnerReadsOwnPetDto.class);
 
         // then
         Assertions.assertEquals(kahn.getId(), pet.getOwnerId());
@@ -83,9 +84,9 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
                 createUpdateJsonLine("replace", "/name", "newName")
         );
         String token = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
-        ReadPetDto updatedPetDto = petController.perform2xxAndDeserialize(petController.update(updateJson, bella.getId().toString())
+        OwnerReadsOwnPetDto updatedPetDto = petController.perform2xxAndDeserialize(petController.update(updateJson, bella.getId().toString())
                         .header(HttpHeaders.AUTHORIZATION, token),
-                ReadPetDto.class);
+                OwnerReadsOwnPetDto.class);
 
         // then
         Pet updatedBella = petService.findByName("newName").get();
@@ -162,7 +163,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
-    public void ownerCantReadForeignPetIfNotAllowedBefore() throws Exception {
+    public void givenOwnerIsNotPetSpectator_ownerCantReadForeignPet() throws Exception {
         // kahn -> bella
         // meier -> bello
         // given
@@ -179,7 +180,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
-    public void givenForeignOwnerWasGivenPermissionByOwner_ownerCanReadForeignPet() throws Exception {
+    public void givenForeignOwnerWasAddedAsPetSpectator_ownerCanReadForeignPet() throws Exception {
         // kahn -> bella
         // meier -> bello
         // bella saved with illness teeth pain
@@ -192,12 +193,19 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Owner meier = helper.signupMeierWithBello();
         Pet bello = petService.findByName(BELLO).get();
 
-        // when
+        // kahn gives meier permission to watch its pets
+        String kahnToken = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        ownerController.addPetsSpectator(meier.getId(),kahn.getId(),kahnToken);
 
-        String ownerToken = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
-        mvc.perform(petController.find(bello.getId().toString())
-                        .header(HttpHeaders.AUTHORIZATION, ownerToken))
+        // when
+        String meierToken = ownerController.login2xx(OWNER_MEIER_EMAIL, OWNER_MEIER_PASSWORD);
+        String json = petController.perform(petController.find(bella.getId())
+                        .header(HttpHeaders.AUTHORIZATION, meierToken))
         // then
-                .andExpect(status().isForbidden());
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("illnesss").doesNotExist())
+                .andReturn().getResponse().getContentAsString();
+        OwnerReadsForeignPetDto dto = petController.deserialize(json, OwnerReadsForeignPetDto.class);
+        Assertions.assertEquals(BELLO,dto.getName());
     }
 }

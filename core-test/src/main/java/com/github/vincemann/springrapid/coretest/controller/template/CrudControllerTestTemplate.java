@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.*;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -49,6 +50,10 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
         return perform2xxAndDeserialize(find(id),dtoClass);
     }
 
+    public <D> D find2xx(Serializable id,String token, Class<D> dtoClass) throws Exception {
+        return perform2xxAndDeserialize(withToken(find(id),token),dtoClass);
+    }
+
     public MockHttpServletRequestBuilder update(String patchString,Serializable id) throws Exception {
         return put(controller.getUpdateUrl())
                 .param("id",id.toString())
@@ -60,6 +65,10 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
         return perform2xxAndDeserialize(update(patchString,id),dtoClass);
     }
 
+    public <D> D update2xx(String patchString,Serializable id,String token, Class<D> dtoClass) throws Exception {
+        return perform2xxAndDeserialize(withToken(update(patchString,id),token),dtoClass);
+    }
+
 
     public  MockHttpServletRequestBuilder create(Object dto) throws Exception {
         return post(controller.getCreateUrl())
@@ -69,6 +78,10 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
 
     public <D> D create2xx(Object dto, Class<D> dtoClass) throws Exception {
         return perform2xxAndDeserialize(create(dto),dtoClass);
+    }
+
+    public <D> D create2xx(Object dto,String token, Class<D> dtoClass) throws Exception {
+        return perform2xxAndDeserialize(withToken(create(dto),token),dtoClass);
     }
 
 
@@ -104,25 +117,30 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
     /**
      * perform, expect 2xx and deserialize result to dtoClass
      */
-    public <Dto> Dto perform2xxAndDeserialize(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
+    public <Dto> Dto perform2xxAndDeserialize(MockHttpServletRequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
         return performAndDeserialize(requestBuilder,status().is2xxSuccessful(),dtoClass);
     }
 
-    public <Dto> Dto performAndDeserialize(RequestBuilder requestBuilder, ResultMatcher status, Class<Dto> dtoClass) throws Exception {
+
+    public <Dto> Dto performAndDeserialize(MockHttpServletRequestBuilder requestBuilder, ResultMatcher status, Class<Dto> dtoClass) throws Exception {
         return deserialize(mvc.perform(requestBuilder)
                 .andExpect(status)
                 .andReturn().getResponse().getContentAsString(),dtoClass);
     }
 
-    public <Dto> Set<Dto> perform2xxAndDeserializeToSet(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
+    public <Dto> Set<Dto> perform2xxAndDeserializeToSet(MockHttpServletRequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
         return deserializeToSet(mvc.perform(requestBuilder)
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(),dtoClass);
     }
-    public <Dto> List<Dto> perform2xxAndDeserializeToList(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
+    public <Dto> List<Dto> perform2xxAndDeserializeToList(MockHttpServletRequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
         return deserializeToList(mvc.perform(requestBuilder)
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(),dtoClass);
+    }
+
+    public static MockHttpServletRequestBuilder withToken(MockHttpServletRequestBuilder builder, String token){
+        return builder.header(HttpHeaders.AUTHORIZATION,token);
     }
 
 

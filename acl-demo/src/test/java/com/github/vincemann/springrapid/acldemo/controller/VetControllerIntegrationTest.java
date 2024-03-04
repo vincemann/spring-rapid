@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTest;
-import com.github.vincemann.springrapid.acldemo.dto.pet.ReadPetDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.VetReadsPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.ReadVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.visit.CreateVisitDto;
@@ -149,8 +149,8 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
                 createUpdateJsonLine("add", "/illnessIds", teethPain.getId().toString())
         );
         String token = vetController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
-        ReadPetDto responsePetDto = petController.perform2xxAndDeserialize(petController.update(updateJson,bella.getId())
-                .header(HttpHeaders.AUTHORIZATION, token), ReadPetDto.class);
+        VetReadsPetDto responsePetDto = petController.perform2xxAndDeserialize(petController.update(updateJson,bella.getId())
+                .header(HttpHeaders.AUTHORIZATION, token), VetReadsPetDto.class);
 
         // then
         Pet updatedBella = petService.findByName(BELLA).get();

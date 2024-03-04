@@ -105,7 +105,7 @@ public class VisitControllerIntegrationTest extends MyIntegrationTest {
         Visit visit = helper.createVisit(dicaprioToken, testData.getCheckTeethVisit(), kahn, dicaprio, bella);
 
         // when
-        String meierToken = ownerController.login2xx(OWNER_MEIER_CONTACT_INFORMATION, OWNER_MEIER_PASSWORD);
+        String meierToken = ownerController.login2xx(OWNER_MEIER_EMAIL, OWNER_MEIER_PASSWORD);
         mvc.perform(visitController.find(visit.getId().toString())
                 .header(HttpHeaders.AUTHORIZATION,meierToken))
         // then

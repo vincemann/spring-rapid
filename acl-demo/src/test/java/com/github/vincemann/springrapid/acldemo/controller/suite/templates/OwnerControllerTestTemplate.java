@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.authtest.AbstractUserControllerTestTempl
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -21,5 +22,12 @@ public class OwnerControllerTestTemplate extends AbstractUserControllerTestTempl
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
         return getController().getJsonMapper().readDto(json,ReadOwnOwnerDto.class);
+    }
+
+    public void addPetsSpectator(long permittedOwner, long targetOwner, String token) throws Exception {
+        getMvc().perform(get(getController().getAddPetSpectatorUrl())
+                .param("permitted",String.valueOf(permittedOwner))
+                .param("target",String.valueOf(targetOwner)))
+                .andExpect(status().is2xxSuccessful());
     }
 }

@@ -41,9 +41,9 @@ public class SecuredOwnerService
 
     @Transactional
     @Override
-    public void permitOwnerReadPets(long permittedOwnerId, long targetOwnerId) throws EntityNotFoundException {
+    public void addPetSpectator(long permittedOwnerId, long targetOwnerId) throws EntityNotFoundException {
         // must have admin permission about target owner for that operation
         getAclTemplate().checkPermission(targetOwnerId, Owner.class,BasePermission.ADMINISTRATION);
-        getDecorated().permitOwnerReadPets(permittedOwnerId,targetOwnerId);
+        getDecorated().addPetSpectator(permittedOwnerId,targetOwnerId);
     }
 }

@@ -38,7 +38,7 @@ public class JpaOwnerService
 
     @Transactional
     @Override
-    public void permitOwnerReadPets(long permittedOwnerId, long targetOwnerId) throws EntityNotFoundException {
+    public void addPetSpectator(long permittedOwnerId, long targetOwnerId) throws EntityNotFoundException {
         Owner permittedOwner = findPresentById(permittedOwnerId);
         Owner targetOwner = findPresentById(targetOwnerId);
 

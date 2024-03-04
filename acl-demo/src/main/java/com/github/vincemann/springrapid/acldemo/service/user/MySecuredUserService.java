@@ -13,12 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Service(value = "securedUserService")
 public class MySecuredUserService
         extends AbstractSecuredUserServiceDecorator<MyUserService, User,Long>
         implements MyUserService
 {
 
-    public MySecuredUserService(MyUserService decorated) {
+    @Autowired
+    public MySecuredUserService(@Root MyUserService decorated) {
         super(decorated);
     }
 

@@ -34,12 +34,15 @@ public class OwnerController extends AbstractUserController<com.github.vincemann
 
     @Getter
     private String signupUrl;
+    @Getter
+    private String addPetSpectatorUrl;
     private OwnerSignupService signupService;
 
     @Override
     protected void initUrls() {
         super.initUrls();
         this.signupUrl = "/api/core/owner/signup";
+        this.addPetSpectatorUrl = "/api/core/owner/add-pet-spectator";
     }
 
 
@@ -65,10 +68,10 @@ public class OwnerController extends AbstractUserController<com.github.vincemann
         return ResponseEntity.ok(getDtoMapper().mapToDto(owner, ReadOwnOwnerDto.class));
     }
 
-    @RequestMapping(value = "/api/core/visit/permit-owner-read-pets", method = RequestMethod.GET)
-    public ResponseEntity<?> permitOwnerReadPets(@RequestParam("permittedOwnerId") long permittedOwnerId, @RequestParam("targetOwnerId") long targetOwnerId) throws EntityNotFoundException {
-        getService().permitOwnerReadPets(permittedOwnerId, targetOwnerId);
-        return ResponseEntity.ok().build();
+    @GetMapping(value = "/api/core/visit/add-pet-spectator")
+    public ResponseEntity<?> addPetSpectator(@RequestParam("permitted") long permittedOwnerId, @RequestParam("target") long targetOwnerId) throws EntityNotFoundException {
+        getService().addPetSpectator(permittedOwnerId, targetOwnerId);
+        return ResponseEntity.noContent().build();
     }
 
 

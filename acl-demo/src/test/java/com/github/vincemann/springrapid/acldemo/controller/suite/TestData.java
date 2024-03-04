@@ -29,7 +29,7 @@ public class TestData {
 
     public static final String OWNER_MEIER = "Meier";
     public static final String OWNER_MEIER_PASSWORD = "MeierPassword123?";
-    public static final String OWNER_MEIER_CONTACT_INFORMATION = OWNER_MEIER+CONTACT_INFORMATION_SUFFIX;
+    public static final String OWNER_MEIER_EMAIL = OWNER_MEIER+CONTACT_INFORMATION_SUFFIX;
 
     public static final String OWNER_KAHN = "Kahn";
     public static final String OWNER_KAHN_PASSWORD = "KahnPassword123?";
@@ -118,7 +118,7 @@ public class TestData {
         meier = Owner.builder()
                 .firstName("Max")
                 .lastName(OWNER_MEIER)
-                .contactInformation(OWNER_MEIER_CONTACT_INFORMATION)
+                .contactInformation(OWNER_MEIER_EMAIL)
                 .password(OWNER_MEIER_PASSWORD)
                 .address("asljnflksamfslkmf")
                 .city("n1 city")
