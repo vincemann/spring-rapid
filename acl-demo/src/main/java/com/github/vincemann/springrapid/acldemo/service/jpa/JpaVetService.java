@@ -18,7 +18,6 @@ import java.util.Optional;
 
 
 @Root
-@com.github.vincemann.springrapid.acldemo.Vet
 @Service
 public class JpaVetService
         extends JpaUserService<Vet,Long, VetRepository>

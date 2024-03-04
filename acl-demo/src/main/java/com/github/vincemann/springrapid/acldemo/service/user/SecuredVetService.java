@@ -15,7 +15,6 @@ import java.util.Optional;
 
 @Service
 @Secured
-@com.github.vincemann.springrapid.acldemo.Vet
 public class SecuredVetService
         extends AbstractSecuredUserServiceDecorator<VetService, Vet,Long>
         implements VetService

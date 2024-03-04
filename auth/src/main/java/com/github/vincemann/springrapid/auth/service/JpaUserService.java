@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.pass.RapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.util.*;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -205,6 +206,18 @@ public abstract class JpaUserService
     @Autowired
     public void setAclService(RapidAclService aclService) {
         this.aclService = aclService;
+    }
+
+    protected RapidPasswordEncoder getPasswordEncoder() {
+        return passwordEncoder;
+    }
+
+    protected PasswordValidator getPasswordValidator() {
+        return passwordValidator;
+    }
+
+    protected RapidAclService getAclService() {
+        return aclService;
     }
 
     //    protected boolean rolesUpdated(U update) throws EntityNotFoundException {

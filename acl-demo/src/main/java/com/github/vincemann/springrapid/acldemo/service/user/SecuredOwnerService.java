@@ -17,18 +17,14 @@ import java.util.Optional;
 
 @Service
 @Secured
-@com.github.vincemann.springrapid.acldemo.Owner
 public class SecuredOwnerService
         extends AbstractSecuredUserServiceDecorator<OwnerService, Owner,Long>
         implements OwnerService {
 
-    private final OwnerRepository ownerRepository;
 
     @Autowired
-    public SecuredOwnerService(@Root OwnerService decorated,
-                               OwnerRepository ownerRepository) {
+    public SecuredOwnerService(@Root OwnerService decorated) {
         super(decorated);
-        this.ownerRepository = ownerRepository;
     }
 
     @Transactional(readOnly = true)

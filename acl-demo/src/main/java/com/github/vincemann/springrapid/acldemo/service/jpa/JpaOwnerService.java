@@ -20,14 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Root
-@com.github.vincemann.springrapid.acldemo.Owner
 @Service
 public class JpaOwnerService
         extends JpaUserService<Owner,Long, OwnerRepository>
                 implements OwnerService
 {
-
-    private RapidAclService aclService;
 
     @LogInteraction
     @Transactional(readOnly = true)
@@ -43,13 +40,7 @@ public class JpaOwnerService
         Owner targetOwner = findPresentById(targetOwnerId);
 
         for (Pet pet : targetOwner.getPets()) {
-            aclService.grantUserPermissionForEntity(permittedOwner.getContactInformation(), pet, BasePermission.READ);
+            getAclService().grantUserPermissionForEntity(permittedOwner.getContactInformation(), pet, BasePermission.READ);
         }
-    }
-
-    @Autowired
-    @Override
-    public void setAclService(RapidAclService aclService) {
-        this.aclService = aclService;
     }
 }
