@@ -17,4 +17,15 @@ public class OwnerReadsForeignPetDto extends AbstractReadPetDto {
     public OwnerReadsForeignPetDto(String name, Long petTypeId, LocalDate birthDate, Long id, Long ownerId) {
         super(name, petTypeId, birthDate, id, ownerId);
     }
+
+    @Override
+    public String toString() {
+        return "OwnerReadsForeignPetDto{" +
+                "id=" + getId() +
+                ", ownerId=" + getOwnerId() +
+                ", name='" + getName() + '\'' +
+                ", petTypeId=" + getPetTypeId() +
+                ", birthDate=" + getBirthDate() +
+                '}';
+    }
 }

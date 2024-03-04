@@ -29,18 +29,18 @@ public interface EntityIdResolver {
 
     /**
      * Resolves Id's from entities set in {@param entity} and inject (set) them into {@param target} dto.
-     * @param target target dto, that will be modified in this process
+     * @param targetDto target dto, that will be modified in this process
      * @param entity source entity, from which entity will be taken and resolved to ids
      * @param fieldsToCheck optional: you can limit the fields scanned by giving only the relevant field names
      */
-    void setResolvedEntities(IdentifiableEntity entity, Object target, String... fieldsToCheck) throws BadEntityException, EntityNotFoundException;
+    void setResolvedEntities(IdentifiableEntity entity, Object targetDto, String... fieldsToCheck) throws BadEntityException, EntityNotFoundException;
 
     /**
      * Resolve entities by id from {@param dto} and inject (set) them into {@param target} entity.
-     * @param target target entity, that will be modified in this process
+     * @param targetEntity target entity, that will be modified in this process
      * @param dto source dto, from which ids will be taken and resolved to entities
      */
-    void setResolvedIds(Object dto, IdentifiableEntity target, String... fieldsToCheck);
+    void setResolvedIds(Object dto, IdentifiableEntity targetEntity, String... fieldsToCheck);
 
 
 

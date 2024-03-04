@@ -24,17 +24,17 @@ public class DelegatingEntityIdResolver {
     }
 
 
-    public void setResolvedEntities(IdentifiableEntity entity, Object target, String... fieldsToCheck) throws BadEntityException, EntityNotFoundException {
-        List<EntityIdResolver> resolvers = findMatchingResolvers(target.getClass());
+    public void setResolvedEntities(IdentifiableEntity entity, Object targetDto, String... fieldsToCheck) throws BadEntityException, EntityNotFoundException {
+        List<EntityIdResolver> resolvers = findMatchingResolvers(targetDto.getClass());
         for (EntityIdResolver resolver : resolvers) {
-            resolver.setResolvedEntities(entity, target,fieldsToCheck);
+            resolver.setResolvedEntities(entity, targetDto,fieldsToCheck);
         }
     }
 
-    public void setResolvedIds(Object dto, IdentifiableEntity target, String... fieldsToCheck) {
-        List<EntityIdResolver> resolvers = findMatchingResolvers(target.getClass());
+    public void setResolvedIds(Object dto, IdentifiableEntity targetEntity, String... fieldsToCheck) {
+        List<EntityIdResolver> resolvers = findMatchingResolvers(dto.getClass());
         for (EntityIdResolver entityIdResolver : resolvers) {
-            entityIdResolver.setResolvedIds(dto, target, fieldsToCheck);
+            entityIdResolver.setResolvedIds(dto, targetEntity, fieldsToCheck);
         }
     }
 

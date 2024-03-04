@@ -25,9 +25,10 @@ public class OwnerControllerTestTemplate extends AbstractUserControllerTestTempl
     }
 
     public void addPetsSpectator(long permittedOwner, long targetOwner, String token) throws Exception {
-        getMvc().perform(get(getController().getAddPetSpectatorUrl())
+        getMvc().perform(withToken(get(getController().getAddPetSpectatorUrl())
                 .param("permitted",String.valueOf(permittedOwner))
-                .param("target",String.valueOf(targetOwner)))
+                .param("target",String.valueOf(targetOwner)),
+                        token))
                 .andExpect(status().is2xxSuccessful());
     }
 }

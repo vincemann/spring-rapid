@@ -25,9 +25,9 @@ public class UniDirParentIdResolver extends AbstractRelationalEntityIdResolver {
     }
 
     @Override
-    public void setResolvedEntities(IdentifiableEntity entity, Object target, String... fieldsToCheck) throws BadEntityException, EntityNotFoundException {
+    public void setResolvedEntities(IdentifiableEntity entity, Object targetDto, String... fieldsToCheck) throws BadEntityException, EntityNotFoundException {
         //find all children by id and map them to parent
-        Map<Class<IdentifiableEntity>, Collection<Serializable>> childIds = getRelationalDtoManagerUtil().findAllUniDirChildIds(target);
+        Map<Class<IdentifiableEntity>, Collection<Serializable>> childIds = getRelationalDtoManagerUtil().findAllUniDirChildIds(targetDto);
         for (Map.Entry<Class<IdentifiableEntity>, Collection<Serializable>> entry : childIds.entrySet()) {
             Collection<Serializable> childIdCollection = entry.getValue();
             for (Serializable id : childIdCollection) {
@@ -39,8 +39,8 @@ public class UniDirParentIdResolver extends AbstractRelationalEntityIdResolver {
     }
 
     @Override
-    public void setResolvedIds(Object dto, IdentifiableEntity target, String... fieldsToCheck) {
-        for (IdentifiableEntity child : getRelationalEntityManagerUtil().findAllUniDirChildren(target,fieldsToCheck)) {
+    public void setResolvedIds(Object dto, IdentifiableEntity targetEntity, String... fieldsToCheck) {
+        for (IdentifiableEntity child : getRelationalEntityManagerUtil().findAllUniDirChildren(targetEntity,fieldsToCheck)) {
             getRelationalDtoManagerUtil().addUniDirChildId(child, dto);
         }
     }

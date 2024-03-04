@@ -8,12 +8,16 @@ import org.springframework.context.annotation.Lazy;
 
 import java.io.Serializable;
 
-public abstract class SecuredCrudController<E extends IdentifiableEntity<Id>, Id extends Serializable, S extends CrudService<E,Id>>
+public abstract class SecuredCrudController
+        <
+                E extends IdentifiableEntity<Id>,
+                Id extends Serializable,
+                S extends CrudService<E,Id>
+                >
         extends CrudController<E,Id,S> {
 
     @Autowired
     @Secured
-    @Lazy
     @Override
     public void setCrudService(S crudService) {
         super.setCrudService(crudService);

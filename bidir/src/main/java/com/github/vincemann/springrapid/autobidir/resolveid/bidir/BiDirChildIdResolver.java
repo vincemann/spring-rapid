@@ -32,9 +32,9 @@ public class BiDirChildIdResolver extends AbstractRelationalEntityIdResolver {
     }
 
     @Override
-    public void setResolvedEntities(IdentifiableEntity entity, Object target, String... fieldsToCheck) throws BadEntityException, EntityNotFoundException {
+    public void setResolvedEntities(IdentifiableEntity entity, Object targetDto, String... fieldsToCheck) throws BadEntityException, EntityNotFoundException {
         //find all parents by id and map them to child
-        Map<Class<IdentifiableEntity>, Collection<Serializable>> parentIds = getRelationalDtoManagerUtil().findAllBiDirParentIds(target);
+        Map<Class<IdentifiableEntity>, Collection<Serializable>> parentIds = getRelationalDtoManagerUtil().findAllBiDirParentIds(targetDto);
         for (Map.Entry<Class<IdentifiableEntity>, Collection<Serializable>> entry : parentIds.entrySet()) {
             Class<IdentifiableEntity> entityClass = entry.getKey();
             Collection<Serializable> parentIdCollection = entry.getValue();
@@ -46,8 +46,8 @@ public class BiDirChildIdResolver extends AbstractRelationalEntityIdResolver {
     }
 
     @Override
-    public void setResolvedIds(Object dto, IdentifiableEntity target, String... fieldsToCheck) {
-        for (IdentifiableEntity parent : getRelationalEntityManagerUtil().findAllBiDirParents(target,fieldsToCheck)) {
+    public void setResolvedIds(Object dto, IdentifiableEntity targetEntity, String... fieldsToCheck) {
+        for (IdentifiableEntity parent : getRelationalEntityManagerUtil().findAllBiDirParents(targetEntity,fieldsToCheck)) {
             getRelationalDtoManagerUtil().addBiDirParentId(parent, dto);
         }
     }

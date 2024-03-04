@@ -48,7 +48,12 @@ import static com.github.vincemann.springrapid.core.controller.WebExtensionType.
 
 @Slf4j
 @Getter
-public abstract class CrudController<E extends IdentifiableEntity<Id>, Id extends Serializable, S extends CrudService<E,Id>>
+public abstract class CrudController
+        <
+                E extends IdentifiableEntity<Id>,
+                Id extends Serializable,
+                S extends CrudService<E,Id>
+                >
         extends AbstractEntityController<E, Id>
 {
 

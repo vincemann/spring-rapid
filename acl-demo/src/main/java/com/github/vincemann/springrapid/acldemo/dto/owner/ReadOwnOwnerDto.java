@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.acldemo.dto.owner;
 
-import com.github.vincemann.springrapid.acldemo.dto.owner.abs.AbstractOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.abs.AbstractReadOwnerDto;
 import lombok.*;
 import org.springframework.lang.Nullable;
@@ -14,11 +13,11 @@ import java.util.Set;
 public class ReadOwnOwnerDto extends AbstractReadOwnerDto {
 
 
-    private String dirtySecret;
+    private String secret;
 
     @Builder
-    public ReadOwnOwnerDto(String firstName, String lastName, String address, String city, String telephone, Set<String> hobbies, @Nullable Set<Long> petIds, Long id, String dirtySecret) {
+    public ReadOwnOwnerDto(String firstName, String lastName, String address, String city, String telephone, Set<String> hobbies, @Nullable Set<Long> petIds, Long id, String secret) {
         super(firstName, lastName, address, city, telephone, hobbies, petIds, id);
-        this.dirtySecret = dirtySecret;
+        this.secret = secret;
     }
 }

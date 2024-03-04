@@ -24,7 +24,6 @@ public class PetController extends SecuredCrudController<Pet, Long, PetService> 
                         .and(direction(Direction.REQUEST)))
                 .thenReturn(CreatePetDto.class);
 
-
         builder.when(endpoint(getUpdateUrl())
                         .and(roles(MyRoles.OWNER))
                         .and(direction(Direction.REQUEST)))

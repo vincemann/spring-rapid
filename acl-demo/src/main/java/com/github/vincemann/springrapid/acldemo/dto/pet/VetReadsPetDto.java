@@ -26,4 +26,16 @@ public class VetReadsPetDto extends AbstractReadPetDto {
         if (illnessIds != null)
             this.illnessIds = illnessIds;
     }
+
+    @Override
+    public String toString() {
+        return "VetReadsPetDto{" +
+                "illnessIds=" + illnessIds +
+                ", id=" + getId() +
+                ", ownerId=" + getOwnerId() +
+                ", name='" + getName() + '\'' +
+                ", petTypeId=" + getPetTypeId() +
+                ", birthDate=" + getBirthDate() +
+                '}';
+    }
 }

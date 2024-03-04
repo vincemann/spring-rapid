@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.acldemo.dto.pet;
 
 import com.github.vincemann.springrapid.acldemo.dto.pet.abs.AbstractReadPetDto;
+import com.github.vincemann.springrapid.acldemo.model.Illness;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.BiDirChildIdCollection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class OwnerReadsOwnPetDto extends AbstractReadPetDto {
 
+    @BiDirChildIdCollection(Illness.class)
     private Set<Long> illnessIds = new HashSet<>();
 
     @Builder
@@ -22,5 +25,17 @@ public class OwnerReadsOwnPetDto extends AbstractReadPetDto {
         super(name, petTypeId, birthDate, id, ownerId);
         if (illnessIds != null)
             this.illnessIds = illnessIds;
+    }
+
+    @Override
+    public String toString() {
+        return "OwnerReadsOwnPetDto{" +
+                "illnessIds=" + illnessIds +
+                ", id=" + getId() +
+                ", ownerId=" + getOwnerId() +
+                ", name='" + getName() + '\'' +
+                ", petTypeId=" + getPetTypeId() +
+                ", birthDate=" + getBirthDate() +
+                '}';
     }
 }

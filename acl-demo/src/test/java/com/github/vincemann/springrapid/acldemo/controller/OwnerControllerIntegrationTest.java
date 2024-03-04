@@ -28,11 +28,12 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
     @Test
     public void signupOwner() throws Exception {
+        // when
         SignupOwnerDto dto = new SignupOwnerDto(testData.getKahn());
-
         ReadOwnOwnerDto response = ownerController.signup(dto);
-        Assertions.assertEquals(Owner.SECRET, response.getDirtySecret());
 
+        // then
+        Assertions.assertEquals(Owner.SECRET, response.getSecret());
         Assertions.assertTrue(ownerService.findByLastName(OWNER_KAHN).isPresent());
         Assertions.assertTrue(ownerService.findByContactInformation(OWNER_KAHN_EMAIL).isPresent());
     }
@@ -46,11 +47,10 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         String token = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
         CreatePetDto createPetDto = new CreatePetDto(testData.getBella());
         createPetDto.setOwnerId(kahn.getId());
-        OwnerReadsOwnPetDto pet = petController.perform2xxAndDeserialize(petController.create(createPetDto)
-                .header(HttpHeaders.AUTHORIZATION, token), OwnerReadsOwnPetDto.class);
+        OwnerReadsOwnPetDto responseDto = petController.create2xx(createPetDto,token,OwnerReadsOwnPetDto.class);
 
         // then
-        Assertions.assertEquals(kahn.getId(), pet.getOwnerId());
+        Assertions.assertEquals(kahn.getId(), responseDto.getOwnerId());
         assertOwnerHasPets(OWNER_KAHN, BELLA);
         assertPetHasOwner(BELLA, OWNER_KAHN);
     }
@@ -84,9 +84,8 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
                 createUpdateJsonLine("replace", "/name", "newName")
         );
         String token = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
-        OwnerReadsOwnPetDto updatedPetDto = petController.perform2xxAndDeserialize(petController.update(updateJson, bella.getId().toString())
-                        .header(HttpHeaders.AUTHORIZATION, token),
-                OwnerReadsOwnPetDto.class);
+        OwnerReadsOwnPetDto updatedPetDto
+                = petController.update2xx(updateJson, bella.getId(),token,OwnerReadsOwnPetDto.class);
 
         // then
         Pet updatedBella = petService.findByName("newName").get();
@@ -188,12 +187,12 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Owner kahn = helper.signupKahnWithBella();
         Pet bella = petService.findByName(BELLA).get();
 
-        // bello saved with teeth pain as well
+        // bello saved with teeth pain as well for owner meier
         testData.getBello().getIllnesss().add(illnessService.findByName(TEETH_PAIN).get());
         Owner meier = helper.signupMeierWithBello();
         Pet bello = petService.findByName(BELLO).get();
 
-        // kahn gives meier permission to watch its pets
+        // kahn gives meier permission to watch its pets bella
         String kahnToken = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
         ownerController.addPetsSpectator(meier.getId(),kahn.getId(),kahnToken);
 
@@ -206,6 +205,6 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
                 .andExpect(jsonPath("illnesss").doesNotExist())
                 .andReturn().getResponse().getContentAsString();
         OwnerReadsForeignPetDto dto = petController.deserialize(json, OwnerReadsForeignPetDto.class);
-        Assertions.assertEquals(BELLO,dto.getName());
+        Assertions.assertEquals(BELLA,dto.getName());
     }
 }
