@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.authdemo.service;
 
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.VerificationService;
@@ -53,6 +54,7 @@ public class MySignupServiceImpl implements MySignupService {
     }
 
     @Autowired
+    @Root
     public void setUserService(MyUserService userService) {
         this.userService = userService;
     }

@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acldemo.service.user;
+package com.github.vincemann.springrapid.acldemo.service.user.del;
 
 import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.model.abs.User;
@@ -136,7 +136,7 @@ public abstract class AbstractDelegatingUserService implements UserService<User,
         Assert.isTrue(!(isVet && isOwner));
         if (isVet)
             return vetService;
-        else if(isOwner)
+        else if (isOwner)
             return ownerService;
         else
             throw new IllegalArgumentException("unexpected role");

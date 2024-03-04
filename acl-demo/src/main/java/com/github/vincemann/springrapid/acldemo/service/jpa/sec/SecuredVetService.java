@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.acldemo.service.VetService;
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.service.AbstractSecuredUserServiceDecorator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
@@ -14,11 +15,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 
+@Service
+@Secured
+@com.github.vincemann.springrapid.acldemo.Vet
 public class SecuredVetService
         extends AbstractSecuredUserServiceDecorator<VetService, Vet, Long>
         implements VetService
 {
 
+    @Autowired
+    @Root
     public SecuredVetService(VetService decorated) {
         super(decorated);
     }

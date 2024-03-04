@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
-import com.github.vincemann.springrapid.acl.SecuredCrudController;
+import com.github.vincemann.springrapid.acl.Secured;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
-import com.github.vincemann.springrapid.acldemo.Root;
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.acldemo.dto.vet.ReadVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.UpdateVetDto;
@@ -11,6 +11,7 @@ import com.github.vincemann.springrapid.acldemo.service.VetService;
 import com.github.vincemann.springrapid.acldemo.service.user.VetSignupService;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
+import com.github.vincemann.springrapid.auth.service.SignupService;
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
 import com.github.vincemann.springrapid.core.controller.dto.map.Principal;
@@ -37,9 +38,6 @@ public class VetController extends AbstractUserController<Vet, Long, VetService>
     private String signupUrl;
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {
-        builder.when(roles(AuthRoles.ADMIN))
-                        .thenReturn(ReadVetDto.class);
-
         builder.when(endpoint(getUpdateUrl())
                         .and(roles(MyRoles.VET))
                         .and(principal(Principal.OWN))
@@ -74,11 +72,25 @@ public class VetController extends AbstractUserController<Vet, Long, VetService>
         return Lists.newArrayList(getCreateUrl(),getSignupUrl());
     }
 
+    @Autowired
+    @Secured
+    @com.github.vincemann.springrapid.acldemo.Vet
+    @Override
+    public void setCrudService(VetService crudService) {
+        super.setCrudService(crudService);
+    }
 
     @Autowired
+    @com.github.vincemann.springrapid.acldemo.Vet
     @Root
     @Override
     public void setUnsecuredService(VetService Service) {
         super.setUnsecuredService(Service);
+    }
+
+    @Autowired(required = false)
+    @Override
+    public void setSignupService(SignupService signupService) {
+        super.setSignupService(signupService);
     }
 }

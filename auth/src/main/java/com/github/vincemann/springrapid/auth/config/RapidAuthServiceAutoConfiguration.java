@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.auth.config;
 
 
 import com.github.vincemann.springrapid.acl.Secured;
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.service.*;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.JwtAuthorizationTokenService;
@@ -12,6 +13,7 @@ import com.github.vincemann.springrapid.auth.service.val.PasswordValidatorImpl;
 import com.github.vincemann.springrapid.core.service.pass.BcryptRapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.service.pass.RapidPasswordEncoder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,35 +59,33 @@ public class RapidAuthServiceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "verificationService")
-    @Primary
     public VerificationService verificationService(){
         return new VerificationServiceImpl();
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "signupService")
-    @Primary
     public SignupService signupService(){
         return new SignupServiceImpl();
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "passwordService")
-    @Primary
+    @Root
     public PasswordService passwordService(){
         return new PasswordServiceImpl();
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "userAuthTokenService")
-    @Primary
+    @Root
     public UserAuthTokenService userAuthTokenService(){
         return new UserAuthTokenServiceImpl();
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "contactInformationService")
-    @Primary
+    @Root
     public ContactInformationService contactInformationService(){
         return new ContactInformationServiceImpl();
     }

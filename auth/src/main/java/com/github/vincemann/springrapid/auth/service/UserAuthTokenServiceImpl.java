@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.service;
 
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
@@ -44,6 +45,7 @@ public class UserAuthTokenServiceImpl implements UserAuthTokenService {
     }
 
     @Autowired
+    @Root
     public void setUserService(UserService userService) {
         this.userService = userService;
     }

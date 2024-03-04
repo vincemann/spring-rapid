@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
 
@@ -57,6 +58,7 @@ public class RapidUserDetailsService
 	}
 
 	@Autowired
+	@Root
 	public void setUserService(UserService userService) {
 		this.userService = userService;
 	}

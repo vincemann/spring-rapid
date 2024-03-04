@@ -4,6 +4,7 @@ import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.service.JpaUserService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
@@ -12,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Root
+@com.github.vincemann.springrapid.acldemo.Owner
+@Service
 public class JpaOwnerService
         extends JpaUserService<Owner,Long, OwnerRepository>
                 implements OwnerService

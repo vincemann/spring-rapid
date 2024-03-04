@@ -40,6 +40,7 @@ public class VetSignupServiceImpl implements VetSignupService {
         this.vetService = vetService;
     }
 
+    @com.github.vincemann.springrapid.acldemo.Vet
     @Autowired
     public void setVerificationService(VerificationService verificationService) {
         this.verificationService = verificationService;

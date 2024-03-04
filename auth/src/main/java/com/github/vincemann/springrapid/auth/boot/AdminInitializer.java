@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.auth.boot;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
@@ -62,6 +63,7 @@ public class AdminInitializer implements CommandLineRunner {
     }
 
     @Autowired
+    @Root
     public void setUserService(UserService userService) {
         this.userService = userService;
     }

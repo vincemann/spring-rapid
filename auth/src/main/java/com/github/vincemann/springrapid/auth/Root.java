@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acldemo;
+package com.github.vincemann.springrapid.auth;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 

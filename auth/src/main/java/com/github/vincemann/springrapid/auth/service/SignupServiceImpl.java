@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
@@ -69,10 +70,14 @@ public class SignupServiceImpl implements SignupService {
     }
 
 
-    @Autowired public void setUserService(UserService<AbstractUser<?>, ?> userService) {
+    @Autowired
+    @Root
+    public void setUserService(UserService<AbstractUser<?>, ?> userService) {
         this.userService = userService;
     }
-    @Autowired public void setVerificationService(VerificationService verificationService) {
+    @Autowired
+    @Root
+    public void setVerificationService(VerificationService verificationService) {
         this.verificationService = verificationService;
     }
 

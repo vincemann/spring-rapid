@@ -119,24 +119,24 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     @Test
     public void ownerCantUpdateForeignPet() throws Exception {
         // kahn -> bella
-        // meier -> kitty
+        // meier -> bello
         // given
         Owner kahn = helper.signupKahnWithBella();
         Owner meier = helper.signupMeierWithBello();
-        Pet kitty = petService.findByName(KITTY).get();
+        Pet bello = petService.findByName(BELLO).get();
 
 
         // when
         String updateJson = createUpdateJsonRequest(
-                createUpdateJsonLine("replace", "/name", kitty.getId().toString())
+                createUpdateJsonLine("replace", "/name", bello.getId().toString())
         );
         String token = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
-        mvc.perform(petController.update(updateJson, kitty.getId().toString())
+        mvc.perform(petController.update(updateJson, bello.getId().toString())
                         .header(HttpHeaders.AUTHORIZATION, token))
         // then
                 .andExpect(status().isForbidden());
 
-        Pet dbKitty = petService.findById(kitty.getId()).get();
+        Pet dbKitty = petService.findById(bello.getId()).get();
         Assertions.assertEquals(KITTY, dbKitty.getName());
     }
 

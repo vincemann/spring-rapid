@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.MessageSender;
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
@@ -133,6 +134,7 @@ public class PasswordServiceImpl implements PasswordService {
 
 
     @Autowired
+    @Root
     public void setUserService(UserService<AbstractUser<Serializable>, Serializable> userService) {
         this.userService = userService;
     }

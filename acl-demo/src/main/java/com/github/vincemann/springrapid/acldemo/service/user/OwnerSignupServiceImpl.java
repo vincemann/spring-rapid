@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.print.attribute.standard.Destination;
 
-@Service
+@Service(value = "signupService")  // disables autoconfiguring spring rapids SignupServiceImpl bean
 public class OwnerSignupServiceImpl implements OwnerSignupService {
 
     private OwnerService ownerService;
@@ -41,6 +41,7 @@ public class OwnerSignupServiceImpl implements OwnerSignupService {
         this.ownerService = ownerService;
     }
 
+    @com.github.vincemann.springrapid.acldemo.Owner
     @Autowired
     public void setVerificationService(VerificationService verificationService) {
         this.verificationService = verificationService;

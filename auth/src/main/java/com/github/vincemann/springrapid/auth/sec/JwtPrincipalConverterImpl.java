@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.sec;
 
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
@@ -51,8 +52,8 @@ public class JwtPrincipalConverterImpl implements JwtPrincipalConverter {
         }
     }
 
-    @Lazy
     @Autowired
+    @Root
     public void setUserService(UserService userService) {
         this.userService = userService;
     }

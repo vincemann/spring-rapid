@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.auth.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.acl.Secured;
 import com.github.vincemann.springrapid.auth.AuthProperties;
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.dto.*;
 import com.github.vincemann.springrapid.auth.dto.user.FindForeignUserDto;
 import com.github.vincemann.springrapid.auth.dto.user.FindOwnUserDto;
@@ -450,14 +451,15 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	//              INJECT DEPENDENCIES
 
+	@Autowired
 	@Secured
 	@Override
-	@Autowired
 	public void setCrudService(S crudService) {
 		super.setCrudService(crudService);
 	}
 
 	@Autowired
+	@Root
 	public void setUnsecuredService(S Service) {
 		this.unsecuredService = Service;
 	}
@@ -469,12 +471,12 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	@Autowired
 	@Secured
-	@Lazy
 	public void setUserAuthTokenService(UserAuthTokenService authTokenService) {
 		this.authTokenService = authTokenService;
 	}
 
 	@Autowired
+	@Root
 	public void setUnsecuredAuthTokenService(UserAuthTokenService unsecuredAuthTokenService) {
 		this.unsecuredAuthTokenService = unsecuredAuthTokenService;
 	}

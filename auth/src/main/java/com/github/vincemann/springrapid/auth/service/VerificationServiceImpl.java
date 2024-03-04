@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.MessageSender;
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
@@ -119,19 +120,24 @@ public class VerificationServiceImpl implements VerificationService {
         return userService.findPresentById(id);
     }
 
-    @Autowired public void setJweTokenService(JweTokenService jweTokenService) {
+    @Autowired
+    public void setJweTokenService(JweTokenService jweTokenService) {
         this.jweTokenService = jweTokenService;
     }
 
-    @Autowired public void setProperties(AuthProperties properties) {
+    @Autowired
+    public void setProperties(AuthProperties properties) {
         this.properties = properties;
     }
 
-    @Autowired public void setMessageSender(MessageSender messageSender) {
+    @Autowired
+    public void setMessageSender(MessageSender messageSender) {
         this.messageSender = messageSender;
     }
 
-    @Autowired public void setUserService(UserService userService) {
+    @Autowired
+    @Root
+    public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
