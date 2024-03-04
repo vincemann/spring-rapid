@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acl.Secured;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
-import com.github.vincemann.springrapid.acldemo.Owner;
 import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
@@ -17,13 +16,13 @@ import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
 import com.github.vincemann.springrapid.core.controller.dto.map.Principal;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.Lists;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -66,6 +65,12 @@ public class OwnerController extends AbstractUserController<com.github.vincemann
         return ResponseEntity.ok(getDtoMapper().mapToDto(owner, ReadOwnOwnerDto.class));
     }
 
+    @RequestMapping(value = "/api/core/visit/permit-owner-read-pets", method = RequestMethod.GET)
+    public ResponseEntity<?> permitOwnerReadPets(@RequestParam("permittedOwnerId") long permittedOwnerId, @RequestParam("targetOwnerId") long targetOwnerId) throws EntityNotFoundException {
+        getService().permitOwnerReadPets(permittedOwnerId, targetOwnerId);
+        return ResponseEntity.ok().build();
+    }
+
 
     @Override
     public List<String> getIgnoredEndPoints() {
@@ -81,23 +86,23 @@ public class OwnerController extends AbstractUserController<com.github.vincemann
 
     @Autowired
     @Secured
-    @Owner
     @Override
     public void setCrudService(OwnerService crudService) {
         super.setCrudService(crudService);
     }
 
     @Autowired
-    @Owner
     @Root
     @Override
     public void setUnsecuredService(OwnerService Service) {
         super.setUnsecuredService(Service);
     }
 
-    @Autowired(required = false)
+
+    // not needed, dont autowire
     @Override
     public void setSignupService(SignupService signupService) {
         super.setSignupService(signupService);
     }
+
 }

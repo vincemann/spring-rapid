@@ -94,21 +94,21 @@ public class RapidAuthServiceAutoConfiguration {
     @Bean
     @Secured
     @ConditionalOnMissingBean(name = "securedContactInformationService")
-    public ContactInformationService securedContactInformationService(ContactInformationService service){
+    public ContactInformationService securedContactInformationService(@Root ContactInformationService service){
         return new SecuredContactInformationService(service);
     }
 
     @Bean
     @Secured
     @ConditionalOnMissingBean(name = "securedUserAuthTokenService")
-    public UserAuthTokenService securedUserAuthTokenService(UserAuthTokenService service){
+    public UserAuthTokenService securedUserAuthTokenService(@Root UserAuthTokenService service){
         return new SecuredUserAuthTokenService(service);
     }
 
     @Bean
     @Secured
     @ConditionalOnMissingBean(name = "securedPasswordService")
-    public PasswordService securedPasswordService(PasswordService service){
+    public PasswordService securedPasswordService(@Root PasswordService service){
         return new SecuredPasswordService(service);
     }
 
@@ -116,7 +116,7 @@ public class RapidAuthServiceAutoConfiguration {
     @ConditionalOnMissingBean(name = "securedUserService")
     @Bean
     @Secured
-    public UserService securedUserService(UserService service) {
+    public UserService securedUserService(@Root UserService service) {
         return new SecuredUserService(service);
     }
 

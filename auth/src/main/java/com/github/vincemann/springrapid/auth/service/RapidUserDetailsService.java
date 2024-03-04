@@ -28,14 +28,13 @@ import java.util.Optional;
 
 @Slf4j
 public class RapidUserDetailsService
-		implements UserDetailsService, AopLoggable {
+		implements UserDetailsService {
 
 	private UserService userService;
 	private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
 
 
 	@Transactional
-	@LogInteraction
 	@Override
 	public RapidPrincipal loadUserByUsername(String contactInformation) throws UsernameNotFoundException {
 		AbstractUser<?> user;

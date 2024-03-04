@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.service.VerificationService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -37,11 +38,11 @@ public class OwnerSignupServiceImpl implements OwnerSignupService {
     }
 
     @Autowired
+    @Root
     public void setOwnerService(OwnerService ownerService) {
         this.ownerService = ownerService;
     }
 
-    @com.github.vincemann.springrapid.acldemo.Owner
     @Autowired
     public void setVerificationService(VerificationService verificationService) {
         this.verificationService = verificationService;

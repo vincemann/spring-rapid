@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-
 public interface VetRepository extends AbstractUserRepository<Vet,Long> {
     Optional<Vet> findByLastName(String lastName);
 }

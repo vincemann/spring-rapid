@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.handler;
 
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.service.UserAuthTokenService;
 import com.github.vincemann.springrapid.auth.service.UserService;
 
@@ -58,6 +59,7 @@ public class RapidAuthenticationSuccessHandler
 
 
 	@Autowired
+	@Root
 	public void setAuthTokenService(UserAuthTokenService authTokenService) {
 		this.authTokenService = authTokenService;
 	}

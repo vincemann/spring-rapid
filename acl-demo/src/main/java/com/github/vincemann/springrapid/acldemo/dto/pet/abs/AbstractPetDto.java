@@ -17,10 +17,8 @@ public abstract class AbstractPetDto
 {
 
     private String name;
-
     @UniDirChildId(PetType.class)
     private Long petTypeId;
-
     private LocalDate birthDate;
 
     public AbstractPetDto(String name, Long petTypeId, LocalDate birthDate) {

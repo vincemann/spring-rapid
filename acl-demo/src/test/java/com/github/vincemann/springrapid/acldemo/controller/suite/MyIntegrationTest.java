@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VetCo
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VisitControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.service.*;
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.boot.AdminInitializer;
 import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
 import com.github.vincemann.springrapid.authtest.config.RapidAuthControllerTestTemplateAutoConfiguration;
@@ -37,6 +38,7 @@ public class MyIntegrationTest extends AclMvcTest
     @Autowired
     protected SpecialtyService specialtyService;
     @Autowired
+    @Root
     protected VetService vetService;
     @Autowired
     protected IllnessService illnessService;
@@ -47,6 +49,7 @@ public class MyIntegrationTest extends AclMvcTest
     @Autowired
     protected VisitService visitService;
     @Autowired
+    @Root
     protected OwnerService ownerService;
 
     // controller

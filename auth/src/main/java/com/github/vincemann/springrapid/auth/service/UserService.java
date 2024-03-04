@@ -15,7 +15,7 @@ import java.util.Optional;
 
 // only do validation on highest level, that is exposed to user, not when only using internally
 public interface UserService<U extends AbstractUser<ID>, ID extends Serializable>
-        extends CrudService<U,ID>, AopLoggable
+        extends CrudService<U,ID>
 {
 
     public Optional<U> findByContactInformation(String contactInformation);

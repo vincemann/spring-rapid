@@ -135,7 +135,7 @@ public class PasswordServiceImpl implements PasswordService {
 
     @Autowired
     @Root
-    public void setUserService(UserService<AbstractUser<Serializable>, Serializable> userService) {
+    public void setUserService(UserService userService) {
         this.userService = userService;
     }
 

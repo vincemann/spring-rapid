@@ -5,12 +5,14 @@ import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoRequestInfo;
 import com.github.vincemann.springrapid.core.controller.dto.map.Principal;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.coredemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadForeignOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.UpdateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import com.github.vincemann.springrapid.coredemo.service.filter.CityPrefixFilter;
 import com.github.vincemann.springrapid.coredemo.service.filter.HasPetsFilter;
@@ -19,6 +21,9 @@ import com.github.vincemann.springrapid.coredemo.service.filter.PetNameEndsWithF
 import com.github.vincemann.springrapid.coredemo.service.sort.LastNameAscSorting;
 import com.github.vincemann.springrapid.coredemo.service.sort.LastNameDescSorting;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.function.Predicate;
 

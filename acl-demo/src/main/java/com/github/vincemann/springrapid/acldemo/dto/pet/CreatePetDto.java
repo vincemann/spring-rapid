@@ -31,7 +31,7 @@ public class CreatePetDto extends AbstractPetDto {
     @NotBlank
     @Size(min = 2, max = 20)
     @Override
-    public  String getName() {
+    public String getName() {
         return super.getName();
     }
 
@@ -54,7 +54,7 @@ public class CreatePetDto extends AbstractPetDto {
                 pet.getName(),
                 pet.getPetType().getId(),
                 pet.getBirthDate(),
-                pet.getOwner().getId()
+                pet.getOwner() == null ? null : pet.getOwner().getId()
         );
     }
 

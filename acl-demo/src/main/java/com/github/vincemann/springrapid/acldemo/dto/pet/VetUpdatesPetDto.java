@@ -1,7 +1,9 @@
 package com.github.vincemann.springrapid.acldemo.dto.pet;
 
 import com.github.vincemann.springrapid.acldemo.dto.pet.abs.AbstractPetDto;
+import com.github.vincemann.springrapid.acldemo.model.Illness;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
+import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.BiDirChildIdCollection;
 import com.github.vincemann.springrapid.autobidir.resolveid.annotation.parent.BiDirParentId;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,6 +27,7 @@ public class VetUpdatesPetDto extends AbstractPetDto {
     @Positive
     private Long id;
 
+    @BiDirChildIdCollection(Illness.class)
     private Set<Long> illnessIds = new HashSet<>();
 
     @NotNull
@@ -47,6 +50,7 @@ public class VetUpdatesPetDto extends AbstractPetDto {
     }
 
 
+    @Builder
     public VetUpdatesPetDto(String name, Long petTypeId, LocalDate birthDate, Long id, Set<Long> illnessIds, Long ownerId) {
         super(name, petTypeId, birthDate);
         this.id = id;

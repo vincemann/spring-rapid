@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTe
 import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.CreatePetDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerReadsOwnPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.ReadPetDto;
 import com.github.vincemann.springrapid.acldemo.model.Illness;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
@@ -87,7 +88,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
                 ReadPetDto.class);
 
         // then
-        Pet updatedBella = petService.findByName(BELLA).get();
+        Pet updatedBella = petService.findByName("newName").get();
         Assertions.assertEquals("newName",updatedBella.getName());
         Assertions.assertEquals("newName",updatedPetDto.getName());
     }
@@ -137,38 +138,64 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
                 .andExpect(status().isForbidden());
 
         Pet dbKitty = petService.findById(bello.getId()).get();
-        Assertions.assertEquals(KITTY, dbKitty.getName());
+        Assertions.assertEquals(BELLO, dbKitty.getName());
     }
 
     @Test
     public void ownerCanReadOwnPet() throws Exception {
         // given
+        // bella saved with illness teeth pain
+        testData.getBella().getIllnesss().add(illnessService.create(testData.getTeethPain()));
         Owner kahn = helper.signupKahnWithBella();
         Pet bella = petService.findByName(BELLA).get();
 
 
         // when
         String token = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
-        ReadPetDto dto = petController.perform2xxAndDeserialize(petController.find(bella.getId())
+        OwnerReadsOwnPetDto dto = petController.perform2xxAndDeserialize(petController.find(bella.getId())
                 .header(HttpHeaders.AUTHORIZATION, token),
-                ReadPetDto.class);
+                OwnerReadsOwnPetDto.class);
 
         // then
-        Assertions.assertEquals(KITTY,dto.getName());
+        Assertions.assertEquals(BELLA,dto.getName());
+        Assertions.assertFalse(dto.getIllnessIds().isEmpty());
     }
 
     @Test
-    public void ownerCantReadForeignPet() throws Exception {
+    public void ownerCantReadForeignPetIfNotAllowedBefore() throws Exception {
         // kahn -> bella
-        // meier -> kitty
+        // meier -> bello
         // given
         Owner kahn = helper.signupKahnWithBella();
         Owner meier = helper.signupMeierWithBello();
-        Pet kitty = petService.findByName(KITTY).get();
+        Pet bello = petService.findByName(BELLO).get();
 
         // when
         String ownerToken = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
-        mvc.perform(petController.find(kitty.getId().toString())
+        mvc.perform(petController.find(bello.getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, ownerToken))
+        // then
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void givenForeignOwnerWasGivenPermissionByOwner_ownerCanReadForeignPet() throws Exception {
+        // kahn -> bella
+        // meier -> bello
+        // bella saved with illness teeth pain
+        testData.getBella().getIllnesss().add(illnessService.create(testData.getTeethPain()));
+        Owner kahn = helper.signupKahnWithBella();
+        Pet bella = petService.findByName(BELLA).get();
+
+        // bello saved with teeth pain as well
+        testData.getBello().getIllnesss().add(illnessService.findByName(TEETH_PAIN).get());
+        Owner meier = helper.signupMeierWithBello();
+        Pet bello = petService.findByName(BELLO).get();
+
+        // when
+
+        String ownerToken = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        mvc.perform(petController.find(bello.getId().toString())
                         .header(HttpHeaders.AUTHORIZATION, ownerToken))
         // then
                 .andExpect(status().isForbidden());

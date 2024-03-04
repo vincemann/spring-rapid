@@ -16,6 +16,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
+// cant update pets owner in contrast to vet
 public class OwnerUpdatesPetDto extends AbstractPetDto {
 
     @NotNull

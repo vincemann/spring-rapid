@@ -1,9 +1,8 @@
-package com.github.vincemann.springrapid.acldemo.service.jpa.sec;
+package com.github.vincemann.springrapid.acldemo.service.user;
 
 import com.github.vincemann.springrapid.acl.Secured;
-import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
-import com.github.vincemann.springrapid.acldemo.service.OwnerService;
+import com.github.vincemann.springrapid.acldemo.model.abs.User;
 import com.github.vincemann.springrapid.acldemo.service.VetService;
 import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.service.AbstractSecuredUserServiceDecorator;
@@ -14,26 +13,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-
 @Service
 @Secured
 @com.github.vincemann.springrapid.acldemo.Vet
 public class SecuredVetService
-        extends AbstractSecuredUserServiceDecorator<VetService, Vet, Long>
+        extends AbstractSecuredUserServiceDecorator<VetService, Vet,Long>
         implements VetService
 {
-
     @Autowired
-    @Root
-    public SecuredVetService(VetService decorated) {
+    public SecuredVetService(@Root VetService decorated) {
         super(decorated);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
-    public Optional<Vet> findByLastName(String lastName) {
-        Optional<Vet> vet = getDecorated().findByLastName(lastName);
-        vet.ifPresent(v -> getAclTemplate().checkPermission(v, BasePermission.READ));
+    public Optional<Vet> findByLastName(String name) {
+        Optional<Vet> vet = getDecorated().findByLastName(name);
+        vet.ifPresent(o -> getAclTemplate().checkPermission(o, BasePermission.READ));
         return vet;
     }
 }

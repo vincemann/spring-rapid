@@ -6,6 +6,9 @@ import com.github.vincemann.springrapid.acldemo.model.abs.User;
 import com.github.vincemann.springrapid.acldemo.repo.VisitRepository;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
+import com.github.vincemann.springrapid.acldemo.service.user.MyUserService;
+import com.github.vincemann.springrapid.acldemo.service.user.MyUserServiceImpl;
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -24,12 +27,12 @@ public class JpaVisitService
 
 
     private RapidAclService aclService;
-    private OwnerService ownerService;
+    private MyUserService userService;
 
     @Transactional
     @Override
     public void addSpectator(Long spectatorId, Long visitId) throws EntityNotFoundException {
-        User spectator = ownerService.findPresentById(spectatorId);
+        User spectator = userService.findPresentById(spectatorId);
         Visit visit = findPresentById(visitId);
         aclService.grantUserPermissionForEntity(spectator.getContactInformation(),visit,BasePermission.READ);
     }
@@ -37,7 +40,7 @@ public class JpaVisitService
     @Transactional
     @Override
     public void removeSpectator(Long spectatorId, Long visitId) throws EntityNotFoundException {
-        User spectator = ownerService.findPresentById(spectatorId);
+        User spectator = userService.findPresentById(spectatorId);
         Visit visit = findPresentById(visitId);
         aclService.revokeRolesPermissionForEntity(spectator.getContactInformation(),visit,true,BasePermission.READ);
     }
@@ -63,8 +66,9 @@ public class JpaVisitService
     }
 
     @Autowired
-    public void setOwnerService(OwnerService ownerService) {
-        this.ownerService = ownerService;
+    @Root
+    public void setUserService(MyUserService userService) {
+        this.userService = userService;
     }
 
 }

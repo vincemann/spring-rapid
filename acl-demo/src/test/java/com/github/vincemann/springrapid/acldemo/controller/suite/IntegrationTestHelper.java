@@ -12,6 +12,7 @@ import com.github.vincemann.springrapid.acldemo.dto.visit.CreateVisitDto;
 import com.github.vincemann.springrapid.acldemo.dto.visit.ReadVisitDto;
 import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.service.*;
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
@@ -36,6 +37,7 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     @Autowired
     protected SpecialtyService specialtyService;
     @Autowired
+    @Root
     protected VetService vetService;
     @Autowired
     protected IllnessService illnessService;
@@ -46,6 +48,7 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     @Autowired
     protected VisitService visitService;
     @Autowired
+    @Root
     protected OwnerService ownerService;
 
 
