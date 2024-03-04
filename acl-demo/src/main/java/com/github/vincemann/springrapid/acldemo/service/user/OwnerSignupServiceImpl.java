@@ -4,17 +4,14 @@ import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
-import com.github.vincemann.springrapid.auth.Root;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.service.VerificationService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.google.common.collect.Sets;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.print.attribute.standard.Destination;
 
 @Service(value = "signupService")  // disables autoconfiguring spring rapids SignupServiceImpl bean
 public class OwnerSignupServiceImpl implements OwnerSignupService {

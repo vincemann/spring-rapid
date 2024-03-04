@@ -1,21 +1,17 @@
 package com.github.vincemann.springrapid.auth.service;
 
-import com.github.vincemann.springrapid.auth.Root;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
-import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.util.Assert;
-
-import java.util.Optional;
 
 // need this class as a wrapper so I can implement security extension properly
 public class UserAuthTokenServiceImpl implements UserAuthTokenService {

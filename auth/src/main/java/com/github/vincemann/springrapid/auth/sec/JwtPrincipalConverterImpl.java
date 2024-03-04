@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.sec;
 
-import com.github.vincemann.springrapid.auth.Root;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
@@ -9,7 +9,6 @@ import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 

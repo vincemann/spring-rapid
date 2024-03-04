@@ -1,8 +1,6 @@
 package com.github.vincemann.springrapid.auth.service;
 
-import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.annotation.LogInteraction;
-import com.github.vincemann.springrapid.auth.Root;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
 
@@ -10,7 +8,6 @@ import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
 
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import org.springframework.stereotype.Component;
 import com.github.vincemann.springrapid.core.util.Message;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.extern.slf4j.Slf4j;

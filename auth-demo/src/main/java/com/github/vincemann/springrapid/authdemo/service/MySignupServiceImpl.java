@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.authdemo.service;
 
-import com.github.vincemann.springrapid.auth.Root;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.VerificationService;

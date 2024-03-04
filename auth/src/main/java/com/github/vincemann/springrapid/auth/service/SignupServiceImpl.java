@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
-import com.github.vincemann.springrapid.auth.Root;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;

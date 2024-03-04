@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationListener;
@@ -25,9 +26,15 @@ import java.util.stream.Collectors;
  *
  */
 @Slf4j
-public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationListener<ContextRefreshedEvent>, BeanFactoryAware {
+public class CrudServiceLocatorImpl implements CrudServiceLocator,
+        ApplicationListener<ContextRefreshedEvent>,
+        BeanFactoryAware
+{
+    /**
+     * contains services that either have @{@link com.github.vincemann.springrapid.core.Root} qualifier or are primary.
+     */
     @Getter
-    private Map<Class<? extends IdentifiableEntity>, CrudService> primaryServices = new HashMap<>();
+    private Map<Class<? extends IdentifiableEntity>, CrudService> rootServices = new HashMap<>();
 
     private ConfigurableListableBeanFactory beanFactory;
 
@@ -43,34 +50,56 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationLi
 
     @Override
     public void loadServices() {
-        List<String> beanNames = Lists.newArrayList(beanFactory.getBeanNamesForType(CrudService.class));
+        List<String> crudServiceNames = Lists.newArrayList(beanFactory.getBeanNamesForType(CrudService.class));
 
         Map<Class<? extends CrudService>, List<CrudService>> nonPrimaryServices = new HashMap<>();
-        for (String beanName : beanNames) {
-            BeanDefinition bd = beanFactory.getBeanDefinition(beanName);
+        for (String beanName : crudServiceNames) {
+            BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
             CrudService bean = ((CrudService) beanFactory.getBean(beanName));
-            if (bd.isPrimary()) {
-                primaryServices.put(bean.getEntityClass(), bean);
+            if (beanDefinition.isPrimary()) {
+                // if primary add to root services
+                rootServices.put(bean.getEntityClass(), bean);
             } else {
-                List<CrudService> crudServices = nonPrimaryServices.get(bean.getClass());
-                if (crudServices == null) {
+                // if not primary add to non root services
+                List<CrudService> services = nonPrimaryServices.get(bean.getClass());
+                if (services == null) {
                     nonPrimaryServices.put(bean.getClass(), Lists.newArrayList(bean));
                 } else {
-                    crudServices.add(bean);
+                    services.add(bean);
                 }
             }
         }
-        //services that were not primary but only exist once, are practically primary -> get added to map as well
-        for (Map.Entry<Class<? extends CrudService>, List<CrudService>> classBeansEntry : nonPrimaryServices.entrySet()) {
-            if (classBeansEntry.getValue().size() == 1) {
-                CrudService service = classBeansEntry.getValue().get(0);
-                if (primaryServices.get(service.getEntityClass()) != null) {
+        // services that are not primary but are annotated with @Root are root services
+        Map<Class<?>,CrudService> addedRootServices = new HashMap<>();
+        Map<String, CrudService> rootQualifierServices = BeanFactoryAnnotationUtils.qualifiedBeansOfType(beanFactory, CrudService.class, "root");
+        for (CrudService service : rootQualifierServices.values()){
+            // check if there is already primary bean
+            if (rootServices.get(service.getEntityClass()) != null) {
+                continue;
+            }
+            // check if multiple beans for same entity class are marked as root
+            CrudService alreadyAdded = addedRootServices.get(service.getEntityClass());
+            if (alreadyAdded != null){
+                throw new IllegalArgumentException("cannot mark multiple beans for same entity class as @root and not define primary one");
+            }
+            // all checks passed, add as root service bean
+            addedRootServices.put(service.getEntityClass(),service);
+            rootServices.put(service.getEntityClass(),service);
+        }
+
+        //services that were not primary nor marked as @root but only exist once, are practically root services -> get added to map as well
+        for (Map.Entry<Class<? extends CrudService>, List<CrudService>> entry : nonPrimaryServices.entrySet()) {
+            List<CrudService> services = entry.getValue();
+            if (services.size() == 1) {
+                CrudService service = services.get(0);
+                if (rootServices.get(service.getEntityClass()) != null) {
                     continue;
                 }
-                primaryServices.put(service.getEntityClass(), service);
+                rootServices.put(service.getEntityClass(), service);
             }
         }
     }
+
 
 
     //@LogInteraction
@@ -87,6 +116,6 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationLi
     //@LogInteraction
     @Override
     public CrudService find(Class<? extends IdentifiableEntity> entityClass) {
-        return primaryServices.get(entityClass);
+        return rootServices.get(entityClass);
     }
 }

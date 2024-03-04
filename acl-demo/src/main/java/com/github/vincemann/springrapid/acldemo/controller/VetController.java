@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.acldemo.dto.vet.UpdateVetDto;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.service.VetService;
 import com.github.vincemann.springrapid.acldemo.service.user.VetSignupService;
-import com.github.vincemann.springrapid.auth.Root;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.service.SignupService;
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;

@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.MessageSender;
-import com.github.vincemann.springrapid.auth.Root;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
@@ -12,21 +12,18 @@ import com.github.vincemann.springrapid.auth.service.val.ContactInformationValid
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
-import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.util.*;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
-import java.util.Optional;
 
 import static com.github.vincemann.springrapid.core.util.MethodNameUtil.propertyName;
 

@@ -1,13 +1,9 @@
 package com.github.vincemann.springrapid.auth.handler;
 
-import com.github.vincemann.springrapid.auth.Root;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.service.UserAuthTokenService;
-import com.github.vincemann.springrapid.auth.service.UserService;
 
-import com.github.vincemann.springrapid.auth.util.UserUtils;
-import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

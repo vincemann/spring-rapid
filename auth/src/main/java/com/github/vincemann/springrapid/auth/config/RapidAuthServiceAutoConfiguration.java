@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.auth.config;
 
 
 import com.github.vincemann.springrapid.acl.Secured;
-import com.github.vincemann.springrapid.auth.Root;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.service.*;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.JwtAuthorizationTokenService;
@@ -13,7 +13,6 @@ import com.github.vincemann.springrapid.auth.service.val.PasswordValidatorImpl;
 import com.github.vincemann.springrapid.core.service.pass.BcryptRapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.service.pass.RapidPasswordEncoder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.service.VetService;
-import com.github.vincemann.springrapid.auth.Root;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.service.VerificationService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;

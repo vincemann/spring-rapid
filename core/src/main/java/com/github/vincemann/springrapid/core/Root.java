@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth;
+package com.github.vincemann.springrapid.core;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 

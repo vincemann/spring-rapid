@@ -1,18 +1,13 @@
 package com.github.vincemann.springrapid.acldemo.service.jpa;
 
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
-import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
-import com.github.vincemann.springrapid.auth.Root;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.service.JpaUserService;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

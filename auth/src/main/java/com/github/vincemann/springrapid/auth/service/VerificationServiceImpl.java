@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.MessageSender;
-import com.github.vincemann.springrapid.auth.Root;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
@@ -10,7 +10,6 @@ import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
-import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
@@ -23,7 +22,6 @@ import org.springframework.util.Assert;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
-import java.util.Optional;
 
 @Slf4j
 public class VerificationServiceImpl implements VerificationService {
