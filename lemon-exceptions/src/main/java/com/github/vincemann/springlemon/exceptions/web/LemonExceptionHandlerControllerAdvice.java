@@ -41,7 +41,7 @@ public class LemonExceptionHandlerControllerAdvice<T extends Throwable>
     		return ex;
 		});
     	
-    	// Propogate up if message or status is null 
+    	// Propagate up if message or status is null
     	if (errorResponse.incomplete()){
     		log.warn("Throwing exception, bc composed ErrorResponse is incomplete: " + errorResponse);
 			throw ex;

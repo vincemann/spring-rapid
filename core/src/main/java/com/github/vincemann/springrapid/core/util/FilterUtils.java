@@ -5,49 +5,46 @@ import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.support.SortDefinition;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class FilterUtils {
 
     public static <E extends IdentifiableEntity<?>> Set<E> applyMemoryFilters(Set<E> result, List<EntityFilter<? super E>> filters) {
-        if (filters == null)
-            return result;
+        Assert.notNull(filters,"filters cant be null");
         if (filters.isEmpty())
             return result;
-        Set<E> filtered;
-        if (result instanceof LinkedHashSet)
-             filtered = new LinkedHashSet<>();
-        else
-            filtered = new HashSet<>();
-
-        for (E entity : result) {
-            if (!isFilteredOut(filters,entity)){
-                filtered.add(entity);
-            }
+        java.util.function.Predicate<? super E> filter =
+                (java.util.function.Predicate<E>) entity -> !isFilteredOut(filters,entity);
+        if (result instanceof LinkedHashSet){
+            return result.stream()
+                    .filter(filter)
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+        }else{
+            return result.stream()
+                    .filter(filter)
+                    .collect(Collectors.toSet());
         }
-        return filtered;
     }
 
     public static <E extends IdentifiableEntity<?>> List<E> applyMemoryFilters(List<E> result, List<EntityFilter<? super E>> filters) {
-        if (filters == null)
-            return result;
+        Assert.notNull(filters,"filters cant be null");
         if (filters.isEmpty())
             return result;
-        List<E> filtered = new ArrayList<>();
-        for (E entity : result) {
-            if (!isFilteredOut(filters,entity)){
-                filtered.add(entity);
-            }
-        }
-        return filtered;
+        return result.stream()
+                .filter(entity -> !isFilteredOut(filters,entity))
+                .collect(Collectors.toList());
     }
 
 
@@ -55,15 +52,10 @@ public class FilterUtils {
      * @return true if entity is filtered out -> not part of result set
      *         false if entity matches all filters -> is part of result set
      */
-    public static <E extends IdentifiableEntity<?>> boolean isFilteredOut(List<EntityFilter<? super E>> filters, E entity){
-        for (EntityFilter<? super E> filter : filters) {
-            if (log.isDebugEnabled())
-                log.debug("applying memory filter: " + filter.getClass().getSimpleName());
-            if (!filter.match(entity)) {
-                return true;
-            }
-        }
-        return false;
+    private static <E extends IdentifiableEntity<?>> boolean isFilteredOut(List<EntityFilter<? super E>> filters, E entity){
+        Assert.notNull(filters,"filters cant be null");
+        Assert.notNull(entity,"entity cant be null");
+        return filters.stream().anyMatch(filter -> !filter.match(entity));
     }
 
 
@@ -99,16 +91,26 @@ public class FilterUtils {
 //        }
 //    }
 
-    public static Sort toSort(List<SortingExtension> sortingStrategies){
-        if (sortingStrategies.isEmpty())
+    @Nullable
+    public static Sort toSort(List<SortingExtension> sortingExtensions){
+        if (sortingExtensions.isEmpty())
             return null;
-        Sort sort = sortingStrategies.get(0).getSort();
-        for (SortingExtension sortingStrategy : sortingStrategies) {
-            sort = sort.and(sortingStrategy.getSort());
+        List<Sort> sortings = sortingExtensions.stream()
+                .map(ext -> convert(ext.getSort()))
+                .collect(Collectors.toList());
+        Sort sort = sortings.get(0);
+        for (Sort sorting : sortings) {
+            sort = sort.and(sorting);
         }
         return sort;
     }
 
+    private static Sort convert(SortDefinition sortDefinition){
+        if (sortDefinition.isAscending())
+            return Sort.by(sortDefinition.getProperty()).ascending();
+        else
+            return Sort.by(sortDefinition.getProperty()).descending();
+    }
 
     public static <E> Specification<E> toSpec(List<QueryFilter<? super E>> filters) {
 
@@ -118,7 +120,8 @@ public class FilterUtils {
             for (QueryFilter filter : filters) {
                 if (filter != null) {
                     Predicate predicate = filter.toPredicate(root, query, builder);
-                    combinedPredicate = combinedPredicate == null ? predicate : builder.and(combinedPredicate, predicate);
+                    combinedPredicate = combinedPredicate == null ? predicate
+                            : builder.and(combinedPredicate, predicate);
                 }
             }
 

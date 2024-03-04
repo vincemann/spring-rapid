@@ -47,8 +47,8 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         helper.signupVetDiCaprioWithHeart();
 
         // when
-        MailData mailData = userController.verifyMailWasSend();
-        userController.perform(userController.verifyContactInformationWithLink(mailData.getLink()))
+        MailData mailData = vetController.verifyMailWasSend();
+        vetController.perform(vetController.verifyContactInformationWithLink(mailData.getLink()))
         // then
                 .andExpect(status().is2xxSuccessful());
 
@@ -63,7 +63,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         Pet bella = petService.create(testData.getBella());
 
         // when
-        String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String token = vetController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
 
         mvc.perform(petController.find(bella.getId().toString())
                 .header(HttpHeaders.AUTHORIZATION, token))
@@ -85,7 +85,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         visit.setOwner(kahn);
         visit.getPets().add(bella);
         CreateVisitDto dto = new CreateVisitDto(visit);
-        String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String token = vetController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         ReadVisitDto response = visitController.perform2xxAndDeserialize(visitController.create(dto)
                         .header(HttpHeaders.AUTHORIZATION,token)
                 , ReadVisitDto.class);
@@ -107,7 +107,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         visit.setOwner(kahn);
         visit.getPets().add(bella);
         CreateVisitDto dto = new CreateVisitDto(visit);
-        String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String token = vetController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         visitController.perform(visitController.create(dto)
                         .header(HttpHeaders.AUTHORIZATION,token))
         // then
@@ -128,7 +128,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         visit.setOwner(kahn);
         visit.getPets().add(bello); // setting bello here, which is not owner by kahn
         CreateVisitDto dto = new CreateVisitDto(visit);
-        String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String token = vetController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         visitController.perform(visitController.create(dto)
                 .header(HttpHeaders.AUTHORIZATION,token))
         // then
@@ -148,7 +148,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         String updateJson = createUpdateJsonRequest(
                 createUpdateJsonLine("add", "/illnessIds", teethPain.getId().toString())
         );
-        String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String token = vetController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         ReadPetDto responsePetDto = petController.perform2xxAndDeserialize(petController.update(updateJson,bella.getId())
                 .header(HttpHeaders.AUTHORIZATION, token), ReadPetDto.class);
 

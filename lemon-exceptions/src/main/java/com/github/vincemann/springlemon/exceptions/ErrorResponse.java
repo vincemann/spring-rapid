@@ -11,7 +11,9 @@ import lombok.ToString;
  * Error DTO, to be sent as response body
  * in case of errors
  */
-@Getter @Setter @ToString
+@Getter
+@Setter
+@ToString
 public class ErrorResponse {
 	
 	private String exceptionId;
@@ -21,7 +23,6 @@ public class ErrorResponse {
 	private Collection<FieldError> errors;
 	
 	public boolean incomplete() {
-		
 		return message == null || status == null;
 	}
 }

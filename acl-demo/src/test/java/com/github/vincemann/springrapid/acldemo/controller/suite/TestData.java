@@ -3,11 +3,12 @@ package com.github.vincemann.springrapid.acldemo.controller.suite;
 import com.github.vincemann.springrapid.acldemo.model.*;
 import lombok.Getter;
 import org.springframework.boot.test.context.TestComponent;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
 @Getter
-@TestComponent
+@Component
 public class TestData {
     public static final String CONTACT_INFORMATION_SUFFIX = "@guerilla-mail.com";
 

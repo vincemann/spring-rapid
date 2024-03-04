@@ -26,9 +26,7 @@ spring:
 rapid-auth:
 
   # ADMIN users
-  admins:
-    - contactInformation: admin@example.com
-      password: AdminPassword123!
+  create-admins: false
 
   jwt:
       # An aes-128-cbc key generated at https://asecuritysite.com/encryption/keygen (take the "key" field)

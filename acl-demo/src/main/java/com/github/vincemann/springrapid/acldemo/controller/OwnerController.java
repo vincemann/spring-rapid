@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.acldemo.controller;
 import com.github.vincemann.springrapid.acl.Secured;
 import com.github.vincemann.springrapid.acl.SecuredCrudController;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
+import com.github.vincemann.springrapid.acldemo.Root;
 import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.UpdateOwnerDto;
@@ -32,7 +33,7 @@ import java.util.List;
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
 
 @Controller
-public class OwnerController extends SecuredCrudController<Owner, Long, OwnerService> {
+public class OwnerController extends AbstractUserController<Owner, Long, OwnerService> {
 
     @Getter
     private String signupUrl;
@@ -43,6 +44,8 @@ public class OwnerController extends SecuredCrudController<Owner, Long, OwnerSer
         super.initUrls();
         this.signupUrl = "/api/core/owner/signup";
     }
+
+
 
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {
@@ -68,11 +71,21 @@ public class OwnerController extends SecuredCrudController<Owner, Long, OwnerSer
 
     @Override
     public List<String> getIgnoredEndPoints() {
-        return Lists.newArrayList(getCreateUrl());
+        return Lists.newArrayList(getCreateUrl(),getSignupUrl());
     }
+
+
 
     @Autowired
     public void setSignupService(OwnerSignupService signupService) {
         this.signupService = signupService;
     }
+
+    @Autowired
+    @Root
+    @Override
+    public void setUnsecuredService(OwnerService Service) {
+        super.setUnsecuredService(Service);
+    }
+
 }

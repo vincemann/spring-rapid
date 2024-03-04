@@ -17,7 +17,6 @@ public class LemonExceptionUtils {
 	
 
 
-	// todo change to javax.validator instead of concrete bean?
 	private static LocalValidatorFactoryBean validator;
 	private static ExceptionIdMaker exceptionIdMaker;
 	

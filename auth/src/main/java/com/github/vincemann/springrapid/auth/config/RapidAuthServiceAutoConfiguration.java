@@ -36,18 +36,6 @@ public class RapidAuthServiceAutoConfiguration {
         return new RapidUserDetailsService();
     }
 
-
-
-    // keep it like that - otherwise stuff is not proxied and much other sht happening
-    // this way user can define its UserServiceImpl with @Service or @Component and everything works
-    // user must not set its implementation to Primary tho
-    @Bean
-    @Primary
-    public UserService myUserService(JpaUserService userService) {
-//        return createInstance();
-        return userService;
-    }
-
     @Bean
     @ConditionalOnMissingBean(PasswordEncoder.class)
     public RapidPasswordEncoder passwordEncoder() {

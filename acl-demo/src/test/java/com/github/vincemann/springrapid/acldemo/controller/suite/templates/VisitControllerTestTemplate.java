@@ -9,7 +9,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-@TestComponent
+@Component
 public class VisitControllerTestTemplate extends CrudControllerTestTemplate<VisitController> {
 
     public MockHttpServletRequestBuilder addSpectator(long visitId, long spectatorId){

@@ -21,9 +21,10 @@ import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 
-@TestComponent
+@Component
 public class IntegrationTestHelper implements TestMethodInitializable, MvcAware {
 
     @Autowired
@@ -50,8 +51,6 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     // controllers
 
     @Autowired
-    protected UserControllerTestTemplate userController;
-    @Autowired
     protected OwnerControllerTestTemplate ownerController;
     @Autowired
     protected PetControllerTestTemplate petController;
@@ -63,13 +62,12 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
 
 
     @Override
-    public void before() {
+    public void beforeTestMethod() {
         testData.initTestData();
     }
 
     @Override
     public void setMvc(MockMvc mvc) {
-        userController.setMvc(mvc);
         ownerController.setMvc(mvc);
         petController.setMvc(mvc);
         vetController.setMvc(mvc);
@@ -80,8 +78,8 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     public Vet signupVetDiCaprioWithHeartAndVerify() throws Exception {
         Vet dicaprio = signupVetDiCaprioWithHeart();
         // verify
-        MailData mailData = userController.verifyMailWasSend();
-        userController.perform2xx(userController.verifyContactInformationWithLink(mailData.getLink()));
+        MailData mailData = vetController.verifyMailWasSend();
+        vetController.perform2xx(vetController.verifyContactInformationWithLink(mailData.getLink()));
 
         Vet saved = vetService.findByLastName(dicaprio.getLastName()).get();
         Assertions.assertFalse(saved.getRoles().contains(AuthRoles.UNVERIFIED));
@@ -91,8 +89,8 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     public Vet signupVetMaxWithDentismAndVerify() throws Exception {
         Vet max = signupVetMaxWithDentism();
         // verify
-        MailData mailData = userController.verifyMailWasSend();
-        userController.perform2xx(userController.verifyContactInformationWithLink(mailData.getLink()));
+        MailData mailData = vetController.verifyMailWasSend();
+        vetController.perform2xx(vetController.verifyContactInformationWithLink(mailData.getLink()));
 
         Vet saved = vetService.findByLastName(max.getLastName()).get();
         Assertions.assertFalse(saved.getRoles().contains(AuthRoles.UNVERIFIED));

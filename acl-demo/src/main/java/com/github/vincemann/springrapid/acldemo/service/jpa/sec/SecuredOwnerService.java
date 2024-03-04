@@ -16,13 +16,10 @@ import java.util.Optional;
 /**
  * decorator securing owner Service
  */
-@Secured
-@Service
 public class SecuredOwnerService
         extends AbstractSecuredUserServiceDecorator<OwnerService, Owner,Long>
         implements OwnerService{
 
-    @Autowired
     public SecuredOwnerService(OwnerService decorated) {
         super(decorated);
     }

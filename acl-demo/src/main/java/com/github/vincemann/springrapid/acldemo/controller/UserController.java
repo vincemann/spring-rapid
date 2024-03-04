@@ -8,21 +8,21 @@ import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
-/**
- * controller exposing user operations, that are not specific to Vet or Owner but work for both
- *
- * {@link com.github.vincemann.springrapid.acldemo.service.user.SecuredDelegatingUserService} and
- * {@link com.github.vincemann.springrapid.acldemo.service.user.DelegatingUserService} are injected into services with
- * dependency on {@link UserService}.
- *
- *
- */
-@Controller
-public class UserController extends AbstractUserController<User, Long, UserService<User,Long>>  {
-
-
-    @Override
-    public List<String> getIgnoredEndPoints() {
-        return Lists.newArrayList(getSignupUrl(),getCreateUrl());
-    }
-}
+///**
+// * controller exposing user operations, that are not specific to Vet or Owner but work for both
+// *
+// * {@link com.github.vincemann.springrapid.acldemo.service.user.SecuredDelegatingUserService} and
+// * {@link com.github.vincemann.springrapid.acldemo.service.user.DelegatingUserService} are injected into services with
+// * dependency on {@link UserService}.
+// *
+// *
+// */
+//@Controller
+//public class UserController extends AbstractUserController<User, Long, UserService<User,Long>>  {
+//
+//
+//    @Override
+//    public List<String> getIgnoredEndPoints() {
+//        return Lists.newArrayList(getSignupUrl(),getCreateUrl());
+//    }
+//}

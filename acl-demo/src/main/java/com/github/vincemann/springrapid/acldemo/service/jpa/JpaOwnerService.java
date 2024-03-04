@@ -12,9 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-@Primary
-@Service
-@Qualifier("owner")
 public class JpaOwnerService
         extends JpaUserService<Owner,Long, OwnerRepository>
                 implements OwnerService

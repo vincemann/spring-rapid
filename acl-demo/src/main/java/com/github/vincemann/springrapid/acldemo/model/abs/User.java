@@ -5,31 +5,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "usr",uniqueConstraints = {
+        @UniqueConstraint(name = "unique last name", columnNames = {"lastName"}),
+        @UniqueConstraint(name = "unique email", columnNames = "contactInformation")
+})
 @NoArgsConstructor
 @Getter
 @Setter
 public abstract class User extends AbstractUser<Long> {
 
     @NotBlank
-    @Column(name = "first_name")
+    @Column
     private String firstName;
 
     @NotBlank
-    @Column(name = "last_name")
+    @Column
     private String lastName;
     @Email
     @NotBlank
-    @Column(nullable = false, unique = true, length = CONTACT_INFORMATION_MAX)
     @Override
     public String getContactInformation() {
         return super.getContactInformation();

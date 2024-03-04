@@ -16,10 +16,7 @@ import java.util.Set;
 @Setter
 @Getter
 @Entity
-@Table(name = "owners", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"last_name"}),
-        @UniqueConstraint(name = "unique email", columnNames = "contact_information")
-})
+@Table(name = "owners")
 public class Owner extends User {
 
     public static final String SECRET = "mySecret";

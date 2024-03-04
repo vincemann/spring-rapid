@@ -232,23 +232,22 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	@Override
 	protected void initUrls() {
 		super.initUrls();
-		findByContactInformationUrl = getAuthProperties().getController().getFindByContactInformationUrl();
-
 		loginUrl = getAuthProperties().getController().getLoginUrl();
-		signupUrl = getAuthProperties().getController().getSignupUrl();
 
-		resetPasswordUrl = getAuthProperties().getController().getResetPasswordUrl();
-		resetPasswordViewUrl = getAuthProperties().getController().getResetPasswordViewUrl();
-		changeContactInformationUrl = getAuthProperties().getController().getChangeContactInformationUrl();
-		changeContactInformationViewUrl = getAuthProperties().getController().getChangeContactInformationViewUrl();
-		verifyUserUrl = getAuthProperties().getController().getVerifyUserUrl();
-		resendVerificationContactInformationUrl = getAuthProperties().getController().getResendVerifyContactInformationMsgUrl();
-		forgotPasswordUrl = getAuthProperties().getController().getForgotPasswordUrl();
-		changePasswordUrl = getAuthProperties().getController().getChangePasswordUrl();
-		requestContactInformationChangeUrl = getAuthProperties().getController().getRequestContactInformationChangeUrl();
-		fetchNewAuthTokenUrl = getAuthProperties().getController().getFetchNewAuthTokenUrl();
-		testTokenUrl = getAuthProperties().getController().getTestTokenUrl();
-		blockUserUrl =  getAuthProperties().getController().getBlockUserUrl();
+		findByContactInformationUrl = getEntityBaseUrl() + getAuthProperties().getController().getFindByContactInformationUrl();
+		signupUrl = getEntityBaseUrl() + getAuthProperties().getController().getSignupUrl();
+		resetPasswordUrl = getEntityBaseUrl() + getAuthProperties().getController().getResetPasswordUrl();
+		resetPasswordViewUrl = getEntityBaseUrl() + getAuthProperties().getController().getResetPasswordViewUrl();
+		changeContactInformationUrl = getEntityBaseUrl() + getAuthProperties().getController().getChangeContactInformationUrl();
+		changeContactInformationViewUrl = getEntityBaseUrl() + getAuthProperties().getController().getChangeContactInformationViewUrl();
+		verifyUserUrl = getEntityBaseUrl() + getAuthProperties().getController().getVerifyUserUrl();
+		resendVerificationContactInformationUrl = getEntityBaseUrl() + getAuthProperties().getController().getResendVerifyContactInformationMsgUrl();
+		forgotPasswordUrl = getEntityBaseUrl() + getAuthProperties().getController().getForgotPasswordUrl();
+		changePasswordUrl = getEntityBaseUrl() + getAuthProperties().getController().getChangePasswordUrl();
+		requestContactInformationChangeUrl = getEntityBaseUrl() + getAuthProperties().getController().getRequestContactInformationChangeUrl();
+		fetchNewAuthTokenUrl = getEntityBaseUrl() + getAuthProperties().getController().getFetchNewAuthTokenUrl();
+		testTokenUrl = getEntityBaseUrl() + getAuthProperties().getController().getTestTokenUrl();
+		blockUserUrl =  getEntityBaseUrl() + getAuthProperties().getController().getBlockUserUrl();
 	}
 
 

@@ -47,7 +47,7 @@ public class VisitController extends SecuredCrudController<Visit, Long, VisitSer
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = "/api/core/visit/add-spectator", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/core/visit/remove-spectator", method = RequestMethod.GET)
     public ResponseEntity<?> removeSpectator(@RequestParam("spectatorId") long spectatorId, @RequestParam("visit") long visitId) throws EntityNotFoundException {
         getService().removeSpectator(spectatorId,visitId);
         return ResponseEntity.ok().build();

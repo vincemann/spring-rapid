@@ -9,9 +9,11 @@ import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.service.*;
 import com.github.vincemann.springrapid.auth.boot.AdminInitializer;
 import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
+import com.github.vincemann.springrapid.authtest.config.RapidAuthControllerTestTemplateAutoConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
@@ -21,6 +23,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@ImportAutoConfiguration(exclude = RapidAuthControllerTestTemplateAutoConfiguration.class)
 public class MyIntegrationTest extends AclMvcTest
 {
 
@@ -28,8 +31,6 @@ public class MyIntegrationTest extends AclMvcTest
     protected TestData testData;
     @Autowired
     protected IntegrationTestHelper helper;
-    @Autowired
-    private AdminInitializer adminInitializer;
 
 
     // services
@@ -50,8 +51,6 @@ public class MyIntegrationTest extends AclMvcTest
 
     // controller
     @Autowired
-    protected UserControllerTestTemplate userController;
-    @Autowired
     protected OwnerControllerTestTemplate ownerController;
     @Autowired
     protected PetControllerTestTemplate petController;
@@ -60,11 +59,6 @@ public class MyIntegrationTest extends AclMvcTest
     @Autowired
     protected VisitControllerTestTemplate visitController;
 
-
-    @BeforeEach
-    public void setup() throws Exception {
-        adminInitializer.run();
-    }
 
     @Override
     protected DefaultMockMvcBuilder createMvcBuilder() {

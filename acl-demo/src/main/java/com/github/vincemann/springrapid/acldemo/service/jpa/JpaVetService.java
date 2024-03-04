@@ -16,10 +16,6 @@ import java.util.Optional;
 
 
 
-
-@Qualifier("vet")
-@Primary
-@Service
 public class JpaVetService
         extends JpaUserService<Vet,Long, VetRepository>
                 implements VetService {

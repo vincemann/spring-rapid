@@ -2,6 +2,8 @@ package com.github.vincemann.springrapid.coredemo.service.sort;
 
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
+import org.springframework.beans.support.MutableSortDefinition;
+import org.springframework.beans.support.SortDefinition;
 import org.springframework.stereotype.Component;
 import org.springframework.data.domain.Sort;
 
@@ -19,7 +21,7 @@ public class LastNameAscSorting implements SortingExtension {
     }
 
     @Override
-    public Sort getSort() {
-        return Sort.by("lastName").ascending();
+    public SortDefinition getSort() {
+        return new MutableSortDefinition("lastName",false,true);
     }
 }
