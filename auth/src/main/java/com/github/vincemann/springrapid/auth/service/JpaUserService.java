@@ -67,7 +67,10 @@ public abstract class JpaUserService
     @Transactional
     @Override
     public U create(U user) throws BadEntityException {
-        Assert.notNull(user);
+        Assert.notNull(user,"user to create must not be null");
+        VerifyEntity.notNull(user.getPassword(),"password");
+        VerifyEntity.notNull(user.getContactInformation(),"contactInformation");
+        VerifyEntity.notEmpty(user.getRoles(),"roles");
         // only enforce very basic stuff
         if (user.getPassword() != null && !passwordEncoder.isEncoded(user.getPassword()))
             passwordValidator.validate(user.getPassword());

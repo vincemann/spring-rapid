@@ -15,6 +15,7 @@ import com.github.vincemann.springrapid.acldemo.service.*;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.coretest.MvcAware;
 import com.github.vincemann.springrapid.coretest.TestMethodInitializable;
 import org.junit.jupiter.api.Assertions;
@@ -62,8 +63,10 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
 
 
     @Override
-    public void beforeTestMethod() {
+    public void beforeTestMethod() throws BadEntityException {
         testData.initTestData();
+        testData.savedDogPetType = petTypeService.create(testData.getSavedDogPetType());
+        testData.savedCatPetType = petTypeService.create(testData.getSavedCatPetType());
     }
 
     @Override
@@ -118,15 +121,17 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     }
 
     public Owner signupKahnWithBella() throws Exception {
+        Owner owner = signupOwner(testData.getKahn());
+        testData.getBella().setOwner(owner);
         Pet bella = petService.create(testData.getBella());
-        testData.getKahn().getPets().add(bella);
-        return signupOwner(testData.getKahn());
+        return ownerService.findPresentById(owner.getId());
     }
 
     public Owner signupMeierWithBello() throws Exception {
+        Owner owner = signupOwner(testData.getMeier());
+        testData.getBello().setOwner(owner);
         Pet bello = petService.create(testData.getBello());
-        testData.getMeier().getPets().add(bello);
-        return signupOwner(testData.getMeier());
+        return ownerService.findPresentById(owner.getId());
     }
 
     public Owner signupOwner(Owner owner) throws Exception {

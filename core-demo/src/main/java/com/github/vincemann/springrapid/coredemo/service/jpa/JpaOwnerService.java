@@ -31,15 +31,6 @@ public class JpaOwnerService
         return getRepository().findByLastName(lastName);
     }
 
-
-
-    public Class<?> getTargetClass(){
-        return JpaOwnerService.class;
-    }
-
-
-
-
     /**
      * Owner named "chad" is owner of the year
      * @return

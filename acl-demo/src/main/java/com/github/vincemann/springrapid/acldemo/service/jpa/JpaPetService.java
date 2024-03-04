@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.acldemo.repo.PetRepository;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
 import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.acls.domain.BasePermission;
@@ -28,6 +29,7 @@ public class JpaPetService
     @Override
     public Pet create(Pet entity) throws BadEntityException {
         Pet pet = super.create(entity);
+        VerifyEntity.notNull(entity.getOwner(),"owner");
         saveAclInfo(pet);
         return pet;
     }

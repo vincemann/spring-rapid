@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.acldemo.controller.suite;
 
 import com.github.vincemann.springrapid.acldemo.model.*;
 import lombok.Getter;
-import org.springframework.boot.test.context.TestComponent;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -22,7 +21,7 @@ public class TestData {
 
     public static final String VET_POLDI = "Poldi";
     public static final String VET_POLDI_PASSWORD = "PoldiPassword123?";
-    public static final String VET_POLDI_CONTACT_INFORMATION = VET_POLDI+CONTACT_INFORMATION_SUFFIX;
+    public static final String VET_POLDI_EMAIL = VET_POLDI+CONTACT_INFORMATION_SUFFIX;
 
     public static final String VET_DICAPRIO = "Dicaprio";
     public static final String VET_DICAPRIO_PASSWORD = "DicaprioPassword123?";
@@ -155,16 +154,22 @@ public class TestData {
         vetMax = Vet.builder()
                 .firstName("Max")
                 .lastName(VET_MAX)
+                .contactInformation(VET_MAX_EMAIL)
+                .password(VET_MAX_PASSWORD)
                 .build();
 
         vetDiCaprio = Vet.builder()
                 .firstName("michael")
                 .lastName(VET_DICAPRIO)
+                .contactInformation(VET_DICAPRIO_EMAIL)
+                .password(VET_DICAPRIO_PASSWORD)
                 .build();
 
         vetPoldi = Vet.builder()
                 .firstName("Olli")
                 .lastName(VET_POLDI)
+                .contactInformation(VET_POLDI_EMAIL)
+                .password(VET_POLDI_PASSWORD)
                 .build();
 
         checkHeartVisit = Visit.builder()

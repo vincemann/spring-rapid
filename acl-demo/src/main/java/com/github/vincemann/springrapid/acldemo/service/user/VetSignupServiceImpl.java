@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.auth.service.VerificationService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.google.common.collect.Sets;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +22,9 @@ public class VetSignupServiceImpl implements VetSignupService {
 
     @Override
     public Vet signup(SignupVetDto dto) throws BadEntityException {
-        Vet vet = Vet.builder()
-                .roles(Sets.newHashSet(MyRoles.VET,MyRoles.USER))
-                .build();
+        ModelMapper mapper = new ModelMapper();
+        Vet vet = mapper.map(dto, Vet.class);
+        vet.setRoles(Sets.newHashSet(MyRoles.VET,MyRoles.USER));
 
         Vet saved = vetService.create(vet);
         try {

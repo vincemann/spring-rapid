@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
 import com.github.vincemann.springrapid.authtest.AbstractUserControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import org.springframework.boot.test.context.TestComponent;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -17,7 +18,8 @@ public class VetControllerTestTemplate extends AbstractUserControllerTestTemplat
 
     public ReadVetDto signup(SignupVetDto dto) throws Exception {
         String json = getMvc().perform(post(getController().getSignupUrl())
-                        .content(getController().getJsonMapper().writeDto(dto)))
+                        .content(serialize(dto))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
         return getController().getJsonMapper().readDto(json,ReadVetDto.class);

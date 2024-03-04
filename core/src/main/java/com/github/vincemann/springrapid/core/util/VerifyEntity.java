@@ -3,6 +3,8 @@ package com.github.vincemann.springrapid.core.util;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public class VerifyEntity {
@@ -14,6 +16,15 @@ public class VerifyEntity {
     }
 
     public static void notEmpty(String property, String propertyName) throws BadEntityException {
+        if(property==null){
+            throw new BadEntityException("Property: "+propertyName+" must not be null");
+        }
+        if (property.isEmpty()){
+            throw new BadEntityException("Property: "+propertyName+" must not be empty");
+        }
+    }
+
+    public static void notEmpty(Collection<?> property, String propertyName) throws BadEntityException {
         if(property==null){
             throw new BadEntityException("Property: "+propertyName+" must not be null");
         }

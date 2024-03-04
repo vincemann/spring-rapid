@@ -36,18 +36,14 @@ public class SignupOwnerDto extends AbstractSignupDto {
     @Nullable
     private Set<String> hobbies = new HashSet<>();
 
-    @Nullable
-    @BiDirChildIdCollection(Pet.class)
-    private Set<Long> petIds = new HashSet<>();
 
     @Builder
-    public SignupOwnerDto(String contactInformation, String password, String firstName, String lastName, String address, String city, @Nullable String telephone, @Nullable Set<String> hobbies, @Nullable Set<Long> petIds) {
+    public SignupOwnerDto(String contactInformation, String password, String firstName, String lastName, String address, String city, @Nullable String telephone, @Nullable Set<String> hobbies) {
         super(contactInformation, password, firstName, lastName);
         this.address = address;
         this.city = city;
         this.telephone = telephone;
         this.hobbies = hobbies;
-        this.petIds = petIds;
     }
 
     public SignupOwnerDto(Owner owner){
@@ -59,8 +55,7 @@ public class SignupOwnerDto extends AbstractSignupDto {
                 owner.getAddress(),
                 owner.getCity(),
                 owner.getTelephone(),
-                owner.getHobbies(),
-                owner.getPets().stream().map(Pet::getId).collect(Collectors.toSet())
+                owner.getHobbies()
         );
     }
 
@@ -71,7 +66,6 @@ public class SignupOwnerDto extends AbstractSignupDto {
                 ", city='" + city + '\'' +
                 ", telephone='" + telephone + '\'' +
                 ", hobbies=" + hobbies +
-                ", petIds=" + petIds +
                 ", contactInformation='" + getContactInformation() + '\'' +
                 ", password='" + getPassword() + '\'' +
                 ", firstName='" + getFirstName() + '\'' +
