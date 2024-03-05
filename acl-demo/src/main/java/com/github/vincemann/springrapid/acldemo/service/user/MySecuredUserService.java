@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.service.user;
 
+import com.github.vincemann.springrapid.acl.Secured;
 import com.github.vincemann.springrapid.acldemo.model.abs.User;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.service.AbstractSecuredUserServiceDecorator;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service(value = "securedUserService")
+@Secured
 public class MySecuredUserService
         extends AbstractSecuredUserServiceDecorator<MyUserService, User,Long>
         implements MyUserService

@@ -12,6 +12,8 @@ import com.github.vincemann.springrapid.acldemo.dto.visit.CreateVisitDto;
 import com.github.vincemann.springrapid.acldemo.dto.visit.ReadVisitDto;
 import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.service.*;
+import com.github.vincemann.springrapid.auth.AuthMessage;
+import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
@@ -60,6 +62,8 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     protected VetControllerTestTemplate vetController;
     @Autowired
     protected VisitControllerTestTemplate visitController;
+    @Autowired
+    protected UserControllerTestTemplate userController;
 
 
 
@@ -82,8 +86,8 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     public Vet signupVetDiCaprioWithHeartAndVerify() throws Exception {
         Vet dicaprio = signupVetDiCaprioWithHeart();
         // verify
-        MailData mailData = vetController.verifyMailWasSend();
-        vetController.perform2xx(vetController.verifyContactInformationWithLink(mailData.getLink()));
+        AuthMessage msg = userController.verifyMsgWasSent();
+        userController.perform2xx(userController.verifyContactInformationWithLink(msg.getLink()));
 
         Vet saved = vetService.findByLastName(dicaprio.getLastName()).get();
         Assertions.assertFalse(saved.getRoles().contains(AuthRoles.UNVERIFIED));
@@ -93,8 +97,8 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     public Vet signupVetMaxWithDentismAndVerify() throws Exception {
         Vet max = signupVetMaxWithDentism();
         // verify
-        MailData mailData = vetController.verifyMailWasSend();
-        vetController.perform2xx(vetController.verifyContactInformationWithLink(mailData.getLink()));
+        AuthMessage msg = userController.verifyMsgWasSent();
+        userController.perform2xx(userController.verifyContactInformationWithLink(msg.getLink()));
 
         Vet saved = vetService.findByLastName(max.getLastName()).get();
         Assertions.assertFalse(saved.getRoles().contains(AuthRoles.UNVERIFIED));

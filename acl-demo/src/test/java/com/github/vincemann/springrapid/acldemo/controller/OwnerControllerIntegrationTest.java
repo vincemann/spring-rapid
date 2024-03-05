@@ -44,7 +44,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Owner kahn = helper.signupOwner(testData.getKahn());
 
         // when
-        String token = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        String token = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
         CreatePetDto createPetDto = new CreatePetDto(testData.getBella());
         createPetDto.setOwnerId(kahn.getId());
         OwnerReadsOwnPetDto responseDto = petController.create2xx(createPetDto,token,OwnerReadsOwnPetDto.class);
@@ -62,7 +62,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Owner meier = helper.signupOwner(testData.getMeier());
 
         // when
-        String kahnToken = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        String kahnToken = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
         CreatePetDto createPetDto = new CreatePetDto(testData.getBella());
         createPetDto.setOwnerId(meier.getId()); // using diff owners id here
         mvc.perform(petController.create(createPetDto)
@@ -83,7 +83,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         String updateJson = createUpdateJsonRequest(
                 createUpdateJsonLine("replace", "/name", "newName")
         );
-        String token = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        String token = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
         OwnerReadsOwnPetDto updatedPetDto
                 = petController.update2xx(updateJson, bella.getId(),token,OwnerReadsOwnPetDto.class);
 
@@ -105,7 +105,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         String updateJson = createUpdateJsonRequest(
                 createUpdateJsonLine("add", "/illnessIds", teethPain.getId().toString())
         );
-        String token = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        String token = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
         mvc.perform(petController.update(updateJson, bella.getId().toString())
                         .header(HttpHeaders.AUTHORIZATION, token))
         // then
@@ -131,7 +131,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         String updateJson = createUpdateJsonRequest(
                 createUpdateJsonLine("replace", "/name", bello.getId().toString())
         );
-        String token = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        String token = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
         mvc.perform(petController.update(updateJson, bello.getId().toString())
                         .header(HttpHeaders.AUTHORIZATION, token))
         // then
@@ -151,7 +151,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
 
         // when
-        String token = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        String token = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
         OwnerReadsOwnPetDto dto = petController.perform2xxAndDeserialize(petController.find(bella.getId())
                 .header(HttpHeaders.AUTHORIZATION, token),
                 OwnerReadsOwnPetDto.class);
@@ -171,7 +171,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Pet bello = petService.findByName(BELLO).get();
 
         // when
-        String ownerToken = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        String ownerToken = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
         mvc.perform(petController.find(bello.getId().toString())
                         .header(HttpHeaders.AUTHORIZATION, ownerToken))
         // then
@@ -193,11 +193,11 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Pet bello = petService.findByName(BELLO).get();
 
         // kahn gives meier permission to watch its pets bella
-        String kahnToken = ownerController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        String kahnToken = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
         ownerController.addPetsSpectator(meier.getId(),kahn.getId(),kahnToken);
 
         // when
-        String meierToken = ownerController.login2xx(OWNER_MEIER_EMAIL, OWNER_MEIER_PASSWORD);
+        String meierToken = userController.login2xx(OWNER_MEIER_EMAIL, OWNER_MEIER_PASSWORD);
         String json = petController.perform(petController.find(bella.getId())
                         .header(HttpHeaders.AUTHORIZATION, meierToken))
         // then

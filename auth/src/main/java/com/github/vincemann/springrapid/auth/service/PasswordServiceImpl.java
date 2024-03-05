@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.service;
 
+import com.github.vincemann.springrapid.auth.AuthMessage;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.MessageSender;
 import com.github.vincemann.springrapid.core.Root;
@@ -38,7 +39,6 @@ public class PasswordServiceImpl implements PasswordService {
     private MessageSender messageSender;
     private IdConverter idConverter;
     private PasswordEncoder passwordEncoder;
-
     private PasswordValidator passwordValidator;
 
 
@@ -47,9 +47,7 @@ public class PasswordServiceImpl implements PasswordService {
     @Transactional(readOnly = true)
     @Override
     public AbstractUser forgotPassword(String contactInformation) throws EntityNotFoundException, BadEntityException {
-        if (contactInformation == null || contactInformation.isEmpty()){
-            throw new BadEntityException("need non emtpy contact information");
-        }
+        VerifyEntity.notEmpty(contactInformation,"need non emtpy contact information");
         // fetch the user record from database
         Optional<AbstractUser<Serializable>> user = userService.findByContactInformation(contactInformation);
         VerifyEntity.isPresent(user, "User with contactInformation: " + contactInformation + " not found");
@@ -116,8 +114,14 @@ public class PasswordServiceImpl implements PasswordService {
                 .queryParam("code", forgotPasswordCode)
                 .toUriString();
         log.info("forgotPasswordLink: " + forgotPasswordLink);
+        AuthMessage message = AuthMessage.builder()
+                .link(forgotPasswordLink)
+                .topic(FORGOT_PASSWORD_AUDIENCE)
+                .code(forgotPasswordCode)
+                .recipient(user.getContactInformation())
+                .build();
 
-        messageSender.sendMessage(forgotPasswordLink, FORGOT_PASSWORD_AUDIENCE, forgotPasswordCode, user.getContactInformation());
+        messageSender.send(message);
 
 
         log.debug("Forgot password link mail queued.");

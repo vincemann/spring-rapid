@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.service;
 
 import com.github.vincemann.springrapid.auth.service.UserService;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 

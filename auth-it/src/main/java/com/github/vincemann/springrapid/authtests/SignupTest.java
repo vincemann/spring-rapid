@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.authtests;
 
+import com.github.vincemann.springrapid.auth.AuthMessage;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
@@ -12,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.Serializable;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -54,9 +54,9 @@ public class SignupTest extends RapidAuthIntegrationTest {
 				.andExpect(jsonPath("$.admin").value(false))
 				.andExpect(jsonPath("$.goodUser").value(false));
 
-		MailData mailData = userController.verifyMailWasSend();
-		Assertions.assertEquals(signupDto.getContactInformation(), mailData.getTo());
-		Assertions.assertNotNull(mailData.getCode());
+		AuthMessage msg = userController.verifyMsgWasSent();
+		Assertions.assertEquals(signupDto.getContactInformation(), msg.getRecipient());
+		Assertions.assertNotNull(msg.getCode());
 
 		Optional<AbstractUser<Serializable>> byContactInformation = getUserService().findByContactInformation(signupDto.getContactInformation());
 		Assertions.assertTrue(byContactInformation.isPresent());

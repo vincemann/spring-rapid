@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Component
-public class VetControllerTestTemplate extends AbstractUserControllerTestTemplate<VetController> {
+public class VetControllerTestTemplate extends CrudControllerTestTemplate<VetController> {
 
     public ReadVetDto signup(SignupVetDto dto) throws Exception {
         String json = getMvc().perform(post(getController().getSignupUrl())

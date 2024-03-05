@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.authtests;
 
+import com.github.vincemann.springrapid.auth.AuthMessage;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.Serializable;
@@ -27,8 +29,8 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 	@Test
 	public void canVerifyContactInformation() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
-		MailData mailData = userController.signup2xx(signupDto);
-		mvc.perform(userController.verifyContactInformationWithLink(mailData.getLink()))
+		AuthMessage msg = userController.signup2xx(signupDto);
+		mvc.perform(userController.verifyContactInformationWithLink(msg.getLink()))
 				.andExpect(status().is(204))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
 
@@ -38,11 +40,11 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 	@Test
 	public void cantVerifyContactInformationTwiceWithSameCode() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
-		MailData mailData = userController.signup2xx(signupDto);
-		mvc.perform(userController.verifyContactInformationWithLink(mailData.getLink()))
+		AuthMessage msg = userController.signup2xx(signupDto);
+		mvc.perform(userController.verifyContactInformationWithLink(msg.getLink()))
 				.andExpect(status().is2xxSuccessful());
 
-		mvc.perform(userController.verifyContactInformationWithLink(mailData.getLink()))
+		mvc.perform(userController.verifyContactInformationWithLink(msg.getLink()))
 				.andExpect(status().isForbidden());
 	}
 
@@ -58,7 +60,7 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 	@Test
 	public void cantVerifyContactInformationWithInvalidData() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
-		MailData mailData = userController.signup2xx(signupDto);
+		AuthMessage msg = userController.signup2xx(signupDto);
 
 		// null code
 		mvc.perform(userController.verifyContactInformation(null))
@@ -69,7 +71,7 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 				.andExpect(status().isBadRequest());
 
 		// Wrong audience
-		String code = modifyCode(mailData.getCode(),"wrong-audience",null,null,null,null);
+		String code = modifyCode(msg.getCode(),"wrong-audience",null,null,null,null);
 		mvc.perform(userController.verifyContactInformation(code))
 				.andExpect(status().isForbidden());
 
@@ -90,11 +92,11 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 
 		SignupDto signupDto = createValidSignupDto();
 		mockJwtExpirationTime(50L);
-		MailData mailData = userController.signup2xx(signupDto);
+		AuthMessage msg = userController.signup2xx(signupDto);
 		AbstractUser<Serializable> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
 		// expired token
 		Thread.sleep(51L);
-		mvc.perform(userController.verifyContactInformationWithLink(mailData.getLink()))
+		mvc.perform(userController.verifyContactInformationWithLink(msg.getLink()))
 				.andExpect(status().isForbidden());
 
 //
@@ -113,23 +115,21 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 	@Test
 	public void usersCredentialsUpdatedAfterSignup_cantUseObsoleteVerificationCode() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
-		MailData mailData = userController.signup2xx(signupDto);
+		AuthMessage msg = userController.signup2xx(signupDto);
 
-		transactionTemplate.execute(new TransactionCallback<Object>() {
+		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 			@SneakyThrows
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				AbstractUser<Serializable> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
 
 				// Credentials updated after the verification token is issued
 				savedUser.setCredentialsUpdatedMillis(System.currentTimeMillis());
 				getUserService().fullUpdate(savedUser);
-				return null;
 			}
 		});
 
-
-		mvc.perform(userController.verifyContactInformationWithLink(mailData.getLink()))
+		mvc.perform(userController.verifyContactInformationWithLink(msg.getLink()))
 				.andExpect(status().isForbidden());
 	}
 }

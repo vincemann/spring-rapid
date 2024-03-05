@@ -1,20 +1,19 @@
 package com.github.vincemann.springrapid.authtest;
 
+import com.github.vincemann.springrapid.auth.AuthMessage;
+import com.github.vincemann.springrapid.auth.MessageSender;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.dto.*;
 import com.github.vincemann.springrapid.auth.mail.MailData;
-import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
+import org.checkerframework.checker.units.qual.A;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockHttpServletRequestDsl;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -41,11 +40,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserController>
         extends CrudControllerTestTemplate<C> {
-    private MailSender<MailData> mailSenderMock;
+    /**
+     * needs to be mocked and put into context
+     * just use {@link org.springframework.boot.test.mock.mockito.MockBean}
+     */
+    private MessageSender messageSenderMock;
 
     @Autowired
-    public void setMailSenderMock(MailSender<MailData> mailSenderMock) {
-        this.mailSenderMock = mailSenderMock;
+    public void setMessageSenderMock(MessageSender messageSenderMock) {
+        this.messageSenderMock = messageSenderMock;
     }
 
     @Override
@@ -59,14 +62,14 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .contentType(MediaType.APPLICATION_JSON);
     }
 
-    public MailData signup2xx(SignupDto dto) throws Exception {
+    public AuthMessage signup2xx(SignupDto dto) throws Exception {
         mvc.perform(signup(dto))
                 .andExpect(status().is2xxSuccessful());
-        return verifyMailWasSend();
+        return verifyMsgWasSent();
     }
 
-    public MockHttpServletRequestBuilder resendVerificationMail(Serializable id, String token) throws Exception {
-        return post(getController().getResendVerificationContactInformationUrl())
+    public MockHttpServletRequestBuilder resendVerificationMessage(Serializable id, String token) throws Exception {
+        return post(getController().getResendVerificationMessageUrl())
                 .param("id",id.toString())
                 .header(HttpHeaders.AUTHORIZATION, token);
     }
@@ -82,7 +85,6 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     public MockHttpServletRequestBuilder changeContactInformation(String code, String token) {
         return post(getController().getChangeContactInformationUrl())
                 .param("code", code)
-//                .param("id", targetId.toString())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
@@ -101,13 +103,13 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .content(serialize(dto));
     }
 
-    public MailData requestContactInformationChange2xx(String token, RequestContactInformationChangeDto dto) throws Exception {
+    public AuthMessage requestContactInformationChange2xx(String token, RequestContactInformationChangeDto dto) throws Exception {
         mvc.perform(post(getController().getRequestContactInformationChangeUrl())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .content(serialize(dto)))
                 .andExpect(status().is2xxSuccessful());
-        return verifyMailWasSend();
+        return verifyMsgWasSent();
     }
 
     public MockHttpServletRequestBuilder changePassword(String token, ChangePasswordDto dto) throws Exception {
@@ -123,12 +125,12 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
-    public MailData forgotPassword2xx(String contactInformation) throws Exception {
+    public AuthMessage forgotPassword2xx(String contactInformation) throws Exception {
         mvc.perform(post(getController().getForgotPasswordUrl())
                 .param("ci", contactInformation)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is2xxSuccessful());
-        return verifyMailWasSend();
+        return verifyMsgWasSent();
     }
 
     public MockHttpServletRequestBuilder resetPassword(ResetPasswordDto dto) throws Exception {
@@ -139,8 +141,6 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
     public MockHttpServletRequestBuilder getResetPasswordView(String link) throws Exception {
         return get(link);
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(serialize(resetPasswordDto)));
     }
 
     public MockHttpServletRequestBuilder resetPassword(String url, ResetPasswordDto dto) throws Exception {
@@ -196,7 +196,6 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
     public MockHttpServletRequestBuilder verifyContactInformation(String code) throws Exception {
         return get(getController().getVerifyUserUrl())
-//                .param("id", id.toString())
                 .param("code", code)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
@@ -206,28 +205,29 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
-    public MailData verifyMailWasSend() {
-        ArgumentCaptor<MailData> captor = ArgumentCaptor.forClass(MailData.class);
-        verify(ProxyUtils.aopUnproxy(mailSenderMock), times(1))
-                .send(captor.capture());
-        MailData sentData = captor.getValue();
-        Mockito.reset(ProxyUtils.aopUnproxy(mailSenderMock));
+    public AuthMessage verifyMsgWasSent() {
+        ArgumentCaptor<AuthMessage> msgCaptor = ArgumentCaptor.forClass(AuthMessage.class);
+
+        verify(ProxyUtils.aopUnproxy(messageSenderMock), times(1))
+                .send(msgCaptor.capture());
+        AuthMessage sentData = msgCaptor.getValue();
+        Mockito.reset(ProxyUtils.aopUnproxy(messageSenderMock));
         return sentData;
     }
 
 
     public MockHttpServletRequestBuilder resendVerificationContactInformation(String contactInformation, String token) throws Exception {
-        return post(getController().getResendVerificationContactInformationUrl())
+        return post(getController().getResendVerificationMessageUrl())
                 .param("ci", contactInformation)
                 .header(HttpHeaders.AUTHORIZATION, token);
     }
 
-    public MailData resendVerificationContactInformation2xx(String contactInformation, String token) throws Exception {
-        mvc.perform(post(getController().getResendVerificationContactInformationUrl())
+    public AuthMessage resendVerificationContactInformation2xx(String contactInformation, String token) throws Exception {
+        mvc.perform(post(getController().getResendVerificationMessageUrl())
                 .param("ci", contactInformation)
                 .header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().is2xxSuccessful());
-        return verifyMailWasSend();
+        return verifyMsgWasSent();
     }
 
     public String login2xx(AbstractUser user) throws Exception {
@@ -258,6 +258,4 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         }
     }
 
-
-    // todo add more methods there for each endpoint
 }

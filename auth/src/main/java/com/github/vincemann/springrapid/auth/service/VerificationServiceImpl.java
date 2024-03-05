@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.service;
 
+import com.github.vincemann.springrapid.auth.AuthMessage;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.MessageSender;
 import com.github.vincemann.springrapid.core.Root;
@@ -72,7 +73,13 @@ public class VerificationServiceImpl implements VerificationService {
                 .queryParam("code", verificationCode)
                 .toUriString();
         log.info("verify link: " + verifyLink);
-        messageSender.sendMessage(verifyLink,VERIFY_CONTACT_INFORMATION_AUDIENCE,verificationCode, user.getContactInformation());
+        AuthMessage message = AuthMessage.builder()
+                .link(verifyLink)
+                .topic(VERIFY_CONTACT_INFORMATION_AUDIENCE)
+                .code(verificationCode)
+                .recipient(user.getContactInformation())
+                .build();
+        messageSender.send(message);
 
 
         log.debug("Verification mail to " + user.getContactInformation() + " queued.");

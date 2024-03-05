@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acl.Secured;
+import com.github.vincemann.springrapid.acl.SecuredCrudController;
 import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.dto.vet.ReadVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
@@ -11,6 +12,7 @@ import com.github.vincemann.springrapid.acldemo.service.user.VetSignupService;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.service.SignupService;
+import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
 import com.github.vincemann.springrapid.core.controller.dto.map.Principal;
@@ -29,7 +31,7 @@ import java.util.List;
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
 
 @Controller
-public class VetController extends AbstractUserController<Vet, Long, VetService> {
+public class VetController extends SecuredCrudController<Vet, Long, VetService> {
 
     private VetSignupService signupService;
     @Getter
@@ -77,17 +79,4 @@ public class VetController extends AbstractUserController<Vet, Long, VetService>
         super.setCrudService(crudService);
     }
 
-    @Autowired
-    @Root
-    @Override
-    public void setUnsecuredService(VetService Service) {
-        super.setUnsecuredService(Service);
-    }
-
-
-    // not needed, dont autowire
-    @Override
-    public void setSignupService(SignupService signupService) {
-        super.setSignupService(signupService);
-    }
 }

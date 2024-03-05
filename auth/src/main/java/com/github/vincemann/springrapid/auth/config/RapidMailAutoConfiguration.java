@@ -30,7 +30,7 @@ public class RapidMailAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean(MailSender.class)
-    @ConditionalOnProperty(name="spring.mail.host", havingValue="foo", matchIfMissing=true)
+    @ConditionalOnProperty(name="spring.mail.host",matchIfMissing=true)
     public MailSender<?> mockMailSender() {
         return new MockMailSender();
     }

@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.visit.CreateVisitDto;
 import com.github.vincemann.springrapid.acldemo.dto.visit.ReadVisitDto;
 import com.github.vincemann.springrapid.acldemo.model.*;
-import com.github.vincemann.springrapid.auth.mail.MailData;
+import com.github.vincemann.springrapid.auth.AuthMessage;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -47,8 +47,8 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         helper.signupVetDiCaprioWithHeart();
 
         // when
-        MailData mailData = vetController.verifyMailWasSend();
-        vetController.perform(vetController.verifyContactInformationWithLink(mailData.getLink()))
+        AuthMessage msg = userController.verifyMsgWasSent();
+        userController.perform(userController.verifyContactInformationWithLink(msg.getLink()))
         // then
                 .andExpect(status().is2xxSuccessful());
 
@@ -64,7 +64,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         Pet bella = petService.findByName(BELLA).get();
 
         // when
-        String token = vetController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
 
         mvc.perform(petController.find(bella.getId().toString())
                 .header(HttpHeaders.AUTHORIZATION, token))
@@ -86,7 +86,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         visit.setOwner(kahn);
         visit.getPets().add(bella);
         CreateVisitDto dto = new CreateVisitDto(visit);
-        String token = vetController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         ReadVisitDto response = visitController.perform2xxAndDeserialize(visitController.create(dto)
                         .header(HttpHeaders.AUTHORIZATION,token)
                 , ReadVisitDto.class);
@@ -108,7 +108,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         visit.setOwner(kahn);
         visit.getPets().add(bella);
         CreateVisitDto dto = new CreateVisitDto(visit);
-        String token = vetController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         visitController.perform(visitController.create(dto)
                         .header(HttpHeaders.AUTHORIZATION,token))
         // then
@@ -129,7 +129,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         visit.setOwner(kahn);
         visit.getPets().add(bello); // setting bello here, which is not owner by kahn
         CreateVisitDto dto = new CreateVisitDto(visit);
-        String token = vetController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         visitController.perform(visitController.create(dto)
                 .header(HttpHeaders.AUTHORIZATION,token))
         // then
@@ -149,7 +149,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         String updateJson = createUpdateJsonRequest(
                 createUpdateJsonLine("add", "/illnessIds", teethPain.getId().toString())
         );
-        String token = vetController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         VetReadsPetDto responsePetDto = petController.perform2xxAndDeserialize(petController.update(updateJson,bella.getId())
                 .header(HttpHeaders.AUTHORIZATION, token), VetReadsPetDto.class);
         Assertions.assertFalse(responsePetDto.getIllnessIds().isEmpty());

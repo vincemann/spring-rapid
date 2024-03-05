@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.vincemann.springrapid.auth.AuthMessage;
 import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.dto.ResetPasswordView;
 import com.github.vincemann.springrapid.auth.mail.MailData;
@@ -23,9 +24,9 @@ public class ResetPasswordTest extends RapidAuthIntegrationTest {
 
     @Test
     public void getDirectedToForgotPasswordPage() throws Exception {
-        MailData mailData = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
-        String code = mailData.getCode();
-        String html = mvc.perform(userController.getResetPasswordView(mailData.getLink()))
+        AuthMessage msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        String code = msg.getCode();
+        String html = mvc.perform(userController.getResetPasswordView(msg.getLink()))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
         Assertions.assertTrue(html.contains("Reset Password"));
@@ -33,8 +34,8 @@ public class ResetPasswordTest extends RapidAuthIntegrationTest {
 
     @Test
     public void canResetPasswordWithCorrectCode() throws Exception {
-        MailData mailData = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
-        mvc.perform(userController.resetPassword(resetPasswordDto(NEW_PASSWORD,mailData.getCode())))
+        AuthMessage msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        mvc.perform(userController.resetPassword(resetPasswordDto(NEW_PASSWORD,msg.getCode())))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
                         .andExpect(content().string(""));
@@ -45,8 +46,8 @@ public class ResetPasswordTest extends RapidAuthIntegrationTest {
 
     @Test
     public void cantResetPasswordWithSameCodeTwice() throws Exception {
-        MailData mailData = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
-        mvc.perform(userController.resetPassword(resetPasswordDto(NEW_PASSWORD,mailData.getCode())))
+        AuthMessage msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        mvc.perform(userController.resetPassword(resetPasswordDto(NEW_PASSWORD,msg.getCode())))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().string(""));
 
@@ -54,7 +55,7 @@ public class ResetPasswordTest extends RapidAuthIntegrationTest {
         login2xx(USER_CONTACT_INFORMATION, NEW_PASSWORD);
 
         // Repeating shouldn't work
-        mvc.perform(userController.resetPassword(resetPasswordDto(USER_PASSWORD,mailData.getCode())))
+        mvc.perform(userController.resetPassword(resetPasswordDto(USER_PASSWORD,msg.getCode())))
                 .andExpect(status().isForbidden());
 
         login2xx(USER_CONTACT_INFORMATION, NEW_PASSWORD);
@@ -62,8 +63,8 @@ public class ResetPasswordTest extends RapidAuthIntegrationTest {
 
     @Test
     public void cantResetPasswordWithInvalidCode() throws Exception {
-        MailData mailData = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
-        String code = mailData.getCode();
+        AuthMessage msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        String code = msg.getCode();
         String invalidCode = code +"invalid";
         mvc.perform(userController.resetPassword(resetPasswordDto(NEW_PASSWORD,invalidCode)))
                 .andExpect(status().isUnauthorized());
@@ -72,14 +73,14 @@ public class ResetPasswordTest extends RapidAuthIntegrationTest {
     @Test
     public void cantResetPasswordWithInvalidPassword() throws Exception {
         // Blank password
-        MailData mailData = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
-        mvc.perform(userController.resetPassword(resetPasswordDto("",mailData.getCode())))
+        AuthMessage msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        mvc.perform(userController.resetPassword(resetPasswordDto("",msg.getCode())))
                 .andExpect(status().isBadRequest());
 
 
         // Invalid password
-        mailData = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
-        mvc.perform(userController.resetPassword(resetPasswordDto(INVALID_PASSWORD,mailData.getCode())))
+        msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        mvc.perform(userController.resetPassword(resetPasswordDto(INVALID_PASSWORD,msg.getCode())))
                 .andExpect(status().isBadRequest());
     }
 

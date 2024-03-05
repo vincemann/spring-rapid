@@ -10,15 +10,15 @@ public class EmailMessageSender implements MessageSender {
     private MailSender<MailData> mailSender;
 
     @Override
-    public void sendMessage(String link, String topic, String code, String contactInformation) {
-        // send the mail
+    public void send(AuthMessage message) {
+        String body = Message.get("com.github.vincemann.verifyContactInformation", message.getLink())
+                .replace("contactInformation", "email");
         MailData mailData = MailData.builder()
-                .to(contactInformation)
-//                .topic(Message.get("com.github.vincemann.verifySubject"))
-                .topic(topic)
-                .body(Message.get("com.github.vincemann.verifyContactInformation", link))
-                .link(link)
-                .code(code)
+                .to(message.getRecipient())
+                .topic(message.getTopic())
+                .body(body)
+                .link(message.getLink())
+                .code(message.getCode())
                 .build();
         mailSender.send(mailData);
     }

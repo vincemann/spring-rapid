@@ -70,7 +70,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return okWithAuthToken(responseDto,saved.getContactInformation());
 	}
 
-	public ResponseEntity<Void> resendVerificationMail(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
+	public ResponseEntity<Void> resendVerificationMessage(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
 		String contactInformation = readRequestParam(request, "ci");
 		verificationService.resendVerificationMessage(contactInformation);
 		return okNoContent();
@@ -212,15 +212,15 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	// URLS
 
 	private String loginUrl;
-	private String signupUrl;
 
+	private String signupUrl;
 	private String resetPasswordUrl;
 	private String resetPasswordViewUrl;
 	private String findByContactInformationUrl;
 	private String changeContactInformationUrl;
 	private String changeContactInformationViewUrl;
 	private String verifyUserUrl;
-	private String resendVerificationContactInformationUrl;
+	private String resendVerificationMessageUrl;
 	private String forgotPasswordUrl;
 	private String changePasswordUrl;
 	private String requestContactInformationChangeUrl;
@@ -234,20 +234,20 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		super.initUrls();
 		loginUrl = getAuthProperties().getController().getLoginUrl();
 
-		findByContactInformationUrl = getEntityBaseUrl() + getAuthProperties().getController().getFindByContactInformationUrl();
-		signupUrl = getEntityBaseUrl() + getAuthProperties().getController().getSignupUrl();
-		resetPasswordUrl = getEntityBaseUrl() + getAuthProperties().getController().getResetPasswordUrl();
-		resetPasswordViewUrl = getEntityBaseUrl() + getAuthProperties().getController().getResetPasswordViewUrl();
-		changeContactInformationUrl = getEntityBaseUrl() + getAuthProperties().getController().getChangeContactInformationUrl();
-		changeContactInformationViewUrl = getEntityBaseUrl() + getAuthProperties().getController().getChangeContactInformationViewUrl();
-		verifyUserUrl = getEntityBaseUrl() + getAuthProperties().getController().getVerifyUserUrl();
-		resendVerificationContactInformationUrl = getEntityBaseUrl() + getAuthProperties().getController().getResendVerifyContactInformationMsgUrl();
-		forgotPasswordUrl = getEntityBaseUrl() + getAuthProperties().getController().getForgotPasswordUrl();
-		changePasswordUrl = getEntityBaseUrl() + getAuthProperties().getController().getChangePasswordUrl();
-		requestContactInformationChangeUrl = getEntityBaseUrl() + getAuthProperties().getController().getRequestContactInformationChangeUrl();
-		fetchNewAuthTokenUrl = getEntityBaseUrl() + getAuthProperties().getController().getFetchNewAuthTokenUrl();
-		testTokenUrl = getEntityBaseUrl() + getAuthProperties().getController().getTestTokenUrl();
-		blockUserUrl =  getEntityBaseUrl() + getAuthProperties().getController().getBlockUserUrl();
+		findByContactInformationUrl = getAuthProperties().getController().getFindByContactInformationUrl();
+		signupUrl = getAuthProperties().getController().getSignupUrl();
+		resetPasswordUrl = getAuthProperties().getController().getResetPasswordUrl();
+		resetPasswordViewUrl = getAuthProperties().getController().getResetPasswordViewUrl();
+		changeContactInformationUrl = getAuthProperties().getController().getChangeContactInformationUrl();
+		changeContactInformationViewUrl = getAuthProperties().getController().getChangeContactInformationViewUrl();
+		verifyUserUrl = getAuthProperties().getController().getVerifyUserUrl();
+		resendVerificationMessageUrl = getAuthProperties().getController().getResendVerifyContactInformationMsgUrl();
+		forgotPasswordUrl = getAuthProperties().getController().getForgotPasswordUrl();
+		changePasswordUrl = getAuthProperties().getController().getChangePasswordUrl();
+		requestContactInformationChangeUrl = getAuthProperties().getController().getRequestContactInformationChangeUrl();
+		fetchNewAuthTokenUrl = getAuthProperties().getController().getFetchNewAuthTokenUrl();
+		testTokenUrl = getAuthProperties().getController().getTestTokenUrl();
+		blockUserUrl =  getAuthProperties().getController().getBlockUserUrl();
 	}
 
 
@@ -260,8 +260,8 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		if (!getIgnoredEndPoints().contains(getSignupUrl())){
 			registerEndpoint(createSignupRequestMappingInfo(),"signup");
 		}
-		if (!getIgnoredEndPoints().contains(getResendVerificationContactInformationUrl())){
-			registerEndpoint(createResendVerificationContactInformationRequestMappingInfo(),"resendVerificationMail");
+		if (!getIgnoredEndPoints().contains(getResendVerificationMessageUrl())){
+			registerEndpoint(createResendVerificationContactInformationRequestMappingInfo(),"resendVerificationMessage");
 		}
 		if (!getIgnoredEndPoints().contains(getVerifyUserUrl())){
 			registerEndpoint(createVerifyUserRequestMappingInfo(),"verifyUser");
@@ -325,9 +325,8 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	protected RequestMappingInfo createResendVerificationContactInformationRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getResendVerificationContactInformationUrl())
+				.paths(getResendVerificationMessageUrl())
 				.methods(RequestMethod.POST)
-				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.build();
 	}
 
@@ -335,7 +334,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return RequestMappingInfo
 				.paths(getVerifyUserUrl())
 				.methods(RequestMethod.GET)
-				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(MediaType.APPLICATION_JSON_VALUE)
 				.build();
 	}
@@ -344,7 +342,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return RequestMappingInfo
 				.paths(getForgotPasswordUrl())
 				.methods(RequestMethod.POST)
-				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.build();
 	}
 
@@ -352,7 +349,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return RequestMappingInfo
 				.paths(getResetPasswordViewUrl())
 				.methods(RequestMethod.GET)
-//				.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.build();
 	}
 
@@ -370,7 +366,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return RequestMappingInfo
 				.paths(getFindByContactInformationUrl())
 				.methods(RequestMethod.GET)
-				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(MediaType.APPLICATION_JSON_VALUE)
 				.build();
 	}
@@ -381,7 +376,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return RequestMappingInfo
 				.paths(getChangePasswordUrl())
 				.methods(RequestMethod.POST)
-				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.build();
 	}
 
@@ -399,7 +393,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return RequestMappingInfo
 				.paths(getChangeContactInformationUrl())
 				.methods(RequestMethod.POST)
-//				.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(MediaType.APPLICATION_JSON_VALUE)
 				.build();
 	}
@@ -416,7 +409,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return RequestMappingInfo
 				.paths(getFetchNewAuthTokenUrl())
 				.methods(RequestMethod.POST)
-				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(MediaType.APPLICATION_JSON_VALUE)
 				.build();
 	}

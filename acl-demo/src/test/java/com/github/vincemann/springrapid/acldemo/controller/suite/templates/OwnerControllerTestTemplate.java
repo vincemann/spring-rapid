@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.acldemo.controller.OwnerController;
 import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
 import com.github.vincemann.springrapid.authtest.AbstractUserControllerTestTemplate;
+import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @Component
-public class OwnerControllerTestTemplate extends AbstractUserControllerTestTemplate<OwnerController> {
+public class OwnerControllerTestTemplate extends CrudControllerTestTemplate<OwnerController> {
 
     public ReadOwnOwnerDto signup(SignupOwnerDto dto) throws Exception {
         String json = getMvc().perform(post(getController().getSignupUrl())

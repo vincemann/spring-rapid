@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.service;
 
+import com.github.vincemann.springrapid.auth.AuthMessage;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.MessageSender;
 import com.github.vincemann.springrapid.core.Root;
@@ -136,7 +137,13 @@ public class ContactInformationServiceImpl implements ContactInformationService 
                 .queryParam("code", changeContactInformationCode)
                 .toUriString();
         log.info("change contactInformation link: " + changeContactInformationLink);
-        messageSender.sendMessage(changeContactInformationLink, CHANGE_CONTACT_INFORMATION_AUDIENCE, changeContactInformationCode, user.getContactInformation());
+        AuthMessage message = AuthMessage.builder()
+                .link(changeContactInformationLink)
+                .topic(CHANGE_CONTACT_INFORMATION_AUDIENCE)
+                .code(changeContactInformationCode)
+                .recipient(user.getContactInformation())
+                .build();
+        messageSender.send(message);
 
         log.debug("Change contactInformation link mail queued.");
     }

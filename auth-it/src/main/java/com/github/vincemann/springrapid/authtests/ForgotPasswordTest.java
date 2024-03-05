@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.authtests;
 
+import com.github.vincemann.springrapid.auth.AuthMessage;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,9 +18,9 @@ public class ForgotPasswordTest extends RapidAuthIntegrationTest {
 
 	@Test
 	public void anonCanIssueForgotPassword() throws Exception {
-		MailData mailData = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
-		Assertions.assertEquals(FORGOT_PASSWORD_AUDIENCE, mailData.getTopic());
-		Assertions.assertEquals(USER_CONTACT_INFORMATION,mailData.getTo());
+		AuthMessage msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+		Assertions.assertEquals(FORGOT_PASSWORD_AUDIENCE, msg.getTopic());
+		Assertions.assertEquals(USER_CONTACT_INFORMATION,msg.getRecipient());
 	}
 
 

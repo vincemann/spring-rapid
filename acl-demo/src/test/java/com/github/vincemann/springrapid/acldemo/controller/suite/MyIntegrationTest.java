@@ -7,11 +7,16 @@ import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VetCo
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VisitControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.service.*;
+import com.github.vincemann.springrapid.auth.MessageSender;
+import com.github.vincemann.springrapid.auth.service.UserService;
+import com.github.vincemann.springrapid.authtest.AbstractUserControllerTestTemplate;
+import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.authtest.config.RapidAuthControllerTestTemplateAutoConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
@@ -21,7 +26,6 @@ import java.util.Optional;
 import java.util.Set;
 
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@ImportAutoConfiguration(exclude = RapidAuthControllerTestTemplateAutoConfiguration.class)
 public class MyIntegrationTest extends AclMvcTest
 {
 
@@ -29,6 +33,9 @@ public class MyIntegrationTest extends AclMvcTest
     protected TestData testData;
     @Autowired
     protected IntegrationTestHelper helper;
+
+    @MockBean
+    protected MessageSender messageSender;
 
 
     // services
@@ -49,6 +56,7 @@ public class MyIntegrationTest extends AclMvcTest
     @Root
     protected OwnerService ownerService;
 
+
     // controller
     @Autowired
     protected OwnerControllerTestTemplate ownerController;
@@ -58,6 +66,8 @@ public class MyIntegrationTest extends AclMvcTest
     protected VetControllerTestTemplate vetController;
     @Autowired
     protected VisitControllerTestTemplate visitController;
+    @Autowired
+    protected UserControllerTestTemplate userController;
 
 
     @Override
