@@ -1,10 +1,9 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.auth.AuthMessage;
+import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
-import com.github.vincemann.springrapid.auth.mail.MailData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,7 @@ public class SignupTest extends RapidAuthIntegrationTest {
 		mvc.perform(userController.signup(signupDto))
 				.andExpect(status().isBadRequest());
 
-		verify(aopUnproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(msgSender), never()).send(any());
 	}
 
 	@Test
@@ -77,6 +76,6 @@ public class SignupTest extends RapidAuthIntegrationTest {
 		mvc.perform(userController.signup(signupDto))
 				.andExpect(status().isBadRequest());
 		// mock is reset by signup2xx so never only applies to latest signup
-		verify(aopUnproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(msgSender), never()).send(any());
 	}
 }

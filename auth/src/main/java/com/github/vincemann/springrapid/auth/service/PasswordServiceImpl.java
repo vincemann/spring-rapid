@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.auth.service;
 
-import com.github.vincemann.springrapid.auth.AuthMessage;
+import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.MessageSender;
+import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
@@ -10,7 +10,7 @@ import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
-import com.github.vincemann.springrapid.auth.util.RapidJwt;
+import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -62,10 +62,10 @@ public class PasswordServiceImpl implements PasswordService {
         VerifyEntity.notEmpty(dto.getCode(),"code");
 
         JWTClaimsSet claims = jweTokenService.parseToken(dto.getCode());
-        RapidJwt.validate(claims, FORGOT_PASSWORD_AUDIENCE);
+        JwtUtils.validate(claims, FORGOT_PASSWORD_AUDIENCE);
 
         AbstractUser user = extractUserFromClaims(claims);
-        RapidJwt.validateIssuedAfter(claims, user.getCredentialsUpdatedMillis());
+        JwtUtils.validateIssuedAfter(claims, user.getCredentialsUpdatedMillis());
 
         passwordValidator.validate(dto.getNewPassword()); // fail fast
         return userService.updatePassword(user.getId(),dto.getNewPassword());
@@ -101,7 +101,7 @@ public class PasswordServiceImpl implements PasswordService {
         Assert.notNull(user.getContactInformation(), "users contact information must not be null");
 
         log.debug("Sending forgot password link to user: " + user);
-        JWTClaimsSet claims = RapidJwt.create(FORGOT_PASSWORD_AUDIENCE,
+        JWTClaimsSet claims = JwtUtils.create(FORGOT_PASSWORD_AUDIENCE,
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis());
         String forgotPasswordCode = jweTokenService.createToken(claims);

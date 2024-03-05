@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.authdemo.dto.user;
 
-import com.github.vincemann.springrapid.authdemo.service.val.ValidUsername;
+import com.github.vincemann.springrapid.authdemo.service.ValidUsername;
 
 import lombok.*;
 
@@ -13,7 +13,8 @@ import javax.validation.constraints.Positive;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class UserUpdatesOwnDto {
+@Builder
+public class UserUpdatesUserDto {
 
     @NotNull
     @Positive

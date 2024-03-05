@@ -172,7 +172,11 @@ public class AuthProperties {
 	 * @author Sanjay Patel
 	 * @modifiedBy vincemann
 	 */
-	@AllArgsConstructor @NoArgsConstructor @ToString @Getter @Setter
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@ToString
+	@Getter
+	@Setter
 	public static class Admin {
 		/**
 		 * Login ID of the initial Admin user to be created 

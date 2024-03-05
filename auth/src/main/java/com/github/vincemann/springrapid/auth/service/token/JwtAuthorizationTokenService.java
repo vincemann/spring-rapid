@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.sec.JwtPrincipalConverter;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.auth.util.RapidJwt;
+import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -20,8 +20,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.github.vincemann.springrapid.auth.util.RapidJwt.AUTH_CLAIM;
-import static com.github.vincemann.springrapid.auth.util.RapidJwt.create;
+import static com.github.vincemann.springrapid.auth.util.JwtUtils.AUTH_CLAIM;
+import static com.github.vincemann.springrapid.auth.util.JwtUtils.create;
 
 @Slf4j
 public class JwtAuthorizationTokenService
@@ -61,13 +61,13 @@ public class JwtAuthorizationTokenService
     }
 
     public void verifyToken(JWTClaimsSet claims, RapidPrincipal principal) {
-        RapidJwt.validateNotExpired(claims);
+        JwtUtils.validateNotExpired(claims);
 
         try {
             Optional<AbstractUser<?>> byContactInformation = userService.findByContactInformation(principal.getName());
             VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+principal.getName()+" not found");
             AbstractUser<?> user = byContactInformation.get();
-            RapidJwt.validateIssuedAfter(claims,user.getCredentialsUpdatedMillis());
+            JwtUtils.validateIssuedAfter(claims,user.getCredentialsUpdatedMillis());
         } catch (EntityNotFoundException e) {
             throw new BadCredentialsException("User encoded in token not found",e);
         }

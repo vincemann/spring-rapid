@@ -30,8 +30,8 @@ public class RapidAuthServiceAutoConfiguration {
     /**
      * Configures UserDetailsService if missing
      */
-    @Bean
     @Primary
+    @Bean
     @ConditionalOnMissingBean(UserDetailsService.class)
     public UserDetailsService userDetailService() {
         return new RapidUserDetailsService();
@@ -68,56 +68,56 @@ public class RapidAuthServiceAutoConfiguration {
         return new SignupServiceImpl();
     }
 
+    @Root
     @Bean
     @ConditionalOnMissingBean(name = "passwordService")
-    @Root
     public PasswordService passwordService(){
         return new PasswordServiceImpl();
     }
 
+    @Root
     @Bean
     @ConditionalOnMissingBean(name = "userAuthTokenService")
-    @Root
     public UserAuthTokenService userAuthTokenService(){
         return new UserAuthTokenServiceImpl();
     }
 
+    @Root
     @Bean
     @ConditionalOnMissingBean(name = "contactInformationService")
-    @Root
     public ContactInformationService contactInformationService(){
         return new ContactInformationServiceImpl();
     }
 
 
-    @Bean
     @Secured
+    @Bean
     @ConditionalOnMissingBean(name = "securedContactInformationService")
     public ContactInformationService securedContactInformationService(@Root ContactInformationService service){
         return new SecuredContactInformationService(service);
     }
 
-    @Bean
     @Secured
+    @Bean
     @ConditionalOnMissingBean(name = "securedUserAuthTokenService")
     public UserAuthTokenService securedUserAuthTokenService(@Root UserAuthTokenService service){
         return new SecuredUserAuthTokenService(service);
     }
 
-    @Bean
     @Secured
+    @Bean
     @ConditionalOnMissingBean(name = "securedPasswordService")
     public PasswordService securedPasswordService(@Root PasswordService service){
         return new SecuredPasswordService(service);
     }
 
 
-    @ConditionalOnMissingBean(name = "securedUserService")
-    @Bean
-    @Secured
-    public UserService securedUserService(@Root UserService service) {
-        return new SecuredUserService(service);
-    }
+//    @ConditionalOnMissingBean(name = "securedUserService")
+//    @Bean
+//    @Secured
+//    public UserService securedUserService(@Root UserService service) {
+//        return new SecuredUserService(service);
+//    }
 
     @Bean
     @ConditionalOnMissingBean(AuthorizationTokenService.class)

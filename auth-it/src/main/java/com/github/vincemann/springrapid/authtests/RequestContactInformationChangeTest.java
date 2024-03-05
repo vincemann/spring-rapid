@@ -32,7 +32,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 		mvc.perform(userController.requestContactInformationChange(token,contactInformationChangeDto(UNVERIFIED_USER_CONTACT_INFORMATION)))
 				.andExpect(status().is(204));
 
-		verify(aopUnproxy(mailSender)).send(any());
+		verify(aopUnproxy(msgSender)).send(any());
 
 		AbstractUser<Serializable> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
 		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getNewContactInformation());
@@ -45,7 +45,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 		mvc.perform(userController.requestContactInformationChange(token,contactInformationChangeDto(USER_CONTACT_INFORMATION)))
 				.andExpect(status().is(204));
 
-		verify(aopUnproxy(mailSender)).send(any());
+		verify(aopUnproxy(msgSender)).send(any());
 
 		AbstractUser<Serializable> updatedUser = getUserService().findById(getUser().getId()).get();
 		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getNewContactInformation());
@@ -74,7 +74,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 		mvc.perform(userController.requestContactInformationChange(token,contactInformationChangeDto(UNKNOWN_CONTACT_INFORMATION)))
 				.andExpect(status().is(404));
 		
-		verify(aopUnproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(msgSender), never()).send(any());
 	}
 
 	@Test
@@ -83,7 +83,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 		mvc.perform(userController.requestContactInformationChange(token,contactInformationChangeDto(SECOND_USER_CONTACT_INFORMATION)))
 				.andExpect(status().is(403));
 		
-		verify(aopUnproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(msgSender), never()).send(any());
 
 		AbstractUser<Serializable> updatedUser = getUserService().findById(getSecondUser().getId()).get();
 		Assertions.assertNull(updatedUser.getNewContactInformation());
@@ -105,7 +105,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		mvc.perform(userController.requestContactInformationChange(token,dto))
 				.andExpect(status().is(400));
-		verify(aopUnproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(msgSender), never()).send(any());
     	
 		dto = new RequestContactInformationChangeDto();
 //		dto.setPassword("");
@@ -115,7 +115,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
     	// try with blank newContactInformation
 		mvc.perform(userController.requestContactInformationChange(token,dto))
 				.andExpect(status().is(400));
-		verify(aopUnproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(msgSender), never()).send(any());
 
 		// try with invalid newContactInformation
 		dto = new RequestContactInformationChangeDto();
@@ -125,13 +125,13 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 
 		mvc.perform(userController.requestContactInformationChange(token,dto))
 				.andExpect(status().is(400));
-		verify(aopUnproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(msgSender), never()).send(any());
 		// try with an existing contactInformation
 		dto = contactInformationChangeDto(USER_CONTACT_INFORMATION);
 		dto.setNewContactInformation(SECOND_USER_CONTACT_INFORMATION);
 		mvc.perform(userController.requestContactInformationChange(token,dto))
 				.andExpect(status().is(400));
 		
-		verify(aopUnproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(msgSender), never()).send(any());
 	}
 }

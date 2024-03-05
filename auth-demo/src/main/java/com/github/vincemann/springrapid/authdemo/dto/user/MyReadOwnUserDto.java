@@ -18,13 +18,13 @@ public class MyReadOwnUserDto extends ReadOwnUserDto {
 
     @Override
     public String toString() {
-        return "MyFindOwnUserDto{" +
+        return "MyReadOwnUserDto{" +
                 "name='" + name + '\'' +
+                ", id='" + getId() + '\'' +
                 ", verified=" + isVerified() +
                 ", blocked=" + isBlocked() +
                 ", admin=" + isAdmin() +
                 ", goodUser=" + isGoodUser() +
-                ", id='" + getId() + '\'' +
                 ", contactInformation='" + getContactInformation() + '\'' +
                 ", roles=" + getRoles() +
                 '}';

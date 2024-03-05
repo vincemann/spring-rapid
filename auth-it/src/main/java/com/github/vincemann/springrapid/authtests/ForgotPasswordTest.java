@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.auth.AuthMessage;
-import com.github.vincemann.springrapid.auth.mail.MailData;
+import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +39,6 @@ public class ForgotPasswordTest extends RapidAuthIntegrationTest {
 		mvc.perform(userController.forgotPassword(""))
 				.andExpect(status().isBadRequest());
 
-		verify(aopUnproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(msgSender), never()).send(any());
 	}
 }

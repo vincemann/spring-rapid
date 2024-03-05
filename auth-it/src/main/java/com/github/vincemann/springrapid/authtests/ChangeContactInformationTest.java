@@ -1,15 +1,11 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.auth.AuthMessage;
+import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
-import com.github.vincemann.springrapid.auth.mail.MailData;
-import com.github.vincemann.springrapid.auth.service.ContactInformationService;
 import com.github.vincemann.springrapid.auth.service.ContactInformationServiceImpl;
-import com.github.vincemann.springrapid.auth.service.JpaUserService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
-import com.github.vincemann.springrapid.auth.util.RapidJwt;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
@@ -18,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.Serializable;
@@ -217,7 +212,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 
     protected String createChangeContactInformationToken(AbstractUser targetUser, String newContactInformation, Long expiration) {
         return jweTokenService.createToken(
-                RapidJwt.create(
+                JwtUtils.create(
                         ContactInformationServiceImpl.CHANGE_CONTACT_INFORMATION_AUDIENCE,
                         targetUser.getId().toString(),
                         expiration,

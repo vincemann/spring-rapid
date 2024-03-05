@@ -3,18 +3,18 @@ package com.github.vincemann.springrapid.authtests;
 import com.github.vincemann.acltest.AclMvcTest;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.config.RapidAdminAutoConfiguration;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
-import com.github.vincemann.springrapid.auth.mail.MailSender;
+import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
-import com.github.vincemann.springrapid.auth.util.RapidJwt;
+import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.core.CoreProperties;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.coretest.util.TransactionalTestUtil;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.Getter;
@@ -23,11 +23,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
@@ -48,10 +46,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //see application-dev.yml config for expected database config
 //@Sql({"/test-data/resetTestData.sql"})
 
-/**
- * Creates All Test Users.
- * Fills tokens Map in an integration test manner by creating and logging all users in.
- */
 @SpringBootTest(properties = "rapid-auth.create-admins=false")
 @Getter
 @Slf4j
@@ -60,17 +54,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public abstract class RapidAuthIntegrationTest extends AclMvcTest {
 
 
-    @Autowired
-    private UserService<AbstractUser<Serializable>, Serializable> aclUserService;
 
-    @Autowired
     private UserService<AbstractUser<Serializable>, Serializable> userService;
 
     @MockBean
-    protected MailSender<?> mailSender;
-
-    @Autowired
-    protected DataSource dataSource;
+    protected MessageSender msgSender;
+    
 
     //use for stubbing i.E. Mockito.doReturn(mockedExpireTime).when(jwt).getExpirationMillis();
     @SpyBean
@@ -133,14 +122,14 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
 
 
     protected void createTestUsers() throws Exception {
-        admin = aclUserService.create(testAdapter.createTestUser(ADMIN_CONTACT_INFORMATION,/*"Admin",*/ ADMIN_PASSWORD, AuthRoles.ADMIN));
-        secondAdmin = aclUserService.create(testAdapter.createTestUser(SECOND_ADMIN_CONTACT_INFORMATION,/*"Second Admin",*/ SECOND_ADMIN_PASSWORD, AuthRoles.ADMIN));
-        blockedAdmin = aclUserService.create(testAdapter.createTestUser(BLOCKED_ADMIN_CONTACT_INFORMATION,/*"Blocked Admin",*/ BLOCKED_ADMIN_PASSWORD, AuthRoles.ADMIN, AuthRoles.BLOCKED));
+        admin = userService.create(testAdapter.createTestUser(ADMIN_CONTACT_INFORMATION,/*"Admin",*/ ADMIN_PASSWORD, AuthRoles.ADMIN));
+        secondAdmin = userService.create(testAdapter.createTestUser(SECOND_ADMIN_CONTACT_INFORMATION,/*"Second Admin",*/ SECOND_ADMIN_PASSWORD, AuthRoles.ADMIN));
+        blockedAdmin = userService.create(testAdapter.createTestUser(BLOCKED_ADMIN_CONTACT_INFORMATION,/*"Blocked Admin",*/ BLOCKED_ADMIN_PASSWORD, AuthRoles.ADMIN, AuthRoles.BLOCKED));
 
-        user = aclUserService.create(testAdapter.createTestUser(USER_CONTACT_INFORMATION,/*"User",*/ USER_PASSWORD, AuthRoles.USER));
-        secondUser = aclUserService.create(testAdapter.createTestUser(SECOND_USER_CONTACT_INFORMATION,/*"User",*/ SECOND_USER_PASSWORD, AuthRoles.USER));
-        unverifiedUser = aclUserService.create(testAdapter.createTestUser(UNVERIFIED_USER_CONTACT_INFORMATION,/*"Unverified User",*/ UNVERIFIED_USER_PASSWORD, AuthRoles.USER, AuthRoles.UNVERIFIED));
-        blockedUser = aclUserService.create(testAdapter.createTestUser(BLOCKED_USER_CONTACT_INFORMATION,/*"Blocked User",*/ BLOCKED_USER_PASSWORD, AuthRoles.USER, AuthRoles.BLOCKED));
+        user = userService.create(testAdapter.createTestUser(USER_CONTACT_INFORMATION,/*"User",*/ USER_PASSWORD, AuthRoles.USER));
+        secondUser = userService.create(testAdapter.createTestUser(SECOND_USER_CONTACT_INFORMATION,/*"User",*/ SECOND_USER_PASSWORD, AuthRoles.USER));
+        unverifiedUser = userService.create(testAdapter.createTestUser(UNVERIFIED_USER_CONTACT_INFORMATION,/*"Unverified User",*/ UNVERIFIED_USER_PASSWORD, AuthRoles.USER, AuthRoles.UNVERIFIED));
+        blockedUser = userService.create(testAdapter.createTestUser(BLOCKED_USER_CONTACT_INFORMATION,/*"Blocked User",*/ BLOCKED_USER_PASSWORD, AuthRoles.USER, AuthRoles.BLOCKED));
     }
 
     protected void mockJwtExpirationTime(long expirationMillis) {
@@ -179,7 +168,7 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
 
     protected String modifyCode(String code, String aud, String subject, Long expirationMillis, Long issuedAt, Map<String, Object> otherClaims) throws BadTokenException, ParseException {
         JWTClaimsSet claims = jweTokenService.parseToken(code);
-        claims = RapidJwt.mod(claims, aud, subject, expirationMillis, issuedAt, otherClaims);
+        claims = JwtUtils.mod(claims, aud, subject, expirationMillis, issuedAt, otherClaims);
         return jweTokenService.createToken(claims);
     }
 
@@ -191,11 +180,11 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
         System.err.println("deleting users");
         clearAclCache();
         // done via sql script
-        TransactionalTestUtil.clear(aclUserService, transactionTemplate);
+        TransactionalTestUtil.clear(userService, transactionTemplate);
         System.err.println("deleted users");
         System.err.println("test data cleared");
 
-        Mockito.reset(aopUnproxy(mailSender));
+        Mockito.reset(aopUnproxy(msgSender));
         testAdapter.afterEach();
 //        https://github.com/spring-projects/spring-boot/issues/7374  -> @SpyBean beans are automatically reset
 
@@ -204,6 +193,10 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
 //        Mockito.reset(jwt);
     }
 
-
+    @Autowired
+    @Root
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 }
 

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.sec.service;
 
 import com.github.vincemann.springrapid.auth.service.token.*;
-import com.github.vincemann.springrapid.auth.util.RapidJwt;
+import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -42,13 +42,13 @@ public class RapidJweServiceTests {
 	private void testParseToken(JweTokenService service) throws BadTokenException {
 		
 		log.info("Creating token ..." + service.getClass().getSimpleName());
-		JWTClaimsSet claims = RapidJwt.create("auth", "subject", 5000L,
+		JWTClaimsSet claims = JwtUtils.create("auth", "subject", 5000L,
 				MapUtils.mapOf("username", "abc@example.com"));
 		String token = service.createToken(claims);
 		
 		log.info("Parsing token ...");
 		JWTClaimsSet parsedClaims = service.parseToken(token);
-		RapidJwt.validate(parsedClaims,"auth");
+		JwtUtils.validate(parsedClaims,"auth");
 		
 		log.info("Parsed token.");
 		Assertions.assertEquals("subject", parsedClaims.getSubject());
@@ -68,10 +68,10 @@ public class RapidJweServiceTests {
 	
 
 	private void testParseTokenWrongAudience(JweTokenService service) throws BadTokenException {
-		JWTClaimsSet claims = RapidJwt.create("auth", "subject", 5000L);
+		JWTClaimsSet claims = JwtUtils.create("auth", "subject", 5000L);
 		String token = service.createToken(claims);
 		JWTClaimsSet parsedClaims = service.parseToken(token);
-		RapidJwt.validate( parsedClaims,"auth2");
+		JwtUtils.validate( parsedClaims,"auth2");
 	}
 
 	@Test
@@ -88,10 +88,10 @@ public class RapidJweServiceTests {
 
 	private void testParseTokenExpired(JweTokenService service) throws InterruptedException, BadTokenException {
 		
-		String token = service.createToken(RapidJwt.create("auth", "subject", 1L));
+		String token = service.createToken(JwtUtils.create("auth", "subject", 1L));
 		Thread.sleep(1L);
 		JWTClaimsSet claims = service.parseToken(token);
-		RapidJwt.validate(claims,"auth");
+		JwtUtils.validate(claims,"auth");
 	}
 
 	@Test()
@@ -108,9 +108,9 @@ public class RapidJweServiceTests {
 
 	private void testParseTokenWrongSecret(JweTokenService service1, JweTokenService service2) throws BadTokenException {
 		
-		String token = service1.createToken(RapidJwt.create("auth", "subject", 5000L));
+		String token = service1.createToken(JwtUtils.create("auth", "subject", 5000L));
 		JWTClaimsSet claims = service2.parseToken(token);
-		RapidJwt.validate(claims, "auth");
+		JwtUtils.validate(claims, "auth");
 	}
 
 	@Test()
@@ -128,9 +128,9 @@ public class RapidJweServiceTests {
 
 	private void testParseTokenCutoffTime(JweTokenService service) throws InterruptedException, BadTokenException {
 		
-		String token = service.createToken(RapidJwt.create("auth", "subject", 5000L));
+		String token = service.createToken(JwtUtils.create("auth", "subject", 5000L));
 		Thread.sleep(1L);
 		JWTClaimsSet claims = service.parseToken(token);
-		RapidJwt.validate(claims,"auth", System.currentTimeMillis());
+		JwtUtils.validate(claims,"auth", System.currentTimeMillis());
 	}
 }

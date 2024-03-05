@@ -7,7 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.github.vincemann.springrapid.auth.AuthMessage;
+import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -52,7 +52,7 @@ public class ResendVerificationMailTest extends RapidAuthIntegrationTest {
 		mvc.perform(userController.resendVerificationContactInformation(getUnverifiedUser().getContactInformation(),""))
 				.andExpect(status().isUnauthorized());
 		
-		verify(aopUnproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(msgSender), never()).send(any());
 	}
 	
 	@Test
@@ -61,7 +61,7 @@ public class ResendVerificationMailTest extends RapidAuthIntegrationTest {
 		mvc.perform(userController.resendVerificationContactInformation(getUser().getContactInformation(),token))
 				.andExpect(status().isBadRequest());
 
-		verify(aopUnproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(msgSender), never()).send(any());
 	}
 	
 
@@ -72,6 +72,6 @@ public class ResendVerificationMailTest extends RapidAuthIntegrationTest {
 		mvc.perform(userController.resendVerificationContactInformation(UNKNOWN_USER_ID,token))
 				.andExpect(status().isNotFound());
 		
-		verify(aopUnproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(msgSender), never()).send(any());
 	}
 }

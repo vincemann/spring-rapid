@@ -1,14 +1,12 @@
-package com.github.vincemann.springrapid.auth;
+package com.github.vincemann.springrapid.auth.msg;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@ToString
 public class AuthMessage {
     private String link;
     private String topic;

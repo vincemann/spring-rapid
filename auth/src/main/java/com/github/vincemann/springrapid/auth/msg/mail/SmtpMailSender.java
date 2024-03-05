@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.mail;
+package com.github.vincemann.springrapid.auth.msg.mail;
 
 import com.github.vincemann.springrapid.core.util.Message;
 import lombok.extern.slf4j.Slf4j;

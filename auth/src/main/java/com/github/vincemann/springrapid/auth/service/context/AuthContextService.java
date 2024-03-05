@@ -1,7 +1,5 @@
-package com.github.vincemann.springrapid.auth.service.ctx;
+package com.github.vincemann.springrapid.auth.service.context;
 
-import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.ctx.CoreContextService;

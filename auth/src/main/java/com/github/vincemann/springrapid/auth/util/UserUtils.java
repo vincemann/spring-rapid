@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenSer
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
+import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,7 @@ public abstract class UserUtils {
 
 
     public static <T extends AbstractUser> T findAuthenticatedUser(UserService userService){
-        if (!RapidSecurityContext.isAuthenticated()){
-            throw new AccessDeniedException("No user logged in");
-        }
+        VerifyAccess.condition(RapidSecurityContext.isAuthenticated(),"No user logged in");
         Optional<T> userByContactInformation = (Optional<T>) userService.findByContactInformation(RapidSecurityContext.getName());
         try {
             VerifyEntity.isPresent(userByContactInformation,"user with contactInformation: " + RapidSecurityContext.getName()+ " could not be found");

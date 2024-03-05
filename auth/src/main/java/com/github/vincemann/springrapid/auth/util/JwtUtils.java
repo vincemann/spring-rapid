@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.auth.util;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.util.Maps;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.text.ParseException;
@@ -13,7 +12,7 @@ import java.util.stream.Collectors;
  * Helper-Methods for creating and validating Jwt's claims
  */
 @Slf4j
-public class RapidJwt {
+public class JwtUtils {
 
 	public static final String SUBJECT_CLAIM = "sub";
 	public static final String AUDIENCE_CLAIM = "aud";
@@ -30,10 +29,10 @@ public class RapidJwt {
 		builder
 				//.issueTime(new Date())
 //                .expirationTime(new Date()) -> rounds to millis bad for tests
-				.claim(RapidJwt.EXPIRATION_CLAIM,System.currentTimeMillis() + expirationMillis)
+				.claim(JwtUtils.EXPIRATION_CLAIM,System.currentTimeMillis() + expirationMillis)
 				.audience(aud)
 				.subject(subject)
-				.claim(RapidJwt.ISSUED_AT_CLAIM,System.currentTimeMillis());
+				.claim(JwtUtils.ISSUED_AT_CLAIM,System.currentTimeMillis());
 //                .issueTime(new Date()); -> rounds to millis bad for tests
 
 		otherClaims.forEach(builder::claim);
@@ -46,10 +45,10 @@ public class RapidJwt {
 		builder
 				//.issueTime(new Date())
 //                .expirationTime(new Date()) -> rounds to millis bad for tests
-				.claim(RapidJwt.EXPIRATION_CLAIM,expirationMillis)
+				.claim(JwtUtils.EXPIRATION_CLAIM,expirationMillis)
 				.audience(aud)
 				.subject(subject)
-				.claim(RapidJwt.ISSUED_AT_CLAIM,issuedAt);
+				.claim(JwtUtils.ISSUED_AT_CLAIM,issuedAt);
 //                .issueTime(new Date()); -> rounds to millis bad for tests
 		if (otherClaims!=null)
 			otherClaims.forEach(builder::claim);
@@ -61,18 +60,18 @@ public class RapidJwt {
 		JWTClaimsSet.Builder builder = createRawBuilder(
 				claimsSet.getAudience().get(0),
 				claimsSet.getSubject(),
-				claimsSet.getLongClaim(RapidJwt.EXPIRATION_CLAIM),
-				claimsSet.getLongClaim(RapidJwt.ISSUED_AT_CLAIM),
+				claimsSet.getLongClaim(JwtUtils.EXPIRATION_CLAIM),
+				claimsSet.getLongClaim(JwtUtils.ISSUED_AT_CLAIM),
 				getOtherClaims(claimsSet)
 		);
 		if (expirationMillis!=null)
-			builder.claim(RapidJwt.EXPIRATION_CLAIM,expirationMillis);
+			builder.claim(JwtUtils.EXPIRATION_CLAIM,expirationMillis);
 		if (issuedAt!=null)
-			builder.claim(RapidJwt.ISSUED_AT_CLAIM,issuedAt);
+			builder.claim(JwtUtils.ISSUED_AT_CLAIM,issuedAt);
 		if (aud!=null)
 			builder.audience(aud);
 		if (subject != null)
-			builder.claim(RapidJwt.SUBJECT_CLAIM,subject);
+			builder.claim(JwtUtils.SUBJECT_CLAIM,subject);
 		if (otherClaims !=null){
 			for (Map.Entry<String, Object> claim : otherClaims.entrySet()) {
 				builder.claim(claim.getKey(),claim.getValue());
@@ -84,8 +83,8 @@ public class RapidJwt {
 
 	private static Map<String,Object> getOtherClaims(JWTClaimsSet claimsSet){
 		Set<Map.Entry<String, Object>> otherClaimsSet = claimsSet.getClaims().entrySet().stream().filter(e -> {
-			return !e.getKey().equals(RapidJwt.EXPIRATION_CLAIM) &&
-					!e.getKey().equals(RapidJwt.ISSUED_AT_CLAIM) &&
+			return !e.getKey().equals(JwtUtils.EXPIRATION_CLAIM) &&
+					!e.getKey().equals(JwtUtils.ISSUED_AT_CLAIM) &&
 					!e.getKey().equals("sub") &&
 					!e.getKey().equals("aud");
 		}).collect(Collectors.toSet());
@@ -101,7 +100,7 @@ public class RapidJwt {
 	}
 
 	public static void validateNotExpired(JWTClaimsSet claims) {
-		long expirationTime = (long) claims.getClaim(RapidJwt.EXPIRATION_CLAIM);
+		long expirationTime = (long) claims.getClaim(JwtUtils.EXPIRATION_CLAIM);
 		long currentTime = System.currentTimeMillis();
 		log.debug("Check if token is expired...");
 		log.debug("Expiration time = " + new Date(expirationTime)

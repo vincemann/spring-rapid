@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authdemo.model;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.authdemo.service.val.ValidUsername;
+import com.github.vincemann.springrapid.authdemo.service.ValidUsername;
 import com.google.common.collect.Sets;
 import lombok.Builder;
 import lombok.Getter;

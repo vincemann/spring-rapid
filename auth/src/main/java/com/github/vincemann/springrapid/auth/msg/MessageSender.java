@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth;
+package com.github.vincemann.springrapid.auth.msg;
 
 public interface MessageSender {
 

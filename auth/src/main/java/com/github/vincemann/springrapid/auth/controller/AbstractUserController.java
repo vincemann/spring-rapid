@@ -8,7 +8,6 @@ import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.dto.*;
 import com.github.vincemann.springrapid.auth.dto.user.ReadForeignUserDto;
 import com.github.vincemann.springrapid.auth.dto.user.ReadOwnUserDto;
-import com.github.vincemann.springrapid.auth.dto.user.FullUserDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.*;

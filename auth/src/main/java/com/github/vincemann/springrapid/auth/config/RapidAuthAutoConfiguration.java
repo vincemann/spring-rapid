@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.auth.controller.owner.AuthOwnerLocator;
 import com.github.vincemann.springrapid.auth.controller.owner.UserOwnerLocator;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.sec.*;
-import com.github.vincemann.springrapid.auth.service.ctx.AuthContextService;
+import com.github.vincemann.springrapid.auth.service.context.AuthContextService;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.config.RapidCoreAutoConfiguration;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;

@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.mail;
+package com.github.vincemann.springrapid.auth.msg.mail;
 
 import lombok.Builder;
 import lombok.Getter;

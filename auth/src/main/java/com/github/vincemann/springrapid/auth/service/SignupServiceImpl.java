@@ -70,13 +70,12 @@ public class SignupServiceImpl implements SignupService {
     }
 
 
-    @Autowired
     @Root
-    public void setUserService(UserService<AbstractUser<?>, ?> userService) {
+    @Autowired
+    public void setUserService(UserService userService) {
         this.userService = userService;
     }
     @Autowired
-    @Root
     public void setVerificationService(VerificationService verificationService) {
         this.verificationService = verificationService;
     }

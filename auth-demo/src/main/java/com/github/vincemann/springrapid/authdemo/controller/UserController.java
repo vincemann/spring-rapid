@@ -5,8 +5,8 @@ import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.authdemo.dto.*;
 import com.github.vincemann.springrapid.authdemo.dto.user.MyReadOwnUserDto;
-import com.github.vincemann.springrapid.authdemo.dto.user.MyFullUserDto;
-import com.github.vincemann.springrapid.authdemo.dto.user.UserUpdatesOwnDto;
+import com.github.vincemann.springrapid.authdemo.dto.user.MyAdminUpdatesUserDto;
+import com.github.vincemann.springrapid.authdemo.dto.user.UserUpdatesUserDto;
 import com.github.vincemann.springrapid.authdemo.model.User;
 import com.github.vincemann.springrapid.authdemo.service.MySignupService;
 import com.github.vincemann.springrapid.authdemo.service.MyUserService;
@@ -37,10 +37,10 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
     protected void configureDtoMappings(DtoMappingsBuilder builder) {
 
         builder.when(endpoint(getUpdateUrl()).and(roles(AuthRoles.ADMIN)))
-                        .thenReturn(MyFullUserDto.class);
+                        .thenReturn(MyAdminUpdatesUserDto.class);
 
         builder.when(endpoint(getUpdateUrl()))
-                .thenReturn(UserUpdatesOwnDto.class);
+                .thenReturn(UserUpdatesUserDto.class);
 
         builder.when(direction(Direction.RESPONSE).and(principal(Principal.OWN)))
                 .thenReturn(MyReadOwnUserDto.class);

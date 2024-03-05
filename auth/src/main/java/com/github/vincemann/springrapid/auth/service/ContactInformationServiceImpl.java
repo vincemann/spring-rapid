@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.auth.service;
 
-import com.github.vincemann.springrapid.auth.AuthMessage;
+import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.MessageSender;
+import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
@@ -11,7 +11,7 @@ import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.service.val.ContactInformationValidator;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
-import com.github.vincemann.springrapid.auth.util.RapidJwt;
+import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -56,7 +56,7 @@ public class ContactInformationServiceImpl implements ContactInformationService 
         JWTClaimsSet claims = jweTokenService.parseToken(code);
         AbstractUser user = extractUserFromClaims(claims);
 
-        RapidJwt.validate(claims, CHANGE_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
+        JwtUtils.validate(claims, CHANGE_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
 
         VerifyEntity.notEmpty(user.getNewContactInformation(), "new contact-information");
 
@@ -120,7 +120,7 @@ public class ContactInformationServiceImpl implements ContactInformationService 
      * Mails the change-contactInformation verification link to the user.
      */
     protected void sendChangeContactInformationMessage(AbstractUser user) {
-        JWTClaimsSet claims = RapidJwt.create(
+        JWTClaimsSet claims = JwtUtils.create(
                 CHANGE_CONTACT_INFORMATION_AUDIENCE,
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
