@@ -65,7 +65,7 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 
 		// blank code
 		mvc.perform(userController.verifyContactInformation(""))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isUnauthorized());
 
 		// Wrong audience
 		String code = modifyCode(msg.getCode(),"wrong-audience",null,null,null,null);

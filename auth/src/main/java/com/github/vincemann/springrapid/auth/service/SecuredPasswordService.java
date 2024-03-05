@@ -37,9 +37,12 @@ public class SecuredPasswordService implements PasswordService {
 
     @Override
     public AbstractUser changePassword(ChangePasswordDto dto) throws EntityNotFoundException, BadEntityException {
-        Optional<AbstractUser> user = userService.findByContactInformation(dto.getContactInformation());
-        VerifyEntity.isPresent(user,"user not found");
-        aclTemplate.checkPermission(user.get(), BasePermission.WRITE);
+        // fail fast
+        VerifyEntity.notEmpty(dto.getContactInformation(),"contact information");
+        VerifyEntity.notEmpty(dto.getNewPassword(),"new password");
+        VerifyEntity.notEmpty(dto.getOldPassword(),"old password");
+        AbstractUser user = userService.findPresentByContactInformation(dto.getContactInformation());
+        aclTemplate.checkPermission(user, BasePermission.WRITE);
         return decorated.changePassword(dto);
     }
 

@@ -19,7 +19,7 @@ public class MyJpaUserService extends JpaUserService<User, Long, UserRepository>
 	@Override
 	public User createAdmin(AuthProperties.Admin admin) {
 		User createdAdmin = super.createAdmin(admin);
-		createdAdmin.setName(admin.getContactInformation()+"name");
+		createdAdmin.setName(admin.getContactInformation().split("@")[0]);
 		return createdAdmin;
 	}
 }

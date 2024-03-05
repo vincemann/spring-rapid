@@ -3,10 +3,8 @@ package com.github.vincemann.springrapid.auth.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.acl.Secured;
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.dto.user.AdminUpdatesUserDto;
-import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.dto.*;
-import com.github.vincemann.springrapid.auth.dto.user.ReadForeignUserDto;
+import com.github.vincemann.springrapid.auth.dto.user.AdminUpdatesUserDto;
 import com.github.vincemann.springrapid.auth.dto.user.ReadOwnUserDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
@@ -14,6 +12,7 @@ import com.github.vincemann.springrapid.auth.service.*;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
@@ -199,17 +198,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 				.and(roles(AuthRoles.ADMIN))
 				.and(direction(Direction.REQUEST)))
 						.thenReturn(AdminUpdatesUserDto.class);
-
-		// anon can find id of user by ci
-		builder.when(endpoint(getFindByContactInformationUrl())
-								.and(roles(AuthRoles.ANON))
-						.and(direction(Direction.RESPONSE)))
-				.thenReturn(ReadForeignUserDto.class);
-
-		// foreign user can also find id of user by ci
-		builder.when(direction(Direction.RESPONSE)
-						.and(principal(Principal.FOREIGN)))
-				.thenReturn(ReadForeignUserDto.class);
 
 		// user can gather all information about self
 		builder.when(direction(Direction.RESPONSE)

@@ -112,26 +112,26 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
         String code = "";
         mvc.perform(userController.changeContactInformation(code, token))
                 //gets new token for new contactInformation to use
-                .andExpect(status().is(400));
+                .andExpect(status().isUnauthorized());
 
         // Wrong audience
         code = modifyCode(msg.getCode(), "", null, null, null, null);
         mvc.perform(userController.changeContactInformation(code, token))
                 //gets new token for new contactInformation to use
-                .andExpect(status().is(403));
+                .andExpect(status().isForbidden());
 
 
         // Wrong userId subject
         code = modifyCode(msg.getCode(), null, getSecondUser().getId().toString(), null, null, null);
         mvc.perform(userController.changeContactInformation(code, token))
                 //gets new token for new contactInformation to use
-                .andExpect(status().is(403));
+                .andExpect(status().isForbidden());
 
         // Wrong new contactInformation
         code = modifyCode(msg.getCode(), null, null, null, null, MapUtils.mapOf("newContactInformation", "wrong.new.contactInformation@example.com"));
         mvc.perform(userController.changeContactInformation(code, token))
                 //gets new token for new contactInformation to use
-                .andExpect(status().is(403));
+                .andExpect(status().isBadRequest());
     }
 
 
