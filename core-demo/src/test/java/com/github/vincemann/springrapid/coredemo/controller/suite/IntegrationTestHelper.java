@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coredemo.controller.suite.template.*;
 import com.github.vincemann.springrapid.coredemo.dto.ClinicCardDto;
 import com.github.vincemann.springrapid.coredemo.dto.SpecialtyDto;
+import com.github.vincemann.springrapid.coredemo.dto.VetDto;
 import com.github.vincemann.springrapid.coredemo.dto.VisitDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
@@ -22,8 +23,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.stream.Collectors;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Component
 public class IntegrationTestHelper implements TestMethodInitializable, MvcAware {
@@ -139,5 +138,14 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
                         .map(IdentifiableEntityImpl::getId)
                         .collect(Collectors.toList())));
         return specialtyController.create2xx(createSpecialtyDto,SpecialtyDto.class);
+    }
+
+    public VetDto createVetLinkedToSpecialties(Vet vet, Specialty... specialtys) throws Exception {
+        VetDto createVetDto = new VetDto(vet);
+        createVetDto.setSpecialtyIds(new HashSet<>(
+                Arrays.stream(specialtys)
+                        .map(IdentifiableEntityImpl::getId)
+                        .collect(Collectors.toList())));
+        return vetController.create2xx(createVetDto,VetDto.class);
     }
 }
