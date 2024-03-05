@@ -1,12 +1,11 @@
 package com.github.vincemann.springrapid.coredemo.controller.suite;
 
+import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.util.Lists;
-import com.github.vincemann.springrapid.coredemo.controller.suite.template.OwnerControllerTestTemplate;
-import com.github.vincemann.springrapid.coredemo.controller.suite.template.PetControllerTestTemplate;
-import com.github.vincemann.springrapid.coredemo.controller.suite.template.VetControllerTestTemplate;
-import com.github.vincemann.springrapid.coredemo.controller.suite.template.VisitControllerTestTemplate;
+import com.github.vincemann.springrapid.coredemo.controller.suite.template.*;
 import com.github.vincemann.springrapid.coredemo.dto.ClinicCardDto;
+import com.github.vincemann.springrapid.coredemo.dto.SpecialtyDto;
 import com.github.vincemann.springrapid.coredemo.dto.VisitDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
@@ -21,7 +20,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.stream.Collectors;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Component
 public class IntegrationTestHelper implements TestMethodInitializable, MvcAware {
@@ -55,6 +57,9 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     protected VetControllerTestTemplate vetController;
     @Autowired
     protected VisitControllerTestTemplate visitController;
+
+    @Autowired
+    protected SpecialtyControllerTestTemplate specialtyController;
 
     @Override
     public void beforeTestMethod() throws BadEntityException {
@@ -125,5 +130,14 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
             createPetDto.setToyIds(Arrays.stream(toys).map(Toy::getId).collect(Collectors.toSet()));
 
         return petController.create2xx(createPetDto,ReadPetDto.class);
+    }
+
+    public SpecialtyDto createSpecialtyLinkedToVets(Specialty specialty, Vet... vets) throws Exception {
+        SpecialtyDto createSpecialtyDto = new SpecialtyDto(specialty);
+        createSpecialtyDto.setVetIds(new HashSet<>(
+                Arrays.stream(vets)
+                        .map(IdentifiableEntityImpl::getId)
+                        .collect(Collectors.toList())));
+        return specialtyController.create2xx(createSpecialtyDto,SpecialtyDto.class);
     }
 }

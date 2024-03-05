@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coredemo.controller.suite.MyIntegrationTest;
 import com.github.vincemann.springrapid.coredemo.controller.suite.template.SpecialtyControllerTestTemplate;
@@ -10,13 +9,10 @@ import com.github.vincemann.springrapid.coredemo.model.Vet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.stream.Collectors;
 
-import static com.github.vincemann.ezcompare.Comparator.compare;
+import static com.github.vincemann.springrapid.coredemo.controller.suite.TestData.*;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,68 +24,49 @@ public class SpecialtyControllerIntegrationTest extends MyIntegrationTest {
     SpecialtyControllerTestTemplate controller;
 
     @Test
-    public void canSaveSpecialty_getLinkedToVets() throws Exception {
-        Vet savedVetMax = vetRepository.save(vetMax);
-        Vet savedVetPoldi = vetRepository.save(vetPoldi);
-        Vet savedVetDiCaprio = vetRepository.save(vetDiCaprio);
+    public void canCreateSpecialtyLinkedToSavedVets() throws Exception {
+        // given
+        Vet max = vetService.create(testData.getVetMax());
+        Vet poldi = vetService.create(testData.getVetPoldi());
+        Vet dicaprio = vetService.create(testData.getVetDiCaprio());
 
-        SpecialtyDto createGastroDto = new SpecialtyDto(gastro);
-        createGastroDto.setVetIds(new HashSet<>(Lists.newArrayList(savedVetMax.getId(),savedVetPoldi.getId())));
-
-        MvcResult result = getMvc().perform(controller.create(createGastroDto))
-                .andExpect(status().isOk())
-                .andReturn();
-        String json = result.getResponse().getContentAsString();
-        System.err.println(json);
-
-
-        SpecialtyDto responseDto = deserialize(json, SpecialtyDto.class);
-        compare(createGastroDto).with(responseDto)
-                .properties()
-                .all()
-                .ignore(SpecialtyType::getId)
-                .assertEqual();
-        Assertions.assertTrue(specialtyRepository.findByDescription(GASTRO).isPresent());
-        Specialty dbGastro = specialtyRepository.findByDescription(GASTRO).get();
-
-        compare(createGastroDto).with(dbGastro)
-                .properties()
-                .all()
-                .ignore(SpecialtyType::getId)
-                .ignore(createGastroDto::getVetIds)
-                .assertEqual();
-
-        Assertions.assertEquals(responseDto.getId(),dbGastro.getId());
-
+        // when
+        SpecialtyDto createGastroDto = new SpecialtyDto(testData.getGastro());
+        createGastroDto.setVetIds(new HashSet<>(Lists.newArrayList(max.getId(),poldi.getId())));
+        SpecialtyDto dto = controller.create2xx(createGastroDto, SpecialtyDto.class);
+        // then
+        Assertions.assertTrue(specialtyService.findByDescription(GASTRO).isPresent());
+        Specialty gastro = specialtyService.findByDescription(GASTRO).get();
+        Assertions.assertEquals(dto.getId(),gastro.getId());
         assertSpecialtyHasVets(GASTRO, VET_POLDI, VET_MAX);
-
         assertVetHasSpecialties(VET_POLDI,GASTRO);
         assertVetHasSpecialties(VET_MAX,GASTRO);
         assertVetHasSpecialties(VET_DICAPRIO);
     }
 
     @Test
-    public void canUnlinkSpecialtyFromSomeVets_viaUpdate() throws Exception {
+    public void canUnlinkSpecialtyFromMultipleVetsViaUpdateSpecialty() throws Exception {
 
         // gastro -> poldi, max, diCaprio
         // heart -> poldi, max
-        Vet savedVetPoldi = vetRepository.save(vetPoldi);
-        Vet savedMaier = vetRepository.save(vetMax);
-        Vet savedVetDiCaprio = vetRepository.save(vetDiCaprio);
 
-        SpecialtyDto savedGastro = createSpecialtyLinkedToVets(gastro, savedVetPoldi, savedMaier, savedVetDiCaprio);
-        createSpecialtyLinkedToVets(heart, savedVetPoldi,savedMaier);
+        // given
+        Vet poldi = vetService.create(testData.getVetPoldi());
+        Vet meier = vetService.create(testData.getVetMax());
+        Vet diCaprio = vetService.create(testData.getVetDiCaprio());
+        SpecialtyDto savedGastro = helper.createSpecialtyLinkedToVets(testData.getGastro(), poldi, meier, diCaprio);
+        helper.createSpecialtyLinkedToVets(testData.getHeart(), poldi,meier);
 
 
         // remove poldi and diCaprio from gastro
-        String removeVetPoldiJson = createUpdateJsonLine("remove", "/vetIds",savedVetPoldi.getId().toString());
-        String removeVetDiCaprioJson = createUpdateJsonLine("remove", "/vetIds",savedVetDiCaprio.getId().toString());
-        String updateJson = createUpdateJsonRequest(removeVetPoldiJson,removeVetDiCaprioJson);
-
-        SpecialtyDto responseDto = deserialize(getMvc().perform(controller.update(updateJson, savedGastro.getId()))
-                .andReturn().getResponse().getContentAsString(), SpecialtyDto.class);
-        Assertions.assertTrue(responseDto.getVetIds().contains(savedMaier.getId()));
-        Assertions.assertEquals(1,responseDto.getVetIds().size());
+        // when
+        String removePoldi = createUpdateJsonLine("remove", "/vetIds",poldi.getId().toString());
+        String removeDicaprio = createUpdateJsonLine("remove", "/vetIds",diCaprio.getId().toString());
+        String jsonPatch = createUpdateJsonRequest(removePoldi,removeDicaprio);
+        SpecialtyDto dto = controller.update2xx(jsonPatch, savedGastro.getId(), SpecialtyDto.class);
+        // then
+        Assertions.assertTrue(dto.getVetIds().contains(meier.getId()));
+        Assertions.assertEquals(1,dto.getVetIds().size());
 
         assertSpecialtyHasVets(GASTRO, VET_MAX);
         assertSpecialtyHasVets(HEART, VET_POLDI, VET_MAX);
@@ -102,31 +79,30 @@ public class SpecialtyControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
-    public void canLinkSpecialtyToSomeVets_viaUpdate() throws Exception {
+    public void givenSpecialtyIsAlreadyLinkedToOneVet_canLinkMoreVetsToSpecialtyViaUpdateSpecialty() throws Exception {
 
         // gastro -> poldi, max, diCaprio
         // heart -> poldi, max
-        Vet savedVetPoldi = vetRepository.save(vetPoldi);
-        Vet savedMaier = vetRepository.save(vetMax);
-        Vet savedVetDiCaprio = vetRepository.save(vetDiCaprio);
 
-        SpecialtyDto savedGastro = createSpecialtyLinkedToVets(gastro, savedVetPoldi, savedMaier, savedVetDiCaprio);
-        createSpecialtyLinkedToVets(heart, savedVetPoldi,savedMaier);
-        SpecialtyDto savedDentism = createSpecialtyLinkedToVets(dentism);
-
+        // given
+        Vet poldi = vetService.create(testData.getVetPoldi());
+        Vet savedMaier = vetService.create(testData.getVetMax());
+        Vet DiCaprio = vetService.create(testData.getVetDiCaprio());
+        SpecialtyDto savedGastro = helper.createSpecialtyLinkedToVets(testData.getGastro(), poldi, savedMaier, DiCaprio);
+        helper.createSpecialtyLinkedToVets(testData.getHeart(), poldi,savedMaier);
+        SpecialtyDto savedDentism = helper.createSpecialtyLinkedToVets(testData.getDentism());
         assertSpecialtyHasVets(DENTISM);
 
-
         // add dentism to diCaprio and poldi
-        String addVetPoldiJson = createUpdateJsonLine("add", "/vetIds/-",savedVetPoldi.getId().toString());
-        String addVetDiCaprioJson = createUpdateJsonLine("add", "/vetIds/-",savedVetDiCaprio.getId().toString());
+        // when
+        String addVetPoldiJson = createUpdateJsonLine("add", "/vetIds/-",poldi.getId().toString());
+        String addVetDiCaprioJson = createUpdateJsonLine("add", "/vetIds/-",DiCaprio.getId().toString());
         String updateJson = createUpdateJsonRequest(addVetPoldiJson,addVetDiCaprioJson);
-
-        SpecialtyDto responseDto = deserialize(getMvc().perform(controller.update(updateJson, savedDentism.getId()))
-                .andReturn().getResponse().getContentAsString(), SpecialtyDto.class);
-        Assertions.assertTrue(responseDto.getVetIds().contains(savedVetPoldi.getId()));
-        Assertions.assertTrue(responseDto.getVetIds().contains(savedVetDiCaprio.getId()));
-        Assertions.assertEquals(2,responseDto.getVetIds().size());
+        SpecialtyDto dto = controller.update2xx(updateJson, savedDentism.getId(), SpecialtyDto.class);
+        // then
+        Assertions.assertTrue(dto.getVetIds().contains(poldi.getId()));
+        Assertions.assertTrue(dto.getVetIds().contains(DiCaprio.getId()));
+        Assertions.assertEquals(2,dto.getVetIds().size());
 
         assertSpecialtyHasVets(DENTISM, VET_POLDI, VET_DICAPRIO);
         assertSpecialtyHasVets(GASTRO, VET_POLDI, VET_MAX, VET_DICAPRIO);
@@ -140,31 +116,33 @@ public class SpecialtyControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
-    public void canReLinkSpecialtyFromSomeVetsToSomeVets_viaUpdate() throws Exception {
+    public void relinkMultipleSpecialtiesOfVetsViaSingleUpdateSpecialtyRequest() throws Exception {
 
         // gastro -> poldi, max, diCaprio
         // heart -> poldi, max
         // dentism -> diCaprio
-        Vet savedVetPoldi = vetRepository.save(vetPoldi);
-        Vet savedMaier = vetRepository.save(vetMax);
-        Vet savedVetDiCaprio = vetRepository.save(vetDiCaprio);
 
-        SpecialtyDto savedGastro = createSpecialtyLinkedToVets(gastro, savedVetPoldi, savedMaier, savedVetDiCaprio);
-        SpecialtyDto savedVetMax = createSpecialtyLinkedToVets(heart, savedVetPoldi, savedMaier);
-        SpecialtyDto savedDentism = createSpecialtyLinkedToVets(dentism,savedVetDiCaprio);
+        // given
+        Vet poldi = vetService.create(testData.getVetPoldi());
+        Vet savedMaier = vetService.create(testData.getVetMax());
+        Vet DiCaprio = vetService.create(testData.getVetDiCaprio());
 
+        SpecialtyDto gastro = helper.createSpecialtyLinkedToVets(testData.getGastro(), poldi, savedMaier, DiCaprio);
+        SpecialtyDto max = helper.createSpecialtyLinkedToVets(testData.getHeart(), poldi, savedMaier);
+        SpecialtyDto dentism = helper.createSpecialtyLinkedToVets(testData.getDentism(),DiCaprio);
 
+        // when
         // remove diCaprio from dentism and add poldi and max
-        String removeVetDiCaprioJson = createUpdateJsonLine("remove", "/vetIds",savedVetDiCaprio.getId().toString());
-        String addVetPoldiJson = createUpdateJsonLine("add", "/vetIds/-",savedVetPoldi.getId().toString());
-        String addVetMaxJson = createUpdateJsonLine("add", "/vetIds/-",savedMaier.getId().toString());
-        String updateJson = createUpdateJsonRequest(removeVetDiCaprioJson,addVetPoldiJson,addVetMaxJson);
+        String removeDicaprio = createUpdateJsonLine("remove", "/vetIds",DiCaprio.getId().toString());
+        String addPoldi = createUpdateJsonLine("add", "/vetIds/-",poldi.getId().toString());
+        String addMax = createUpdateJsonLine("add", "/vetIds/-",savedMaier.getId().toString());
+        String jsonPatch = createUpdateJsonRequest(removeDicaprio,addPoldi,addMax);
 
-        SpecialtyDto responseDto = deserialize(getMvc().perform(controller.update(updateJson, savedDentism.getId()))
-                .andReturn().getResponse().getContentAsString(), SpecialtyDto.class);
-        Assertions.assertTrue(responseDto.getVetIds().contains(savedVetPoldi.getId()));
-        Assertions.assertTrue(responseDto.getVetIds().contains(savedMaier.getId()));
-        Assertions.assertEquals(2,responseDto.getVetIds().size());
+        SpecialtyDto dto = controller.update2xx(jsonPatch, dentism.getId(), SpecialtyDto.class);
+        // then
+        Assertions.assertTrue(dto.getVetIds().contains(poldi.getId()));
+        Assertions.assertTrue(dto.getVetIds().contains(savedMaier.getId()));
+        Assertions.assertEquals(2,dto.getVetIds().size());
 
         assertSpecialtyHasVets(DENTISM, VET_POLDI, VET_MAX);
         assertSpecialtyHasVets(GASTRO, VET_POLDI, VET_MAX, VET_DICAPRIO);
@@ -178,38 +156,28 @@ public class SpecialtyControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
-    public void canDeleteSpecialty_getUnlinkedFromVets() throws Exception {
+    public void givenVetsLinkedToSpecialty_whenRemoveSpecialty_thenVetsUnlinked() throws Exception {
         // gastro -> poldi, max, diCaprio
         // heart -> poldi, max
-        Vet savedVetPoldi = vetRepository.save(vetPoldi);
-        Vet savedMaier = vetRepository.save(vetMax);
-        Vet savedVetDiCaprio = vetRepository.save(vetDiCaprio);
 
-        SpecialtyDto savedGastro = createSpecialtyLinkedToVets(gastro, savedVetPoldi, savedMaier, savedVetDiCaprio);
-        createSpecialtyLinkedToVets(heart, savedVetPoldi,savedMaier);
+        // given
+        Vet poldi = vetService.create(testData.getVetPoldi());
+        Vet savedMaier = vetService.create(testData.getVetMax());
+        Vet DiCaprio = vetService.create(testData.getVetDiCaprio());
+        SpecialtyDto savedGastro = helper.createSpecialtyLinkedToVets(testData.getGastro(), poldi, savedMaier, DiCaprio);
+        helper.createSpecialtyLinkedToVets(testData.getHeart(), poldi,savedMaier);
 
+        // when
         getMvc().perform(controller.delete(savedGastro.getId()))
                 .andExpect(status().is2xxSuccessful());
 
-        Assertions.assertFalse(specialtyRepository.findByDescription(GASTRO).isPresent());
+        // then
+        Assertions.assertFalse(specialtyService.findByDescription(GASTRO).isPresent());
 
         assertSpecialtyHasVets(HEART, VET_POLDI, VET_MAX);
 
         assertVetHasSpecialties(VET_POLDI, HEART);
         assertVetHasSpecialties(VET_MAX, HEART);
-    }
-
-
-    private SpecialtyDto createSpecialtyLinkedToVets(Specialty specialty, Vet... vets) throws Exception {
-        SpecialtyDto createSpecialtyDto = new SpecialtyDto(specialty);
-        createSpecialtyDto.setVetIds(new HashSet<>(
-                Arrays.stream(vets)
-                        .map(IdentifiableEntityImpl::getId)
-                        .collect(Collectors.toList())));
-        String json = getMvc().perform(controller.create(createSpecialtyDto))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-        return deserialize(json,SpecialtyDto.class);
     }
 
 }
