@@ -19,14 +19,12 @@ import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import static com.github.vincemann.ezcompare.Comparator.compare;
+import static com.github.vincemann.springrapid.coredemo.controller.suite.TestData.*;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -34,82 +32,73 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
 
+    @Autowired
+    private RapidSecurityContext securityContext;
+
 
     // SAVE TESTS
 
     @Test
-    public void canSaveOwnerWithoutPets() throws Exception {
-        CreateOwnerDto createDto = new CreateOwnerDto(kahn);
+    public void canCreateOwnerWithoutPets() throws Exception {
+        // when
+        CreateOwnerDto createDto = new CreateOwnerDto(testData.getKahn());
         ReadOwnOwnerDto responseDto = ownerController.create2xx(createDto, ReadOwnOwnerDto.class);
-        compare(createDto).with(responseDto)
-                .properties()
-                .all()
-                .ignore(OwnerType::getId)
-                .assertEqual();
-        Assertions.assertTrue(ownerRepository.findByLastName(KAHN).isPresent());
-        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
-
-        compare(createDto).with(dbKahn)
-                .properties()
-                .all()
-                .ignore(OwnerType::getId)
-                .ignore(createDto::getPetIds)
-                .ignore(createDto::getClinicCardId)
-                .assertEqual();
-
+        // then
+        Optional<Owner> kahn = ownerService.findByLastName(KAHN);
+        Assertions.assertTrue(kahn.isPresent());
+        Owner dbKahn = kahn.get();
         Assertions.assertEquals(responseDto.getId(),dbKahn.getId());
+        Assertions.assertTrue(kahn.get().getPets().isEmpty());
     }
 
     @Test
     public void canSaveOwnerWithManyHobbies() throws Exception {
-
+        // when
         String bodybuilding = "bodybuilding";
         Set<String> hobbies = new HashSet<>(Arrays.asList("swimming","biking",bodybuilding,"jogging","eating"));
-        kahn.setHobbies(hobbies);
-
-        ReadOwnOwnerDto responseDto = saveOwnerLinkedToPets(kahn);
+        testData.getKahn().setHobbies(hobbies);
+        ReadOwnOwnerDto responseDto = helper.saveOwnerLinkedToPets(testData.getKahn());
+        // then
         Assertions.assertEquals(hobbies,responseDto.getHobbies());
-
-        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
-        Assertions.assertEquals(hobbies,dbKahn.getHobbies());
+        Owner kahn = ownerService.findByLastName(KAHN).get();
+        Assertions.assertEquals(hobbies,kahn.getHobbies());
     }
 
     @Test
-    public void canSaveOwner_linkToPet() throws Exception {
-        Pet savedBello = petRepository.save(bello);
-
-
-        ReadOwnOwnerDto responseDto = saveOwnerLinkedToPets(kahn,savedBello.getId());
-        Assertions.assertTrue(responseDto.getPetIds().contains(savedBello.getId()));
-
-
+    public void canSaveOwnerLinkedToSavedPet() throws Exception {
+        // given
+        Pet bello = petService.create(testData.getBello());
+        // when
+        ReadOwnOwnerDto responseDto = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
+        // then
+        Assertions.assertTrue(responseDto.getPetIds().contains(bello.getId()));
         assertOwnerHasPets(KAHN,BELLO);
         assertPetHasOwner(BELLO,KAHN);
     }
 
     @Test
-    public void canSaveOwner_linkToClinicCard() throws Exception {
-        ClinicCard savedClinicCard = clinicCardRepository.save(clinicCard);
-
-        ReadOwnOwnerDto responseDto = saveOwnerLinkedToClinicCard(kahn,savedClinicCard);
-        Assertions.assertEquals(responseDto.getClinicCardId(),savedClinicCard.getId());
-
-        assertOwnerHasClinicCard(KAHN,savedClinicCard.getId());
-        assertClinicCardHasOwner(savedClinicCard.getId(),KAHN);
+    public void canSaveOwnerLinkedToSavedClinicCard() throws Exception {
+        // given
+        ClinicCard clinicCard = clinicCardService.create(testData.getClinicCard());
+        // when
+        ReadOwnOwnerDto responseDto = helper.saveOwnerLinkedToClinicCard(testData.getKahn(),clinicCard);
+        // then
+        Assertions.assertEquals(responseDto.getClinicCardId(),clinicCard.getId());
+        assertOwnerHasClinicCard(KAHN,clinicCard.getId());
+        assertClinicCardHasOwner(clinicCard.getId(),KAHN);
     }
 
     @Test
-    public void canSaveOwner_linkToPets() throws Exception {
-        Pet savedBello = petRepository.save(bello);
-        Pet savedKitty = petRepository.save(kitty);
-
-
-        ReadOwnOwnerDto responseDto = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
+    public void canSaveOwnerLinkedToMultipleSavedPets() throws Exception {
+        // given
+        Pet savedBello = petService.create(testData.getBello());
+        Pet savedKitty = petService.create(testData.getKitty());
+        // when
+        ReadOwnOwnerDto responseDto = helper.saveOwnerLinkedToPets(testData.getKahn(),savedBello.getId(),savedKitty.getId());
+        // then
         Assertions.assertTrue(responseDto.getPetIds().contains(savedBello.getId()));
         Assertions.assertTrue(responseDto.getPetIds().contains(savedKitty.getId()));
         Assertions.assertEquals(2,responseDto.getPetIds().size());
-
-
         assertOwnerHasPets(KAHN,BELLO,KITTY);
         assertPetHasOwner(BELLO,KAHN);
         assertPetHasOwner(KITTY,KAHN);
@@ -118,159 +107,170 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     // UPDATE TESTS
     @Test
     public void canUpdateOwnersCity() throws Exception {
-        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn);
-        String newCity = kahn.getCity()+"new";
-
+        // given
+        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn());
+        // when
+        String newCity = testData.getKahn().getCity()+"new";
         String updateJson = createUpdateJsonLine("replace", "/city",newCity);
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
                 createUpdateJsonRequest(updateJson),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+        // then
         Assertions.assertEquals(newCity,responseDto.getCity());
-
-        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
-        Assertions.assertEquals(newCity,dbKahn.getCity());
+        Owner kahn = ownerService.findByLastName(KAHN).get();
+        Assertions.assertEquals(newCity,kahn.getCity());
     }
 
     @Test
     public void canUpdateOwnersCityAndAddressInOneRequest() throws Exception {
-        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn);
-        String newCity = kahn.getCity()+"new";
-        String newAdr = kahn.getAddress()+"new";
-
+        // given
+        ReadOwnOwnerDto kahnDto = helper.saveOwnerLinkedToPets(testData.getKahn());
+        // when
+        String newCity = kahnDto.getCity()+"new";
+        String newAdr = kahnDto.getAddress()+"new";
         String updateCityJson = createUpdateJsonLine("replace", "/city",newCity);
         String updateAdrJson = createUpdateJsonLine("replace", "/address",newAdr);
         String updateJsonRequest = createUpdateJsonRequest(updateCityJson, updateAdrJson);
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
-                createUpdateJsonRequest(updateJsonRequest),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+                createUpdateJsonRequest(updateJsonRequest),kahnDto.getId(),ReadOwnOwnerDto.class);
+        // then
         Assertions.assertEquals(newCity,responseDto.getCity());
         Assertions.assertEquals(newAdr,responseDto.getAddress());
-
-        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
-        Assertions.assertEquals(newCity,dbKahn.getCity());
-        Assertions.assertEquals(newAdr,dbKahn.getAddress());
+        Owner kahn = ownerService.findByLastName(KAHN).get();
+        Assertions.assertEquals(newCity,kahn.getCity());
+        Assertions.assertEquals(newAdr,kahn.getAddress());
     }
 
 
     @Test
-    public void canRemoveOnlyPetFromOwner_viaRemoveAllPetsUpdate() throws Exception {
-        Pet savedBello = petRepository.save(bello);
-        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId());
-
+    public void givenOwnerLinkedToPet_whenRemoveAllPetsOfOwnerViaUpdateOwner_thenPetsUnlinked() throws Exception {
+        // given
+        Pet savedBello = petService.create(testData.getBello());
+        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn(),savedBello.getId());
+        // when
         String updateJson = createUpdateJsonLine("remove", "/petIds");
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
                 createUpdateJsonRequest(updateJson),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+        // then
         Assertions.assertTrue(responseDto.getPetIds().isEmpty());
-
         assertOwnerHasPets(KAHN);
         assertPetHasOwner(BELLO,null);
     }
 
     @Test
-    public void canRemoveClinicCardFromOwner_viaUpdate() throws Exception {
-        ClinicCard savedClinicCard = clinicCardRepository.save(clinicCard);
-
-        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToClinicCard(kahn,savedClinicCard);
+    public void canUnlinkClinicCardFromOwnerViaUpdateOwner() throws Exception {
+        // given
+        ClinicCard savedClinicCard = clinicCardService.create(testData.getClinicCard());
+        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToClinicCard(testData.getKahn(),savedClinicCard);
+        // when
         String updateJson = createUpdateJsonLine("remove", "/clinicCardId");
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
                 createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+        // then
         Assertions.assertNull(responseDto.getClinicCardId());
-
         assertOwnerHasClinicCard(KAHN,null);
         assertClinicCardHasOwner(savedClinicCard.getId(),null);
     }
 
     @Test
-    public void canAddClinicCardToOwner_viaUpdate() throws Exception {
-        ClinicCard savedClinicCard = clinicCardRepository.save(clinicCard);
-
-        ReadOwnOwnerDto createdKahnDto = saveOwner(kahn);
+    public void canLinkClinicCardToOwnerViaUpdateOwner() throws Exception {
+        // given
+        ClinicCard savedClinicCard = clinicCardService.create(testData.getClinicCard());
+        ReadOwnOwnerDto createdKahnDto = helper.saveOwner(testData.getKahn());
+        // when
         String updateJson = createUpdateJsonLine("add", "/clinicCardId",savedClinicCard.getId().toString());
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
                 createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+        // then
         Assertions.assertEquals(savedClinicCard.getId(),responseDto.getClinicCardId());
-
         assertOwnerHasClinicCard(KAHN,savedClinicCard.getId());
         assertClinicCardHasOwner(savedClinicCard.getId(),KAHN);
     }
 
     @Test
-    public void canRelinkDiffClinicCardToOwner_viaUpdate() throws Exception {
-        ClinicCard savedClinicCard = clinicCardRepository.save(clinicCard);
-        ClinicCard savedSecondClinicCard = clinicCardRepository.save(secondClinicCard);
-
-        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToClinicCard(kahn,savedClinicCard);
+    public void canRelinkDiffClinicCardToOwnerViaUpdateOwner() throws Exception {
+        // given
+        ClinicCard savedClinicCard = clinicCardService.create(testData.getClinicCard());
+        ClinicCard savedSecondClinicCard = clinicCardService.create(testData.getSecondClinicCard());
+        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToClinicCard(testData.getKahn(),savedClinicCard);
+        // when
         String updateJson = createUpdateJsonLine("replace", "/clinicCardId",savedSecondClinicCard.getId().toString());
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
                 createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+        // then
         Assertions.assertEquals(savedSecondClinicCard.getId(),responseDto.getClinicCardId());
-
         assertOwnerHasClinicCard(KAHN,savedSecondClinicCard.getId());
         assertClinicCardHasOwner(savedClinicCard.getId(),null);
         assertClinicCardHasOwner(savedSecondClinicCard.getId(),KAHN);
     }
 
     @Test
-    public void canRemoveOnlyPetFromOwner_viaRemoveSpecificUpdate() throws Exception {
-        Pet savedBello = petRepository.save(bello);
-        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId());
+    public void canUnlinkPetFromOwnerViaRemoveSpecificPetInUpdateOwner() throws Exception {
+        //given
+        Pet bello = petService.create(testData.getBello());
+        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
 
-        String updateJson = createUpdateJsonLine("remove", "/petIds",savedBello.getId().toString());
+        // when
+        String updateJson = createUpdateJsonLine("remove", "/petIds",bello.getId().toString());
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
                 createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+        // then
         Assertions.assertTrue(responseDto.getPetIds().isEmpty());
-
         assertOwnerHasPets(KAHN);
         assertPetHasOwner(BELLO,null);
     }
 
     @Test
-    public void canRemoveMultiplePetsFromOwner_viaRemoveAllPetsUpdate() throws Exception {
-        Pet savedBello = petRepository.save(bello);
-        Pet savedKitty = petRepository.save(kitty);
-        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
-
+    public void canUnlinkMultiplePetsFromOwnerViaRemoveAllPetsInUpdateOwner() throws Exception {
+        // given
+        Pet bello = petService.create(testData.getBello());
+        Pet kitty = petService.create(testData.getKitty());
+        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId(),kitty.getId());
+        // when
         String updateJson = createUpdateJsonLine("remove", "/petIds");
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
                 createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+        // then
         Assertions.assertTrue(responseDto.getPetIds().isEmpty());
-
         assertOwnerHasPets(KAHN);
         assertPetHasOwner(BELLO,null);
         assertPetHasOwner(KITTY,null);
     }
 
     @Test
-    public void canRemoveOneOfManyPetsFromOwner_viaUpdate() throws Exception {
-        Pet savedBello = petRepository.save(bello);
-        Pet savedKitty = petRepository.save(kitty);
-        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
-
-        String updateJson = createUpdateJsonLine("remove", "/petIds",savedBello.getId().toString());
+    public void canUnlinkOneOfManyPetsFromOwnerViaUpdateOwner() throws Exception {
+        // given
+        Pet bello = petService.create(testData.getBello());
+        Pet kitty = petService.create(testData.getKitty());
+        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId(),kitty.getId());
+        // when
+        String updateJson = createUpdateJsonLine("remove", "/petIds",bello.getId().toString());
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
                 createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
-        Assertions.assertTrue(responseDto.getPetIds().contains(savedKitty.getId()));
+        // then
+        Assertions.assertTrue(responseDto.getPetIds().contains(kitty.getId()));
         Assertions.assertEquals(1,responseDto.getPetIds().size());
-
         assertOwnerHasPets(KAHN,KITTY);
         assertPetHasOwner(BELLO,null);
         assertPetHasOwner(KITTY,KAHN);
     }
 
     @Test
-    public void canRemoveSomeOfManyPetsFromOwner_viaUpdate() throws Exception {
-        Pet savedBello = petRepository.save(bello);
-        Pet savedKitty = petRepository.save(kitty);
-        Pet savedBella = petRepository.save(bella);
-        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId(),savedBella.getId());
+    public void canUnlinkSomeOfManyPetsFromOwnerViaUpdateOwner() throws Exception {
+        // given
+        Pet bello = petService.create(testData.getBello());
+        Pet kitty = petService.create(testData.getKitty());
+        Pet bella = petService.create(testData.getBella());
+        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId(),kitty.getId(),bella.getId());
 
-        String removeBelloJson = createUpdateJsonLine("remove", "/petIds",savedBello.getId().toString());
-        String removeKittyJson = createUpdateJsonLine("remove", "/petIds",savedKitty.getId().toString());
+        // when
+        String removeBelloJson = createUpdateJsonLine("remove", "/petIds",bello.getId().toString());
+        String removeKittyJson = createUpdateJsonLine("remove", "/petIds",kitty.getId().toString());
         String removePetsJson = createUpdateJsonRequest(removeBelloJson, removeKittyJson);
-
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
                 createUpdateJsonRequest(createUpdateJsonRequest(removePetsJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
-        Assertions.assertTrue(responseDto.getPetIds().contains(savedBella.getId()));
+        // then
+        Assertions.assertTrue(responseDto.getPetIds().contains(bella.getId()));
         Assertions.assertEquals(1,responseDto.getPetIds().size());
-
         assertOwnerHasPets(KAHN,BELLA);
         assertPetHasOwner(BELLO,null);
         assertPetHasOwner(KITTY,null);
@@ -278,22 +278,23 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
-    public void canRemoveSomeOfManyPetsFromOwner_viaUpdate_diffOrder() throws Exception {
-        Pet savedBello = petRepository.save(bello);
-        Pet savedKitty = petRepository.save(kitty);
-        Pet savedBella = petRepository.save(bella);
-        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId(),savedBella.getId());
+    public void canUnlinkSomeOfManyPetsFromOwnerViaUpdateOwnerInDiffOrder() throws Exception {
+        // given
+        Pet bello = petService.create(testData.getBello());
+        Pet kitty = petService.create(testData.getKitty());
+        Pet bella = petService.create(testData.getBella());
+        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId(),kitty.getId(),bella.getId());
 
-        String removeBelloJson = createUpdateJsonLine("remove", "/petIds",savedBello.getId().toString());
-        String removeKittyJson = createUpdateJsonLine("remove", "/petIds",savedBella.getId().toString());
+        // when
+        String removeBelloJson = createUpdateJsonLine("remove", "/petIds",bello.getId().toString());
+        String removeKittyJson = createUpdateJsonLine("remove", "/petIds",bella.getId().toString());
         String removePetsJson = createUpdateJsonRequest(removeBelloJson, removeKittyJson);
-
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
                 createUpdateJsonRequest(createUpdateJsonRequest(removePetsJson)),
                 createdKahnDto.getId(),ReadOwnOwnerDto.class);
-        Assertions.assertTrue(responseDto.getPetIds().contains(savedKitty.getId()));
+        // then
+        Assertions.assertTrue(responseDto.getPetIds().contains(kitty.getId()));
         Assertions.assertEquals(1,responseDto.getPetIds().size());
-
         assertOwnerHasPets(KAHN,KITTY);
         assertPetHasOwner(BELLO,null);
         assertPetHasOwner(KITTY,KAHN);
@@ -301,51 +302,51 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
-    public void canRemoveOneOfManyHobbiesFromOwner_viaUpdate() throws Exception {
+    public void canRemoveOneOfManyHobbiesFromOwnerViaUpdateOwner() throws Exception {
+        // given
         String hobbyToRemove = "bodybuilding";
         Set<String> hobbies = new HashSet<>(Arrays.asList("swimming","biking",hobbyToRemove,"jogging","eating"));
-        kahn.setHobbies(hobbies);
-        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn);
-
+        testData.getKahn().setHobbies(hobbies);
+        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn());
+        // when
         String updateJson = createUpdateJsonLine("remove", "/hobbies", hobbyToRemove);
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
                 createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+        // then
         Assertions.assertFalse(responseDto.getHobbies().contains(hobbyToRemove));
         Assertions.assertEquals(hobbies.size()-1,responseDto.getHobbies().size());
-
-
-        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
+        Owner dbKahn = ownerService.findByLastName(KAHN).get();
         Assertions.assertFalse(dbKahn.getHobbies().contains(hobbyToRemove));
         Assertions.assertEquals(hobbies.size()-1,dbKahn.getHobbies().size());
     }
 
     @Test
-    public void canAddPetToOwner_viaUpdate() throws Exception {
-        Pet savedBello = petRepository.save(bello);
-        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn);
+    public void canLinkSavedPetToOwnerViaUpdateOwner() throws Exception {
+        // given
+        Pet bello = petService.create(testData.getBello());
+        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn());
 
-        String updateJson = createUpdateJsonLine("add", "/petIds", savedBello.getId().toString());
+        // when
+        String updateJson = createUpdateJsonLine("add", "/petIds", bello.getId().toString());
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
                 createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
-        Assertions.assertTrue(responseDto.getPetIds().contains(savedBello.getId()));
-
+        // then
+        Assertions.assertTrue(responseDto.getPetIds().contains(bello.getId()));
         assertOwnerHasPets(KAHN,BELLO);
         assertPetHasOwner(BELLO,KAHN);
     }
 
     // FIND TESTS
     @Test
-    public void canFindOwnOwner() throws Exception {
+    public void ownerCanFindOwnOwner() throws Exception {
+        // given
         securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
-        ReadOwnOwnerDto kahn = saveOwnerLinkedToPets(this.kahn);
+        ReadOwnOwnerDto kahn = helper.saveOwnerLinkedToPets(testData.getKahn());
+        // when
         ReadOwnOwnerDto response = ownerController.find2xx(kahn.getId(), ReadOwnOwnerDto.class);
+        // then
         Assertions.assertEquals(kahn.getLastName(),response.getLastName());
-
-        compare(kahn).with(response)
-                .properties().all()
-                .assertEqual();
         Assertions.assertEquals(Owner.SECRET,response.getSecret());
-
         RapidSecurityContext.unsetAuthenticated();
     }
 
@@ -359,22 +360,22 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // should find kahn and meier
         // kahn should be FindOwnOwnerDto and meier FindForeignOwnerDto
 
-        Pet savedBello = petRepository.save(bello);
-        Pet savedKitty = petRepository.save(kitty);
+        // given
+        Pet bello = petService.create(testData.getBello());
+        Pet kitty = petService.create(testData.getKitty());
 
-        ReadOwnOwnerDto savedKahn = saveOwnerLinkedToPets(kahn,savedBello.getId());
-        ReadOwnOwnerDto savedMeier = saveOwnerLinkedToPets(meier, savedKitty.getId());
-        ReadOwnOwnerDto savedGil = saveOwnerLinkedToPets(gil);
+        ReadOwnOwnerDto savedKahn = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
+        ReadOwnOwnerDto savedMeier = helper.saveOwnerLinkedToPets(testData.getMeier(), kitty.getId());
+        ReadOwnOwnerDto savedGil = helper.saveOwnerLinkedToPets(testData.getGil());
+        Assertions.assertEquals(3,ownerService.findAll().size());
 
-        Assertions.assertEquals(3,ownerRepository.findAll().size());
-
-
+        // when
         securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
         List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class, hasPetsFilter);
         RapidSecurityContext.unsetAuthenticated();
-
+        // then
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(2,responseDtos.size());
         ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
@@ -384,7 +385,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
-    public void canFindAllOwnersWithPetsFilter_sortedByLastName() throws Exception {
+    public void canFindAllOwnersWithPetsFilterSortedByLastNameDsc() throws Exception {
 
         // save kahn -> bello
         // meier -> kitty
@@ -394,16 +395,16 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // kahn should be FindOwnOwnerDto and meier FindForeignOwnerDto
         // find again with asc name sorting -> [kahn, meier]
 
-        Pet savedBello = petRepository.save(bello);
-        Pet savedKitty = petRepository.save(kitty);
+        // given
+        Pet bello = petService.create(testData.getBello());
+        Pet kitty = petService.create(testData.getKitty());
 
-        ReadOwnOwnerDto savedKahn = saveOwnerLinkedToPets(kahn,savedBello.getId());
-        ReadOwnOwnerDto savedMeier = saveOwnerLinkedToPets(meier, savedKitty.getId());
-        ReadOwnOwnerDto savedGil = saveOwnerLinkedToPets(gil);
+        ReadOwnOwnerDto savedKahn = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
+        ReadOwnOwnerDto savedMeier = helper.saveOwnerLinkedToPets(testData.getMeier(), kitty.getId());
+        ReadOwnOwnerDto savedGil = helper.saveOwnerLinkedToPets(testData.getGil());
+        Assertions.assertEquals(3,ownerService.findAll().size());
 
-        Assertions.assertEquals(3,ownerRepository.findAll().size());
-
-
+        // when
         securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
@@ -411,6 +412,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class, hasPetsFilter, sortByNameDesc);
         RapidSecurityContext.unsetAuthenticated();
 
+        // then
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(2,responseDtos.size());
         // order
@@ -422,12 +424,34 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Assertions.assertEquals(Owner.SECRET,kahnDto.getSecret());
         ReadOwnOwnerDto meierDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedMeier.getId()));
         Assertions.assertNull(meierDto.getSecret());
+    }
 
+    @Test
+    public void canFindAllOwnersWithPetsFilterSortedByLastNameAsc() throws Exception {
 
-        // diff sorting
+        // save kahn -> bello
+        // meier -> kitty
+        // gil -> []
+        // find all owners with hasPets filter (in memory filter), authenticated as kahn
+        // should find kahn and meier - sorted by name asc -> kahn, meier
+        // kahn should be FindOwnOwnerDto and meier FindForeignOwnerDto
+
+        // given
+        Pet bello = petService.create(testData.getBello());
+        Pet kitty = petService.create(testData.getKitty());
+
+        ReadOwnOwnerDto savedKahn = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
+        ReadOwnOwnerDto savedMeier = helper.saveOwnerLinkedToPets(testData.getMeier(), kitty.getId());
+        ReadOwnOwnerDto savedGil = helper.saveOwnerLinkedToPets(testData.getGil());
+        Assertions.assertEquals(3,ownerService.findAll().size());
+
+        // when
+        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
+        // memory filter
+        UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);c
         UrlWebExtension sortByNameAsc = new UrlWebExtension(LastNameAscSorting.class);
         securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
-        responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class, hasPetsFilter, sortByNameAsc);
+        List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class, hasPetsFilter, sortByNameAsc);
         RapidSecurityContext.unsetAuthenticated();
 
         // one dto findOwnDto and one findForeign
@@ -437,15 +461,17 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Assertions.assertEquals(savedMeier.getId(),responseDtos.get(1).getId());
 
         // content
-        kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
+        ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
         Assertions.assertEquals(Owner.SECRET,kahnDto.getSecret());
-        meierDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedMeier.getId()));
+        ReadOwnOwnerDto meierDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedMeier.getId()));
         Assertions.assertNull(meierDto.getSecret());
     }
 
-    // can combine jpql filter with memory filter
+
+
+    // can combine query filter with memory filter
     @Test
-    public void canFindAllOwnersWithPetsFilter_andTelNrPrefix() throws Exception {
+    public void canFindAllOwnersWithPetsFilterAndInMemoryTelNrPrefix() throws Exception {
         // save kahn -> bello
         // meier -> kitty
         // gil -> []
@@ -453,14 +479,14 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // and combine with jpql filter checking telnr prefix for 0176
         // should find kahn only
         // kahn should be FindOwnOwnerDto
-        Pet savedBello = petRepository.save(bello);
-        Pet savedKitty = petRepository.save(kitty);
+        // given
+        Pet bello = petService.create(testData.getBello());
+        Pet kitty = petService.create(testData.getKitty());
 
-        ReadOwnOwnerDto savedKahn = saveOwnerLinkedToPets(kahn,savedBello.getId());
-        ReadOwnOwnerDto savedMeier = saveOwnerLinkedToPets(meier, savedKitty.getId());
-        ReadOwnOwnerDto savedGil = saveOwnerLinkedToPets(gil);
-
-        Assertions.assertEquals(3,ownerRepository.findAll().size());
+        ReadOwnOwnerDto savedKahn = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
+        ReadOwnOwnerDto savedMeier = helper.saveOwnerLinkedToPets(testData.getMeier(), kitty.getId());
+        ReadOwnOwnerDto savedGil = helper.saveOwnerLinkedToPets(testData.getGil());
+        Assertions.assertEquals(3,ownerService.findAll().size());
 
         String telnrPrefix = "0176";
         Assertions.assertTrue(savedKahn.getTelephone().startsWith(telnrPrefix));
@@ -468,12 +494,14 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Assertions.assertFalse(savedMeier.getTelephone().startsWith(telnrPrefix));
 
 
+        // when
         securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
         UrlWebExtension telNrPrefixFilter = new UrlWebExtension(OwnerTelNumberFilter.class,telnrPrefix);
         List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class,telNrPrefixFilter, hasPetsFilter);
         RapidSecurityContext.unsetAuthenticated();
+        // then
 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(1,responseDtos.size());
@@ -492,15 +520,15 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // and combine with petNameEnds with a filter -> gil
         // should find gil only
         // gil should be FindForeignOwnerDto
-        Pet savedBello = petRepository.save(bello);
-        Pet savedKitty = petRepository.save(kitty);
-        Pet savedBella = petRepository.save(bella);
 
-        ReadOwnOwnerDto savedKahn = saveOwnerLinkedToPets(kahn,savedBello.getId());
-        ReadOwnOwnerDto savedMeier = saveOwnerLinkedToPets(meier, savedKitty.getId());
-        ReadOwnOwnerDto savedGil = saveOwnerLinkedToPets(gil,savedBella.getId());
+        // given
+        Pet bello = petService.create(testData.getBello());
+        Pet kitty = petService.create(testData.getKitty());
 
-        Assertions.assertEquals(3,ownerRepository.findAll().size());
+        ReadOwnOwnerDto savedKahn = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
+        ReadOwnOwnerDto savedMeier = helper.saveOwnerLinkedToPets(testData.getMeier(), kitty.getId());
+        ReadOwnOwnerDto savedGil = helper.saveOwnerLinkedToPets(testData.getGil());
+        Assertions.assertEquals(3,ownerService.findAll().size());
 
         String telnrPrefix = "0176";
         Assertions.assertTrue(savedKahn.getTelephone().startsWith(telnrPrefix));
@@ -508,6 +536,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Assertions.assertFalse(savedMeier.getTelephone().startsWith(telnrPrefix));
 
 
+        // when
         securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
@@ -516,17 +545,12 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         UrlWebExtension telNrPrefixFilter = new UrlWebExtension(OwnerTelNumberFilter.class,telnrPrefix);
         List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class,telNrPrefixFilter, hasPetsFilter,petNameEndsWithAFilter);
         RapidSecurityContext.unsetAuthenticated();
+        // then
 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(1,responseDtos.size());
         ReadOwnOwnerDto gilDto = assertCanFindInCollection(responseDtos, dto -> dto.getId().equals(savedGil.getId()));
         ReadForeignOwnerDto dto = assertIsEffectivelyReadForeignDto(gilDto);
-
-
-        compare(dto).with(savedGil)
-                .properties()
-                .all()
-                .assertEqual();
     }
 
     private ReadForeignOwnerDto assertIsEffectivelyReadForeignDto(ReadOwnOwnerDto dto){
@@ -548,15 +572,15 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // and combine with city is n1 -> kahn
         // should find kahn only
         // kahn should be FindOwnOwnerDto
-        Pet savedBello = petRepository.save(bello);
-        Pet savedKitty = petRepository.save(kitty);
-        Pet savedBella = petRepository.save(bella);
 
-        ReadOwnOwnerDto savedKahn = saveOwnerLinkedToPets(kahn,savedBello.getId());
-        ReadOwnOwnerDto savedMeier = saveOwnerLinkedToPets(meier, savedKitty.getId());
-        ReadOwnOwnerDto savedGil = saveOwnerLinkedToPets(gil,savedBella.getId());
+        // given
+        Pet bello = petService.create(testData.getBello());
+        Pet kitty = petService.create(testData.getKitty());
 
-        Assertions.assertEquals(3,ownerRepository.findAll().size());
+        ReadOwnOwnerDto savedKahn = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
+        ReadOwnOwnerDto savedMeier = helper.saveOwnerLinkedToPets(testData.getMeier(), kitty.getId());
+        ReadOwnOwnerDto savedGil = helper.saveOwnerLinkedToPets(testData.getGil());
+        Assertions.assertEquals(3,ownerService.findAll().size());
 
         String telnrPrefix = "0176";
         Assertions.assertTrue(savedKahn.getTelephone().startsWith(telnrPrefix));
@@ -567,6 +591,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Assertions.assertTrue(savedKahn.getCity().startsWith(niceCityPrefix));
         Assertions.assertFalse(savedGil.getCity().startsWith(niceCityPrefix));
 
+        // when
         securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
@@ -575,49 +600,54 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         UrlWebExtension cityPrefixFilter = new UrlWebExtension(CityPrefixFilter.class, niceCityPrefix);
         List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class,telNrPrefixFilter,cityPrefixFilter, hasPetsFilter);
         RapidSecurityContext.unsetAuthenticated();
+        // then
 
         Assertions.assertEquals(1,responseDtos.size());
         ReadOwnOwnerDto kahnDto = assertCanFindInCollection(responseDtos,dto -> dto.getId().equals(savedKahn.getId()));
         Assertions.assertEquals(Owner.SECRET,kahnDto.getSecret());
-
-        compare(kahnDto).with(savedKahn)
-                .properties()
-                .all()
-                .assertEqual();
     }
 
 
     @Test
     public void canFindOwnOwnerWithPets() throws Exception {
-        Pet savedBello = petRepository.save(bello);
-        Pet savedKitty = petRepository.save(kitty);
-        ReadOwnOwnerDto savedKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
+        // given
+        Pet bello = petService.create(testData.getBello());
+        Pet kitty = petService.create(testData.getKitty());
+        ReadOwnOwnerDto savedKahn = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId(), kitty.getId());
+        // when
         securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
-        ReadOwnOwnerDto responseDto = ownerController.find2xx(savedKahnDto.getId(),ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = ownerController.find2xx(savedKahn.getId(),ReadOwnOwnerDto.class);
+        // then
         Assertions.assertEquals(2,responseDto.getPetIds().size());
-        Assertions.assertTrue(responseDto.getPetIds().contains(savedBello.getId()));
-        Assertions.assertTrue(responseDto.getPetIds().contains(savedKitty.getId()));
+        Assertions.assertTrue(responseDto.getPetIds().contains(bello.getId()));
+        Assertions.assertTrue(responseDto.getPetIds().contains(kitty.getId()));
         RapidSecurityContext.unsetAuthenticated();
     }
 
     @Test
     public void anonCanFindForeignOwner() throws Exception {
-        ReadOwnOwnerDto savedKahnDto = saveOwnerLinkedToPets(kahn);
+        // given
+        ReadOwnOwnerDto savedKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn());
+        // when
         getMvc().perform(ownerController.find(savedKahnDto.getId()))
+        // then
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.lastName").doesNotExist())
-                .andExpect(jsonPath("$.city").value(kahn.getCity()));
+                .andExpect(jsonPath("$.city").value(savedKahnDto.getCity()));
         RapidSecurityContext.unsetAuthenticated();
     }
 
     @Test
     public void userCanFindForeignOwnOwner() throws Exception {
-        ReadOwnOwnerDto savedKahnDto = saveOwnerLinkedToPets(kahn);
+        // given
+        ReadOwnOwnerDto savedKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn());
+        // when
         securityContext.setAuthenticated(TestPrincipal.withName(MEIER));
         getMvc().perform(ownerController.find(savedKahnDto.getId()))
+        // then
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.lastName").doesNotExist())
-                .andExpect(jsonPath("$.city").value(kahn.getCity()));
+                .andExpect(jsonPath("$.city").value(savedKahnDto.getCity()));
         RapidSecurityContext.unsetAuthenticated();
     }
 
@@ -626,45 +656,45 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     // DELETE TESTS
 
     @Test
-    public void canDeleteOwner_thusUnlinkFromPet() throws Exception {
-        Pet savedBello = petRepository.save(bello);
+    public void givenPetLinkedToOwner_whenDeletingOwner_thenPetGetsUnlinked() throws Exception {
+        // given
+        Pet bello = petService.create(testData.getBello());
+        ReadOwnOwnerDto responseDto = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
 
-        ReadOwnOwnerDto responseDto = saveOwnerLinkedToPets(kahn,savedBello.getId());
-
+        // when
         getMvc().perform(ownerController.delete(responseDto.getId()))
                 .andExpect(status().is2xxSuccessful());
-
-        Assertions.assertFalse(ownerRepository.findByLastName(KAHN).isPresent());
-
+        // then
+        Assertions.assertFalse(ownerService.findByLastName(KAHN).isPresent());
         assertPetHasOwner(BELLO,null);
     }
 
     @Test
-    public void canDeleteOwner_thusUnlinkFromClinicCard() throws Exception {
-        ClinicCard savedClinicCard = clinicCardRepository.save(clinicCard);
-
-        ReadOwnOwnerDto responseDto = saveOwnerLinkedToClinicCard(kahn,savedClinicCard);
-
+    public void givenCardLinkedToOwner_whenDeletingOwner_thenCardGetsUnlinked() throws Exception {
+        // given
+        ClinicCard savedClinicCard = clinicCardService.create(testData.getClinicCard());
+        ReadOwnOwnerDto responseDto = helper.saveOwnerLinkedToClinicCard(testData.getKahn(),savedClinicCard);
+        // when
         getMvc().perform(ownerController.delete(responseDto.getId()))
                 .andExpect(status().is2xxSuccessful());
-
-        Assertions.assertFalse(ownerRepository.findByLastName(KAHN).isPresent());
-
+        // then
+        Assertions.assertFalse(ownerService.findByLastName(KAHN).isPresent());
         assertClinicCardHasOwner(savedClinicCard.getId(),null);
     }
 
     @Test
-    public void canDeleteOwner_thusUnlinkFromPets() throws Exception {
-        Pet savedBello = petRepository.save(bello);
-        Pet savedKitty = petRepository.save(kitty);
+    public void givenMultiplePetsLinkedToOwner_whenRemoveOwner_petsGetUnlinked() throws Exception {
+        // given
+        Pet savedBello = petService.create(testData.getBello());
+        Pet savedKitty = petService.create(testData.getKitty());
+        ReadOwnOwnerDto responseDto = helper.saveOwnerLinkedToPets(testData.getKahn(),savedBello.getId(),savedKitty.getId());
 
-        ReadOwnOwnerDto responseDto = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
-
+        // when
         MvcResult result = getMvc().perform(ownerController.delete(responseDto.getId()))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
-
-        Assertions.assertFalse(ownerRepository.findByLastName(KAHN).isPresent());
+        // then
+        Assertions.assertFalse(ownerService.findByLastName(KAHN).isPresent());
         assertPetHasOwner(BELLO,null);
         assertPetHasOwner(KITTY,null);
     }

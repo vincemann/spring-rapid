@@ -3,7 +3,6 @@ package com.github.vincemann.springrapid.coredemo.controller;
 import com.github.vincemann.springrapid.coredemo.controller.suite.MyIntegrationTest;
 import com.github.vincemann.springrapid.coredemo.controller.suite.template.ClinicCardControllerTestTemplate;
 import com.github.vincemann.springrapid.coredemo.dto.ClinicCardDto;
-import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import org.junit.jupiter.api.Assertions;
@@ -11,11 +10,11 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.github.vincemann.springrapid.coredemo.controller.suite.TestData.*;
+import static com.github.vincemann.springrapid.coredemo.controller.suite.TestData.KAHN;
+import static com.github.vincemann.springrapid.coredemo.controller.suite.TestData.MEIER;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Tag(value = "demo-projects")
-
 public class ClinicCardControllerTest extends MyIntegrationTest {
 
     @Autowired
@@ -44,7 +43,7 @@ public class ClinicCardControllerTest extends MyIntegrationTest {
     }
 
     @Test
-    public void canUnlinkOwnerFromCardViaUpdate() throws Exception {
+    public void canUnlinkOwnerFromCardViaUpdateCard() throws Exception {
         // given
         Owner kahn = ownerService.create(testData.getKahn());
         ClinicCardDto savedDto = helper.saveClinicCardLinkedToOwner(testData.getClinicCard(), KAHN);
@@ -61,7 +60,7 @@ public class ClinicCardControllerTest extends MyIntegrationTest {
     }
 
     @Test
-    public void canLinkOwnerToCardViaUpdate() throws Exception {
+    public void canLinkOwnerToCardViaUpdateCard() throws Exception {
         // given
         Owner kahn = ownerService.create(testData.getKahn());
         ClinicCardDto savedDto = helper.saveClinicCardLinkedToOwner(testData.getClinicCard(),null);
@@ -78,7 +77,7 @@ public class ClinicCardControllerTest extends MyIntegrationTest {
     }
 
     @Test
-    public void canRelinkDiffOwnerToCardViaUpdate() throws Exception {
+    public void canRelinkDiffOwnerToCardViaUpdateCard() throws Exception {
         // given
         Owner kahn = ownerService.create(testData.getKahn());
         Owner meier = ownerService.create(testData.getMeier());

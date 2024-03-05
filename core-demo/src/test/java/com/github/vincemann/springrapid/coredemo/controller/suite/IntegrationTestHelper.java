@@ -90,7 +90,7 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
         return visitService.findById(response.getId()).get();
     }
 
-    protected ReadOwnOwnerDto saveOwnerLinkedToPets(Owner owner, Long... petIds) throws Exception {
+    public ReadOwnOwnerDto saveOwnerLinkedToPets(Owner owner, Long... petIds) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
         createOwnerDto.getPetIds().addAll(Lists.newArrayList(petIds));
 
@@ -99,7 +99,7 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     }
 
 
-    protected ReadOwnOwnerDto saveOwnerLinkedToClinicCard(Owner owner, ClinicCard clinicCard) throws Exception {
+    public ReadOwnOwnerDto saveOwnerLinkedToClinicCard(Owner owner, ClinicCard clinicCard) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
         createOwnerDto.setClinicCardId(clinicCard.getId());
 
@@ -108,7 +108,7 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     }
 
 
-    protected ReadOwnOwnerDto saveOwner(Owner owner) throws Exception {
+    public ReadOwnOwnerDto saveOwner(Owner owner) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
         return ownerController.perform2xxAndDeserialize(ownerController.create(createOwnerDto),ReadOwnOwnerDto.class);
     }
