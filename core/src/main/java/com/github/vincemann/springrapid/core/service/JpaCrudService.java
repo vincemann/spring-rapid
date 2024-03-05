@@ -151,7 +151,6 @@ public abstract class JpaCrudService
 
     // todo need better bean based solution
     // create own default jpaRepository containing methods (put into JpaRapidRepo)
-    // in sync or softdelete create own Default Repos
     @LogInteraction(disabled = true)
     @Override
     public void afterPropertiesSet() throws Exception {

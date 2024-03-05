@@ -22,8 +22,4 @@ public class JpaToyService
         return getRepository().findByName(name);
     }
 
-    @Override
-    public Class<?> getTargetClass() {
-        return JpaToyService.class;
-    }
 }

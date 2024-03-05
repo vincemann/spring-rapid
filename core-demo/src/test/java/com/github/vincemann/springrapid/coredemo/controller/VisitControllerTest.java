@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
-import com.github.vincemann.springrapid.coredemo.controller.suite.MyControllerIntegrationTest;
+import com.github.vincemann.springrapid.coredemo.controller.suite.MyIntegrationTest;
 import com.github.vincemann.springrapid.coredemo.controller.suite.template.VisitControllerTestTemplate;
 import com.github.vincemann.springrapid.coredemo.dto.VisitDto;
 import com.github.vincemann.springrapid.coredemo.model.*;
@@ -19,7 +19,7 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.creat
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class VisitControllerTest extends MyControllerIntegrationTest {
+public class VisitControllerTest extends MyIntegrationTest {
 
     @Autowired
     VisitControllerTestTemplate controller;

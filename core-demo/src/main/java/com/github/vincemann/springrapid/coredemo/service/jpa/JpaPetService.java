@@ -8,6 +8,9 @@ import com.github.vincemann.springrapid.coredemo.repo.PetRepository;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Root
 @Service
@@ -16,8 +19,9 @@ public class JpaPetService
         extends JpaCrudService<Pet, Long, PetRepository>
                 implements PetService {
 
+    @Transactional
     @Override
-    public Class<?> getTargetClass() {
-        return JpaPetService.class;
+    public Optional<Pet> findByName(String petName) {
+        return getRepository().findByName(petName);
     }
 }

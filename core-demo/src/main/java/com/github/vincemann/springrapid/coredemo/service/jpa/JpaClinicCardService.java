@@ -15,10 +15,5 @@ public class JpaClinicCardService
         extends JpaCrudService<ClinicCard,Long, ClinicCardRepository>
             implements ClinicCardService
 {
-
-    @Override
-    public Class<?> getTargetClass() {
-        return JpaClinicCardService.class;
-    }
 }
 

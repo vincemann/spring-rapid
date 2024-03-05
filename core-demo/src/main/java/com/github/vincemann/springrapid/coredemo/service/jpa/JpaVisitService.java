@@ -15,8 +15,4 @@ import org.springframework.stereotype.Service;
 public class JpaVisitService
         extends JpaCrudService<Visit,Long, VisitRepository>
                 implements VisitService {
-    @Override
-    public Class<?> getTargetClass() {
-        return JpaVisitService.class;
-    }
 }

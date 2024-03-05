@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
-import com.github.vincemann.springrapid.coredemo.controller.suite.MyControllerIntegrationTest;
+import com.github.vincemann.springrapid.coredemo.controller.suite.MyIntegrationTest;
 import com.github.vincemann.springrapid.coredemo.controller.suite.template.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.pet.ReadPetDto;
@@ -21,7 +21,7 @@ import static com.github.vincemann.ezcompare.Comparator.compare;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class PetControllerIntegrationTest extends MyControllerIntegrationTest
+public class PetControllerIntegrationTest extends MyIntegrationTest
 {
 
     @Autowired

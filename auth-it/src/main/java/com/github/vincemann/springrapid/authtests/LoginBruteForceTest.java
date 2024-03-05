@@ -52,7 +52,7 @@ public class LoginBruteForceTest extends RapidAuthIntegrationTest {
 
 
     @AfterEach
-    void resetLimit() throws java.sql.SQLException {
+    void resetLimit() {
         loginAttemptService.reset();
     }
 }

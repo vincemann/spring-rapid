@@ -20,11 +20,6 @@ public class JpaVetService
         extends JpaCrudService<Vet,Long, VetRepository>
             implements VetService {
 
-    @Override
-    public Class<?> getTargetClass() {
-        return JpaVetService.class;
-    }
-
     @LogInteraction
     @Override
     public Optional<Vet> findByLastName(String lastName) {

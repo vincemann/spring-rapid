@@ -23,8 +23,7 @@ public class PetNameEndsWithFilter implements EntityFilter<Owner> {
 
     @Override
     public void setArgs(String... args) throws BadEntityException {
-        if (args.length != 1)
-            throw new BadEntityException("need suffix argument for filter");
+        assertAmountArgs(1,args);
         this.suffix = args[0];
     }
 

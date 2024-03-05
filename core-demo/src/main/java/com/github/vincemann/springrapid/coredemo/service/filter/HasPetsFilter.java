@@ -15,7 +15,7 @@ public class HasPetsFilter implements EntityFilter<Owner> {
 
     @Override
     public void setArgs(String... args) throws BadEntityException {
-
+        assertAmountArgs(0,args);
     }
 
 
