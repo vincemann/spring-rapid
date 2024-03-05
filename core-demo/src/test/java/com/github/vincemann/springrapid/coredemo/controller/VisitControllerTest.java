@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.github.vincemann.ezcompare.PropertyMatchers.propertyAssert;
+import static com.github.vincemann.springrapid.coredemo.controller.suite.TestData.*;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,26 +25,26 @@ public class VisitControllerTest extends MyIntegrationTest {
     VisitControllerTestTemplate controller;
 
     @Test
-    public void canSaveVisit_linkToSomePetsAndOwner() throws Exception {
-        Pet savedBello = petRepository.save(bello);
-        Pet savedBella = petRepository.save(bella);
-        Pet savedKitty = petRepository.save(kitty);
+    public void canCreateVisitLinkedToOwnerAndPets() throws Exception {
+        // given
+        Pet bello = petService.create(testData.getBello());
+        Pet bella = petService.create(testData.getBella());
+        Pet kitty = petService.create(testData.getKitty());
 
-        Owner savedKahn = ownerRepository.save(kahn);
-        Owner savedMeier = ownerRepository.save(meier);
+        Owner kahn = ownerService.create(testData.getKahn());
+        Owner meier = ownerService.create(testData.getMeier());
 
-        Vet savedVetMax = vetRepository.save(vetMax);
-        Vet savedVetPoldi = vetRepository.save(vetPoldi);
+        Vet max = vetService.create(testData.getVetMax());
+        Vet poldi = vetService.create(testData.getVetPoldi());
 
+        // when
+        VisitDto responseDto = helper.createVisitLinkedTo(testData.getCheckHeartVisit(), null, kahn, bello,kitty);
+        // then
+        Assertions.assertEquals(2,responseDto.getPetIds().size());
+        Assertions.assertNull(responseDto.getVetId());
+        Assertions.assertEquals(kahn.getId(),responseDto.getOwnerId());
 
-        VisitDto responseDto = saveVisitLinkedTo(checkHeartVisit, null, savedKahn, savedBello,savedKitty);
-        propertyAssert(responseDto)
-                .assertSize(responseDto::getPetIds,2)
-                .assertContains(responseDto::getPetIds,savedBello.getId(),savedKitty.getId())
-                .assertNull(responseDto::getVetId)
-                .assertEquals(responseDto::getOwnerId,savedKahn.getId());
-
-        Visit dbVisit = visitRepository.findById(responseDto.getId()).get();
+        Visit dbVisit = visitService.findById(responseDto.getId()).get();
         assertVisitHasOwner(dbVisit,KAHN);
         assertVisitHasVet(dbVisit,null);
         assertVisitHasPets(dbVisit,BELLO,KITTY);
@@ -53,25 +53,26 @@ public class VisitControllerTest extends MyIntegrationTest {
     }
 
     @Test
-    public void canSaveVisit_linkToVetAndOwner() throws Exception {
-        Pet savedBello = petRepository.save(bello);
-        Pet savedBella = petRepository.save(bella);
-        Pet savedKitty = petRepository.save(kitty);
+    public void canCreateVisitLinkedToVetAndOwner() throws Exception {
+        // given
+        Pet bello = petService.create(testData.getBello());
+        Pet bella = petService.create(testData.getBella());
+        Pet kitty = petService.create(testData.getKitty());
 
-        Owner savedKahn = ownerRepository.save(kahn);
-        Owner savedMeier = ownerRepository.save(meier);
+        Owner kahn = ownerService.create(testData.getKahn());
+        Owner meier = ownerService.create(testData.getMeier());
 
-        Vet savedVetMax = vetRepository.save(vetMax);
-        Vet savedVetPoldi = vetRepository.save(vetPoldi);
+        Vet max = vetService.create(testData.getVetMax());
+        Vet poldi = vetService.create(testData.getVetPoldi());
 
+        // when
+        VisitDto responseDto = helper.createVisitLinkedTo(testData.getCheckHeartVisit(), max, kahn);
+        // then
+        Assertions.assertTrue(responseDto.getPetIds().isEmpty());
+        Assertions.assertEquals(max.getId(),responseDto.getVetId());
+        Assertions.assertEquals(kahn.getId(),responseDto.getOwnerId());
 
-        VisitDto responseDto = saveVisitLinkedTo(checkHeartVisit, savedVetMax, savedKahn);
-        propertyAssert(responseDto)
-                .assertSize(responseDto::getPetIds,0)
-                .assertEquals(responseDto::getVetId,savedVetMax.getId())
-                .assertEquals(responseDto::getOwnerId,savedKahn.getId());
-
-        Visit dbVisit = visitRepository.findById(responseDto.getId()).get();
+        Visit dbVisit = visitService.findById(responseDto.getId()).get();
         assertVisitHasOwner(dbVisit,KAHN);
         assertVisitHasVet(dbVisit,VET_MAX);
         assertVisitHasPets(dbVisit);
@@ -80,140 +81,136 @@ public class VisitControllerTest extends MyIntegrationTest {
     }
 
     @Test
-    public void canUnlinkOwnerAndSomePetsFromVisit_viaUpdate() throws Exception {
-        Pet savedBello = petRepository.save(bello);
-        Pet savedBella = petRepository.save(bella);
-        Pet savedKitty = petRepository.save(kitty);
+    public void canUnlinkOwnerAndMultiplePetsFromVisitViaSingleUpdateVisitOperation() throws Exception {
+        // given
+        Pet bello = petService.create(testData.getBello());
+        Pet bella = petService.create(testData.getBella());
+        Pet kitty = petService.create(testData.getKitty());
 
-        Owner savedKahn = ownerRepository.save(kahn);
-        Owner savedMeier = ownerRepository.save(meier);
+        Owner kahn = ownerService.create(testData.getKahn());
+        Owner meier = ownerService.create(testData.getMeier());
 
-        Vet savedVetMax = vetRepository.save(vetMax);
-        Vet savedVetPoldi = vetRepository.save(vetPoldi);
+        Vet max = vetService.create(testData.getVetMax());
+        Vet poldi = vetService.create(testData.getVetPoldi());
 
+        VisitDto visitDto = helper.createVisitLinkedTo(testData.getCheckHeartVisit(), max, kahn,bello,bella,kitty);
 
-        VisitDto createdVetDto = saveVisitLinkedTo(checkHeartVisit, savedVetMax, savedKahn,savedBello,savedBella,savedKitty);
-        String updateJson = createUpdateJsonRequest(
+        // when
+        String jsonPatch = createUpdateJsonRequest(
                 createUpdateJsonLine("remove", "/ownerId"),
-                createUpdateJsonLine("remove", "/petIds",savedBello.getId().toString()),
-                createUpdateJsonLine("remove", "/petIds",savedBella.getId().toString())
+                createUpdateJsonLine("remove", "/petIds",bello.getId().toString()),
+                createUpdateJsonLine("remove", "/petIds",bella.getId().toString())
 
         );
-        VisitDto responseDto = deserialize(getMvc().perform(controller.update(updateJson, createdVetDto.getId()))
-                .andReturn().getResponse().getContentAsString(), VisitDto.class);
-        propertyAssert(responseDto)
-                .assertSize(responseDto::getPetIds,1)
-                .assertContains(responseDto::getPetIds,savedKitty.getId())
-                .assertEquals(responseDto::getVetId,savedVetMax.getId())
-                .assertNull(responseDto::getOwnerId);
+        VisitDto responseDto = controller.update2xx(jsonPatch, visitDto.getId(), VisitDto.class);
+        // then
+        Assertions.assertEquals(1,responseDto.getPetIds().size());
+        Assertions.assertEquals(max.getId(),responseDto.getVetId());
+        Assertions.assertNull(responseDto.getOwnerId());
 
-
-        Visit dbVisit = visitRepository.findById(createdVetDto.getId()).get();
-        assertVisitHasOwner(dbVisit,null);
-        assertVisitHasVet(dbVisit,VET_MAX);
-        assertVisitHasPets(dbVisit,KITTY);
-
-
+        Visit visit = visitService.findById(visitDto.getId()).get();
+        assertVisitHasOwner(visit,null);
+        assertVisitHasVet(visit,VET_MAX);
+        assertVisitHasPets(visit,KITTY);
     }
 
     @Test
-    public void canLinkOwnerAndSomePetsToVisit_viaUpdate() throws Exception {
-        Pet savedBello = petRepository.save(bello);
-        Pet savedBella = petRepository.save(bella);
-        Pet savedKitty = petRepository.save(kitty);
+    public void canLinkOwnerAndSomePetsToVisitViaUpdateVisit() throws Exception {
+        // given
+        Pet bello = petService.create(testData.getBello());
+        Pet bella = petService.create(testData.getBella());
+        Pet kitty = petService.create(testData.getKitty());
 
-        Owner savedKahn = ownerRepository.save(kahn);
-        Owner savedMeier = ownerRepository.save(meier);
+        Owner kahn = ownerService.create(testData.getKahn());
+        Owner meier = ownerService.create(testData.getMeier());
 
-        Vet savedVetMax = vetRepository.save(vetMax);
-        Vet savedVetPoldi = vetRepository.save(vetPoldi);
+        Vet max = vetService.create(testData.getVetMax());
+        Vet poldi = vetService.create(testData.getVetPoldi());
 
 
-        VisitDto createdVetDto = saveVisitLinkedTo(checkHeartVisit, savedVetMax,null);
-        String updateJson = createUpdateJsonRequest(
-                createUpdateJsonLine("add", "/ownerId",savedKahn.getId().toString()),
-                createUpdateJsonLine("add", "/petIds/-",savedBello.getId().toString()),
-                createUpdateJsonLine("add", "/petIds/-",savedBella.getId().toString())
+        VisitDto visitDto = helper.createVisitLinkedTo(testData.getCheckHeartVisit(), max,null);
+        // when
+        String jsonPatch = createUpdateJsonRequest(
+                createUpdateJsonLine("add", "/ownerId",kahn.getId().toString()),
+                createUpdateJsonLine("add", "/petIds/-",bello.getId().toString()),
+                createUpdateJsonLine("add", "/petIds/-",bella.getId().toString())
 
         );
-        VisitDto responseDto = deserialize(getMvc().perform(controller.update(updateJson, createdVetDto.getId()))
-                .andReturn().getResponse().getContentAsString(), VisitDto.class);
-        propertyAssert(responseDto)
-                .assertSize(responseDto::getPetIds,2)
-                .assertContains(responseDto::getPetIds,savedBello.getId(),savedBella.getId())
-                .assertEquals(responseDto::getOwnerId,savedKahn.getId())
-                .assertEquals(responseDto::getVetId,savedVetMax.getId());
 
+        VisitDto responseDto = controller.update2xx(jsonPatch, visitDto.getId(), VisitDto.class);
+        // then
+        Assertions.assertEquals(2,responseDto.getPetIds().size());
+        Assertions.assertEquals(max.getId(),responseDto.getVetId());
+        Assertions.assertEquals(kahn.getId(),responseDto.getOwnerId());
 
-        Visit dbVisit = visitRepository.findById(createdVetDto.getId()).get();
-        assertVisitHasOwner(dbVisit,KAHN);
-        assertVisitHasVet(dbVisit,VET_MAX);
-        assertVisitHasPets(dbVisit,BELLA,BELLO);
-
-
+        Visit visit = visitService.findById(visitDto.getId()).get();
+        assertVisitHasOwner(visit,KAHN);
+        assertVisitHasVet(visit,VET_MAX);
+        assertVisitHasPets(visit,BELLA,BELLO);
     }
 
     @Test
-    public void canUpdateVetAndLinkSomePetsToVisit_viaUpdate() throws Exception {
-        Pet savedBello = petRepository.save(bello);
-        Pet savedBella = petRepository.save(bella);
-        Pet savedKitty = petRepository.save(kitty);
+    public void canLinkNewVetAndSomePetsToVisitViaSingleUpdateVisitOperation() throws Exception {
+        // given
+        Pet bello = petService.create(testData.getBello());
+        Pet bella = petService.create(testData.getBella());
+        Pet kitty = petService.create(testData.getKitty());
 
-        Owner savedKahn = ownerRepository.save(kahn);
-        Owner savedMeier = ownerRepository.save(meier);
+        Owner kahn = ownerService.create(testData.getKahn());
+        Owner meier = ownerService.create(testData.getMeier());
 
-        Vet savedVetMax = vetRepository.save(vetMax);
-        Vet savedVetPoldi = vetRepository.save(vetPoldi);
+        Vet max = vetService.create(testData.getVetMax());
+        Vet poldi = vetService.create(testData.getVetPoldi());
 
 
-        VisitDto createdVetDto = saveVisitLinkedTo(checkHeartVisit, savedVetMax, savedKahn,savedKitty);
-        String updateJson = createUpdateJsonRequest(
-                createUpdateJsonLine("replace", "/vetId",savedVetPoldi.getId().toString()),
-                createUpdateJsonLine("add", "/petIds/-",savedBello.getId().toString()),
-                createUpdateJsonLine("add", "/petIds/-",savedBella.getId().toString())
+        VisitDto visitDto = helper.createVisitLinkedTo(testData.getCheckHeartVisit(), max, kahn,kitty);
+
+        // when
+        String jsonPatch = createUpdateJsonRequest(
+                createUpdateJsonLine("replace", "/vetId",poldi.getId().toString()),
+                createUpdateJsonLine("add", "/petIds/-",bello.getId().toString()),
+                createUpdateJsonLine("add", "/petIds/-",bella.getId().toString())
 
         );
-        VisitDto responseDto = deserialize(getMvc().perform(controller.update(updateJson, createdVetDto.getId()))
-                .andReturn().getResponse().getContentAsString(), VisitDto.class);
-        propertyAssert(responseDto)
-                .assertSize(responseDto::getPetIds,3)
-                .assertContains(responseDto::getPetIds,savedKitty.getId(),savedBella.getId(),savedBello.getId())
-                .assertEquals(responseDto::getVetId,savedVetPoldi.getId())
-                .assertEquals(responseDto::getOwnerId,savedKahn.getId());
+        VisitDto responseDto = controller.update2xx(jsonPatch, visitDto.getId(), VisitDto.class);
+        // then
+        Assertions.assertEquals(3,responseDto.getPetIds().size());
+        Assertions.assertEquals(poldi.getId(),responseDto.getVetId());
+        Assertions.assertEquals(kahn.getId(),responseDto.getOwnerId());
 
-        Visit dbVisit = visitRepository.findById(createdVetDto.getId()).get();
-        assertVisitHasOwner(dbVisit,KAHN);
-        assertVisitHasVet(dbVisit,VET_POLDI);
-        assertVisitHasPets(dbVisit,KITTY,BELLO,BELLA);
-
-
+        Visit visit = visitService.findById(visitDto.getId()).get();
+        assertVisitHasOwner(visit,KAHN);
+        assertVisitHasVet(visit,VET_POLDI);
+        assertVisitHasPets(visit,KITTY,BELLO,BELLA);
     }
 
     @Test
-    public void canRemoveVisit() throws Exception {
-        Pet savedBello = petRepository.save(bello);
-        Pet savedBella = petRepository.save(bella);
-        Pet savedKitty = petRepository.save(kitty);
+    public void removeVisit() throws Exception {
+        // given
+        Pet bello = petService.create(testData.getBello());
+        Pet bella = petService.create(testData.getBella());
+        Pet kitty = petService.create(testData.getKitty());
 
-        Owner savedKahn = ownerRepository.save(kahn);
-        Owner savedMeier = ownerRepository.save(meier);
+        Owner kahn = ownerService.create(testData.getKahn());
+        Owner meier = ownerService.create(testData.getMeier());
 
-        Vet savedVetMax = vetRepository.save(vetMax);
-        Vet savedVetPoldi = vetRepository.save(vetPoldi);
+        Vet max = vetService.create(testData.getVetMax());
+        Vet poldi = vetService.create(testData.getVetPoldi());
 
+        VisitDto visitDto = helper.createVisitLinkedTo(testData.getCheckHeartVisit(), max, kahn,kitty);
 
-        VisitDto createdVetDto = saveVisitLinkedTo(checkHeartVisit, savedVetMax, savedKahn,savedKitty);
-        getMvc().perform(controller.delete(createdVetDto.getId()))
+        // when
+        getMvc().perform(controller.delete(visitDto.getId()))
                 .andExpect(status().is2xxSuccessful());
-
-        Assertions.assertFalse(visitRepository.findById(createdVetDto.getId()).isPresent());
+        // then
+        Assertions.assertFalse(visitService.findById(visitDto.getId()).isPresent());
     }
 
 
     protected void assertVisitHasOwner(Visit visit, String ownerName) {
         Owner owner = null;
         if (ownerName!=null){
-            Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
+            Optional<Owner> ownerOptional = ownerService.findByLastName(ownerName);
             Assertions.assertTrue(ownerOptional.isPresent());
             owner = ownerOptional.get();
         }
@@ -224,7 +221,7 @@ public class VisitControllerTest extends MyIntegrationTest {
     protected void assertVisitHasVet(Visit visit, String vetName) {
         Vet vet = null;
         if (vetName!=null){
-            Optional<Vet> vetOptional = vetRepository.findByLastName(vetName);
+            Optional<Vet> vetOptional = vetService.findByLastName(vetName);
             Assertions.assertTrue(vetOptional.isPresent());
             vet = vetOptional.get();
         }
@@ -237,28 +234,11 @@ public class VisitControllerTest extends MyIntegrationTest {
         Set<Pet> pets = new HashSet<>();
 
         for (String petName : petNames) {
-            Optional<Pet> petOptional = petRepository.findByName(petName);
+            Optional<Pet> petOptional = petService.findByName(petName);
             Assertions.assertTrue(petOptional.isPresent());
             pets.add(petOptional.get());
         }
         System.err.println("Checking visit: " + visit);
         Assertions.assertEquals(pets, visit.getPets());
-    }
-
-
-    private VisitDto saveVisitLinkedTo(Visit visit, Vet vet, Owner owner, Pet... pets) throws Exception {
-        VisitDto visitDto = new VisitDto(visit);
-        if (owner != null)
-            visitDto.setOwnerId(owner.getId());
-        if (vet != null)
-            visitDto.setVetId(vet.getId());
-        if (pets.length > 0)
-            visitDto.setPetIds(Arrays.stream(pets).map(Pet::getId).collect(Collectors.toSet()));
-
-
-        return deserialize(getMvc().perform(controller.create(visitDto))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn()
-                .getResponse().getContentAsString(), VisitDto.class);
     }
 }

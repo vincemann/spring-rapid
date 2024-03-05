@@ -24,6 +24,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @Component
 public class IntegrationTestHelper implements TestMethodInitializable, MvcAware {
 
@@ -147,5 +149,17 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
                         .map(IdentifiableEntityImpl::getId)
                         .collect(Collectors.toList())));
         return vetController.create2xx(createVetDto,VetDto.class);
+    }
+
+    public VisitDto createVisitLinkedTo(Visit visit, Vet vet, Owner owner, Pet... pets) throws Exception {
+        VisitDto visitDto = new VisitDto(visit);
+        if (owner != null)
+            visitDto.setOwnerId(owner.getId());
+        if (vet != null)
+            visitDto.setVetId(vet.getId());
+        if (pets.length > 0)
+            visitDto.setPetIds(Arrays.stream(pets).map(Pet::getId).collect(Collectors.toSet()));
+
+        return visitController.create2xx(visitDto,VisitDto.class);
     }
 }
