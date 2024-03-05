@@ -54,7 +54,7 @@ public class SignupTest extends RapidAuthIntegrationTest {
 				.andExpect(jsonPath("$.admin").value(false))
 				.andExpect(jsonPath("$.goodUser").value(false));
 
-		AuthMessage msg = userController.verifyMsgWasSent();
+		AuthMessage msg = userController.verifyMsgWasSent(signupDto.getContactInformation());
 		Assertions.assertEquals(signupDto.getContactInformation(), msg.getRecipient());
 		Assertions.assertNotNull(msg.getCode());
 

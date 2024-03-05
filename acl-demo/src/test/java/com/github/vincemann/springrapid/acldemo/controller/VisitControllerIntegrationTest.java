@@ -129,7 +129,9 @@ public class VisitControllerIntegrationTest extends MyIntegrationTest {
                 .andExpect(status().isForbidden());
 
         // when
-        mvc.perform(visitController.addSpectator(visit.getId(),meier.getId()))
+        // dicaprio allows meier to spectate visit
+        mvc.perform(visitController.addSpectator(visit.getId(),meier.getId())
+                        .header(HttpHeaders.AUTHORIZATION,dicaprioToken))
         // then
                 .andExpect(status().is2xxSuccessful());
 
@@ -180,7 +182,8 @@ public class VisitControllerIntegrationTest extends MyIntegrationTest {
         String dicaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         Visit visit = helper.createVisit(dicaprioToken, testData.getCheckTeethVisit(), kahn, dicaprio, bella);
         String meierToken = userController.login2xx(meier.getContactInformation(), OWNER_MEIER_PASSWORD);
-        mvc.perform(visitController.addSpectator(visit.getId(),meier.getId()))
+        mvc.perform(visitController.addSpectator(visit.getId(),meier.getId())
+                        .header(HttpHeaders.AUTHORIZATION,dicaprioToken))
                 .andExpect(status().is2xxSuccessful());
 
         // now meier is able to read visit
@@ -189,7 +192,9 @@ public class VisitControllerIntegrationTest extends MyIntegrationTest {
                 .andExpect(status().is2xxSuccessful());
 
         // when
-        mvc.perform(visitController.removeSpectator(visit.getId(),meier.getId()))
+        // dicaprio decides meier should not be able to spectate visit anymore
+        mvc.perform(visitController.removeSpectator(visit.getId(),meier.getId())
+                        .header(HttpHeaders.AUTHORIZATION,dicaprioToken))
                 .andExpect(status().is2xxSuccessful());
 
         // then

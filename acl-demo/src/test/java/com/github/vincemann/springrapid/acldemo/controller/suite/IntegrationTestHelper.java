@@ -86,7 +86,7 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     public Vet signupVetDiCaprioWithHeartAndVerify() throws Exception {
         Vet dicaprio = signupVetDiCaprioWithHeart();
         // verify
-        AuthMessage msg = userController.verifyMsgWasSent();
+        AuthMessage msg = userController.verifyMsgWasSent(dicaprio.getContactInformation());
         userController.perform2xx(userController.verifyContactInformationWithLink(msg.getLink()));
 
         Vet saved = vetService.findByLastName(dicaprio.getLastName()).get();
@@ -97,7 +97,7 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     public Vet signupVetMaxWithDentismAndVerify() throws Exception {
         Vet max = signupVetMaxWithDentism();
         // verify
-        AuthMessage msg = userController.verifyMsgWasSent();
+        AuthMessage msg = userController.verifyMsgWasSent(max.getContactInformation());
         userController.perform2xx(userController.verifyContactInformationWithLink(msg.getLink()));
 
         Vet saved = vetService.findByLastName(max.getLastName()).get();

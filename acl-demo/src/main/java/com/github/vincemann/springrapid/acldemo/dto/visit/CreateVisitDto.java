@@ -61,8 +61,8 @@ public class CreateVisitDto extends AbstractVisitDto {
     public CreateVisitDto(Visit visit) {
         this(
                 visit.getPets().stream().map(Pet::getId).collect(Collectors.toSet()),
-                visit.getOwner().getId(),
-                visit.getVet().getId(),
+                visit.getOwner() == null ? null : visit.getOwner().getId(),
+                visit.getVet() == null ? null : visit.getVet().getId(),
                 visit.getDate(),
                 visit.getReason()
         );

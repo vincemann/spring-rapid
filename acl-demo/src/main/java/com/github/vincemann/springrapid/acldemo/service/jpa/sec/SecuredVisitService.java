@@ -26,12 +26,9 @@ public class SecuredVisitService
     implements VisitService
 {
 
-    private UserService userService;
-
     @Autowired
-    public SecuredVisitService(VisitService decorated, UserService userService) {
+    public SecuredVisitService(VisitService decorated) {
         super(decorated);
-        this.userService = userService;
     }
 
 

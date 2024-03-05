@@ -21,7 +21,7 @@ public class ResendVerificationMailTest extends RapidAuthIntegrationTest {
 		mvc.perform(userController.resendVerificationContactInformation(getUnverifiedUser().getContactInformation(),token))
 				.andExpect(status().is2xxSuccessful());
 
-		AuthMessage msg = userController.verifyMsgWasSent();
+		AuthMessage msg = userController.verifyMsgWasSent(UNVERIFIED_USER_CONTACT_INFORMATION);
 		Assertions.assertEquals(UNVERIFIED_USER_CONTACT_INFORMATION,msg.getRecipient());
 		Assertions.assertEquals(VERIFY_CONTACT_INFORMATION_AUDIENCE,msg.getTopic());
 	}

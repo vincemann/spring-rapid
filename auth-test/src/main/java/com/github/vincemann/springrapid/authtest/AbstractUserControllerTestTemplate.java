@@ -9,6 +9,7 @@ import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import org.checkerframework.checker.units.qual.A;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.io.Serializable;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -65,7 +65,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     public AuthMessage signup2xx(SignupDto dto) throws Exception {
         mvc.perform(signup(dto))
                 .andExpect(status().is2xxSuccessful());
-        return verifyMsgWasSent();
+        return verifyMsgWasSent(dto.getContactInformation());
     }
 
     public MockHttpServletRequestBuilder resendVerificationMessage(Serializable id, String token) throws Exception {
@@ -109,7 +109,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .content(serialize(dto)))
                 .andExpect(status().is2xxSuccessful());
-        return verifyMsgWasSent();
+        return verifyMsgWasSent(dto.getOldContactInformation());
     }
 
     public MockHttpServletRequestBuilder changePassword(String token, ChangePasswordDto dto) throws Exception {
@@ -130,7 +130,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .param("ci", contactInformation)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is2xxSuccessful());
-        return verifyMsgWasSent();
+        return verifyMsgWasSent(contactInformation);
     }
 
     public MockHttpServletRequestBuilder resetPassword(ResetPasswordDto dto) throws Exception {
@@ -205,12 +205,13 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
-    public AuthMessage verifyMsgWasSent() {
+    public AuthMessage verifyMsgWasSent(String recipient) {
         ArgumentCaptor<AuthMessage> msgCaptor = ArgumentCaptor.forClass(AuthMessage.class);
 
-        verify(ProxyUtils.aopUnproxy(messageSenderMock), times(1))
+        verify(ProxyUtils.aopUnproxy(messageSenderMock), atLeast(1))
                 .send(msgCaptor.capture());
         AuthMessage sentData = msgCaptor.getValue();
+        Assertions.assertEquals(recipient,sentData.getRecipient());
         Mockito.reset(ProxyUtils.aopUnproxy(messageSenderMock));
         return sentData;
     }
@@ -227,7 +228,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .param("ci", contactInformation)
                 .header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().is2xxSuccessful());
-        return verifyMsgWasSent();
+        return verifyMsgWasSent(contactInformation);
     }
 
     public String login2xx(AbstractUser user) throws Exception {

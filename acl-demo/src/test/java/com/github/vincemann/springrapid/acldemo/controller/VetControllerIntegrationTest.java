@@ -31,11 +31,11 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
 
         // then
         Assertions.assertEquals(VET_DICAPRIO,response.getLastName());
-        Assertions.assertEquals(VET_DICAPRIO,response.getContactInformation());
+        Assertions.assertEquals(VET_DICAPRIO_EMAIL,response.getContactInformation());
         Assertions.assertTrue(response.getRoles().contains(MyRoles.VET));
         Assertions.assertTrue(response.getRoles().contains(AuthRoles.USER));
         Assertions.assertTrue(response.getRoles().contains(AuthRoles.UNVERIFIED));
-        Assertions.assertEquals(2,response.getRoles().size());
+        Assertions.assertEquals(3,response.getRoles().size());
 
         Assertions.assertTrue(vetService.findByLastName(VET_DICAPRIO).isPresent());
         Assertions.assertTrue(vetService.findByContactInformation(VET_DICAPRIO_EMAIL).isPresent());
@@ -44,10 +44,10 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
     @Test
     public void canVerifyVetAfterSignup() throws Exception {
         // given
-        helper.signupVetDiCaprioWithHeart();
+        Vet dicaprio = helper.signupVetDiCaprioWithHeart();
 
         // when
-        AuthMessage msg = userController.verifyMsgWasSent();
+        AuthMessage msg = userController.verifyMsgWasSent(dicaprio.getContactInformation());
         userController.perform(userController.verifyContactInformationWithLink(msg.getLink()))
         // then
                 .andExpect(status().is2xxSuccessful());
@@ -121,13 +121,14 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         // given
         Vet dicaprio = helper.signupVetDiCaprioWithHeartAndVerify();
         Owner kahn = helper.signupKahnWithBella();  // kahn is linked to bella not bello
-        Pet bello = petService.create(testData.getBello());
+        Owner meier = helper.signupMeierWithBello();
+        Pet bello = petService.findByName(BELLO).get();
 
         // when
         Visit visit = testData.getCheckTeethVisit();
         visit.setVet(dicaprio);
         visit.setOwner(kahn);
-        visit.getPets().add(bello); // setting bello here, which is not owner by kahn
+        visit.getPets().add(bello); // setting bello here, which is not owned by kahn
         CreateVisitDto dto = new CreateVisitDto(visit);
         String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         visitController.perform(visitController.create(dto)
