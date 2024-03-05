@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.coredemo.dto.ClinicCardDto;
 import com.github.vincemann.springrapid.coredemo.dto.VisitDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
+import com.github.vincemann.springrapid.coredemo.dto.pet.ReadPetDto;
 import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.coredemo.service.*;
 import com.github.vincemann.springrapid.coretest.MvcAware;
@@ -18,6 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Component
 public class IntegrationTestHelper implements TestMethodInitializable, MvcAware {
@@ -111,5 +115,15 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     public ReadOwnOwnerDto saveOwner(Owner owner) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
         return ownerController.perform2xxAndDeserialize(ownerController.create(createOwnerDto),ReadOwnOwnerDto.class);
+    }
+
+    public ReadPetDto savePetLinkedToOwnerAndToys(Pet pet, Long ownerId, Toy... toys) throws Exception {
+        ReadPetDto createPetDto = new ReadPetDto(pet);
+        if (ownerId != null)
+            createPetDto.setOwnerId(ownerId);
+        if (toys.length > 0)
+            createPetDto.setToyIds(Arrays.stream(toys).map(Toy::getId).collect(Collectors.toSet()));
+
+        return petController.create2xx(createPetDto,ReadPetDto.class);
     }
 }

@@ -33,7 +33,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
 
     @Autowired
-    private RapidSecurityContext securityContext;
+    RapidSecurityContext securityContext;
 
 
     // SAVE TESTS
@@ -448,7 +448,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // when
         securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
-        UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);c
+        UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
         UrlWebExtension sortByNameAsc = new UrlWebExtension(LastNameAscSorting.class);
         securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class, hasPetsFilter, sortByNameAsc);
