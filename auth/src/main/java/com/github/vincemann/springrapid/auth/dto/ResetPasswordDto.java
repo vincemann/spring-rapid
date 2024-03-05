@@ -1,14 +1,15 @@
 package com.github.vincemann.springrapid.auth.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 
 @AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
-@Data
+@ToString
+@Builder
 public class ResetPasswordDto implements Serializable {
     String newPassword;
     String code;

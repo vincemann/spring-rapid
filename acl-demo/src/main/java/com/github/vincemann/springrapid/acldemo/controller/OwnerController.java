@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acl.Secured;
 import com.github.vincemann.springrapid.acl.SecuredCrudController;
-import com.github.vincemann.springrapid.acldemo.MyRoles;
+import com.github.vincemann.springrapid.acldemo.Roles;
 import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.UpdateOwnerDto;
@@ -48,13 +48,13 @@ public class OwnerController extends SecuredCrudController<Owner, Long, OwnerSer
 
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {
-        builder.when(endpoint(getUpdateUrl()).and(roles(MyRoles.OWNER)).and(principal(Principal.OWN)))
+        builder.when(endpoint(getUpdateUrl()).and(roles(Roles.OWNER)).and(principal(Principal.OWN)))
                 .thenReturn(UpdateOwnerDto.class);
 
-        builder.when(roles(MyRoles.OWNER).and(principal(Principal.OWN)).and(direction(Direction.RESPONSE)))
+        builder.when(roles(Roles.OWNER).and(principal(Principal.OWN)).and(direction(Direction.RESPONSE)))
                 .thenReturn(ReadOwnOwnerDto.class);
 
-        builder.when(roles(MyRoles.VET).and(direction(Direction.RESPONSE)))
+        builder.when(roles(Roles.VET).and(direction(Direction.RESPONSE)))
                 .thenReturn(VetReadsOwnerDto.class);
     }
 

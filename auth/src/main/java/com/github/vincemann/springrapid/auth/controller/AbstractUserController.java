@@ -3,10 +3,11 @@ package com.github.vincemann.springrapid.auth.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.acl.Secured;
 import com.github.vincemann.springrapid.auth.AuthProperties;
+import com.github.vincemann.springrapid.auth.dto.user.AdminUpdatesUserDto;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.dto.*;
-import com.github.vincemann.springrapid.auth.dto.user.FindForeignUserDto;
-import com.github.vincemann.springrapid.auth.dto.user.FindOwnUserDto;
+import com.github.vincemann.springrapid.auth.dto.user.ReadForeignUserDto;
+import com.github.vincemann.springrapid.auth.dto.user.ReadOwnUserDto;
 import com.github.vincemann.springrapid.auth.dto.user.FullUserDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
@@ -61,12 +62,12 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	//              CONTROLLER METHODS
 
 
-	public ResponseEntity<FindOwnUserDto> signup(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
+	public ResponseEntity<ReadOwnUserDto> signup(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
 		String body = readBody(request);
 		SignupDto dto = getJsonMapper().readDto(body, SignupDto.class);
 		getDtoValidationStrategy().validate(dto);
   		AbstractUser saved = signupService.signup(dto);
-		FindOwnUserDto responseDto = getDtoMapper().mapToDto(saved, FindOwnUserDto.class);
+		ReadOwnUserDto responseDto = getDtoMapper().mapToDto(saved, ReadOwnUserDto.class);
 		return okWithAuthToken(responseDto,saved.getContactInformation());
 	}
 
@@ -189,24 +190,34 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	@Override
 	protected void configureDtoMappings(DtoMappingsBuilder builder) {
 
+		// admin can gather all information about all users
 		builder.when(direction(Direction.RESPONSE)
 						.and(roles(AuthRoles.ADMIN)))
-				.thenReturn(FullUserDto.class);
+				.thenReturn(ReadOwnUserDto.class);
 
-		// anon can find id by email of diff user
+		// admin can update all information of user
+		builder.when(endpoint(getUpdateUrl())
+				.and(roles(AuthRoles.ADMIN))
+				.and(direction(Direction.REQUEST)))
+						.thenReturn(AdminUpdatesUserDto.class);
+
+		// anon can find id of user by ci
 		builder.when(endpoint(getFindByContactInformationUrl())
-						.and(direction(Direction.RESPONSE))
-						.and(roles(AuthRoles.ANON)))
-				.thenReturn(FindForeignUserDto.class);
+								.and(roles(AuthRoles.ANON))
+						.and(direction(Direction.RESPONSE)))
+				.thenReturn(ReadForeignUserDto.class);
 
-
-		builder.when(direction(Direction.RESPONSE)
-						.and(principal(Principal.OWN)))
-				.thenReturn(FindOwnUserDto.class);
-
+		// foreign user can also find id of user by ci
 		builder.when(direction(Direction.RESPONSE)
 						.and(principal(Principal.FOREIGN)))
-				.thenReturn(FindForeignUserDto.class);
+				.thenReturn(ReadForeignUserDto.class);
+
+		// user can gather all information about self
+		builder.when(direction(Direction.RESPONSE)
+						.and(principal(Principal.OWN)))
+				.thenReturn(ReadOwnUserDto.class);
+
+
 	}
 
 	// URLS

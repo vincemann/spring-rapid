@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.service.user;
 
-import com.github.vincemann.springrapid.acldemo.MyRoles;
+import com.github.vincemann.springrapid.acldemo.Roles;
 import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.service.VetService;
@@ -23,7 +23,7 @@ public class VetSignupServiceImpl implements VetSignupService {
     public Vet signup(SignupVetDto dto) throws BadEntityException {
         ModelMapper mapper = new ModelMapper();
         Vet vet = mapper.map(dto, Vet.class);
-        vet.setRoles(Sets.newHashSet(MyRoles.VET,MyRoles.USER));
+        vet.setRoles(Sets.newHashSet(Roles.VET, Roles.USER));
 
         Vet saved = vetService.create(vet);
         try {

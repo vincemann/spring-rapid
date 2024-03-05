@@ -1,13 +1,10 @@
 package com.github.vincemann.springrapid.authdemo.controller;
 
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
-import com.github.vincemann.springrapid.auth.dto.SignupDto;
-import com.github.vincemann.springrapid.auth.dto.user.FindOwnUserDto;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
-import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
 import com.github.vincemann.springrapid.authdemo.dto.*;
-import com.github.vincemann.springrapid.authdemo.dto.user.MyFindOwnUserDto;
+import com.github.vincemann.springrapid.authdemo.dto.user.MyReadOwnUserDto;
 import com.github.vincemann.springrapid.authdemo.dto.user.MyFullUserDto;
 import com.github.vincemann.springrapid.authdemo.dto.user.UserUpdatesOwnDto;
 import com.github.vincemann.springrapid.authdemo.model.User;
@@ -27,7 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
@@ -47,16 +43,16 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
                 .thenReturn(UserUpdatesOwnDto.class);
 
         builder.when(direction(Direction.RESPONSE).and(principal(Principal.OWN)))
-                .thenReturn(MyFindOwnUserDto.class);
+                .thenReturn(MyReadOwnUserDto.class);
 
 
         super.configureDtoMappings(builder);
     }
 
     @PostMapping(path = "/api/core/user/signup",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MyFindOwnUserDto> signup(@Valid @RequestBody MySignupDto signupDto) throws BadEntityException, EntityNotFoundException, AlreadyRegisteredException {
+    public ResponseEntity<MyReadOwnUserDto> signup(@Valid @RequestBody MySignupDto signupDto) throws BadEntityException, EntityNotFoundException, AlreadyRegisteredException {
         User saved = signupService.signup(signupDto);
-        MyFindOwnUserDto dto = getDtoMapper().mapToDto(saved, MyFindOwnUserDto.class);
+        MyReadOwnUserDto dto = getDtoMapper().mapToDto(saved, MyReadOwnUserDto.class);
         return okWithAuthToken(dto,saved.getContactInformation());
     }
 

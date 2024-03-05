@@ -2,17 +2,13 @@ package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acl.Secured;
 import com.github.vincemann.springrapid.acl.SecuredCrudController;
-import com.github.vincemann.springrapid.acldemo.MyRoles;
+import com.github.vincemann.springrapid.acldemo.Roles;
 import com.github.vincemann.springrapid.acldemo.dto.vet.ReadVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.UpdateVetDto;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.service.VetService;
 import com.github.vincemann.springrapid.acldemo.service.user.VetSignupService;
-import com.github.vincemann.springrapid.core.Root;
-import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
-import com.github.vincemann.springrapid.auth.service.SignupService;
-import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
 import com.github.vincemann.springrapid.core.controller.dto.map.Principal;
@@ -39,7 +35,7 @@ public class VetController extends SecuredCrudController<Vet, Long, VetService> 
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {
         builder.when(endpoint(getUpdateUrl())
-                        .and(roles(MyRoles.VET))
+                        .and(roles(Roles.VET))
                         .and(principal(Principal.OWN))
                         .and(direction(Direction.REQUEST)))
                 .thenReturn(UpdateVetDto.class);

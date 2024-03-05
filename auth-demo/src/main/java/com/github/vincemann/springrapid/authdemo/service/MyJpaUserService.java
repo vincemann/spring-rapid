@@ -4,20 +4,16 @@ import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.service.JpaUserService;
 import com.github.vincemann.springrapid.authdemo.model.User;
 import com.github.vincemann.springrapid.authdemo.repo.UserRepository;
+import com.github.vincemann.springrapid.core.Root;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-// dont mark with primary, is done internally
-//@Primary
+@Root
 public class MyJpaUserService extends JpaUserService<User, Long, UserRepository> implements MyUserService{
 
-
-	@Override
-	public Class<?> getTargetClass() {
-		return MyJpaUserService.class;
-	}
 
 
 	@Override

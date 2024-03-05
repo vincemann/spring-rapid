@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.service.user;
 
-import com.github.vincemann.springrapid.acldemo.MyRoles;
+import com.github.vincemann.springrapid.acldemo.Roles;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
@@ -23,7 +23,7 @@ public class OwnerSignupServiceImpl implements OwnerSignupService {
     public Owner signup(SignupOwnerDto dto) throws BadEntityException {
         ModelMapper mapper = new ModelMapper();
         Owner owner = mapper.map(dto, Owner.class);
-        owner.setRoles(Sets.newHashSet(MyRoles.OWNER,MyRoles.USER));
+        owner.setRoles(Sets.newHashSet(Roles.OWNER, Roles.USER));
 
         Owner saved = ownerService.create(owner);
         try {

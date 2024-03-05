@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.service.jpa;
 
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
-import com.github.vincemann.springrapid.acldemo.MyRoles;
+import com.github.vincemann.springrapid.acldemo.Roles;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.repo.PetRepository;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
@@ -46,7 +46,7 @@ public class JpaPetService
         // owner of pet gains admin permission
         aclService.grantUserPermissionForEntity(pet.getOwner().getContactInformation(), pet, BasePermission.ADMINISTRATION);
         // vets can read & write
-        aclService.grantRolePermissionForEntity(MyRoles.VET, pet, BasePermission.READ, BasePermission.WRITE);
+        aclService.grantRolePermissionForEntity(Roles.VET, pet, BasePermission.READ, BasePermission.WRITE);
     }
 
     @Autowired

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.service.jpa;
 
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
-import com.github.vincemann.springrapid.acldemo.MyRoles;
+import com.github.vincemann.springrapid.acldemo.Roles;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.model.abs.User;
 import com.github.vincemann.springrapid.acldemo.repo.VisitRepository;
@@ -58,7 +58,7 @@ public class JpaVisitService
         // participating owner can read
         aclService.grantUserPermissionForEntity(visit.getOwner().getContactInformation(), visit, BasePermission.READ);
         // all vets can read all visits to plan properly
-        aclService.grantRolePermissionForEntity(MyRoles.VET,visit,BasePermission.READ);
+        aclService.grantRolePermissionForEntity(Roles.VET,visit,BasePermission.READ);
     }
 
     @Autowired

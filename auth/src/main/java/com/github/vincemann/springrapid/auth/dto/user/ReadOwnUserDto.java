@@ -1,5 +1,6 @@
-package com.github.vincemann.springrapid.auth.dto.user.abs;
+package com.github.vincemann.springrapid.auth.dto.user;
 
+import com.github.vincemann.springrapid.auth.dto.user.abs.AbstractUserDto;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.core.sec.Roles;
 import lombok.*;
@@ -7,9 +8,11 @@ import lombok.*;
 import java.util.Set;
 
 @Getter
-@NoArgsConstructor
 @Setter
-public abstract class AbstractFindUserDto extends AbstractUserDto {
+@NoArgsConstructor
+public class ReadOwnUserDto extends AbstractUserDto {
+
+    private String id;
 
     private boolean verified = false;
     private boolean blocked = false;
@@ -17,9 +20,9 @@ public abstract class AbstractFindUserDto extends AbstractUserDto {
     private boolean goodUser = false;
     //    private boolean goodAdmin = false;
 
-    private String id;
 
-    public AbstractFindUserDto(String contactInformation, Set<String> roles, String id) {
+    @Builder
+    public ReadOwnUserDto(String contactInformation, Set<String> roles, String id) {
         super(contactInformation,roles);
         this.id = id;
         initFlags();
@@ -31,5 +34,18 @@ public abstract class AbstractFindUserDto extends AbstractUserDto {
         admin = getRoles().contains(Roles.ADMIN);
         goodUser = !(!verified || blocked);
 //        goodAdmin = goodUser && admin;
+    }
+
+    @Override
+    public String toString() {
+        return "ReadOwnUserDto{" +
+                "id='" + id + '\'' +
+                ", verified=" + verified +
+                ", blocked=" + blocked +
+                ", admin=" + admin +
+                ", goodUser=" + goodUser +
+                ", contactInformation='" + getContactInformation() + '\'' +
+                ", roles=" + getRoles() +
+                '}';
     }
 }

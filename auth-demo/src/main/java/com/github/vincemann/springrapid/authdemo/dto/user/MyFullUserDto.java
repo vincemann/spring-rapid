@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.authdemo.dto.user;
 
+import com.github.vincemann.springrapid.auth.dto.user.FullUserDto;
 import lombok.*;
 
 import java.util.HashSet;
@@ -9,7 +10,7 @@ import java.util.Set;
 @Setter
 @ToString
 @NoArgsConstructor
-public class MyFullUserDto {
+public class MyFullUserDto extends FullUserDto {
     private String name;
     private String contactInformation;
     private String password;

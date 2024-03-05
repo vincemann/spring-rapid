@@ -9,8 +9,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-@NoArgsConstructor
 @Setter
+@NoArgsConstructor
 public class AbstractUserDto {
 
     private String contactInformation;

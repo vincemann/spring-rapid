@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
-import com.github.vincemann.springrapid.acldemo.MyRoles;
+import com.github.vincemann.springrapid.acldemo.Roles;
 import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTest;
 import com.github.vincemann.springrapid.acldemo.dto.pet.VetReadsPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.ReadVetDto;
@@ -32,7 +32,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         // then
         Assertions.assertEquals(VET_DICAPRIO,response.getLastName());
         Assertions.assertEquals(VET_DICAPRIO_EMAIL,response.getContactInformation());
-        Assertions.assertTrue(response.getRoles().contains(MyRoles.VET));
+        Assertions.assertTrue(response.getRoles().contains(Roles.VET));
         Assertions.assertTrue(response.getRoles().contains(AuthRoles.USER));
         Assertions.assertTrue(response.getRoles().contains(AuthRoles.UNVERIFIED));
         Assertions.assertEquals(3,response.getRoles().size());

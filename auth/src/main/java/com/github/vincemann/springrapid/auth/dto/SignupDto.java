@@ -7,9 +7,9 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
-@NoArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
 public class SignupDto implements Serializable {
 
     private String contactInformation;
