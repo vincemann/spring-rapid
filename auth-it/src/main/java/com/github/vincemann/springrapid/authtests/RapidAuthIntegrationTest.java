@@ -43,14 +43,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-//see application-dev.yml config for expected database config
-//@Sql({"/test-data/resetTestData.sql"})
-
 @SpringBootTest(properties = "rapid-auth.create-admins=false")
 @Getter
 @Slf4j
-// dont do like that because its db impl specific - use service
-//@Sql(scripts = "classpath:/remove-user.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+//@Sql(scripts = "classpath:/remove-user.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD) // dont do like that because its db impl specific - use service
 public abstract class RapidAuthIntegrationTest extends AclMvcTest {
 
 
@@ -59,7 +55,7 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
 
     @MockBean
     protected MessageSender msgSender;
-    
+
 
     //use for stubbing i.E. Mockito.doReturn(mockedExpireTime).when(jwt).getExpirationMillis();
     @SpyBean
@@ -175,22 +171,14 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
     @AfterEach
     protected void tearDown() throws Exception {
         System.err.println("TEST ENDS HERE -----------------------------------------------------------------------------------------------------------------");
-        System.err.println("clearing test data");
-//        tokens.clear();
         System.err.println("deleting users");
         clearAclCache();
-        // done via sql script
         TransactionalTestUtil.clear(userService, transactionTemplate);
         System.err.println("deleted users");
-        System.err.println("test data cleared");
 
         Mockito.reset(aopUnproxy(msgSender));
         testAdapter.afterEach();
 //        https://github.com/spring-projects/spring-boot/issues/7374  -> @SpyBean beans are automatically reset
-
-//        Mockito.reset(properties);
-//        Mockito.reset(coreProperties);
-//        Mockito.reset(jwt);
     }
 
     @Autowired

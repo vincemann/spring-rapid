@@ -5,4 +5,5 @@ com.github.vincemann.springrapid.core.config.RapidCrudControllerAutoConfiguratio
 com.github.vincemann.springrapid.core.config.RapidCoreAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidServiceAutoConfiguration, \
-com.github.vincemann.springrapid.core.config.RapidContextControllerAutoConfiguration
+com.github.vincemann.springrapid.core.config.RapidContextControllerAutoConfiguration, \
+com.github.vincemann.springrapid.core.config.RapidExceptionHandlerAutoConfiguration
