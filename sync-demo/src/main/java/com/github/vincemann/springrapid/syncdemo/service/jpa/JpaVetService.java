@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.syncdemo.service.jpa;
 
-import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.syncdemo.model.Vet;
@@ -15,7 +14,6 @@ import java.util.Optional;
 @Primary
 @Service
 @EnableAutoBiDir
-@LogInteraction
 public class JpaVetService
         extends JpaCrudService<Vet,Long, VetRepository>
                 implements VetService {
