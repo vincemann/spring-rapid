@@ -24,8 +24,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @Component
 public class IntegrationTestHelper implements TestMethodInitializable, MvcAware {
 
@@ -58,9 +56,10 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     protected VetControllerTestTemplate vetController;
     @Autowired
     protected VisitControllerTestTemplate visitController;
-
     @Autowired
     protected SpecialtyControllerTestTemplate specialtyController;
+    @Autowired
+    protected ClinicCardControllerTestTemplate clinicCardController;
 
     @Override
     public void beforeTestMethod() throws BadEntityException {
@@ -77,13 +76,13 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
         visitController.setMvc(mvc);
     }
 
-    public ClinicCardDto saveClinicCardLinkedToOwner(ClinicCard clinicCard, String ownerName) throws Exception {
+    public ClinicCardDto createClinicCardLinkedToOwner(ClinicCard clinicCard, String ownerName) throws Exception {
         ClinicCardDto clinicCardDto = new ClinicCardDto(clinicCard);
         if (ownerName !=null){
             Owner owner = ownerService.findByLastName(ownerName).get();
             clinicCardDto.setOwnerId(owner.getId());
         }
-        return ownerController.perform2xxAndDeserialize(ownerController.create(clinicCardDto),ClinicCardDto.class);
+        return clinicCardController.perform2xxAndDeserialize(clinicCardController.create(clinicCardDto),ClinicCardDto.class);
     }
 
     public Visit createVisit(String token, Visit visit, Owner owner, Vet vet, Pet... pets) throws Exception {
@@ -100,7 +99,7 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
         return visitService.findById(response.getId()).get();
     }
 
-    public ReadOwnOwnerDto saveOwnerLinkedToPets(Owner owner, Long... petIds) throws Exception {
+    public ReadOwnOwnerDto createOwnerLinkedToPets(Owner owner, Long... petIds) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
         createOwnerDto.getPetIds().addAll(Lists.newArrayList(petIds));
 
@@ -109,7 +108,7 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     }
 
 
-    public ReadOwnOwnerDto saveOwnerLinkedToClinicCard(Owner owner, ClinicCard clinicCard) throws Exception {
+    public ReadOwnOwnerDto createOwnerLinkedToClinicCard(Owner owner, ClinicCard clinicCard) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
         createOwnerDto.setClinicCardId(clinicCard.getId());
 
@@ -118,12 +117,12 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     }
 
 
-    public ReadOwnOwnerDto saveOwner(Owner owner) throws Exception {
+    public ReadOwnOwnerDto createOwner(Owner owner) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
-        return ownerController.perform2xxAndDeserialize(ownerController.create(createOwnerDto),ReadOwnOwnerDto.class);
+        return ownerController.create2xx(createOwnerDto,ReadOwnOwnerDto.class);
     }
 
-    public ReadPetDto savePetLinkedToOwnerAndToys(Pet pet, Long ownerId, Toy... toys) throws Exception {
+    public ReadPetDto createPetLinkedToOwnerAndToys(Pet pet, Long ownerId, Toy... toys) throws Exception {
         ReadPetDto createPetDto = new ReadPetDto(pet);
         if (ownerId != null)
             createPetDto.setOwnerId(ownerId);

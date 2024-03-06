@@ -60,7 +60,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         String bodybuilding = "bodybuilding";
         Set<String> hobbies = new HashSet<>(Arrays.asList("swimming","biking",bodybuilding,"jogging","eating"));
         testData.getKahn().setHobbies(hobbies);
-        ReadOwnOwnerDto responseDto = helper.saveOwnerLinkedToPets(testData.getKahn());
+        ReadOwnOwnerDto responseDto = helper.createOwnerLinkedToPets(testData.getKahn());
         // then
         Assertions.assertEquals(hobbies,responseDto.getHobbies());
         Owner kahn = ownerService.findByLastName(KAHN).get();
@@ -72,7 +72,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // given
         Pet bello = petService.create(testData.getBello());
         // when
-        ReadOwnOwnerDto responseDto = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
+        ReadOwnOwnerDto responseDto = helper.createOwnerLinkedToPets(testData.getKahn(),bello.getId());
         // then
         Assertions.assertTrue(responseDto.getPetIds().contains(bello.getId()));
         assertOwnerHasPets(KAHN,BELLO);
@@ -84,7 +84,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // given
         ClinicCard clinicCard = clinicCardService.create(testData.getClinicCard());
         // when
-        ReadOwnOwnerDto responseDto = helper.saveOwnerLinkedToClinicCard(testData.getKahn(),clinicCard);
+        ReadOwnOwnerDto responseDto = helper.createOwnerLinkedToClinicCard(testData.getKahn(),clinicCard);
         // then
         Assertions.assertEquals(responseDto.getClinicCardId(),clinicCard.getId());
         assertOwnerHasClinicCard(KAHN,clinicCard.getId());
@@ -97,7 +97,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Pet savedBello = petService.create(testData.getBello());
         Pet savedKitty = petService.create(testData.getKitty());
         // when
-        ReadOwnOwnerDto responseDto = helper.saveOwnerLinkedToPets(testData.getKahn(),savedBello.getId(),savedKitty.getId());
+        ReadOwnOwnerDto responseDto = helper.createOwnerLinkedToPets(testData.getKahn(),savedBello.getId(),savedKitty.getId());
         // then
         Assertions.assertTrue(responseDto.getPetIds().contains(savedBello.getId()));
         Assertions.assertTrue(responseDto.getPetIds().contains(savedKitty.getId()));
@@ -111,7 +111,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     @Test
     public void canUpdateOwnersCity() throws Exception {
         // given
-        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn());
+        ReadOwnOwnerDto createdKahnDto = helper.createOwnerLinkedToPets(testData.getKahn());
         // when
         String newCity = testData.getKahn().getCity()+"new";
         String updateJson = createUpdateJsonLine("replace", "/city",newCity);
@@ -126,7 +126,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     @Test
     public void canUpdateOwnersCityAndAddressInOneRequest() throws Exception {
         // given
-        ReadOwnOwnerDto kahnDto = helper.saveOwnerLinkedToPets(testData.getKahn());
+        ReadOwnOwnerDto kahnDto = helper.createOwnerLinkedToPets(testData.getKahn());
         // when
         String newCity = kahnDto.getCity()+"new";
         String newAdr = kahnDto.getAddress()+"new";
@@ -148,7 +148,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     public void givenOwnerLinkedToPet_whenRemoveAllPetsOfOwnerViaUpdateOwner_thenPetsUnlinked() throws Exception {
         // given
         Pet savedBello = petService.create(testData.getBello());
-        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn(),savedBello.getId());
+        ReadOwnOwnerDto createdKahnDto = helper.createOwnerLinkedToPets(testData.getKahn(),savedBello.getId());
         // when
         String updateJson = createUpdateJsonLine("remove", "/petIds");
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
@@ -163,7 +163,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     public void canUnlinkClinicCardFromOwnerViaUpdateOwner() throws Exception {
         // given
         ClinicCard savedClinicCard = clinicCardService.create(testData.getClinicCard());
-        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToClinicCard(testData.getKahn(),savedClinicCard);
+        ReadOwnOwnerDto createdKahnDto = helper.createOwnerLinkedToClinicCard(testData.getKahn(),savedClinicCard);
         // when
         String updateJson = createUpdateJsonLine("remove", "/clinicCardId");
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
@@ -178,7 +178,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     public void canLinkClinicCardToOwnerViaUpdateOwner() throws Exception {
         // given
         ClinicCard savedClinicCard = clinicCardService.create(testData.getClinicCard());
-        ReadOwnOwnerDto createdKahnDto = helper.saveOwner(testData.getKahn());
+        ReadOwnOwnerDto createdKahnDto = helper.createOwner(testData.getKahn());
         // when
         String updateJson = createUpdateJsonLine("add", "/clinicCardId",savedClinicCard.getId().toString());
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
@@ -194,7 +194,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // given
         ClinicCard savedClinicCard = clinicCardService.create(testData.getClinicCard());
         ClinicCard savedSecondClinicCard = clinicCardService.create(testData.getSecondClinicCard());
-        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToClinicCard(testData.getKahn(),savedClinicCard);
+        ReadOwnOwnerDto createdKahnDto = helper.createOwnerLinkedToClinicCard(testData.getKahn(),savedClinicCard);
         // when
         String updateJson = createUpdateJsonLine("replace", "/clinicCardId",savedSecondClinicCard.getId().toString());
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
@@ -210,7 +210,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     public void canUnlinkPetFromOwnerViaRemoveSpecificPetInUpdateOwner() throws Exception {
         //given
         Pet bello = petService.create(testData.getBello());
-        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
+        ReadOwnOwnerDto createdKahnDto = helper.createOwnerLinkedToPets(testData.getKahn(),bello.getId());
 
         // when
         String updateJson = createUpdateJsonLine("remove", "/petIds",bello.getId().toString());
@@ -227,7 +227,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // given
         Pet bello = petService.create(testData.getBello());
         Pet kitty = petService.create(testData.getKitty());
-        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId(),kitty.getId());
+        ReadOwnOwnerDto createdKahnDto = helper.createOwnerLinkedToPets(testData.getKahn(),bello.getId(),kitty.getId());
         // when
         String updateJson = createUpdateJsonLine("remove", "/petIds");
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
@@ -244,7 +244,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // given
         Pet bello = petService.create(testData.getBello());
         Pet kitty = petService.create(testData.getKitty());
-        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId(),kitty.getId());
+        ReadOwnOwnerDto createdKahnDto = helper.createOwnerLinkedToPets(testData.getKahn(),bello.getId(),kitty.getId());
         // when
         String updateJson = createUpdateJsonLine("remove", "/petIds",bello.getId().toString());
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
@@ -263,7 +263,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Pet bello = petService.create(testData.getBello());
         Pet kitty = petService.create(testData.getKitty());
         Pet bella = petService.create(testData.getBella());
-        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId(),kitty.getId(),bella.getId());
+        ReadOwnOwnerDto createdKahnDto = helper.createOwnerLinkedToPets(testData.getKahn(),bello.getId(),kitty.getId(),bella.getId());
 
         // when
         String removeBelloJson = createUpdateJsonLine("remove", "/petIds",bello.getId().toString());
@@ -286,7 +286,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Pet bello = petService.create(testData.getBello());
         Pet kitty = petService.create(testData.getKitty());
         Pet bella = petService.create(testData.getBella());
-        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId(),kitty.getId(),bella.getId());
+        ReadOwnOwnerDto createdKahnDto = helper.createOwnerLinkedToPets(testData.getKahn(),bello.getId(),kitty.getId(),bella.getId());
 
         // when
         String removeBelloJson = createUpdateJsonLine("remove", "/petIds",bello.getId().toString());
@@ -309,7 +309,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         String hobbyToRemove = "bodybuilding";
         Set<String> hobbies = new HashSet<>(Arrays.asList("swimming","biking",hobbyToRemove,"jogging","eating"));
         testData.getKahn().setHobbies(hobbies);
-        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn());
+        ReadOwnOwnerDto createdKahnDto = helper.createOwnerLinkedToPets(testData.getKahn());
         // when
         String updateJson = createUpdateJsonLine("remove", "/hobbies", hobbyToRemove);
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
@@ -326,7 +326,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     public void canLinkSavedPetToOwnerViaUpdateOwner() throws Exception {
         // given
         Pet bello = petService.create(testData.getBello());
-        ReadOwnOwnerDto createdKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn());
+        ReadOwnOwnerDto createdKahnDto = helper.createOwnerLinkedToPets(testData.getKahn());
 
         // when
         String updateJson = createUpdateJsonLine("add", "/petIds", bello.getId().toString());
@@ -343,7 +343,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     @WithRapidMockUser(username = KAHN)
     public void ownerCanFindOwnOwner() throws Exception {
         // given
-        ReadOwnOwnerDto kahn = helper.saveOwnerLinkedToPets(testData.getKahn());
+        ReadOwnOwnerDto kahn = helper.createOwnerLinkedToPets(testData.getKahn());
         // when
         ReadOwnOwnerDto response = ownerController.find2xx(kahn.getId(), ReadOwnOwnerDto.class);
         // then
@@ -366,9 +366,9 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Pet bello = petService.create(testData.getBello());
         Pet kitty = petService.create(testData.getKitty());
 
-        ReadOwnOwnerDto savedKahn = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
-        ReadOwnOwnerDto savedMeier = helper.saveOwnerLinkedToPets(testData.getMeier(), kitty.getId());
-        ReadOwnOwnerDto savedGil = helper.saveOwnerLinkedToPets(testData.getGil());
+        ReadOwnOwnerDto savedKahn = helper.createOwnerLinkedToPets(testData.getKahn(),bello.getId());
+        ReadOwnOwnerDto savedMeier = helper.createOwnerLinkedToPets(testData.getMeier(), kitty.getId());
+        ReadOwnOwnerDto savedGil = helper.createOwnerLinkedToPets(testData.getGil());
         Assertions.assertEquals(3,ownerService.findAll().size());
 
         // when
@@ -400,9 +400,9 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Pet bello = petService.create(testData.getBello());
         Pet kitty = petService.create(testData.getKitty());
 
-        ReadOwnOwnerDto savedKahn = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
-        ReadOwnOwnerDto savedMeier = helper.saveOwnerLinkedToPets(testData.getMeier(), kitty.getId());
-        ReadOwnOwnerDto savedGil = helper.saveOwnerLinkedToPets(testData.getGil());
+        ReadOwnOwnerDto savedKahn = helper.createOwnerLinkedToPets(testData.getKahn(),bello.getId());
+        ReadOwnOwnerDto savedMeier = helper.createOwnerLinkedToPets(testData.getMeier(), kitty.getId());
+        ReadOwnOwnerDto savedGil = helper.createOwnerLinkedToPets(testData.getGil());
         Assertions.assertEquals(3,ownerService.findAll().size());
 
         // when
@@ -440,9 +440,9 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Pet bello = petService.create(testData.getBello());
         Pet kitty = petService.create(testData.getKitty());
 
-        ReadOwnOwnerDto savedKahn = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
-        ReadOwnOwnerDto savedMeier = helper.saveOwnerLinkedToPets(testData.getMeier(), kitty.getId());
-        ReadOwnOwnerDto savedGil = helper.saveOwnerLinkedToPets(testData.getGil());
+        ReadOwnOwnerDto savedKahn = helper.createOwnerLinkedToPets(testData.getKahn(),bello.getId());
+        ReadOwnOwnerDto savedMeier = helper.createOwnerLinkedToPets(testData.getMeier(), kitty.getId());
+        ReadOwnOwnerDto savedGil = helper.createOwnerLinkedToPets(testData.getGil());
         Assertions.assertEquals(3,ownerService.findAll().size());
 
         // when
@@ -482,9 +482,9 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Pet bello = petService.create(testData.getBello());
         Pet kitty = petService.create(testData.getKitty());
 
-        ReadOwnOwnerDto savedKahn = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
-        ReadOwnOwnerDto savedMeier = helper.saveOwnerLinkedToPets(testData.getMeier(), kitty.getId());
-        ReadOwnOwnerDto savedGil = helper.saveOwnerLinkedToPets(testData.getGil());
+        ReadOwnOwnerDto savedKahn = helper.createOwnerLinkedToPets(testData.getKahn(),bello.getId());
+        ReadOwnOwnerDto savedMeier = helper.createOwnerLinkedToPets(testData.getMeier(), kitty.getId());
+        ReadOwnOwnerDto savedGil = helper.createOwnerLinkedToPets(testData.getGil());
         Assertions.assertEquals(3,ownerService.findAll().size());
 
         String telnrPrefix = "0176";
@@ -524,9 +524,9 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Pet kitty = petService.create(testData.getKitty());
         Pet bella = petService.create(testData.getBella());
 
-        ReadOwnOwnerDto savedKahn = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
-        ReadOwnOwnerDto savedMeier = helper.saveOwnerLinkedToPets(testData.getMeier(), kitty.getId());
-        ReadOwnOwnerDto savedGil = helper.saveOwnerLinkedToPets(testData.getGil(),bella.getId());
+        ReadOwnOwnerDto savedKahn = helper.createOwnerLinkedToPets(testData.getKahn(),bello.getId());
+        ReadOwnOwnerDto savedMeier = helper.createOwnerLinkedToPets(testData.getMeier(), kitty.getId());
+        ReadOwnOwnerDto savedGil = helper.createOwnerLinkedToPets(testData.getGil(),bella.getId());
         Assertions.assertEquals(3,ownerService.findAll().size());
 
         String telnrPrefix = "0176";
@@ -575,9 +575,9 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Pet bello = petService.create(testData.getBello());
         Pet kitty = petService.create(testData.getKitty());
 
-        ReadOwnOwnerDto savedKahn = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
-        ReadOwnOwnerDto savedMeier = helper.saveOwnerLinkedToPets(testData.getMeier(), kitty.getId());
-        ReadOwnOwnerDto savedGil = helper.saveOwnerLinkedToPets(testData.getGil());
+        ReadOwnOwnerDto savedKahn = helper.createOwnerLinkedToPets(testData.getKahn(),bello.getId());
+        ReadOwnOwnerDto savedMeier = helper.createOwnerLinkedToPets(testData.getMeier(), kitty.getId());
+        ReadOwnOwnerDto savedGil = helper.createOwnerLinkedToPets(testData.getGil());
         Assertions.assertEquals(3,ownerService.findAll().size());
 
         String telnrPrefix = "0176";
@@ -610,7 +610,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // given
         Pet bello = petService.create(testData.getBello());
         Pet kitty = petService.create(testData.getKitty());
-        ReadOwnOwnerDto savedKahn = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId(), kitty.getId());
+        ReadOwnOwnerDto savedKahn = helper.createOwnerLinkedToPets(testData.getKahn(),bello.getId(), kitty.getId());
         // when
         ReadOwnOwnerDto responseDto = ownerController.find2xx(savedKahn.getId(),ReadOwnOwnerDto.class);
         // then
@@ -622,7 +622,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     @Test
     public void anonCanFindForeignOwner() throws Exception {
         // given
-        ReadOwnOwnerDto savedKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn());
+        ReadOwnOwnerDto savedKahnDto = helper.createOwnerLinkedToPets(testData.getKahn());
         // when
         getMvc().perform(ownerController.find(savedKahnDto.getId()))
         // then
@@ -635,7 +635,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     @WithRapidMockUser(username = MEIER)
     public void userCanFindForeignOwnOwner() throws Exception {
         // given
-        ReadOwnOwnerDto savedKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn());
+        ReadOwnOwnerDto savedKahnDto = helper.createOwnerLinkedToPets(testData.getKahn());
         // when
         getMvc().perform(ownerController.find(savedKahnDto.getId()))
         // then
@@ -652,7 +652,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     public void givenPetLinkedToOwner_whenDeletingOwner_thenPetGetsUnlinked() throws Exception {
         // given
         Pet bello = petService.create(testData.getBello());
-        ReadOwnOwnerDto responseDto = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
+        ReadOwnOwnerDto responseDto = helper.createOwnerLinkedToPets(testData.getKahn(),bello.getId());
 
         // when
         getMvc().perform(ownerController.delete(responseDto.getId()))
@@ -666,7 +666,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     public void givenCardLinkedToOwner_whenDeletingOwner_thenCardGetsUnlinked() throws Exception {
         // given
         ClinicCard savedClinicCard = clinicCardService.create(testData.getClinicCard());
-        ReadOwnOwnerDto responseDto = helper.saveOwnerLinkedToClinicCard(testData.getKahn(),savedClinicCard);
+        ReadOwnOwnerDto responseDto = helper.createOwnerLinkedToClinicCard(testData.getKahn(),savedClinicCard);
         // when
         getMvc().perform(ownerController.delete(responseDto.getId()))
                 .andExpect(status().is2xxSuccessful());
@@ -680,7 +680,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // given
         Pet savedBello = petService.create(testData.getBello());
         Pet savedKitty = petService.create(testData.getKitty());
-        ReadOwnOwnerDto responseDto = helper.saveOwnerLinkedToPets(testData.getKahn(),savedBello.getId(),savedKitty.getId());
+        ReadOwnOwnerDto responseDto = helper.createOwnerLinkedToPets(testData.getKahn(),savedBello.getId(),savedKitty.getId());
 
         // when
         MvcResult result = getMvc().perform(ownerController.delete(responseDto.getId()))

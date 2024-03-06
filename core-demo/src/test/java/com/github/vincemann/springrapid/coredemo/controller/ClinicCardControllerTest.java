@@ -36,7 +36,7 @@ public class ClinicCardControllerTest extends MyIntegrationTest {
         // given
         Owner kahn = ownerService.create(testData.getKahn());
         // when
-        ClinicCardDto responseDto = helper.saveClinicCardLinkedToOwner(testData.getClinicCard(), KAHN);
+        ClinicCardDto responseDto = helper.createClinicCardLinkedToOwner(testData.getClinicCard(), KAHN);
         // then
         assertClinicCardHasOwner(responseDto.getId(),KAHN);
         assertOwnerHasClinicCard(KAHN,responseDto.getId());
@@ -46,7 +46,7 @@ public class ClinicCardControllerTest extends MyIntegrationTest {
     public void canUnlinkOwnerFromCardViaUpdateCard() throws Exception {
         // given
         Owner kahn = ownerService.create(testData.getKahn());
-        ClinicCardDto savedDto = helper.saveClinicCardLinkedToOwner(testData.getClinicCard(), KAHN);
+        ClinicCardDto savedDto = helper.createClinicCardLinkedToOwner(testData.getClinicCard(), KAHN);
         // when
         String jsonRequest = RapidTestUtil.createUpdateJsonRequest(
                 RapidTestUtil.createUpdateJsonLine("remove", "/ownerId")
@@ -63,7 +63,7 @@ public class ClinicCardControllerTest extends MyIntegrationTest {
     public void canLinkOwnerToCardViaUpdateCard() throws Exception {
         // given
         Owner kahn = ownerService.create(testData.getKahn());
-        ClinicCardDto savedDto = helper.saveClinicCardLinkedToOwner(testData.getClinicCard(),null);
+        ClinicCardDto savedDto = helper.createClinicCardLinkedToOwner(testData.getClinicCard(),null);
         // when
         String jsonRequest = RapidTestUtil.createUpdateJsonRequest(
                 RapidTestUtil.createUpdateJsonLine("add", "/ownerId",kahn.getId().toString())
@@ -81,7 +81,7 @@ public class ClinicCardControllerTest extends MyIntegrationTest {
         // given
         Owner kahn = ownerService.create(testData.getKahn());
         Owner meier = ownerService.create(testData.getMeier());
-        ClinicCardDto savedDto = helper.saveClinicCardLinkedToOwner(testData.getClinicCard(),KAHN);
+        ClinicCardDto savedDto = helper.createClinicCardLinkedToOwner(testData.getClinicCard(),KAHN);
         // when
         String jsonRequest = RapidTestUtil.createUpdateJsonRequest(
                 RapidTestUtil.createUpdateJsonLine("replace", "/ownerId",meier.getId().toString())
@@ -99,7 +99,7 @@ public class ClinicCardControllerTest extends MyIntegrationTest {
     public void givenOwnerLinkedToCard_whenRemovingCard_thenCardGetsUnlinkedFromOwner() throws Exception {
         // given
         Owner kahn = ownerService.create(testData.getKahn());
-        ClinicCardDto responseDto = helper.saveClinicCardLinkedToOwner(testData.getClinicCard(), KAHN);
+        ClinicCardDto responseDto = helper.createClinicCardLinkedToOwner(testData.getClinicCard(), KAHN);
         // when
         getMvc().perform(controller.delete(responseDto.getId())).andExpect(status().is2xxSuccessful());
         // then

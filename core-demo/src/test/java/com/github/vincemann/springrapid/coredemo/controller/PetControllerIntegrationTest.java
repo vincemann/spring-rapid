@@ -50,8 +50,8 @@ public class PetControllerIntegrationTest extends MyIntegrationTest
         Pet bello = petService.create(testData.getBello());
         Pet kitty = petService.create(testData.getKitty());
         Pet bella = petService.create(testData.getBella());
-        ReadOwnOwnerDto kahn = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId(),bella.getId());
-        ReadOwnOwnerDto meier = helper.saveOwnerLinkedToPets(testData.getMeier(), kitty.getId());
+        ReadOwnOwnerDto kahn = helper.createOwnerLinkedToPets(testData.getKahn(),bello.getId(),bella.getId());
+        ReadOwnOwnerDto meier = helper.createOwnerLinkedToPets(testData.getMeier(), kitty.getId());
 
         assertOwnerHasPets(KAHN,BELLO,BELLA);
         assertOwnerHasPets(MEIER,KITTY);
@@ -74,7 +74,7 @@ public class PetControllerIntegrationTest extends MyIntegrationTest
     public void canCreatePetWithLinkedOwner() throws Exception {
         // when
         Owner kahn = ownerService.create(testData.getKahn());
-        ReadPetDto responseDto = helper.savePetLinkedToOwnerAndToys(testData.getBella(), kahn.getId());
+        ReadPetDto responseDto = helper.createPetLinkedToOwnerAndToys(testData.getBella(), kahn.getId());
         // then
         Assertions.assertEquals(kahn.getId(),responseDto.getOwnerId());
         assertOwnerHasPets(KAHN, BELLA);
@@ -89,7 +89,7 @@ public class PetControllerIntegrationTest extends MyIntegrationTest
         Toy bone = toyService.create(testData.getBone());
         Toy rubberDuck = toyService.create(testData.getRubberDuck());
         // when
-        ReadPetDto responseDto = helper.savePetLinkedToOwnerAndToys(testData.getBella(), null,ball,rubberDuck);
+        ReadPetDto responseDto = helper.createPetLinkedToOwnerAndToys(testData.getBella(), null,ball,rubberDuck);
         // then
         Assertions.assertNull(responseDto.getOwnerId());
         Assertions.assertTrue(responseDto.getToyIds().contains(ball.getId()));
@@ -112,7 +112,7 @@ public class PetControllerIntegrationTest extends MyIntegrationTest
         Toy bone = toyService.create(testData.getBone());
         Toy rubberDuck = toyService.create(testData.getRubberDuck());
         // when
-        ReadPetDto responseDto = helper.savePetLinkedToOwnerAndToys(testData.getBella(), kahn.getId(),ball,bone);
+        ReadPetDto responseDto = helper.createPetLinkedToOwnerAndToys(testData.getBella(), kahn.getId(),ball,bone);
         // then
         Assertions.assertEquals(kahn.getId(),responseDto.getOwnerId());
         Assertions.assertTrue(responseDto.getToyIds().contains(ball.getId()));
@@ -129,7 +129,7 @@ public class PetControllerIntegrationTest extends MyIntegrationTest
     public void canUnlinkOwnerFromPetViaUpdatePet() throws Exception {
         // given
         Owner kahn = ownerService.create(testData.getKahn());
-        ReadPetDto createdBellaDto = helper.savePetLinkedToOwnerAndToys(testData.getBella(), kahn.getId());
+        ReadPetDto createdBellaDto = helper.createPetLinkedToOwnerAndToys(testData.getBella(), kahn.getId());
         // when
         String removeOwnerJson = createUpdateJsonRequest(createUpdateJsonLine("remove", "/ownerId"));
         ReadPetDto responseDto = controller.update2xx(removeOwnerJson, createdBellaDto.getId(), ReadPetDto.class);
@@ -156,7 +156,7 @@ public class PetControllerIntegrationTest extends MyIntegrationTest
         Toy rubberDuck = toyService.create(testData.getRubberDuck());
 
         // when
-        ReadPetDto createdBellaDto = helper.savePetLinkedToOwnerAndToys(testData.getBella(), kahn.getId(),ball,bone,rubberDuck);
+        ReadPetDto createdBellaDto = helper.createPetLinkedToOwnerAndToys(testData.getBella(), kahn.getId(),ball,bone,rubberDuck);
         String removeOwnerJson = createUpdateJsonRequest(
                 createUpdateJsonLine("remove", "/ownerId"),
                 createUpdateJsonLine("remove", "/toyIds",bone.getId().toString()),
@@ -184,7 +184,7 @@ public class PetControllerIntegrationTest extends MyIntegrationTest
         Toy bone = toyService.create(testData.getBone());
         Toy rubberDuck = toyService.create(testData.getRubberDuck());
 
-        ReadPetDto bella = helper.savePetLinkedToOwnerAndToys(testData.getBella(), kahn.getId(),rubberDuck);
+        ReadPetDto bella = helper.createPetLinkedToOwnerAndToys(testData.getBella(), kahn.getId(),rubberDuck);
         // when
         String removeOwnerJson = createUpdateJsonRequest(
                 createUpdateJsonLine("remove", "/ownerId"),
@@ -210,7 +210,7 @@ public class PetControllerIntegrationTest extends MyIntegrationTest
     @Test
     public void canUnlinkPetsPetTypeViaUpdatePet() throws Exception {
         // given
-        ReadPetDto bella = helper.savePetLinkedToOwnerAndToys(testData.getBella(),null);
+        ReadPetDto bella = helper.createPetLinkedToOwnerAndToys(testData.getBella(),null);
         // when
         String removePetTypeJson = createUpdateJsonRequest(
                 createUpdateJsonLine("remove", "/petTypeId"));
@@ -226,7 +226,7 @@ public class PetControllerIntegrationTest extends MyIntegrationTest
     public void canAddOwnerToPetViaUpdatePet() throws Exception {
         // given
         Owner kahn = ownerService.create(testData.getKahn());
-        ReadPetDto createdBellaDto = helper.savePetLinkedToOwnerAndToys(testData.getBella(),null);
+        ReadPetDto createdBellaDto = helper.createPetLinkedToOwnerAndToys(testData.getBella(),null);
         // when
         String addOwnerJson = createUpdateJsonRequest(createUpdateJsonLine("add", "/ownerId",kahn.getId().toString()));
         ReadPetDto responseDto = controller.update2xx(addOwnerJson, createdBellaDto.getId(), ReadPetDto.class);
@@ -242,7 +242,8 @@ public class PetControllerIntegrationTest extends MyIntegrationTest
         Owner kahn = ownerService.create(testData.getKahn());
         Toy ball = toyService.create(testData.getBall());
         Toy bone = toyService.create(testData.getBone());
-        ReadPetDto bella = helper.savePetLinkedToOwnerAndToys(testData.getBella(),null);
+        Toy rubberDuck = toyService.create(testData.getRubberDuck());
+        ReadPetDto bella = helper.createPetLinkedToOwnerAndToys(testData.getBella(),null);
 
         // when
         String updateJson = createUpdateJsonRequest(
@@ -275,7 +276,7 @@ public class PetControllerIntegrationTest extends MyIntegrationTest
         Toy ball = toyService.create(testData.getBall());
         Toy bone = toyService.create(testData.getBone());
         Toy rubberDuck = toyService.create(testData.getRubberDuck());
-        ReadPetDto bella = helper.savePetLinkedToOwnerAndToys(testData.getBella(),null,ball,rubberDuck,bone);
+        ReadPetDto bella = helper.createPetLinkedToOwnerAndToys(testData.getBella(),null,ball,rubberDuck,bone);
         // when
         String updateJson = createUpdateJsonRequest(
                 createUpdateJsonLine("add", "/ownerId",kahn.getId().toString()),
@@ -303,7 +304,7 @@ public class PetControllerIntegrationTest extends MyIntegrationTest
     public void canLinkPetTypeToPetViaUpdatePet() throws Exception {
         // given
         testData.getBella().setPetType(null);
-        ReadPetDto bella = helper.savePetLinkedToOwnerAndToys(testData.getBella(),null);
+        ReadPetDto bella = helper.createPetLinkedToOwnerAndToys(testData.getBella(),null);
         PetType catPetType = testData.getSavedCatPetType();
         // when
         String addPetTypeJson = createUpdateJsonRequest(
@@ -321,7 +322,7 @@ public class PetControllerIntegrationTest extends MyIntegrationTest
         // given
         Owner kahn = ownerService.create(testData.getKahn());
         Owner meier = ownerService.create(testData.getMeier());
-        ReadPetDto bella = helper.savePetLinkedToOwnerAndToys(testData.getBella(),kahn.getId());
+        ReadPetDto bella = helper.createPetLinkedToOwnerAndToys(testData.getBella(),kahn.getId());
         // when
         String updateOwnerJson = createUpdateJsonRequest(
                 createUpdateJsonLine("replace", "/ownerId",meier.getId().toString())
@@ -341,7 +342,7 @@ public class PetControllerIntegrationTest extends MyIntegrationTest
         // given
         Owner kahn = ownerService.create(testData.getKahn());
         Owner meier = ownerService.create(testData.getMeier());
-        ReadPetDto bella = helper.savePetLinkedToOwnerAndToys(testData.getBella(),kahn.getId());
+        ReadPetDto bella = helper.createPetLinkedToOwnerAndToys(testData.getBella(),kahn.getId());
 
         // when
         String updateOwnerJson = createUpdateJsonRequest(
@@ -361,7 +362,7 @@ public class PetControllerIntegrationTest extends MyIntegrationTest
     public void givenPetLinkedToOwner_whenRemovingPet_thenUnlinkedFromOwner() throws Exception {
         // given
         Owner kahn = ownerService.create(testData.getKahn());
-        ReadPetDto createdBellaDto = helper.savePetLinkedToOwnerAndToys(testData.getBella(),kahn.getId());
+        ReadPetDto createdBellaDto = helper.createPetLinkedToOwnerAndToys(testData.getBella(),kahn.getId());
 
         // when
         getMvc().perform(controller.delete(createdBellaDto.getId()))
@@ -378,7 +379,7 @@ public class PetControllerIntegrationTest extends MyIntegrationTest
         Toy ball = toyService.create(testData.getBall());
         Toy bone = toyService.create(testData.getBone());
         Toy rubberDuck = toyService.create(testData.getRubberDuck());
-        ReadPetDto bella = helper.savePetLinkedToOwnerAndToys(testData.getBella(),null,ball,rubberDuck,bone);
+        ReadPetDto bella = helper.createPetLinkedToOwnerAndToys(testData.getBella(),null,ball,rubberDuck,bone);
 
         // when
         getMvc().perform(controller.delete(bella.getId()))
