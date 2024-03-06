@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.service.jpa;
 
+import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.acldemo.model.Specialty;
 import com.github.vincemann.springrapid.acldemo.repo.SpecialtyRepository;
@@ -11,6 +12,7 @@ import java.util.Optional;
 
 @Primary
 @Service
+@EnableAutoBiDir
 public class JpaSpecialtyService
         extends JpaCrudService<Specialty,Long, SpecialtyRepository>
             implements SpecialtyService {

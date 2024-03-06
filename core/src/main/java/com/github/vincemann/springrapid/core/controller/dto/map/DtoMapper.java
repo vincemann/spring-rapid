@@ -14,6 +14,4 @@ public interface DtoMapper<E extends IdentifiableEntity<?>,Dto> {
 
     public <T extends E> T mapToEntity(Dto source,Class<T> destinationClass) throws EntityNotFoundException, BadEntityException;
     public <T extends Dto> T mapToDto(E source, Class<T> destinationClass,String... fieldsToMap) throws BadEntityException;
-
-//    <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass, Set<String> propertiesToMap);
 }

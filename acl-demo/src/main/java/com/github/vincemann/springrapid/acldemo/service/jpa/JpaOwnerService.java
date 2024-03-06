@@ -1,12 +1,12 @@
 package com.github.vincemann.springrapid.acldemo.service.jpa;
 
-import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
-import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.service.JpaUserService;
+import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Root
 @Service
-@LogInteraction
+@EnableAutoBiDir
 public class JpaOwnerService
         extends JpaUserService<Owner,Long, OwnerRepository>
                 implements OwnerService
