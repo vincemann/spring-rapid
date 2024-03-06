@@ -3,7 +3,6 @@ package com.github.vincemann.springrapid.acldemo.controller.suite.templates;
 import com.github.vincemann.springrapid.acldemo.controller.OwnerController;
 import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
-import com.github.vincemann.springrapid.authtest.AbstractUserControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -22,7 +21,7 @@ public class OwnerControllerTestTemplate extends CrudControllerTestTemplate<Owne
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
-        return getController().getJsonMapper().readDto(json,ReadOwnOwnerDto.class);
+        return getController().getObjectMapper().readDto(json,ReadOwnOwnerDto.class);
     }
 
     public void addPetsSpectator(long permittedOwner, long targetOwner, String token) throws Exception {

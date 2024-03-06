@@ -15,7 +15,6 @@ import com.github.vincemann.springrapid.core.controller.json.patch.PatchInfo;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContextImpl;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
@@ -27,9 +26,11 @@ import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -43,11 +44,11 @@ import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.github.vincemann.springrapid.core.controller.WebExtensionType.*;
 
 
-@Slf4j
 @Getter
 public abstract class CrudController
         <
@@ -57,6 +58,7 @@ public abstract class CrudController
                 >
         extends AbstractEntityController<E, Id>
 {
+    private final Log log = LogFactory.getLog(getClass());
 
 
     private IdFetchingStrategy<Id> idFetchingStrategy;
@@ -75,11 +77,18 @@ public abstract class CrudController
     //              CONTROLLER METHODS
 
     public ResponseEntity<String> findAll(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, BadEntityException {
-
+        log.debug("find all request received");
 
         List<QueryFilter<? super E>> queryFilters = extractExtensions(request,QUERY_FILTER);
         List<EntityFilter<? super E>> entityFilters = extractExtensions(request,ENTITY_FILTER);
         List<SortingExtension> sorting = extractExtensions(request,SORTING);
+
+        if (!queryFilters.isEmpty())
+            log.debug(LogMessage.format("using query filters: %s",queryFilters));
+        if (!entityFilters.isEmpty())
+            log.debug(LogMessage.format("using entity filters: %s",entityFilters));
+        if (!sorting.isEmpty())
+            log.debug(LogMessage.format("using sorting: %s",sorting));
 
         beforeFindAll(request, response,entityFilters,queryFilters,sorting);
         logSecurityContext();
@@ -90,7 +99,8 @@ public abstract class CrudController
                     createDtoClass(getFindAllUrl(), Direction.RESPONSE,request, e)));
         }
         afterFindAll(dtos, foundEntities, request, response,entityFilters, queryFilters, sorting);
-        String json = jsonMapper.writeDto(dtos);
+        String json = objectMapper.writeValueAsString(dtos);
+        log.debug("find all request successful");
         return ok(json);
 
     }
@@ -98,9 +108,10 @@ public abstract class CrudController
     public ResponseEntity<String> findSome(HttpServletRequest request, HttpServletResponse response) throws IOException, BadEntityException {
 
         String json = readBody(request);
-        CollectionType idSetType = getJsonMapper().getObjectMapper()
+        log.debug(LogMessage.format("find some request received for ids '%s'",json));
+        CollectionType idSetType = getObjectMapper()
                 .getTypeFactory().constructCollectionType(Set.class, getIdClass());
-        Set<Id> ids = getJsonMapper().readDto(json,idSetType);
+        Set<Id> ids = getObjectMapper().readValue(json,idSetType);
 
 
 
@@ -114,7 +125,8 @@ public abstract class CrudController
                     createDtoClass(getFindSomeUrl(), Direction.RESPONSE,request, e)));
         }
         afterFindSome(dtos, foundEntities, request, response);
-        String responseJson = jsonMapper.writeDto(dtos);
+        String responseJson = objectMapper.writeValueAsString(dtos);
+        log.debug("find some request successful");
         return ok(responseJson);
     }
 
@@ -122,6 +134,7 @@ public abstract class CrudController
     public ResponseEntity<String> find(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, JsonProcessingException {
 
         Id id = fetchId(request);
+        log.debug(LogMessage.format("find request received for id %s",id));
         beforeFind(id, request, response);
         logSecurityContext();
         Optional<E> optionalEntity = find(id);
@@ -131,16 +144,18 @@ public abstract class CrudController
                 createDtoClass(getFindUrl(), Direction.RESPONSE,request, found)
         );
         afterFind(id, dto, optionalEntity, request, response);
-        return ok(jsonMapper.writeDto(dto));
+        String json = objectMapper.writeValueAsString(dto);
+        log.debug("find request successful");
+        return ok(json);
 
     }
 
     public ResponseEntity<String> create(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
-
+        log.debug("create request received");
         String json = readBody(request);
         Class<?> dtoClass = createDtoClass(getCreateUrl(), Direction.REQUEST, request,null);
         jsonDtoPropertyValidator.validateDto(json, dtoClass);
-        Object dto = getJsonMapper().readDto(json, dtoClass);
+        Object dto = getObjectMapper().readValue(json, dtoClass);
         beforeCreate(dto, request, response);
         dtoValidationStrategy.validate(dto);
         //i expect that dto has the right dto type -> callers responsibility
@@ -150,15 +165,17 @@ public abstract class CrudController
         Object resultDto = dtoMapper.mapToDto(savedEntity,
                 createDtoClass(getCreateUrl(), Direction.RESPONSE,request, savedEntity));
         afterCreate(resultDto, entity, request, response);
-        return ok(jsonMapper.writeDto(resultDto));
+        String responseJson = objectMapper.writeValueAsString(resultDto);
+        log.debug("create request successful");
+        return ok(responseJson);
     }
 
     public ResponseEntity<String> update(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, JsonPatchException, IOException {
-        
 
         String patchString = readBody(request);
-        log.debug("patchString: " + patchString);
         Id id = fetchId(request);
+        log.debug(LogMessage.format("update request received for id %s",id));
+        log.debug(LogMessage.format("json patch string: %s",patchString));
         //user does also need read permission if he wants to update user, so I can check read permission here instead of using unsecured service
         // i indirectly check if by using secured service.findById
         Optional<E> savedOptional = getService().findById(id);
@@ -195,25 +212,19 @@ public abstract class CrudController
         // no third arg, bc mapping all possible fields
         Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
         afterUpdate(resultDto, updated, request, response);
-        return ok(jsonMapper.writeDto(resultDto));
-
-
-        //        E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);
-//        patchDto = jsonPatchStrategy.applyPatch(patchDto, patchString);
-//        log.debug("finished patchDto: " + patchDto);
-//        dtoValidationStrategy.validate(patchDto);
-//        E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());
-//        log.debug("finished patchEntity: " + patchEntity);
-//        // merge dto fields. patch merged with saved Entity.
-//        E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);
+        String responseJson = objectMapper.writeValueAsString(resultDto);
+        log.debug("update request successful");
+        return ok(responseJson);
     }
 
     public ResponseEntity<?> delete(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, ConstraintViolationException {
         Id id = fetchId(request);
+        log.debug(LogMessage.format("delete request received for id %s",id));
         beforeDelete(id, request, response);
         logSecurityContext();
         delete(id);
         afterDelete(id, request, response);
+        log.debug("delete request successful");
         return okNoContent();
     }
 
@@ -223,11 +234,15 @@ public abstract class CrudController
 
     protected Class<?> createDtoClass(String endpoint, Direction direction, HttpServletRequest request, E entity) throws BadEntityException {
         DtoRequestInfo dtoRequestInfo = createDtoRequestInfo(endpoint, direction,request, entity);
-        return dtoClassLocator.find(dtoRequestInfo,dtoMappings);
+        Class<?> dtoClass = dtoClassLocator.find(dtoRequestInfo, dtoMappings);
+        log.debug(LogMessage.format("found dto class '%s' for endpoint: '%s'",dtoClass.getSimpleName(),endpoint));
+        return dtoClass;
     }
 
     protected DtoRequestInfo createDtoRequestInfo(String endpoint, Direction direction,HttpServletRequest request, E entity) {
         Principal principal = principalFactory.create(entity);
+        log.debug(LogMessage.format("current principal: '%s'", principal.name()));
+
         return DtoRequestInfo.builder()
                 .authorities(RapidSecurityContext.getRoles())
                 .direction(direction)

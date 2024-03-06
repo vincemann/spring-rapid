@@ -12,8 +12,11 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 
 import com.github.vincemann.springrapid.core.util.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -37,8 +40,9 @@ import static com.github.vincemann.springrapid.core.util.ReflectionUtils.setFina
  * Don't use remove and add in one request, if you remove whole collection and not elements by value/index.
  * This is a limitation by JsonPatch itself, not by this extension.
  */
-@Slf4j
 public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
+
+    private static final Log log = LogFactory.getLog(ExtendedRemoveJsonPatchStrategy.class);
     
     private ObjectMapper objectMapper;
 
@@ -60,7 +64,7 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
                         if (valueNode == null) {
                             // remove single member, not collection
                             if (path == null) {
-                                throw new BadEntityException("No Path specified to remove operation");
+                                throw new BadEntityException("No Path specified for remove operation");
                             }
                             patchInfo.getRemoveSingleMembersFields().add(sanitizePath(path));
                         }
@@ -138,14 +142,13 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
     }
 
     private void patchRemoveInstruction(JsonNode instructionNode, JsonNode valueNode,Object dto, Map<Collection, List<Integer>> removedIndicesMap) throws Exception {
-        log.debug("found update-remove operation with value set");
         String value = valueNode.asText();
         String path = instructionNode.findValue("path").asText();
         Field collectionField = ReflectionUtils.findField(dto.getClass(),
                 // Utils wont transform if not "...Ids" fieldname
                 path.replace("/", ""));
         if (collectionField==null){
-            log.warn("Collection field for remove by value not found: "+ path);
+            log.warn(LogMessage.format("Collection field for remove by value not found in path: '%s'",path));
             return;
         }
         collectionField.setAccessible(true);
@@ -154,7 +157,7 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
         Optional elementToDelete = Optional.empty();
         Collection collection;
 //        if (IdPropertyNameUtils.isCollectionIdField(path.replace("/", ""))) {
-        log.debug("removing from entity collection, value will be interpreted as id");
+        log.debug("Removing from entity collection, value will be interpreted as id");
         collection = (Collection) collectionField.get(dto);
         elementToDelete = ((Collection<?>)collection).stream()
                 .peek(x -> position[0]++)  // increment every element encounter
@@ -178,8 +181,6 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
         int adjustedIndex = adjustIndex(index,removedIndices);
         removedIndices.add(index);
 
-        log.debug("found index: " + index);
-        log.debug("adjusted index: " + adjustedIndex);
         // modify JsonNode
         TextNode pathNode = (TextNode) instructionNode.findValue("path");
         Field pathValueField = ReflectionUtils.findField(TextNode.class, "_value");

@@ -73,21 +73,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!--        cant put that in here bc core-test needs compile scope and somehow it always picks this dep with test scope
-            instead of the declared one in core-test pom...
--->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-test</artifactId>-->
-        <!--            <scope>test</scope>-->
-        <!--            <exclusions>-->
-        <!--                <exclusion>-->
-        <!--                    <groupId>org.junit.vintage</groupId>-->
-        <!--                    <artifactId>junit-vintage-engine</artifactId>-->
-        <!--                </exclusion>-->
-        <!--            </exclusions>-->
-        <!--        </dependency>-->
-
     </dependencies>
 
     <repositories>

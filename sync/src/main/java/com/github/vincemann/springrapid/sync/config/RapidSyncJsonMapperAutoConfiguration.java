@@ -13,8 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class RapidSyncJsonMapperAutoConfiguration {
 
     @Autowired
-    public void configureObjectMapper(JsonMapper jsonMapper){
-        ObjectMapper mapper = jsonMapper.getObjectMapper();
+    public void configureObjectMapper(ObjectMapper mapper){
         SimpleModule module = new SimpleModule();
         module.addDeserializer(SyncStatus.class, new SyncStatusDeserializer());
         module.addSerializer(SyncStatus.class, new SyncStatusSerializer());

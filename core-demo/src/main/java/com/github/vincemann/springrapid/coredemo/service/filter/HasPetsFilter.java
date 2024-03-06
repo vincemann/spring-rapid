@@ -30,4 +30,10 @@ public class HasPetsFilter implements EntityFilter<Owner> {
         // should not trigger any initializing
         return !entity.getPets().isEmpty();
     }
+
+    @Override
+    public String toString() {
+        return "HasPetsFilter{" +
+                '}';
+    }
 }

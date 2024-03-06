@@ -95,7 +95,7 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
 
     public  MockHttpServletRequestBuilder findSome(Set<String> ids) throws Exception {
         return post(controller.getFindSomeUrl())
-                .content(getController().getJsonMapper().writeDto(ids))
+                .content(getController().getObjectMapper().writeDto(ids))
                 .contentType(MediaType.APPLICATION_JSON_VALUE);
     }
 
@@ -153,31 +153,31 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
 
 
     public  <Dto> Dto deserialize(String s, Class<Dto> dtoClass) throws IOException {
-        return controller.getJsonMapper().readDto(s,dtoClass);
+        return controller.getObjectMapper().readDto(s,dtoClass);
     }
 
     public  <Dto> Set<Dto> deserializeToSet(String s, Class<Dto> dtoClass) throws IOException {
-        CollectionType setType = controller.getJsonMapper().getObjectMapper()
+        CollectionType setType = controller.getObjectMapper().getObjectMapper()
                 .getTypeFactory().constructCollectionType(Set.class, dtoClass);
         return deserialize(s, setType);
     }
 
     public  <Dto> List<Dto> deserializeToList(String s, Class<Dto> dtoClass) throws IOException {
-        CollectionType setType = controller.getJsonMapper().getObjectMapper()
+        CollectionType setType = controller.getObjectMapper().getObjectMapper()
                 .getTypeFactory().constructCollectionType(List.class, dtoClass);
         return deserialize(s, setType);
     }
 
     public  <Dto> Dto deserialize(String s, TypeReference<?> dtoClass) throws IOException {
-        return controller.getJsonMapper().readDto(s,dtoClass);
+        return controller.getObjectMapper().readDto(s,dtoClass);
     }
 
     public  <Dto> Dto deserialize(String s, JavaType dtoClass) throws IOException {
-        return controller.getJsonMapper().readDto(s,dtoClass);
+        return controller.getObjectMapper().readDto(s,dtoClass);
     }
 
     public  String serialize(Object o) throws JsonProcessingException {
-        return controller.getJsonMapper().writeDto(o);
+        return controller.getObjectMapper().writeDto(o);
     }
 
 }

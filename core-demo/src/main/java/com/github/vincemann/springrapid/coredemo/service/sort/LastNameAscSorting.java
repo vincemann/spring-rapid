@@ -24,4 +24,9 @@ public class LastNameAscSorting implements SortingExtension {
     public SortDefinition getSort() {
         return new MutableSortDefinition("lastName",false,true);
     }
+
+    @Override
+    public String toString() {
+        return "LastNameAscSorting{}";
+    }
 }

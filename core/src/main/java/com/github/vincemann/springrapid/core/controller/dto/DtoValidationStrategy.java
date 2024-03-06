@@ -10,7 +10,7 @@ import java.util.Set;
 public interface DtoValidationStrategy {
 
     /**
-     * checks whether the Dto entity, read from the {@link HttpServletRequest} is valid
+     * checks whether the Dto entity read from the {@link HttpServletRequest} is valid
      * @param dto           Dto Entity read from the {@link HttpServletRequest}
      * @throws ConstraintViolationException     is thrown, when Dto Entity {@param dto} is not valid
      */

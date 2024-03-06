@@ -11,4 +11,5 @@ import org.springframework.data.jpa.domain.Specification;
 // would need abstraction like QueryContext with default impl JpaQueryContext and this class must not depend on CriteriaBuilder
 public interface QueryFilter<E extends IdentifiableEntity<?>> extends WebExtension<E>, Specification<E> {
 
+
 }

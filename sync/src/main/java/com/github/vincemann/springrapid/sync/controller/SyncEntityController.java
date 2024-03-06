@@ -89,7 +89,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
             if (updated)
                 return ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(jsonMapper.writeDto(syncStatus));
+                        .body(objectMapper.writeValueAsString(syncStatus));
             else
                 return ResponseEntity.noContent().build();
         } catch (NumberFormatException e) {
@@ -110,9 +110,9 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
     public ResponseEntity<String> fetchEntitySyncStatuses(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
         try {
             String json = readBody(request);
-            CollectionType idSetType = getJsonMapper().getObjectMapper()
+            CollectionType idSetType = getObjectMapper()
                     .getTypeFactory().constructCollectionType(Set.class, LastFetchInfo.class);
-            Set<LastFetchInfo> lastClientFetchInfos = getJsonMapper().readDto(json, idSetType);
+            Set<LastFetchInfo> lastClientFetchInfos = getObjectMapper().readValue(json, idSetType);
 //            List<JPQLEntityFilter<E>> filters = HttpServletRequestUtils.extractFilters(request,applicationContext,"jpql-filter");
 
 
@@ -122,7 +122,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
             else
                 return ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(jsonMapper.writeDto(syncStatuses));
+                        .body(objectMapper.writeValueAsString(syncStatuses));
         } catch (IOException e) {
             throw new BadEntityException("invalid format for EntityLastUpdateInfo. Use json list.");
         }
@@ -151,7 +151,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
         else
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(jsonMapper.writeDto(syncStatuses));
+                    .body(objectMapper.writeValueAsString(syncStatuses));
     }
 
 

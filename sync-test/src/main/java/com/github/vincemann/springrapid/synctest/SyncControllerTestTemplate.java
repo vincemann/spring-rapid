@@ -62,7 +62,7 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
 
 
     public MockHttpServletRequestBuilder fetchSyncStatuses(Set<LastFetchInfo> updateInfos) throws Exception {
-        String jsonUpdateInfos = getController().getJsonMapper().writeDto(updateInfos);
+        String jsonUpdateInfos = getController().getObjectMapper().writeDto(updateInfos);
         return MockMvcRequestBuilders.post(controller.getFetchEntitySyncStatusesUrl())
                 .content(jsonUpdateInfos).contentType(MediaType.APPLICATION_JSON);
     }
@@ -76,7 +76,7 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
                 .andReturn().getResponse().getContentAsString();
 
 
-        EntitySyncStatus status = getController().getJsonMapper().readDto(json,EntitySyncStatus.class);
+        EntitySyncStatus status = getController().getObjectMapper().readDto(json,EntitySyncStatus.class);
         assertThat(status.getStatus(),equalTo(expectedStatus));
         assertThat(entityId.toString(),equalTo(status.getId()));
         return status;
@@ -123,19 +123,19 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
     // helper
 
     private <Dto> List<Dto> deserializeToList(String s, Class<Dto> dtoClass) throws IOException {
-        CollectionType setType = getController().getJsonMapper().getObjectMapper()
+        CollectionType setType = getController().getObjectMapper().getObjectMapper()
                 .getTypeFactory().constructCollectionType(List.class, dtoClass);
         return deserialize(s, setType);
     }
 
     public  <Dto> Set<Dto> deserializeToSet(String s, Class<Dto> dtoClass) throws IOException {
-        CollectionType setType = getController().getJsonMapper().getObjectMapper()
+        CollectionType setType = getController().getObjectMapper().getObjectMapper()
                 .getTypeFactory().constructCollectionType(Set.class, dtoClass);
         return deserialize(s, setType);
     }
 
     public  <Dto> Dto deserialize(String s, JavaType dtoClass) throws IOException {
-        return (Dto) getController().getJsonMapper().readDto(s,dtoClass);
+        return (Dto) getController().getObjectMapper().readDto(s,dtoClass);
     }
 
 }

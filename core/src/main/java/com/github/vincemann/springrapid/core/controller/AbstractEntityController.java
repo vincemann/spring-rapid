@@ -1,23 +1,25 @@
 package com.github.vincemann.springrapid.core.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
+import com.github.vincemann.springrapid.core.controller.json.patch.ExtendedRemoveJsonPatchStrategy;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.filter.WebExtension;
-import com.github.vincemann.springrapid.core.util.Lists;
 import com.google.common.collect.Sets;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.log.LogMessage;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
@@ -26,13 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Getter
 public abstract class AbstractEntityController
         <
@@ -42,6 +40,7 @@ public abstract class AbstractEntityController
         implements ApplicationListener<ContextRefreshedEvent>, InitializingBean, ApplicationContextAware
 {
 
+    protected final Log log = LogFactory.getLog(getClass());
 
     protected Class<E> entityClass;
     protected Class<ID> idClass;
@@ -50,7 +49,7 @@ public abstract class AbstractEntityController
     protected String urlEntityName;
     protected CoreProperties coreProperties;
     protected EndpointService endpointService;
-    protected JsonMapper jsonMapper;
+    protected ObjectMapper objectMapper;
     protected WebExtensionParser extensionParser;
 
     protected List<String> ignoredEndPoints = new ArrayList<>();
@@ -102,11 +101,12 @@ public abstract class AbstractEntityController
      * }
      */
     protected final void registerExtensions(WebExtension<? super E>... extensions){
+        log.debug(LogMessage.format("Registering extensions %s", Arrays.stream(extensions).map(WebExtension::getName).collect(Collectors.toSet())));
         this.extensions.addAll(Sets.newHashSet(extensions));
     }
 
 
-    protected  <Ext extends WebExtension<? super E>> List<Ext> extractExtensions(HttpServletRequest request, WebExtensionType type) throws BadEntityException {
+    protected <Ext extends WebExtension<? super E>> List<Ext> extractExtensions(HttpServletRequest request, WebExtensionType type) throws BadEntityException {
         return (List<Ext>) extensionParser.parse(request,extensions,type);
     }
 
@@ -156,8 +156,8 @@ public abstract class AbstractEntityController
 
 
     @Autowired
-    public void setJsonMapper(JsonMapper mapper) {
-        this.jsonMapper = mapper;
+    public void setObjectMapper(JsonMapper mapper) {
+        this.objectMapper = mapper;
     }
 
 

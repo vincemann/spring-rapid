@@ -35,4 +35,11 @@ public class PetNameEndsWithFilter implements EntityFilter<Owner> {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "PetNameEndsWithFilter{" +
+                "suffix='" + suffix + '\'' +
+                '}';
+    }
 }

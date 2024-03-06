@@ -34,4 +34,10 @@ public class CityPrefixFilter implements QueryFilter<Owner> {
         return cb.like(root.get("city"), cityPrefix + "%");
     }
 
+    @Override
+    public String toString() {
+        return "CityPrefixFilter{" +
+                "cityPrefix='" + cityPrefix + '\'' +
+                '}';
+    }
 }

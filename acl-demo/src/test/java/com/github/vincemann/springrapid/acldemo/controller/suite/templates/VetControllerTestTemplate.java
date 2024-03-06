@@ -1,12 +1,9 @@
 package com.github.vincemann.springrapid.acldemo.controller.suite.templates;
 
 import com.github.vincemann.springrapid.acldemo.controller.VetController;
-import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.ReadVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
-import com.github.vincemann.springrapid.authtest.AbstractUserControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
-import org.springframework.boot.test.context.TestComponent;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +19,7 @@ public class VetControllerTestTemplate extends CrudControllerTestTemplate<VetCon
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
-        return getController().getJsonMapper().readDto(json,ReadVetDto.class);
+        return getController().getObjectMapper().readDto(json,ReadVetDto.class);
     }
 }
 

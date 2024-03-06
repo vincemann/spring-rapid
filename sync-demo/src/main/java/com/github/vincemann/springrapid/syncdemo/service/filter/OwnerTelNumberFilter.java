@@ -36,4 +36,10 @@ public class OwnerTelNumberFilter implements QueryFilter<Owner> {
         return cb.like(root.get("telephone"), telNrPrefix + "%");
     }
 
+    @Override
+    public String toString() {
+        return "OwnerTelNumberFilter{" +
+                "telNrPrefix='" + telNrPrefix + '\'' +
+                '}';
+    }
 }

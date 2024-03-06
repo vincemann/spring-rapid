@@ -50,6 +50,14 @@
             <version>3.2.0</version>
         </dependency>
 
+<!--        Logging -->
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version> <!-- Or the latest version -->
+        </dependency>
+
+
         <!--        UTIL-->
 
         <dependency>

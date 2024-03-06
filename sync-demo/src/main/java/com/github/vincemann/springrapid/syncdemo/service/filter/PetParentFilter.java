@@ -12,4 +12,11 @@ public class PetParentFilter extends ParentFilter<Long> {
     public PetParentFilter() {
         super("owner");
     }
+
+    @Override
+    public String toString() {
+        return "PetParentFilter{" +
+                "parentId=" + getParentId() +
+                '}';
+    }
 }

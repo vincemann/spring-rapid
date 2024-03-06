@@ -45,7 +45,6 @@ public class RapidCoreAutoConfiguration {
         return new LongIdConverter();
     }
 
-
     @Bean
     public Message messageUtils(MessageSource messageSource){
         return new Message(messageSource);
@@ -57,7 +56,6 @@ public class RapidCoreAutoConfiguration {
     public CoreProperties coreProperties(){
         return new CoreProperties();
     }
-
 
     @Bean
     @ConditionalOnMissingBean(WebExtensionParser.class)

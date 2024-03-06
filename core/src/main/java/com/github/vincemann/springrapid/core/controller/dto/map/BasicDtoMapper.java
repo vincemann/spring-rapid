@@ -4,12 +4,15 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.google.common.collect.Sets;
 import lombok.NoArgsConstructor;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.modelmapper.*;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.NamingConvention;
 import org.modelmapper.spi.PropertyType;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.log.LogMessage;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 

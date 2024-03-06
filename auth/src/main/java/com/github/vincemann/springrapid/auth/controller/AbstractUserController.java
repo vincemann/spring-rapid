@@ -62,7 +62,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	public ResponseEntity<ReadOwnUserDto> signup(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
 		String body = readBody(request);
-		SignupDto dto = getJsonMapper().readDto(body, SignupDto.class);
+		SignupDto dto = getObjectMapper().readDto(body, SignupDto.class);
 		getDtoValidationStrategy().validate(dto);
   		AbstractUser saved = signupService.signup(dto);
 		ReadOwnUserDto responseDto = getDtoMapper().mapToDto(saved, ReadOwnUserDto.class);
@@ -100,7 +100,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	 */
 	public ResponseEntity<Void> resetPassword(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, BadTokenException, IOException {
 		String body = readBody(request);
-		ResetPasswordDto dto = getJsonMapper().readDto(body, ResetPasswordDto.class);
+		ResetPasswordDto dto = getObjectMapper().readDto(body, ResetPasswordDto.class);
 		getDtoValidationStrategy().validate(dto);
 		AbstractUser updated = passwordService.resetPassword(dto);
 		return okWithAuthToken(updated.getContactInformation());
@@ -116,7 +116,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	public ResponseEntity<Void> changePassword(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
 		String body = readBody(request);
-		ChangePasswordDto dto = getJsonMapper().readDto(body, ChangePasswordDto.class);
+		ChangePasswordDto dto = getObjectMapper().readDto(body, ChangePasswordDto.class);
 		getDtoValidationStrategy().validate(dto);
 		AbstractUser updated = passwordService.changePassword(dto);
 		return okWithAuthToken(updated.getContactInformation());
@@ -125,7 +125,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	public ResponseEntity<Void> requestContactInformationChange(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException, IOException {
 		String body = readBody(request);
-		RequestContactInformationChangeDto dto = getJsonMapper().readDto(body, RequestContactInformationChangeDto.class);
+		RequestContactInformationChangeDto dto = getObjectMapper().readDto(body, RequestContactInformationChangeDto.class);
 		getDtoValidationStrategy().validate(dto);
 		contactInformationService.requestContactInformationChange(dto);
 		return okNoContent();
@@ -157,7 +157,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 			token = authTokenService.createNewAuthToken(contactInformation.get());
 		}
 		// result = {token:asfsdfjsdjfnd}
-		return ok(getJsonMapper().writeDto(MapUtils.mapOf("token", token)));
+		return ok(getObjectMapper().writeDto(MapUtils.mapOf("token", token)));
 	}
 
 	public ResponseEntity<Void> testToken(HttpServletRequest request, HttpServletResponse response) {
@@ -178,7 +178,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		U user = byContactInformation.get();
 		Object responseDto = getDtoMapper().mapToDto(user,
 				createDtoClass(getFindByContactInformationUrl(), Direction.RESPONSE,request, user));
-		return ok(getJsonMapper().writeDto(responseDto));
+		return ok(getObjectMapper().writeDto(responseDto));
 	}
 
 

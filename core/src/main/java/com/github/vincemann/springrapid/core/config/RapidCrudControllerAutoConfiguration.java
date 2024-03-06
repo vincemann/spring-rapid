@@ -49,14 +49,13 @@ public class RapidCrudControllerAutoConfiguration {
     @ConditionalOnMissingBean(IdFetchingStrategy.class)
     @Bean
     public IdFetchingStrategy idFetchingStrategy(){
-//        return new UrlParamIdFetchingStrategyImpl();
         return new LongUrlParamIdFetchingStrategy();
     }
 
     @ConditionalOnMissingBean(DtoValidationStrategy.class)
     @Bean
     public DtoValidationStrategy validationStrategy(javax.validation.Validator validator){
-        //use spring validator, so dependency injection is supported
+        // use spring validator, so dependency injection is supported
         return new JavaXDtoValidationStrategy(validator);
     }
 

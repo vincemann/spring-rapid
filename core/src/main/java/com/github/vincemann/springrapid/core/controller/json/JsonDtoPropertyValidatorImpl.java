@@ -58,13 +58,6 @@ public class JsonDtoPropertyValidatorImpl implements JsonDtoPropertyValidator {
         ReflectionUtils.doWithFields(dtoClass, field -> dtoClassFieldNames.add(field.getName()), ReflectionUtils.COPYABLE_FIELDS);
         while (propertyNameIterator.hasNext()) {
             String dtoProperty = propertyNameIterator.next();
-
-            // rather ignore, bc mappings are not always name -> name or userId -> user
-//            if (!entityClassFieldNames.contains(EntityCollectionNameUtils.transformDtoEntityIdFieldName(dtoProperty)) &&
-//                    !entityClassFieldNames.contains(EntityCollectionNameUtils.transformDtoEntityIdCollectionFieldName(dtoProperty))){
-//                // unknown property
-//                throw new BadEntityException("Dto Property: " + dtoProperty + " is unknown");
-//            }
             if (!dtoClassFieldNames.contains(dtoProperty)) {
                 // property not allowed
                 throw new org.springframework.security.access.AccessDeniedException("Dto Property: " + dtoProperty + " is not allowed for this operation");
