@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.core.sec;
 
+import lombok.Builder;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -25,6 +26,7 @@ public class RapidPrincipal implements AuthenticatedPrincipal, CredentialsContai
     private String password;
     private String id;
 
+    @Builder
     public  RapidPrincipal(String name, String password, Set<String> roles, String id) {
         this.name = name;
         this.password = password;

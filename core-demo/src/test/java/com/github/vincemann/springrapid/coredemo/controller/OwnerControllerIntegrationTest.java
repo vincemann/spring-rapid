@@ -20,6 +20,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.*;
@@ -29,14 +32,18 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.creat
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@TestExecutionListeners(
+        listeners = WithSecurityContextTestExecutionListener.class,
+        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
+)
 public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
 
     @Autowired
     RapidSecurityContext securityContext;
 
-
     // SAVE TESTS
+
 
     @Test
     public void canCreateOwnerWithoutPets() throws Exception {
@@ -338,16 +345,15 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
     // FIND TESTS
     @Test
+    @WithMockUser(username = KAHN)
     public void ownerCanFindOwnOwner() throws Exception {
         // given
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         ReadOwnOwnerDto kahn = helper.saveOwnerLinkedToPets(testData.getKahn());
         // when
         ReadOwnOwnerDto response = ownerController.find2xx(kahn.getId(), ReadOwnOwnerDto.class);
         // then
         Assertions.assertEquals(kahn.getLastName(),response.getLastName());
         Assertions.assertEquals(Owner.SECRET,response.getSecret());
-        RapidSecurityContext.unsetAuthenticated();
     }
 
     @Test

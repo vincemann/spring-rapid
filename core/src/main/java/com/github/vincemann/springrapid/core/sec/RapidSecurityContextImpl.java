@@ -5,14 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.Assert;
 
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @Slf4j
-public class RapidSecurityContextImpl implements RapidSecurityContext
-{
+public class RapidSecurityContextImpl implements RapidSecurityContext {
     @Override
     public void setAuthenticated(RapidPrincipal principal) {
         SecurityContextHolder.getContext().setAuthentication(createToken(principal));
@@ -31,16 +33,14 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
         if (authentication == null) {
             return null;
         }
-        try {
-            return (RapidPrincipal) authentication.getPrincipal();
-        }catch (ClassCastException e){
-            throw new IllegalArgumentException("Security Context is malformed. Needs to have RapidPrincipal as authenticatation object");
-        }
+        Object principal = authentication.getPrincipal();
+        Assert.isInstanceOf(RapidPrincipal.class, principal, "principal must be of type RapidPrincipal");
+        return (RapidPrincipal) authentication.getPrincipal();
     }
 
     @Override
     public void executeAsSystemUser(Runnable runnable) {
-        if (systemUserAuthenticated()){
+        if (systemUserAuthenticated()) {
             runnable.run();
             return;
         }
@@ -67,24 +67,23 @@ public class RapidSecurityContextImpl implements RapidSecurityContext
         }
     }
 
-    protected boolean systemUserAuthenticated(){
+    protected boolean systemUserAuthenticated() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null)
             return false;
         if (authentication.getAuthorities() == null)
             return false;
-        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(Roles.SYSTEM))){
+        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(Roles.SYSTEM))) {
             return true;
         }
         return false;
     }
 
-    protected RapidPrincipal getAnonUser(){
+    protected RapidPrincipal getAnonUser() {
         RapidPrincipal principal = new RapidPrincipal();
         principal.setRoles(Sets.newHashSet(Roles.ANON));
         return principal;
     }
-
 
 
     protected RapidPrincipal getSystemUser() {
