@@ -15,6 +15,8 @@
 
     <dependencies>
 
+<!--        SPRING-->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -36,22 +38,19 @@
             <version>${project.version}</version>
         </dependency>
 
+<!--        UTIL-->
+
         <dependency>
             <groupId>com.github.fge</groupId>
             <artifactId>json-patch</artifactId>
             <version>1.9</version>
         </dependency>
 
-
-        <!-- https://mvnrepository.com/artifact/org.modelmapper/modelmapper -->
         <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
             <version>3.2.0</version>
         </dependency>
-
-        <!--        util-->
-
 
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -66,18 +65,11 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.13</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.github.Hervian</groupId>
             <artifactId>safety-mirror</artifactId>
             <version>1.0.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest -->
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest</artifactId>

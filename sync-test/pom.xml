@@ -22,21 +22,15 @@
 
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>core-test</artifactId>
+            <artifactId>sync</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>sync</artifactId>
+            <artifactId>core-test</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-test</artifactId>-->
-<!--            <scope>compile</scope>-->
-<!--        </dependency>-->
 
     </dependencies>
 </project>

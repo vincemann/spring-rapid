@@ -20,6 +20,7 @@
     </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
             <artifactId>core</artifactId>

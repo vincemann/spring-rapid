@@ -2,8 +2,6 @@ package com.github.vincemann.springrapid.core.sec;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.CredentialsContainer;
@@ -16,7 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Represents logged in user.
+ * Represents authenticated user.
  * Also contains {@link Authentication#getDetails()} information.
  */
 @Getter
@@ -104,9 +102,22 @@ public class RapidPrincipal implements AuthenticatedPrincipal, CredentialsContai
         this.id = id;
     }
 
+
     @Override
     public String toString() {
-        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
+        return "RapidPrincipal{" +
+                "name='" + name + '\'' +
+                ", roles=" + roles +
+                ", password='" + password + '\'' +
+                ", id='" + id + '\'' +
+                ", authorities=" + getAuthorities() +
+                ", username='" + getUsername() + '\'' +
+                ", accountNonExpired=" + isAccountNonExpired() +
+                ", accountNonLocked=" + isAccountNonLocked() +
+                ", credentialsNonExpired=" + isCredentialsNonExpired() +
+                ", enabled=" + isEnabled() +
+                ", shortToString='" + shortToString() + '\'' +
+                '}';
     }
 
     public String shortToString(){
