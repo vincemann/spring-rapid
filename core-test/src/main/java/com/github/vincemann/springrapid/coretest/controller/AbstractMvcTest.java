@@ -4,16 +4,15 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
 import com.github.vincemann.springrapid.coretest.MvcAware;
 import lombok.Getter;
-import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.ConfigurableSmartRequestBuilder;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -21,6 +20,8 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 
@@ -66,13 +67,13 @@ public abstract class AbstractMvcTest extends InitializingTest implements Initia
 
     public <E> E assertCanFindInCollection(Collection<E> collection, Predicate<E> predicate){
         Optional<E> entity = collection.stream().filter(predicate::test).findFirst();
-        Assertions.assertTrue(entity.isPresent(),"could not find entity in collection");
+        assertThat("entity needs to be present in collection", entity.isPresent());
         return entity.get();
     }
 
     public <E extends IdentifiableEntity<?>, E2 extends IdentifiableEntity<?>> E assertCanFindInCollection(Collection<E> collection, E2 entity){
         Optional<E> filtered = collection.stream().filter(e -> e.getId().equals(entity.getId())).findFirst();
-        Assertions.assertTrue(filtered.isPresent(),"could not find entity in collection");
+        assertThat("entity needs to be present in collection", filtered.isPresent());
         return filtered.get();
     }
 

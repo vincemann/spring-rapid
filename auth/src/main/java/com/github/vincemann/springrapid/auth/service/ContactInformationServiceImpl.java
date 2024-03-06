@@ -26,7 +26,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
 
-import static com.github.vincemann.springrapid.core.util.MethodNameUtil.propertyName;
 
 @Slf4j
 public class ContactInformationServiceImpl implements ContactInformationService {

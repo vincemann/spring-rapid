@@ -1,25 +1,22 @@
 package com.github.vincemann.springrapid.acl.config;
 
-import com.github.vincemann.springrapid.acl.AclProperties;
 import com.github.vincemann.springrapid.acl.AclTemplate;
 import com.github.vincemann.springrapid.acl.AclTemplateImpl;
 import com.github.vincemann.springrapid.acl.framework.AdministrationDefaultPermissionGrantingStrategy;
-import com.github.vincemann.springrapid.acl.service.RapidAclService;
+import com.github.vincemann.springrapid.acl.framework.VerboseAclPermissionEvaluator;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
-import com.github.vincemann.springrapid.acl.service.RapidAclServiceImpl;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverterImpl;
+import com.github.vincemann.springrapid.acl.service.RapidAclService;
+import com.github.vincemann.springrapid.acl.service.RapidAclServiceImpl;
 import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.sec.Roles;
-import com.github.vincemann.springrapid.acl.framework.VerboseAclPermissionEvaluator;
-import org.springframework.context.annotation.Configuration;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.ehcache.CacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
@@ -136,14 +133,6 @@ public class RapidAclAutoConfiguration {
         expressionHandler.setPermissionCacheOptimizer(new AclPermissionCacheOptimizer(aclService()));
         return expressionHandler;
     }
-
-    @ConfigurationProperties(prefix="rapid-acl")
-    @ConditionalOnMissingBean(AclProperties.class)
-    @Bean
-    public AclProperties rapidAclProperties() {
-        return new AclProperties();
-    }
-
 
     @ConditionalOnMissingBean(RapidAclService.class)
     @Bean

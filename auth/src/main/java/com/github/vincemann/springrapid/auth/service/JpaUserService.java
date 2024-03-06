@@ -21,13 +21,7 @@ import org.springframework.util.Assert;
 import java.io.Serializable;
 import java.util.*;
 
-import static com.github.vincemann.springrapid.core.util.MethodNameUtil.propertyName;
 
-/**
- * Note:
- * If you extend from this class and annotate with @{@link org.springframework.stereotype.Service} or @{@link org.springframework.stereotype.Component}
- * make sure to not also add {@link org.springframework.context.annotation.Primary}
- */
 @Slf4j
 public abstract class JpaUserService
         <
@@ -99,8 +93,8 @@ public abstract class JpaUserService
     @Transactional
     @Override
     public U addRole(Id userId, String role) throws EntityNotFoundException, BadEntityException {
-        Assert.notNull(role);
-        Assert.notNull(userId);
+        Assert.notNull(role,"role to add must not be null");
+        Assert.notNull(userId,"user id must not be null");
 
         U oldEntity = findOldEntity(userId);
         Set<String> newRoles = new HashSet<>(oldEntity.getRoles());
@@ -108,15 +102,15 @@ public abstract class JpaUserService
         U update = Entity.createUpdate(oldEntity);
         update.setRoles(newRoles);
         update.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        return service.partialUpdate(update, propertyName(update::getRoles), propertyName(update::getCredentialsUpdatedMillis));
+        return service.partialUpdate(update, "roles", "credentialsUpdatedMillis");
     }
 
 
     @Transactional
     @Override
     public U removeRole(Id userId, String role) throws EntityNotFoundException, BadEntityException {
-        Assert.notNull(role);
-        Assert.notNull(userId);
+        Assert.notNull(role,"role to remove must not be null");
+        Assert.notNull(userId,"user id must not be null");
 
         U oldEntity = findOldEntity(userId);
         Set<String> newRoles = new HashSet<>(oldEntity.getRoles());
@@ -125,7 +119,7 @@ public abstract class JpaUserService
         U update = Entity.createUpdate(oldEntity);
         update.setRoles(newRoles);
         update.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        return service.partialUpdate(update,propertyName(update::getRoles), propertyName(update::getCredentialsUpdatedMillis));
+        return service.partialUpdate(update,"roles", "credentialsUpdatedMillis");
     }
 
 
@@ -140,7 +134,7 @@ public abstract class JpaUserService
         U update = Entity.createUpdate(getEntityClass(), userId);
         update.setPassword(encodePasswordIfNeeded(password));
         update.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        return service.partialUpdate(update,propertyName(update::getPassword), propertyName(update::getCredentialsUpdatedMillis));
+        return service.partialUpdate(update,"password", "credentialsUpdatedMillis");
     }
     
     protected String encodePasswordIfNeeded(String password){
@@ -173,7 +167,7 @@ public abstract class JpaUserService
         U update = Entity.createUpdate(getEntityClass(), userId);
         update.setContactInformation(contactInformation);
         update.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        return service.partialUpdate(update,propertyName(update::getContactInformation), propertyName(update::getCredentialsUpdatedMillis));
+        return service.partialUpdate(update,"contactInformation", "credentialsUpdatedMillis");
     }
 
 

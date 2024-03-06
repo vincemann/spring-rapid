@@ -3,27 +3,26 @@ package com.github.vincemann.springrapid.core.util;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
-import org.springframework.aop.support.AopUtils;
-import org.springframework.test.util.AopTestUtils;
+import org.springframework.aop.framework.AopProxyUtils;
 
 public class ProxyUtils {
 
 
     //use whenever you get errors comparing cglib proxy (all fields null) with normal object or other proxy
-    public static boolean isEqual(Object o1, Object o2){
-        //other way around is no problem
-        //dont forget to actually implement the equals method with getters !
-        if (AopUtils.isCglibProxy(o1)){
-            return AopTestUtils.getUltimateTargetObject(o1).equals(o2);
-        }else {
-            return o1.equals(o2);
-        }
-    }
+//    public static boolean isEqual(Object o1, Object o2){
+//        //other way around is no problem
+//        //dont forget to actually implement the equals method with getters !
+//        if (AopUtils.isCglibProxy(o1)){
+//            return AopProxyUtils.getSingletonTarget(o1).equals(o2);
+//        }else {
+//            return o1.equals(o2);
+//        }
+//    }
 
 
 
     /**
-     * Use in combination with @{@link org.springframework.boot.test.mock.mockito.SpyBean}.
+     * Use in combination with @SpyBean.
      * If you get something like : rg.mockito.exceptions.misusing.NotAMockException: Argument should be a mock, but is: class com.blah.MyServiceImpl$$EnhancerBySpringCGLIB$$9712a2a5
      * example:
      *
@@ -38,7 +37,7 @@ public class ProxyUtils {
      */
     public static  <T> T aopUnproxy(T proxy){
         //        https://stackoverflow.com/questions/9033874/mocking-a-property-of-a-cglib-proxied-service-not-working
-        return AopTestUtils.getUltimateTargetObject(proxy);
+        return (T) AopProxyUtils.getSingletonTarget(proxy);
     }
 
     /**

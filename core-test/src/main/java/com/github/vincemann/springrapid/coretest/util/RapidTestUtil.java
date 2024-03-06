@@ -1,19 +1,16 @@
 package com.github.vincemann.springrapid.coretest.util;
 
-import com.github.vincemann.springrapid.core.controller.CrudController;
-import com.github.vincemann.springrapid.core.controller.UrlParamWebExtensionParser;
-import com.github.vincemann.springrapid.core.controller.WebExtensionType;
-import com.github.vincemann.springrapid.core.service.filter.WebExtension;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
-import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
+import com.github.vincemann.springrapid.core.service.filter.WebExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
 import com.google.common.collect.Sets;
-import org.junit.jupiter.api.Assertions;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import java.util.ArrayList;
@@ -71,9 +68,9 @@ public class RapidTestUtil {
         int filterCount = 0;
         for (UrlWebExtension extension : extensions) {
             String[] beanNamesForType = applicationContext.getBeanNamesForType(extension.getExtensionType());
-            Assertions.assertEquals(1,beanNamesForType.length,"no single bean found with type: " + extension.getExtensionType().getSimpleName() + ". Found beanNames: " + Arrays.toString(beanNamesForType));
+            Assert.isTrue(beanNamesForType.length == 1,"no single bean found with type: " + extension.getExtensionType().getSimpleName() + ". Found beanNames: " + Arrays.toString(beanNamesForType));
             WebExtension bean = (WebExtension) applicationContext.getBean(beanNamesForType[0]);
-            Assertions.assertNotNull(bean);
+            Assert.notNull(bean,"cant find web extension bean with name " + beanNamesForType[0]);
             sb.append(bean.getName());
             int count = 0;
             String[] args = extension.getArgs();
@@ -94,7 +91,7 @@ public class RapidTestUtil {
         List<UrlWebExtension> entityFilters = findExtensionsOfSubType(Lists.newArrayList(extensions), EntityFilter.class);
         List<UrlWebExtension> sortingStrategies = findExtensionsOfSubType(Lists.newArrayList(extensions), SortingExtension.class);
 
-        Assertions.assertEquals(extensions.length,queryFilters.size()+entityFilters.size()+sortingStrategies.size());
+        Assert.isTrue(extensions.length == queryFilters.size()+entityFilters.size()+sortingStrategies.size());
 
         if (!queryFilters.isEmpty()){
             requestBuilder.param(getUrlParamKey(QUERY_FILTER),createExtensionsString(queryFilters,applicationContext));

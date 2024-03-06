@@ -6,12 +6,9 @@ import org.springframework.security.acls.model.AclCache;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
-@Slf4j
 public class ClearAclCacheTestExecutionListener extends AbstractTestExecutionListener {
 
 
-    //todo das geht bestimmt besser, siehe docs
-    //ansonsten in default testAnnotation als TestExecutionListener einbauen
     @Autowired
     private AclCache aclCache;
 
@@ -31,7 +28,7 @@ public class ClearAclCacheTestExecutionListener extends AbstractTestExecutionLis
         try{
             aclCache.clearCache();
         }catch (IllegalStateException e){
-            log.warn("Could not clear cache: ", e);
+            System.err.println("Could not clear cache: " + e);
         }
 
     }

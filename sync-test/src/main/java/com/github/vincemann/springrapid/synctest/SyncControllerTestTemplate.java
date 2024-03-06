@@ -8,24 +8,26 @@ import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
 import com.github.vincemann.springrapid.coretest.controller.template.MvcControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import com.github.vincemann.springrapid.sync.controller.SyncEntityController;
-import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.LastFetchInfo;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
 import lombok.Getter;
-import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
 
 @Getter
 public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
@@ -75,8 +77,8 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
 
 
         EntitySyncStatus status = getController().getJsonMapper().readDto(json,EntitySyncStatus.class);
-        Assertions.assertEquals(expectedStatus,status.getStatus());
-        Assertions.assertEquals(entityId.toString(),status.getId());
+        assertThat(status,equalTo(expectedStatus));
+        assertThat(entityId.toString(),equalTo(status.getId()));
         return status;
     }
 

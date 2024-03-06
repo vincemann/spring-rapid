@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
-import org.springframework.test.util.AopTestUtils;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.io.Serializable;
@@ -150,7 +149,7 @@ public class RelationalEntityAdvice {
     }
 
     protected Optional<IdentifiableEntity> findById(JoinPoint joinPoint, Serializable id) {
-        CrudService service = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
+        CrudService service = (CrudService) AopProxyUtils.getSingletonTarget(joinPoint.getTarget());
         // go via crud service locator so aop is not stripped off
         return crudServiceLocator.find(service.getEntityClass()).findById(id);
     }

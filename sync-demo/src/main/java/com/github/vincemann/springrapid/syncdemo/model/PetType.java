@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.syncdemo.model;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.*;
-import org.checkerframework.common.aliasing.qual.Unique;
+
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentCollection;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import lombok.*;
-import org.checkerframework.common.aliasing.qual.Unique;
+
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
