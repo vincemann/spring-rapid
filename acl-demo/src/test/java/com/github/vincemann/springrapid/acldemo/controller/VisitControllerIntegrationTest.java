@@ -7,12 +7,14 @@ import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 
 import static com.github.vincemann.springrapid.acldemo.controller.suite.TestData.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Tag(value = "demo-projects")
 public class VisitControllerIntegrationTest extends MyIntegrationTest {
 
 

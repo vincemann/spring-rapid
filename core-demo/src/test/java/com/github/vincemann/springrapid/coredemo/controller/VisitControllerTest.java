@@ -3,22 +3,25 @@ package com.github.vincemann.springrapid.coredemo.controller;
 import com.github.vincemann.springrapid.coredemo.controller.suite.MyIntegrationTest;
 import com.github.vincemann.springrapid.coredemo.controller.suite.template.VisitControllerTestTemplate;
 import com.github.vincemann.springrapid.coredemo.dto.VisitDto;
-import com.github.vincemann.springrapid.coredemo.model.*;
+import com.github.vincemann.springrapid.coredemo.model.Owner;
+import com.github.vincemann.springrapid.coredemo.model.Pet;
+import com.github.vincemann.springrapid.coredemo.model.Vet;
+import com.github.vincemann.springrapid.coredemo.model.Visit;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.github.vincemann.springrapid.coredemo.controller.suite.TestData.*;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Tag(value = "demo-projects")
 public class VisitControllerTest extends MyIntegrationTest {
 
     @Autowired
