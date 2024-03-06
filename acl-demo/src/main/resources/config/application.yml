@@ -4,16 +4,6 @@ spring:
     hibernate:
       ddl-auto: create
 
-#   in order to use this demo project with mysql database:
-#   uncomment lines below, and comment out h2 related lines below
-#   run create-db.sh
-#   uncomment contents of DbIdentityFixConfig.java
-
-
-#  datasource:
-#    url: jdbc:mysql://${MYSQL_HOST:localhost}:6603/aclDemoDb?useSSL=false&allowPublicKeyRetrieval=true
-#    username: root
-#    password: mypassword
   datasource:
     url: jdbc:h2:mem:testdb
     driverClassName: org.h2.Driver
