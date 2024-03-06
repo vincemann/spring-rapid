@@ -12,7 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.*;
 
-import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetClass;
+import static com.github.vincemann.springrapid.core.util.HibernateProxyUtils.getTargetClass;
 
 /**
  * needs to be executed within transaction

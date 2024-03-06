@@ -10,7 +10,7 @@ import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDir
 import com.github.vincemann.springrapid.autobidir.util.RelationalEntityAnnotationUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
-import com.github.vincemann.springrapid.core.util.ProxyUtils;
+import com.github.vincemann.springrapid.core.util.HibernateProxyUtils;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.UnknownEntityTypeException;
@@ -22,7 +22,7 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetClass;
+import static com.github.vincemann.springrapid.core.util.HibernateProxyUtils.getTargetClass;
 
 
 @Slf4j
@@ -394,7 +394,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
                         while (iterator.hasNext()) {
                             IdentifiableEntity e = iterator.next();
                             // hibernate proxy should call my custom equals method, but that also compares class, so unproxy
-                            if (ProxyUtils.jpaEquals(e,entityToRemove)) {
+                            if (HibernateProxyUtils.jpaEquals(e,entityToRemove)) {
                                 iterator.remove();
                                 deleted.set(true);
                                 break;
@@ -409,7 +409,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
             IdentifiableEntity removeCandidate = (IdentifiableEntity) fieldAccessor.getPropertyValue(entityField.getName());
 //            IdentifiableEntity removeCandidate = hibernateUnproxy((IdentifiableEntity) entityField.get(entity));
             if (removeCandidate != null) {
-                if (ProxyUtils.unproxyEquals(removeCandidate, entityToRemove)) {
+                if (HibernateProxyUtils.unproxyEquals(removeCandidate, entityToRemove)) {
                     fieldAccessor.setPropertyValue(entityField.getName(),null);
 //                    entityField.set(entity, null);
                     deleted.set(true);

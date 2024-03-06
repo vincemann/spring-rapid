@@ -164,7 +164,7 @@ public class NullAwareBeanUtils {
                                 boolean containsIdentifiableEntity = false;
                                 for (Object entity : targetCollection) {
                                     if (entity instanceof IdentifiableEntity) {
-                                        if (ProxyUtils.jpaEquals((IdentifiableEntity) entity, (IdentifiableEntity) item)) {
+                                        if (HibernateProxyUtils.jpaEquals((IdentifiableEntity) entity, (IdentifiableEntity) item)) {
                                             containsIdentifiableEntity = true;
                                             break;
                                         }
@@ -187,7 +187,7 @@ public class NullAwareBeanUtils {
                         targetCollection.removeIf(entity -> {
                             if (entity instanceof IdentifiableEntity) {
                                 return !((Collection<Object>) value).stream()
-                                        .anyMatch(item -> ProxyUtils.jpaEquals((IdentifiableEntity) entity, (IdentifiableEntity) item));
+                                        .anyMatch(item -> HibernateProxyUtils.jpaEquals((IdentifiableEntity) entity, (IdentifiableEntity) item));
                             } else {
                                 return !((Collection<Object>) value).contains(entity);
                             }
@@ -198,7 +198,7 @@ public class NullAwareBeanUtils {
                                 boolean containsIdentifiableEntity = false;
                                 for (Object entity : targetCollection) {
                                     if (entity instanceof IdentifiableEntity) {
-                                        if (ProxyUtils.jpaEquals((IdentifiableEntity) entity, (IdentifiableEntity) item)) {
+                                        if (HibernateProxyUtils.jpaEquals((IdentifiableEntity) entity, (IdentifiableEntity) item)) {
                                             containsIdentifiableEntity = true;
                                             break;
                                         }

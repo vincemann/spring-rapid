@@ -2,9 +2,6 @@ package com.github.vincemann.springrapid.sync;
 
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.core.util.Entity;
-import com.github.vincemann.springrapid.core.util.ProxyUtils;
-import com.github.vincemann.springrapid.sync.AuditCollection;
-import com.github.vincemann.springrapid.sync.EnableAuditCollection;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;

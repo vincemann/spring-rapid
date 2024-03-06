@@ -22,7 +22,8 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "pets", uniqueConstraints = @UniqueConstraint(name = "unique name", columnNames = "name"))
+@Table(name = "pets",
+        uniqueConstraints = @UniqueConstraint(name = "unique name", columnNames = "name"))
 @Entity
 public class Pet extends AuditingEntity<Long> {
 

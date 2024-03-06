@@ -14,7 +14,7 @@ import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.github.vincemann.springrapid.core.util.ProxyUtils.aopUnproxy;
+import static com.github.vincemann.springrapid.core.util.HibernateProxyUtils.getAopUltimateTargetObject;
 
 
 public class AuthContextTest extends RapidAuthIntegrationTest {
@@ -26,7 +26,7 @@ public class AuthContextTest extends RapidAuthIntegrationTest {
 		Map<String,Object> testSharedProperties = new HashMap<>();
 		testSharedProperties.put("testKey","testValue");
 
-		Mockito.when(aopUnproxy(coreProperties).getShared())
+		Mockito.when(getAopUltimateTargetObject(coreProperties).getShared())
 				.thenReturn(testSharedProperties);
 	}
 

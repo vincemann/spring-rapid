@@ -77,11 +77,16 @@ public class TestData {
     Visit checkTeethVisit;
     Visit checkHeartVisit;
 
+    public PetType getDogPetType(){
+        return new PetType("Dog");
+    }
+
+    public PetType getCatPetType(){
+        return new PetType("Cat");
+    }
+
 
     public void initTestData(){
-        savedDogPetType = new PetType("Dog");
-        savedCatPetType = new PetType("Cat");
-
 
         gastritis = Illness.builder()
                 .name(GASTRITIS)

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.util.ProxyUtils;
+import com.github.vincemann.springrapid.core.util.HibernateProxyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -15,7 +15,7 @@ public class EntityLocatorImpl implements EntityLocator {
 
 
     public <E extends IdentifiableEntity> Optional<E> findEntity(E entity) {
-        return findEntity(ProxyUtils.getTargetClass(entity),entity.getId());
+        return findEntity(HibernateProxyUtils.getTargetClass(entity),entity.getId());
     }
 
 

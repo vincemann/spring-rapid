@@ -31,13 +31,12 @@ import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfig
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.sql.DataSource;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Map;
 
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
-import static com.github.vincemann.springrapid.core.util.ProxyUtils.aopUnproxy;
+import static com.github.vincemann.springrapid.core.util.HibernateProxyUtils.getAopUltimateTargetObject;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -105,7 +104,7 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
 
     protected void setupSpies() {
         jwt = Mockito.spy(properties.getJwt());
-        Mockito.doReturn(jwt).when(aopUnproxy(properties)).getJwt();
+        Mockito.doReturn(jwt).when(getAopUltimateTargetObject(properties)).getJwt();
     }
 
 
@@ -176,7 +175,7 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
         TransactionalTestUtil.clear(userService, transactionTemplate);
         System.err.println("deleted users");
 
-        Mockito.reset(aopUnproxy(msgSender));
+        Mockito.reset(getAopUltimateTargetObject(msgSender));
         testAdapter.afterEach();
 //        https://github.com/spring-projects/spring-boot/issues/7374  -> @SpyBean beans are automatically reset
     }

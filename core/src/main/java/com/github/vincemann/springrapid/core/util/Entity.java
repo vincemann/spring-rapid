@@ -41,7 +41,7 @@ public class Entity {
     }
 
     public static <T extends IdentifiableEntity> T createUpdate(T entity) {
-        return createUpdate(ProxyUtils.getTargetClass(entity),entity.getId());
+        return createUpdate(HibernateProxyUtils.getTargetClass(entity),entity.getId());
     }
 
     public static Set<String> findPartialUpdatedFields(IdentifiableEntity update, String... fieldsToUpdate){

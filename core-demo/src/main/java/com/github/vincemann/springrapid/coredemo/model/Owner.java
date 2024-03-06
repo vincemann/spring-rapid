@@ -20,7 +20,8 @@ import java.util.Set;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "owners", uniqueConstraints = @UniqueConstraint(name = "unique last name", columnNames = "last_name"))
+@Table(name = "owners",
+        uniqueConstraints = @UniqueConstraint(name = "unique last name", columnNames = "last_name"))
 public class Owner extends Person {
     
     public static final String SECRET = "mySecret";

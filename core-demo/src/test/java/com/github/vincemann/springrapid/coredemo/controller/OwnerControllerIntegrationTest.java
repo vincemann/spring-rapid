@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
+import com.github.vincemann.springrapid.coredemo.model.PetType;
 import com.github.vincemann.springrapid.coredemo.service.filter.CityPrefixFilter;
 import com.github.vincemann.springrapid.coredemo.service.filter.HasPetsFilter;
 import com.github.vincemann.springrapid.coredemo.service.filter.OwnerTelNumberFilter;
@@ -610,6 +611,8 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     @WithRapidMockUser(username = KAHN)
     public void canFindOwnOwnerWithPets() throws Exception {
         // given
+        Set<PetType> all = petTypeService.findAll();
+        Optional<PetType> byId = petTypeService.findById(testData.getBello().getPetType().getId());
         Pet bello = petService.create(testData.getBello());
         Pet kitty = petService.create(testData.getKitty());
         ReadOwnOwnerDto savedKahn = helper.createOwnerLinkedToPets(testData.getKahn(),bello.getId(), kitty.getId());

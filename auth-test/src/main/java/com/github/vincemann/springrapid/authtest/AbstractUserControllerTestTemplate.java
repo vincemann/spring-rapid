@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.dto.*;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.core.util.ProxyUtils;
+import com.github.vincemann.springrapid.core.util.HibernateProxyUtils;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -207,12 +207,12 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     public AuthMessage verifyMsgWasSent(String recipient) {
         ArgumentCaptor<AuthMessage> msgCaptor = ArgumentCaptor.forClass(AuthMessage.class);
 
-        verify(ProxyUtils.aopUnproxy(messageSenderMock), atLeast(1))
+        verify(HibernateProxyUtils.getAopUltimateTargetObject(messageSenderMock), atLeast(1))
                 .send(msgCaptor.capture());
         AuthMessage sentData = msgCaptor.getValue();
         assertThat("latest msg must be sent to recipient: " +recipient + " but was sent to: " + sentData.getRecipient(),
                 sentData.getRecipient(),equalTo(recipient));
-        Mockito.reset(ProxyUtils.aopUnproxy(messageSenderMock));
+        Mockito.reset(HibernateProxyUtils.getAopUltimateTargetObject(messageSenderMock));
         return sentData;
     }
 

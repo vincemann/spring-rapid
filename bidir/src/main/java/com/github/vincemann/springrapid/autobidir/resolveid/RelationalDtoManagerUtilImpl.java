@@ -18,7 +18,7 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.*;
 
-import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetClass;
+import static com.github.vincemann.springrapid.core.util.HibernateProxyUtils.getTargetClass;
 
 
 @Slf4j

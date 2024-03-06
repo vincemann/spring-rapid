@@ -10,6 +10,10 @@ import java.util.HashSet;
 
 @Getter
 @Component
+/**
+ * {@code savedDogPetType} and {@code savedCatPetType} need to be persisted and saved before calling
+ * {@code initTestData}.
+ */
 public class TestData {
     public static final String CONTACT_INFORMATION_SUFFIX = "@guerilla-mail.com";
 
@@ -68,11 +72,14 @@ public class TestData {
     Toy ball;
     Toy bone;
 
+    public PetType getDogPetType(){
+        return new PetType("Dog");
+    }
 
+    public PetType getCatPetType(){
+        return new PetType("Cat");
+    }
     public void initTestData(){
-        savedDogPetType = new PetType("Dog");
-        savedCatPetType = new PetType("Cat");
-
 
         rubberDuck = Toy.builder()
                 .name(RUBBER_DUCK)

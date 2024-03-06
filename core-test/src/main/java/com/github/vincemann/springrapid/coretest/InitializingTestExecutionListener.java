@@ -2,8 +2,7 @@ package com.github.vincemann.springrapid.coretest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestContext;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.util.ReflectionUtils;
 
 import java.util.ArrayList;
@@ -12,11 +11,10 @@ import java.util.List;
 /**
  * Initializes all members of test that impl {@link TestMethodInitializable}s and/or
  * {@link TestClassInitializable}.
- * Executes within spring transaction.
  *
  * Reflection depth = 1
  */
-public class InitializingTestExecutionListener extends TransactionalTestExecutionListener {
+public class InitializingTestExecutionListener extends AbstractTestExecutionListener {
 
     @Autowired
     private List<TestMethodInitializable> methodInitializables = new ArrayList<>();
@@ -24,7 +22,6 @@ public class InitializingTestExecutionListener extends TransactionalTestExecutio
     private boolean afterEachInitialized = false;
 
 
-    @Transactional
     @Override
     public void beforeTestMethod(TestContext testContext) throws Exception {
         super.beforeTestMethod(testContext);
@@ -61,7 +58,6 @@ public class InitializingTestExecutionListener extends TransactionalTestExecutio
                 .autowireBean(this);
     }
 
-    @Transactional
     @Override
     public void afterTestMethod(TestContext testContext) throws Exception {
         super.afterTestMethod(testContext);

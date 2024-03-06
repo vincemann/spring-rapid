@@ -13,7 +13,8 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "toys",uniqueConstraints = @UniqueConstraint(name = "unique name", columnNames = "name"))
+@Table(name = "toys",
+        uniqueConstraints = @UniqueConstraint(name = "unique name", columnNames = "name"))
 @Entity
 @Builder
 public class Toy extends IdentifiableEntityImpl<Long> {

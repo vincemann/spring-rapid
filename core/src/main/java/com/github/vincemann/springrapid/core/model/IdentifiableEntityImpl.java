@@ -1,16 +1,12 @@
 package com.github.vincemann.springrapid.core.model;
 
 
-import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import lombok.NoArgsConstructor;
-import org.springframework.util.ReflectionUtils;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
 import java.util.Objects;
 
 @MappedSuperclass

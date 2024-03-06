@@ -13,7 +13,7 @@ public class JpaUtils {
 
 
     public static <T> T deepDetach(T entity){
-        return clone(ProxyUtils.hibernateUnproxy(entity));
+        return clone(HibernateProxyUtils.unproxy(entity));
     }
 
     private static <T> T clone(T bean){

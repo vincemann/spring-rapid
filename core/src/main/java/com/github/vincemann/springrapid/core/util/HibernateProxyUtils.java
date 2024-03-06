@@ -3,50 +3,10 @@ package com.github.vincemann.springrapid.core.util;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
-import org.springframework.aop.framework.AopProxyUtils;
 
-public class ProxyUtils {
+public abstract class HibernateProxyUtils {
 
-
-    //use whenever you get errors comparing cglib proxy (all fields null) with normal object or other proxy
-//    public static boolean isEqual(Object o1, Object o2){
-//        //other way around is no problem
-//        //dont forget to actually implement the equals method with getters !
-//        if (AopUtils.isCglibProxy(o1)){
-//            return AopProxyUtils.getSingletonTarget(o1).equals(o2);
-//        }else {
-//            return o1.equals(o2);
-//        }
-//    }
-
-
-
-    /**
-     * Use in combination with @SpyBean.
-     * If you get something like : rg.mockito.exceptions.misusing.NotAMockException: Argument should be a mock, but is: class com.blah.MyServiceImpl$$EnhancerBySpringCGLIB$$9712a2a5
-     * example:
-     *
-     *
-     * @SpyBean
-     * Extension extension;
-     *
-     * ...
-     *
-     * doReturn(Boolean.TRUE)
-     *                 .when(unproxy(extension)).isInTimeFrame(any(Rating.class));
-     */
-    public static  <T> T aopUnproxy(T proxy){
-        //        https://stackoverflow.com/questions/9033874/mocking-a-property-of-a-cglib-proxied-service-not-working
-        return (T) getUltimateTargetObject(proxy);
-    }
-
-    public static <T> T getUltimateTargetObject(T object) {
-        if (AopProxyUtils.ultimateTargetClass(object) != null) {
-            return (T) AopProxyUtils.ultimateTargetClass(object).cast(object);
-        } else {
-            return object;
-        }
-    }
+    private HibernateProxyUtils(){}
 
     /**
      * gets Class of hibernate proxy without initializing entity ( = loading all lazy entities )
@@ -64,7 +24,7 @@ public class ProxyUtils {
     public static boolean jpaEquals(IdentifiableEntity entity, IdentifiableEntity other) {
         if (entity == other) return true;
         if (entity == null || other == null ||
-                ProxyUtils.getTargetClass(entity) != ProxyUtils.getTargetClass(other)) {
+                HibernateProxyUtils.getTargetClass(entity) != HibernateProxyUtils.getTargetClass(other)) {
             return false;
         }
 
@@ -79,7 +39,7 @@ public class ProxyUtils {
         return entityId.equals(otherId);
     }
 
-    public static <T> T hibernateUnproxy(T proxied)
+    public static <T> T unproxy(T proxied)
     {
         T entity = proxied;
         if (entity instanceof HibernateProxy) {

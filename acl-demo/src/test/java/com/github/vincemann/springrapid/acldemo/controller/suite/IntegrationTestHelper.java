@@ -68,9 +68,9 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
 
     @Override
     public void beforeTestMethod() throws BadEntityException {
+        testData.savedDogPetType = petTypeService.create(testData.getDogPetType());
+        testData.savedCatPetType = petTypeService.create(testData.getCatPetType());
         testData.initTestData();
-        testData.savedDogPetType = petTypeService.create(testData.getSavedDogPetType());
-        testData.savedCatPetType = petTypeService.create(testData.getSavedCatPetType());
     }
 
     @Override

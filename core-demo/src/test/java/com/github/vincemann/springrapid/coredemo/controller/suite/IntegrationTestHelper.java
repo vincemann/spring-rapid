@@ -15,13 +15,23 @@ import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.coredemo.service.*;
 import com.github.vincemann.springrapid.coretest.MvcAware;
 import com.github.vincemann.springrapid.coretest.TestMethodInitializable;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Component
@@ -29,6 +39,9 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
 
     @Autowired
     private TestData testData;
+
+
+    
 
     // services
 
@@ -61,11 +74,12 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     @Autowired
     protected ClinicCardControllerTestTemplate clinicCardController;
 
+
     @Override
     public void beforeTestMethod() throws BadEntityException {
+        testData.savedDogPetType = petTypeService.create(testData.getDogPetType());
+        testData.savedCatPetType = petTypeService.create(testData.getCatPetType());
         testData.initTestData();
-        testData.savedDogPetType = petTypeService.create(testData.getSavedDogPetType());
-        testData.savedCatPetType = petTypeService.create(testData.getSavedCatPetType());
     }
 
     @Override

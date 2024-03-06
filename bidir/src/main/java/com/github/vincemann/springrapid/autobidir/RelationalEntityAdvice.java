@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.autobidir;
 
-import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManager;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -10,7 +9,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.util.Entity;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
 import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
-import com.github.vincemann.springrapid.core.util.ProxyUtils;
+import com.github.vincemann.springrapid.core.util.HibernateProxyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -97,7 +96,7 @@ public class RelationalEntityAdvice {
         Set<String> updatedFields = Entity.findPartialUpdatedFields(update, fieldsToUpdate);
 
         // expects all collections to be initialized and not of Persistent Type
-        IdentifiableEntity detachedOldEntity = BeanUtils.instantiateClass(ProxyUtils.getTargetClass(update));
+        IdentifiableEntity detachedOldEntity = BeanUtils.instantiateClass(HibernateProxyUtils.getTargetClass(update));
         NullAwareBeanUtils.copyProperties(detachedOldEntity, old, updatedFields);
 
         relationalEntityManager.partialUpdate(old, detachedOldEntity, update, updatedFields.toArray(new String[0]));
@@ -149,7 +148,8 @@ public class RelationalEntityAdvice {
     }
 
     protected Optional<IdentifiableEntity> findById(JoinPoint joinPoint, Serializable id) {
-        CrudService service = (CrudService) ProxyUtils.getUltimateTargetObject(joinPoint.getTarget());
+        // need to get to target, otherwise cant cast to CrudService
+        CrudService service = (CrudService) com.github.vincemann.springrapid.core.util.AopProxyUtils.getUltimateTargetObject(joinPoint.getTarget());
         // go via crud service locator so aop is not stripped off
         return crudServiceLocator.find(service.getEntityClass()).findById(id);
     }

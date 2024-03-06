@@ -15,7 +15,8 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "illnesss", uniqueConstraints = @UniqueConstraint(name = "unique name", columnNames = "name"))
+@Table(name = "illnesss",
+        uniqueConstraints = @UniqueConstraint(name = "unique name", columnNames = "name"))
 @Entity
 public class Illness extends IdentifiableEntityImpl<Long> {
 
