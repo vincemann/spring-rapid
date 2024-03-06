@@ -5,23 +5,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.Assert;
 
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
+/**
+ * simple static wrapper for {@link org.springframework.security.core.context.SecurityContext}, providing typed access to
+ * {@link RapidPrincipal}
+ */
 @Slf4j
+// kept non static to allow customization
 public class RapidSecurityContextImpl implements RapidSecurityContext {
-    @Override
+
     public void setAuthenticated(RapidPrincipal principal) {
         SecurityContextHolder.getContext().setAuthentication(createToken(principal));
     }
 
-
-    @Override
     public void setAnonAuthenticated() {
         setAuthenticated(getAnonUser());
     }

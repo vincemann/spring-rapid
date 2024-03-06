@@ -58,7 +58,7 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
         return put(controller.getUpdateUrl())
                 .param("id",id.toString())
                 .content(patchString)
-                .contentType(MediaType.APPLICATION_JSON_VALUE);
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
     }
 
     public <D> D update2xx(String patchString,Serializable id, Class<D> dtoClass) throws Exception {

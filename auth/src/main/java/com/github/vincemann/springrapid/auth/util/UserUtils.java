@@ -1,21 +1,13 @@
 package com.github.vincemann.springrapid.auth.util;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import com.nimbusds.jwt.JWTClaimsSet;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.util.Assert;
 
-import java.io.Serializable;
 import java.util.Optional;
 
 public abstract class UserUtils {

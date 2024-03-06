@@ -13,7 +13,6 @@ import com.github.vincemann.springrapid.core.service.ctx.CoreContextService;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.service.id.LongIdConverter;
 import com.github.vincemann.springrapid.core.util.*;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -73,8 +72,8 @@ public class RapidCoreAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(RapidSecurityContext.class)
-    public RapidSecurityContext rapidSecurityContext(){
+    @ConditionalOnMissingBean(RapidSecurityContextImpl.class)
+    public RapidSecurityContextImpl rapidSecurityContext(){
         return new RapidSecurityContextImpl();
     }
 

@@ -978,7 +978,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         String json = perform(ownerController.findSome(idsToSync))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
-        RapidSecurityContext.unsetAuthenticated();
+        RapidSecurityContextImpl.unsetAuthenticated();
 
         Set<ReadOwnOwnerDto> updatedOwners = deserializeToSet(json, ReadOwnOwnerDto.class);
 

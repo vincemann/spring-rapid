@@ -14,13 +14,11 @@ import com.github.vincemann.springrapid.coredemo.service.filter.OwnerTelNumberFi
 import com.github.vincemann.springrapid.coredemo.service.filter.PetNameEndsWithFilter;
 import com.github.vincemann.springrapid.coredemo.service.sort.LastNameAscSorting;
 import com.github.vincemann.springrapid.coredemo.service.sort.LastNameDescSorting;
-import com.github.vincemann.springrapid.coretest.util.TestPrincipal;
 import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
+import com.github.vincemann.springrapid.coretest.sec.WithRapidMockUser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.MvcResult;
@@ -30,7 +28,8 @@ import java.util.*;
 import static com.github.vincemann.springrapid.coredemo.controller.suite.TestData.*;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestExecutionListeners(
         listeners = WithSecurityContextTestExecutionListener.class,
@@ -38,9 +37,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 )
 public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
-
-    @Autowired
-    RapidSecurityContext securityContext;
 
     // SAVE TESTS
 
@@ -136,9 +132,9 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         String newAdr = kahnDto.getAddress()+"new";
         String updateCityJson = createUpdateJsonLine("replace", "/city",newCity);
         String updateAdrJson = createUpdateJsonLine("replace", "/address",newAdr);
-        String updateJsonRequest = createUpdateJsonRequest(updateCityJson, updateAdrJson);
+        String jsonPatch = createUpdateJsonRequest(updateCityJson, updateAdrJson);
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
-                createUpdateJsonRequest(updateJsonRequest),kahnDto.getId(),ReadOwnOwnerDto.class);
+                jsonPatch,kahnDto.getId(),ReadOwnOwnerDto.class);
         // then
         Assertions.assertEquals(newCity,responseDto.getCity());
         Assertions.assertEquals(newAdr,responseDto.getAddress());
@@ -171,7 +167,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // when
         String updateJson = createUpdateJsonLine("remove", "/clinicCardId");
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
-                createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+                createUpdateJsonRequest(updateJson),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         // then
         Assertions.assertNull(responseDto.getClinicCardId());
         assertOwnerHasClinicCard(KAHN,null);
@@ -186,7 +182,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // when
         String updateJson = createUpdateJsonLine("add", "/clinicCardId",savedClinicCard.getId().toString());
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
-                createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+                createUpdateJsonRequest(updateJson),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         // then
         Assertions.assertEquals(savedClinicCard.getId(),responseDto.getClinicCardId());
         assertOwnerHasClinicCard(KAHN,savedClinicCard.getId());
@@ -202,7 +198,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // when
         String updateJson = createUpdateJsonLine("replace", "/clinicCardId",savedSecondClinicCard.getId().toString());
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
-                createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+                createUpdateJsonRequest(updateJson),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         // then
         Assertions.assertEquals(savedSecondClinicCard.getId(),responseDto.getClinicCardId());
         assertOwnerHasClinicCard(KAHN,savedSecondClinicCard.getId());
@@ -219,7 +215,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // when
         String updateJson = createUpdateJsonLine("remove", "/petIds",bello.getId().toString());
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
-                createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+                createUpdateJsonRequest(updateJson),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         // then
         Assertions.assertTrue(responseDto.getPetIds().isEmpty());
         assertOwnerHasPets(KAHN);
@@ -235,7 +231,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // when
         String updateJson = createUpdateJsonLine("remove", "/petIds");
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
-                createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+                createUpdateJsonRequest(updateJson),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         // then
         Assertions.assertTrue(responseDto.getPetIds().isEmpty());
         assertOwnerHasPets(KAHN);
@@ -252,7 +248,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // when
         String updateJson = createUpdateJsonLine("remove", "/petIds",bello.getId().toString());
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
-                createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+                createUpdateJsonRequest(updateJson),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         // then
         Assertions.assertTrue(responseDto.getPetIds().contains(kitty.getId()));
         Assertions.assertEquals(1,responseDto.getPetIds().size());
@@ -274,7 +270,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         String removeKittyJson = createUpdateJsonLine("remove", "/petIds",kitty.getId().toString());
         String removePetsJson = createUpdateJsonRequest(removeBelloJson, removeKittyJson);
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
-                createUpdateJsonRequest(createUpdateJsonRequest(removePetsJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+                removePetsJson,createdKahnDto.getId(),ReadOwnOwnerDto.class);
         // then
         Assertions.assertTrue(responseDto.getPetIds().contains(bella.getId()));
         Assertions.assertEquals(1,responseDto.getPetIds().size());
@@ -297,8 +293,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         String removeKittyJson = createUpdateJsonLine("remove", "/petIds",bella.getId().toString());
         String removePetsJson = createUpdateJsonRequest(removeBelloJson, removeKittyJson);
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
-                createUpdateJsonRequest(createUpdateJsonRequest(removePetsJson)),
-                createdKahnDto.getId(),ReadOwnOwnerDto.class);
+                removePetsJson, createdKahnDto.getId(),ReadOwnOwnerDto.class);
         // then
         Assertions.assertTrue(responseDto.getPetIds().contains(kitty.getId()));
         Assertions.assertEquals(1,responseDto.getPetIds().size());
@@ -318,7 +313,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // when
         String updateJson = createUpdateJsonLine("remove", "/hobbies", hobbyToRemove);
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
-                createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+                createUpdateJsonRequest(updateJson),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         // then
         Assertions.assertFalse(responseDto.getHobbies().contains(hobbyToRemove));
         Assertions.assertEquals(hobbies.size()-1,responseDto.getHobbies().size());
@@ -336,7 +331,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // when
         String updateJson = createUpdateJsonLine("add", "/petIds", bello.getId().toString());
         ReadOwnOwnerDto responseDto = ownerController.update2xx(
-                createUpdateJsonRequest(createUpdateJsonRequest(updateJson)),createdKahnDto.getId(),ReadOwnOwnerDto.class);
+                createUpdateJsonRequest(updateJson),createdKahnDto.getId(),ReadOwnOwnerDto.class);
         // then
         Assertions.assertTrue(responseDto.getPetIds().contains(bello.getId()));
         assertOwnerHasPets(KAHN,BELLO);
@@ -345,7 +340,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
     // FIND TESTS
     @Test
-    @WithMockUser(username = KAHN)
+    @WithRapidMockUser(username = KAHN)
     public void ownerCanFindOwnOwner() throws Exception {
         // given
         ReadOwnOwnerDto kahn = helper.saveOwnerLinkedToPets(testData.getKahn());
@@ -357,6 +352,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
+    @WithRapidMockUser(username = KAHN)
     public void canFindAllOwnersWithPetsFilter() throws Exception {
 
         // save kahn -> bello
@@ -376,11 +372,9 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Assertions.assertEquals(3,ownerService.findAll().size());
 
         // when
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
         List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class, hasPetsFilter);
-        RapidSecurityContext.unsetAuthenticated();
         // then
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(2,responseDtos.size());
@@ -391,6 +385,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
+    @WithRapidMockUser(username = KAHN)
     public void canFindAllOwnersWithPetsFilterSortedByLastNameDsc() throws Exception {
 
         // save kahn -> bello
@@ -411,12 +406,10 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Assertions.assertEquals(3,ownerService.findAll().size());
 
         // when
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
         UrlWebExtension sortByNameDesc = new UrlWebExtension(LastNameDescSorting.class);
         List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class, hasPetsFilter, sortByNameDesc);
-        RapidSecurityContext.unsetAuthenticated();
 
         // then
         // one dto findOwnDto and one findForeign
@@ -433,6 +426,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     }
 
     @Test
+    @WithRapidMockUser(username = KAHN)
     public void canFindAllOwnersWithPetsFilterSortedByLastNameAsc() throws Exception {
 
         // save kahn -> bello
@@ -452,11 +446,9 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Assertions.assertEquals(3,ownerService.findAll().size());
 
         // when
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
         UrlWebExtension sortByNameAsc = new UrlWebExtension(LastNameAscSorting.class);
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class, hasPetsFilter, sortByNameAsc);
         RapidSecurityContext.unsetAuthenticated();
 
@@ -477,6 +469,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
     // can combine query filter with memory filter
     @Test
+    @WithRapidMockUser(username = KAHN)
     public void canFindAllOwnersWithPetsFilterAndInMemoryTelNrPrefix() throws Exception {
         // save kahn -> bello
         // meier -> kitty
@@ -501,12 +494,10 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
 
         // when
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
         UrlWebExtension telNrPrefixFilter = new UrlWebExtension(OwnerTelNumberFilter.class,telnrPrefix);
         List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class,telNrPrefixFilter, hasPetsFilter);
-        RapidSecurityContext.unsetAuthenticated();
         // then
 
         // one dto findOwnDto and one findForeign
@@ -517,7 +508,8 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
     // combine jpql filter with two memory filters
     @Test
-    public void canFindAllOwnersWithPetsFilter_andTelNrPrefix_andPetNameEndsWithA() throws Exception {
+    @WithRapidMockUser(username = KAHN)
+    public void canFindAllOwnersWithPetsFilterAndTelNrPrefixFilterAndPetNameFilter() throws Exception {
         // save kahn -> bello
         // meier -> kitty
         // gil -> bella
@@ -530,10 +522,11 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // given
         Pet bello = petService.create(testData.getBello());
         Pet kitty = petService.create(testData.getKitty());
+        Pet bella = petService.create(testData.getBella());
 
         ReadOwnOwnerDto savedKahn = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId());
         ReadOwnOwnerDto savedMeier = helper.saveOwnerLinkedToPets(testData.getMeier(), kitty.getId());
-        ReadOwnOwnerDto savedGil = helper.saveOwnerLinkedToPets(testData.getGil());
+        ReadOwnOwnerDto savedGil = helper.saveOwnerLinkedToPets(testData.getGil(),bella.getId());
         Assertions.assertEquals(3,ownerService.findAll().size());
 
         String telnrPrefix = "0176";
@@ -543,14 +536,12 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
 
         // when
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
         UrlWebExtension petNameEndsWithAFilter = new UrlWebExtension(PetNameEndsWithFilter.class,"a");
         // jpql query filters (always come first)
         UrlWebExtension telNrPrefixFilter = new UrlWebExtension(OwnerTelNumberFilter.class,telnrPrefix);
         List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class,telNrPrefixFilter, hasPetsFilter,petNameEndsWithAFilter);
-        RapidSecurityContext.unsetAuthenticated();
         // then
 
         // one dto findOwnDto and one findForeign
@@ -569,7 +560,8 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
     // combine multiple jpql filters with memory filter
     @Test
-    public void canFindAllOwnersWithPetsFilter_andTelNrPrefix_andCityIsN1() throws Exception {
+    @WithRapidMockUser(username = KAHN)
+    public void canFindAllOwnersWithPetsAndTelNrPrefixAndCityFilter() throws Exception {
         // save kahn -> bello
         // meier -> kitty
         // gil -> bella
@@ -598,14 +590,12 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         Assertions.assertFalse(savedGil.getCity().startsWith(niceCityPrefix));
 
         // when
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         // memory filter
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
         // jpql filters (always come first)
         UrlWebExtension telNrPrefixFilter = new UrlWebExtension(OwnerTelNumberFilter.class,telnrPrefix);
         UrlWebExtension cityPrefixFilter = new UrlWebExtension(CityPrefixFilter.class, niceCityPrefix);
         List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class,telNrPrefixFilter,cityPrefixFilter, hasPetsFilter);
-        RapidSecurityContext.unsetAuthenticated();
         // then
 
         Assertions.assertEquals(1,responseDtos.size());
@@ -615,19 +605,18 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
 
     @Test
+    @WithRapidMockUser(username = KAHN)
     public void canFindOwnOwnerWithPets() throws Exception {
         // given
         Pet bello = petService.create(testData.getBello());
         Pet kitty = petService.create(testData.getKitty());
         ReadOwnOwnerDto savedKahn = helper.saveOwnerLinkedToPets(testData.getKahn(),bello.getId(), kitty.getId());
         // when
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
         ReadOwnOwnerDto responseDto = ownerController.find2xx(savedKahn.getId(),ReadOwnOwnerDto.class);
         // then
         Assertions.assertEquals(2,responseDto.getPetIds().size());
         Assertions.assertTrue(responseDto.getPetIds().contains(bello.getId()));
         Assertions.assertTrue(responseDto.getPetIds().contains(kitty.getId()));
-        RapidSecurityContext.unsetAuthenticated();
     }
 
     @Test
@@ -640,21 +629,19 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.lastName").doesNotExist())
                 .andExpect(jsonPath("$.city").value(savedKahnDto.getCity()));
-        RapidSecurityContext.unsetAuthenticated();
     }
 
     @Test
+    @WithRapidMockUser(username = MEIER)
     public void userCanFindForeignOwnOwner() throws Exception {
         // given
         ReadOwnOwnerDto savedKahnDto = helper.saveOwnerLinkedToPets(testData.getKahn());
         // when
-        securityContext.setAuthenticated(TestPrincipal.withName(MEIER));
         getMvc().perform(ownerController.find(savedKahnDto.getId()))
         // then
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.lastName").doesNotExist())
                 .andExpect(jsonPath("$.city").value(savedKahnDto.getCity()));
-        RapidSecurityContext.unsetAuthenticated();
     }
 
 

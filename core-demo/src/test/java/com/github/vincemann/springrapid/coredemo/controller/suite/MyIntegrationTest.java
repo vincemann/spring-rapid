@@ -1,25 +1,17 @@
 package com.github.vincemann.springrapid.coredemo.controller.suite;
 
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coredemo.controller.suite.template.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.coredemo.controller.suite.template.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.coredemo.controller.suite.template.VetControllerTestTemplate;
 import com.github.vincemann.springrapid.coredemo.controller.suite.template.VisitControllerTestTemplate;
-import com.github.vincemann.springrapid.coredemo.dto.owner.CreateOwnerDto;
-import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.coredemo.model.*;
-import com.github.vincemann.springrapid.coredemo.repo.*;
 import com.github.vincemann.springrapid.coredemo.service.*;
 import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
