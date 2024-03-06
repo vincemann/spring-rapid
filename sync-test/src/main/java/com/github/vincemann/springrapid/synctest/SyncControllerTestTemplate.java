@@ -77,7 +77,7 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
 
 
         EntitySyncStatus status = getController().getJsonMapper().readDto(json,EntitySyncStatus.class);
-        assertThat(status,equalTo(expectedStatus));
+        assertThat(status.getStatus(),equalTo(expectedStatus));
         assertThat(entityId.toString(),equalTo(status.getId()));
         return status;
     }
