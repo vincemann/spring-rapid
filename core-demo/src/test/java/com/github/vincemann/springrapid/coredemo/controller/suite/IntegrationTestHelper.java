@@ -40,9 +40,6 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     @Autowired
     private TestData testData;
 
-
-    
-
     // services
 
     @Autowired
@@ -58,7 +55,6 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     @Autowired
     protected OwnerService ownerService;
 
-
     // controllers
 
     @Autowired
@@ -73,7 +69,6 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     protected SpecialtyControllerTestTemplate specialtyController;
     @Autowired
     protected ClinicCardControllerTestTemplate clinicCardController;
-
 
     @Override
     public void beforeTestMethod() throws BadEntityException {

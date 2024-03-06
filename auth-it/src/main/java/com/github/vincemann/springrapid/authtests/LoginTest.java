@@ -38,21 +38,11 @@ public class LoginTest extends RapidAuthIntegrationTest {
 
 	@Test
 	public void cantUseExpiredToken() throws Exception {
-		
-//		// Test that default token does not expire before 10 days		
-//		Thread.sleep(1001L);
-//		mvc.perform(get("/api/core/ping")
-//				.header(LemonSecurityConfig.TOKEN_REQUEST_HEADER_NAME, tokens.get(getAdmin().getId())))
-//				.andExpect(status().is(204));
-		
 		// Test that a 50ms token does not expire before 50ms
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD, 50L);
 		// but, does expire after 50ms
 		Thread.sleep(51L);
 		assertTokenDoesNotWork(token);
-//		mvc.perform(get(authProperties.getController().getPingUrl())
-//				.header(HttpHeaders.AUTHORIZATION, token))
-//				.andExpect(status().is(401));
 	}
 
 	/**
@@ -62,7 +52,6 @@ public class LoginTest extends RapidAuthIntegrationTest {
 	public void cantUseObsoleteToken() throws Exception {
 		
 		// credentials updated
-		// Thread.sleep(1001L);
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
 		transactionTemplate.executeWithoutResult(new Consumer<>() {
@@ -77,9 +66,6 @@ public class LoginTest extends RapidAuthIntegrationTest {
 
 
 		assertTokenDoesNotWork(token);
-//		mvc.perform(get(authProperties.getController().getPingUrl())
-//				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
-//				.andExpect(status().is(401));
 	}
 
 	@Test

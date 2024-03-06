@@ -8,11 +8,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
+import com.github.vincemann.springrapid.core.util.AopProxyUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
-import static com.github.vincemann.springrapid.core.util.HibernateProxyUtils.getAopUltimateTargetObject;
+import static com.github.vincemann.springrapid.core.util.AopProxyUtils.getUltimateTargetObject;
 public class ResendVerificationMailTest extends RapidAuthIntegrationTest {
 
 	@Test
@@ -51,8 +52,8 @@ public class ResendVerificationMailTest extends RapidAuthIntegrationTest {
 	public void anonCantResendVerificationMail() throws Exception {
 		mvc.perform(userController.resendVerificationContactInformation(getUnverifiedUser().getContactInformation(),""))
 				.andExpect(status().isUnauthorized());
-		
-		verify(getAopUltimateTargetObject(msgSender), never()).send(any());
+
+		verifyNoMsgSent();
 	}
 	
 	@Test
@@ -61,7 +62,7 @@ public class ResendVerificationMailTest extends RapidAuthIntegrationTest {
 		mvc.perform(userController.resendVerificationContactInformation(getUser().getContactInformation(),token))
 				.andExpect(status().isBadRequest());
 
-		verify(getAopUltimateTargetObject(msgSender), never()).send(any());
+		verifyNoMsgSent();
 	}
 	
 
@@ -72,6 +73,6 @@ public class ResendVerificationMailTest extends RapidAuthIntegrationTest {
 		mvc.perform(userController.resendVerificationContactInformation(UNKNOWN_USER_ID,token))
 				.andExpect(status().isNotFound());
 		
-		verify(getAopUltimateTargetObject(msgSender), never()).send(any());
+		verifyNoMsgSent();
 	}
 }

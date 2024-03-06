@@ -45,14 +45,6 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 				.andExpect(status().isForbidden());
 	}
 
-//	@Test
-//	public void cantVerifyContactInformationOfUnknownUser() throws Exception {
-//		SignupDto signupDto = createValidSignupDto();
-//		MailData mailData = userController.signup2xx(signupDto);
-//		userController.verifyContactInformation(UNKNOWN_USER_ID,mailData.getCode())
-//				.andExpect(status().isNotFound());
-//	}
-
 	// https://github.com/Gallopsled/pwntools/issues/1783
 	@Test
 	public void cantVerifyContactInformationWithInvalidData() throws Exception {
@@ -71,17 +63,6 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 		String code = modifyCode(msg.getCode(),"wrong-audience",null,null,null,null);
 		mvc.perform(userController.verifyContactInformation(code))
 				.andExpect(status().isForbidden());
-
-		// test makes no sense
-//		// Wrong contactInformation/ userid
-//		code = modCode(mailData.getCode(),null,getUnverifiedUser().getId().toString(),null,null,null);
-//		userController.verifyContactInformation(code)
-//				.andExpect(status().isForbidden());
-
-//		// Wrong user id
-//		code = modCode(mailData.getCode(),null,getSecondUser().getId().toString(),null,null,null);
-//		userController.verifyContactInformation(code)
-//				.andExpect(status().isForbidden());
 	}
 
 	@Test
@@ -95,18 +76,6 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 		Thread.sleep(51L);
 		mvc.perform(userController.verifyContactInformationWithLink(msg.getLink()))
 				.andExpect(status().isForbidden());
-
-//
-//		token = jweTokenService.createToken(
-//				RapidJwt.create(AbstractUserService.VERIFY_SUBJECT,
-//						Long.toString(getUnverifiedUser().getId()), 1L,
-//						MapUtils.mapOf("contactInformation", UNVERIFIED_USER_CONTACT_INFORMATION)));
-//		// Thread.sleep(1001L);
-//		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
-//				.param("id",getUnverifiedUser().getId().toString())
-//				.param("code", token)
-//				.header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-//				.andExpect(status().is(403));
 	}
 
 	@Test

@@ -15,6 +15,7 @@ import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.Root;
+import com.github.vincemann.springrapid.core.util.AopProxyUtils;
 import com.github.vincemann.springrapid.coretest.util.TransactionalTestUtil;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.Getter;
@@ -36,7 +37,10 @@ import java.text.ParseException;
 import java.util.Map;
 
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
-import static com.github.vincemann.springrapid.core.util.HibernateProxyUtils.getAopUltimateTargetObject;
+import static com.github.vincemann.springrapid.core.util.AopProxyUtils.getUltimateTargetObject;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -104,7 +108,7 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
 
     protected void setupSpies() {
         jwt = Mockito.spy(properties.getJwt());
-        Mockito.doReturn(jwt).when(getAopUltimateTargetObject(properties)).getJwt();
+        Mockito.doReturn(jwt).when(AopProxyUtils.getUltimateTargetObject(properties)).getJwt();
     }
 
 
@@ -167,15 +171,18 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
         return jweTokenService.createToken(claims);
     }
 
+    protected void verifyNoMsgSent(){
+        verify(AopProxyUtils.getUltimateTargetObject(msgSender), never()).send(any());
+    }
+
     @AfterEach
     protected void tearDown() throws Exception {
         System.err.println("TEST ENDS HERE -----------------------------------------------------------------------------------------------------------------");
         System.err.println("deleting users");
-        clearAclCache();
         TransactionalTestUtil.clear(userService, transactionTemplate);
         System.err.println("deleted users");
 
-        Mockito.reset(getAopUltimateTargetObject(msgSender));
+        Mockito.reset(AopProxyUtils.getUltimateTargetObject(msgSender));
         testAdapter.afterEach();
 //        https://github.com/spring-projects/spring-boot/issues/7374  -> @SpyBean beans are automatically reset
     }

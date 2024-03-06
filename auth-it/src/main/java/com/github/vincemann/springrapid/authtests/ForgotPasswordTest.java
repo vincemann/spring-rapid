@@ -1,13 +1,13 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
+import com.github.vincemann.springrapid.core.util.AopProxyUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static com.github.vincemann.springrapid.auth.service.PasswordServiceImpl.FORGOT_PASSWORD_AUDIENCE;
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.UNKNOWN_CONTACT_INFORMATION;
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.USER_CONTACT_INFORMATION;
-import static com.github.vincemann.springrapid.core.util.HibernateProxyUtils.getAopUltimateTargetObject;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -39,6 +39,6 @@ public class ForgotPasswordTest extends RapidAuthIntegrationTest {
 		mvc.perform(userController.forgotPassword(""))
 				.andExpect(status().isBadRequest());
 
-		verify(getAopUltimateTargetObject(msgSender), never()).send(any());
+		verifyNoMsgSent();
 	}
 }

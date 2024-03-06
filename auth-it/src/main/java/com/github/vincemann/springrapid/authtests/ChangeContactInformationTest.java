@@ -145,13 +145,13 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
                 new RequestContactInformationChangeDto(getUser().getContactInformation(), NEW_CONTACT_INFORMATION));
         // credentials updated after the request for contactInformation change was made
 
-        transactionTemplate.executeWithoutResult(status -> {
-            AbstractUser<Serializable> user = getUserService().findById(getUser().getId()).get();
-            user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-            try {
+        transactionTemplate.executeWithoutResult(new Consumer<TransactionStatus>() {
+            @SneakyThrows
+            @Override
+            public void accept(TransactionStatus transactionStatus) {
+                AbstractUser<Serializable> user = getUserService().findById(getUser().getId()).get();
+                user.setCredentialsUpdatedMillis(System.currentTimeMillis());
                 getUserService().fullUpdate(user);
-            } catch (EntityNotFoundException e) {
-                throw new RuntimeException(e);
             }
         });
 

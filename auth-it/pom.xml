@@ -16,10 +16,6 @@
 
     <dependencies>
 
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
@@ -37,6 +33,12 @@
             <groupId>com.github.vincemann.spring-rapid</groupId>
             <artifactId>auth-test</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>

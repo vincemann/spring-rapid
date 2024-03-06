@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class InitializingTestExecutionListener extends AbstractTestExecutionListener {
 
-    @Autowired
+    @Autowired(required = false)
     private List<TestMethodInitializable> methodInitializables = new ArrayList<>();
     private boolean beforeEachInitialized = false;
     private boolean afterEachInitialized = false;

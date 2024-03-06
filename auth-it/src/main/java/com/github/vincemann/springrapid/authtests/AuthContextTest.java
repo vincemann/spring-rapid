@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.github.vincemann.springrapid.core.sec.Roles;
+import com.github.vincemann.springrapid.core.util.AopProxyUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -14,7 +15,7 @@ import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.github.vincemann.springrapid.core.util.HibernateProxyUtils.getAopUltimateTargetObject;
+import static com.github.vincemann.springrapid.core.util.AopProxyUtils.getUltimateTargetObject;
 
 
 public class AuthContextTest extends RapidAuthIntegrationTest {
@@ -26,7 +27,7 @@ public class AuthContextTest extends RapidAuthIntegrationTest {
 		Map<String,Object> testSharedProperties = new HashMap<>();
 		testSharedProperties.put("testKey","testValue");
 
-		Mockito.when(getAopUltimateTargetObject(coreProperties).getShared())
+		Mockito.when(AopProxyUtils.getUltimateTargetObject(coreProperties).getShared())
 				.thenReturn(testSharedProperties);
 	}
 

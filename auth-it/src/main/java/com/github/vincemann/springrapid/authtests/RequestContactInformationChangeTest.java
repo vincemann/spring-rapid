@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.authtests;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
+import com.github.vincemann.springrapid.core.util.AopProxyUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
-import static com.github.vincemann.springrapid.core.util.HibernateProxyUtils.getAopUltimateTargetObject;
+import static com.github.vincemann.springrapid.core.util.AopProxyUtils.getUltimateTargetObject;
 public class RequestContactInformationChangeTest extends RapidAuthIntegrationTest {
 
 
@@ -32,7 +33,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 		mvc.perform(userController.requestContactInformationChange(token,contactInformationChangeDto(UNVERIFIED_USER_CONTACT_INFORMATION)))
 				.andExpect(status().is(204));
 
-		verify(getAopUltimateTargetObject(msgSender)).send(any());
+		verify(AopProxyUtils.getUltimateTargetObject(msgSender)).send(any());
 
 		AbstractUser<Serializable> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
 		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getNewContactInformation());
@@ -45,7 +46,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 		mvc.perform(userController.requestContactInformationChange(token,contactInformationChangeDto(USER_CONTACT_INFORMATION)))
 				.andExpect(status().is(204));
 
-		verify(getAopUltimateTargetObject(msgSender)).send(any());
+		verify(AopProxyUtils.getUltimateTargetObject(msgSender)).send(any());
 
 		AbstractUser<Serializable> updatedUser = getUserService().findById(getUser().getId()).get();
 		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getNewContactInformation());
@@ -74,7 +75,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 		mvc.perform(userController.requestContactInformationChange(token,contactInformationChangeDto(UNKNOWN_CONTACT_INFORMATION)))
 				.andExpect(status().is(404));
 		
-		verify(getAopUltimateTargetObject(msgSender), never()).send(any());
+		verifyNoMsgSent();
 	}
 
 	@Test
@@ -83,7 +84,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 		mvc.perform(userController.requestContactInformationChange(token,contactInformationChangeDto(SECOND_USER_CONTACT_INFORMATION)))
 				.andExpect(status().is(403));
 		
-		verify(getAopUltimateTargetObject(msgSender), never()).send(any());
+		verifyNoMsgSent();
 
 		AbstractUser<Serializable> updatedUser = getUserService().findById(getSecondUser().getId()).get();
 		Assertions.assertNull(updatedUser.getNewContactInformation());
@@ -105,7 +106,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		mvc.perform(userController.requestContactInformationChange(token,dto))
 				.andExpect(status().is(400));
-		verify(getAopUltimateTargetObject(msgSender), never()).send(any());
+		verifyNoMsgSent();
     	
 		dto = new RequestContactInformationChangeDto();
 //		dto.setPassword("");
@@ -115,7 +116,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
     	// try with blank newContactInformation
 		mvc.perform(userController.requestContactInformationChange(token,dto))
 				.andExpect(status().is(400));
-		verify(getAopUltimateTargetObject(msgSender), never()).send(any());
+		verifyNoMsgSent();
 
 		// try with invalid newContactInformation
 		dto = new RequestContactInformationChangeDto();
@@ -125,13 +126,13 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 
 		mvc.perform(userController.requestContactInformationChange(token,dto))
 				.andExpect(status().is(400));
-		verify(getAopUltimateTargetObject(msgSender), never()).send(any());
+		verifyNoMsgSent();
 		// try with an existing contactInformation
 		dto = contactInformationChangeDto(USER_CONTACT_INFORMATION);
 		dto.setNewContactInformation(SECOND_USER_CONTACT_INFORMATION);
 		mvc.perform(userController.requestContactInformationChange(token,dto))
 				.andExpect(status().is(400));
-		
-		verify(getAopUltimateTargetObject(msgSender), never()).send(any());
+
+		verifyNoMsgSent();
 	}
 }

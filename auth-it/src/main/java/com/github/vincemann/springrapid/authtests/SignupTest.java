@@ -19,7 +19,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static com.github.vincemann.springrapid.core.util.HibernateProxyUtils.getAopUltimateTargetObject;
+import static com.github.vincemann.springrapid.core.util.AopProxyUtils.getUltimateTargetObject;
 public class SignupTest extends RapidAuthIntegrationTest {
 
 	@Autowired
@@ -31,7 +31,7 @@ public class SignupTest extends RapidAuthIntegrationTest {
 		mvc.perform(userController.signup(signupDto))
 				.andExpect(status().isBadRequest());
 
-		verify(getAopUltimateTargetObject(msgSender), never()).send(any());
+		verifyNoMsgSent();
 	}
 
 	@Test
@@ -76,6 +76,6 @@ public class SignupTest extends RapidAuthIntegrationTest {
 		mvc.perform(userController.signup(signupDto))
 				.andExpect(status().isBadRequest());
 		// mock is reset by signup2xx so never only applies to latest signup
-		verify(getAopUltimateTargetObject(msgSender), never()).send(any());
+		verifyNoMsgSent();
 	}
 }
