@@ -32,9 +32,8 @@ public class LemonWebExceptionsAutoConfiguration {
 	 */	
 	@Bean
 	@ConditionalOnMissingBean(LemonErrorResponseFactory.class)
-	public <T extends Throwable>
-	ErrorResponseFactory<T> errorResponseComposer(List<AbstractExceptionHandler<T>> handlers) {
-		
+	public <T extends Throwable> ErrorResponseFactory<T> errorResponseFactory(
+			List<AbstractExceptionHandler<T>> handlers) {
 		return new LemonErrorResponseFactory<T>(handlers);
 	}
 

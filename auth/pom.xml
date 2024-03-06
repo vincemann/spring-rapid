@@ -43,12 +43,6 @@
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>lemon-exceptions</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
 
         <!-- Password Validation -->
         <dependency>
@@ -57,13 +51,12 @@
             <version>${passay.version}</version>
         </dependency>
 
-
+<!--        jwt-->
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
             <version>8.14.1</version>
         </dependency>
-
 
     </dependencies>
 

@@ -13,6 +13,8 @@
 
     <dependencies>
 
+<!--        SPRING RAPID-->
+
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
             <artifactId>auth</artifactId>
@@ -31,10 +33,7 @@
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-        </dependency>
+<!--        DB-->
 
         <dependency>
             <groupId>com.h2database</groupId>
@@ -42,11 +41,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+<!--        TEST-->
 
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
@@ -57,22 +52,8 @@
 
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>acl-test</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.vincemann.spring-rapid</groupId>
             <artifactId>auth-test</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.vincemann</groupId>
-            <artifactId>ez-compare</artifactId>
-            <version>${ez-compare.version}</version>
             <scope>test</scope>
         </dependency>
 

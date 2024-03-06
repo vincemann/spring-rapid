@@ -15,19 +15,14 @@
     <dependencies>
 
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>acl-test</artifactId>
+            <artifactId>auth</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>auth</artifactId>
+            <artifactId>acl-test</artifactId>
             <version>${project.version}</version>
         </dependency>
 
