@@ -99,6 +99,10 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
                 .contentType(MediaType.APPLICATION_JSON_VALUE);
     }
 
+    public <D> Set<D> findSome2xx(Set<String> ids, Class<D> dtoClass) throws Exception {
+        return perform2xxAndDeserializeToSet(findSome(ids),dtoClass);
+    }
+
 
     public MockHttpServletRequestBuilder findAll(UrlWebExtension... extensions) throws Exception {
         MockHttpServletRequestBuilder requestBuilder = get(controller.getFindAllUrl());

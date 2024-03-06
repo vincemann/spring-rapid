@@ -25,9 +25,4 @@ public class JpaPetService
         return super.partialUpdate(update, fieldsToUpdate);
     }
 
-    @Override
-    public Class<?> getTargetClass() {
-        return JpaPetService.class;
-    }
-
 }

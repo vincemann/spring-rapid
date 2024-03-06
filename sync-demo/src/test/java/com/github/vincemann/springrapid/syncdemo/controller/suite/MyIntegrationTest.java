@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.syncdemo.controller.suite;
 
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
 import com.github.vincemann.springrapid.syncdemo.controller.suite.template.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.controller.suite.template.PetControllerTestTemplate;
@@ -22,8 +21,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class MyIntegrationTest extends AbstractMvcTest {
@@ -134,8 +131,6 @@ public class MyIntegrationTest extends AbstractMvcTest {
     protected ClinicCard clinicCard;
     protected ClinicCard secondClinicCard;
 
-    @Autowired
-    protected RapidSecurityContextImpl securityContext;
 
     @Autowired
     protected TransactionTemplate transactionTemplate;
@@ -406,12 +401,12 @@ public class MyIntegrationTest extends AbstractMvcTest {
         return byId.get();
     }
 
-    protected Owner saveOwnerLinkedToPets(Owner owner, Long... petIds) throws Exception {
+    protected Owner createOwnerLinkedToPets(Owner owner, Long... petIds) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
         createOwnerDto.getPetIds().addAll(Lists.newArrayList(petIds));
 
 
-        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(ownerController.create(createOwnerDto), ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto readOwnOwnerDto = ownerController.create2xx(createOwnerDto, ReadOwnOwnerDto.class);
         Assertions.assertNotNull(readOwnOwnerDto.getId());
         Owner saved = fetchOwner(readOwnOwnerDto.getId());
         Assertions.assertNotNull(saved.getCreatedDate());
@@ -422,10 +417,10 @@ public class MyIntegrationTest extends AbstractMvcTest {
     }
 
 
-    protected Owner saveOwnerLinkedToClinicCard(Owner owner, ClinicCard clinicCard) throws Exception {
+    protected Owner createOwnerLinkedToClinicCard(Owner owner, ClinicCard clinicCard) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
         createOwnerDto.setClinicCardId(clinicCard.getId());
-        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(ownerController.create(createOwnerDto), ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto readOwnOwnerDto = ownerController.create2xx(createOwnerDto, ReadOwnOwnerDto.class);
         Assertions.assertNotNull(readOwnOwnerDto.getId());
         Owner saved = fetchOwner(readOwnOwnerDto.getId());
         Assertions.assertNotNull(saved.getCreatedDate());
@@ -436,34 +431,20 @@ public class MyIntegrationTest extends AbstractMvcTest {
     }
 
 
-    protected ReadOwnOwnerDto saveOwner(Owner owner) throws Exception {
+    protected ReadOwnOwnerDto createOwner(Owner owner) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
-        return performDs2xx(ownerController.create(createOwnerDto), ReadOwnOwnerDto.class);
+        return ownerController.create2xx(createOwnerDto, ReadOwnOwnerDto.class);
     }
 
-    protected ReadPetDto savePetLinkedToOwnerAndToys(Pet pet, Long ownerId, Toy... toys) throws Exception {
+    protected ReadPetDto createPetLinkedToOwnerAndToys(Pet pet, Long ownerId, Toy... toys) throws Exception {
         CreatePetDto createPetDto = new CreatePetDto(pet);
         if (ownerId != null)
             createPetDto.setOwnerId(ownerId);
         if (toys.length > 0)
-            createPetDto.setToyIds(Arrays.stream(toys).map(Toy::getId).collect(Collectors.toSet()));
+            createPetDto.setToyIds(Arrays.stream(toys)
+                    .map(Toy::getId)
+                    .collect(Collectors.toSet()));
 
-        return deserialize(getMvc().perform(petController.create(createPetDto))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn()
-                .getResponse().getContentAsString(), ReadPetDto.class);
+        return petController.create2xx(createPetDto, ReadPetDto.class);
     }
-
-
-//    @AfterEach
-//    void tearDown() {
-//        TransactionalRapidTestUtil.clear(visitService);
-//        TransactionalRapidTestUtil.clear(petService);
-//        TransactionalRapidTestUtil.clear(toyService);
-//        TransactionalRapidTestUtil.clear(ownerService);
-//        TransactionalRapidTestUtil.clear(petTypeService);
-//        TransactionalRapidTestUtil.clear(specialtyService);
-//        TransactionalRapidTestUtil.clear(vetService);
-//        TransactionalRapidTestUtil.clear(clinicCardService);
-//    }
 }
