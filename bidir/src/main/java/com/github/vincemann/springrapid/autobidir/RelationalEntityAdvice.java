@@ -149,7 +149,7 @@ public class RelationalEntityAdvice {
     }
 
     protected Optional<IdentifiableEntity> findById(JoinPoint joinPoint, Serializable id) {
-        CrudService service = (CrudService) AopProxyUtils.getSingletonTarget(joinPoint.getTarget());
+        CrudService service = (CrudService) ProxyUtils.getUltimateTargetObject(joinPoint.getTarget());
         // go via crud service locator so aop is not stripped off
         return crudServiceLocator.find(service.getEntityClass()).findById(id);
     }

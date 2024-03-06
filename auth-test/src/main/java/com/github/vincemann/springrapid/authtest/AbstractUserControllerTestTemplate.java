@@ -7,7 +7,6 @@ import com.github.vincemann.springrapid.auth.dto.*;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
-import org.junit.jupiter.api.Assertions;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.io.Serializable;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -209,7 +210,8 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         verify(ProxyUtils.aopUnproxy(messageSenderMock), atLeast(1))
                 .send(msgCaptor.capture());
         AuthMessage sentData = msgCaptor.getValue();
-        Assertions.assertEquals(recipient,sentData.getRecipient());
+        assertThat("latest msg must be sent to recipient: " +recipient + " but was sent to: " + sentData.getRecipient(),
+                sentData.getRecipient(),equalTo(recipient));
         Mockito.reset(ProxyUtils.aopUnproxy(messageSenderMock));
         return sentData;
     }

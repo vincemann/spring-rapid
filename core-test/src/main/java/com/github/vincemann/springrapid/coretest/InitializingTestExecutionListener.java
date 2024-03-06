@@ -34,7 +34,7 @@ public class InitializingTestExecutionListener extends TransactionalTestExecutio
             ReflectionUtils.doWithFields(testContext.getTestClass(), field -> {
                 try {
                     ReflectionUtils.makeAccessible(field);
-                    Object member = field.get(this);
+                    Object member = field.get(testContext.getTestInstance());
                     if (member instanceof TestClassInitializable) {
                         ((TestClassInitializable) member).beforeTestClass();
                     }
@@ -69,7 +69,7 @@ public class InitializingTestExecutionListener extends TransactionalTestExecutio
             ReflectionUtils.doWithFields(testContext.getTestClass(), field -> {
                 try {
                     ReflectionUtils.makeAccessible(field);
-                    Object member = field.get(this);
+                    Object member = field.get(testContext.getTestInstance());
                     if (member instanceof TestClassInitializable) {
                         ((TestClassInitializable) member).afterTestClass();
                     }

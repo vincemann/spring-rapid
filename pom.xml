@@ -21,12 +21,6 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <lombok.version>1.18.8</lombok.version>
-        <javax.validation.version>2.0.1.Final</javax.validation.version>
-        <guava.version>30.0-jre</guava.version>
-        <aop-log.version>1.0.0-SNAPSHOT.8</aop-log.version>
-
-<!--        demo projects only-->
-        <ez-compare.version>1.0.0-SNAPSHOT.3</ez-compare.version>
     </properties>
 
     <modules>
@@ -73,23 +67,26 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.junit.vintage</groupId>
-                    <artifactId>junit-vintage-engine</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>2.22.0</version>
             <scope>test</scope>
         </dependency>
+
+        <!--        cant put that in here bc core-test needs compile scope and somehow it always picks this dep with test scope
+            instead of the declared one in core-test pom...
+-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-starter-test</artifactId>-->
+        <!--            <scope>test</scope>-->
+        <!--            <exclusions>-->
+        <!--                <exclusion>-->
+        <!--                    <groupId>org.junit.vintage</groupId>-->
+        <!--                    <artifactId>junit-vintage-engine</artifactId>-->
+        <!--                </exclusion>-->
+        <!--            </exclusions>-->
+        <!--        </dependency>-->
 
     </dependencies>
 

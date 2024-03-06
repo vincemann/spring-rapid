@@ -37,7 +37,15 @@ public class ProxyUtils {
      */
     public static  <T> T aopUnproxy(T proxy){
         //        https://stackoverflow.com/questions/9033874/mocking-a-property-of-a-cglib-proxied-service-not-working
-        return (T) AopProxyUtils.getSingletonTarget(proxy);
+        return (T) getUltimateTargetObject(proxy);
+    }
+
+    public static <T> T getUltimateTargetObject(T object) {
+        if (AopProxyUtils.ultimateTargetClass(object) != null) {
+            return (T) AopProxyUtils.ultimateTargetClass(object).cast(object);
+        } else {
+            return object;
+        }
     }
 
     /**
