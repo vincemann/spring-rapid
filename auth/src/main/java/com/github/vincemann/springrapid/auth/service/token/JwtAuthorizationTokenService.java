@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.auth.service.token;
 
-import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.annotation.LogInteraction;
+
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
@@ -25,7 +24,7 @@ import static com.github.vincemann.springrapid.auth.util.JwtUtils.create;
 
 @Slf4j
 public class JwtAuthorizationTokenService
-        implements AuthorizationTokenService, AopLoggable {
+        implements AuthorizationTokenService {
 
     private static final String PRINCIPAL_CLAIMS_KEY = "rapid-principal";
 
@@ -37,7 +36,6 @@ public class JwtAuthorizationTokenService
     private UserService userService;
 
 
-    @LogInteraction
     @Override
     public String createToken(RapidPrincipal principal) {
         Map<String, Object> principalClaims = jwtPrincipalConverter.toClaims(principal);
@@ -50,7 +48,6 @@ public class JwtAuthorizationTokenService
         return jwsTokenService.createToken(claims);
     }
 
-    @LogInteraction
     @Override
     public RapidPrincipal parseToken(String token) throws BadTokenException {
         JWTClaimsSet jwtClaimsSet = jwsTokenService.parseToken(token);

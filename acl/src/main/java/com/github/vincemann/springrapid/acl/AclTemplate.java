@@ -1,7 +1,5 @@
 package com.github.vincemann.springrapid.acl;
 
-import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.security.access.AccessDeniedException;
@@ -13,8 +11,7 @@ import java.util.Collection;
 /**
  * API for dynamic programmatic acl permission checking.
  */
-@LogInteraction
-public interface AclTemplate extends AopLoggable {
+public interface AclTemplate {
 
     public boolean checkExpression(String securityExpression);
 

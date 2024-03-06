@@ -16,12 +16,12 @@ import java.util.Optional;
 
 @Root
 @Service
+@LogInteraction
 public class JpaOwnerService
         extends JpaUserService<Owner,Long, OwnerRepository>
                 implements OwnerService
 {
 
-    @LogInteraction
     @Transactional(readOnly = true)
     @Override
     public Optional<Owner> findByLastName(String lastName) {

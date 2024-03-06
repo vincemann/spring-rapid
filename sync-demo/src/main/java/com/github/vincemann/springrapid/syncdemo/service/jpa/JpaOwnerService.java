@@ -17,13 +17,13 @@ import java.util.Optional;
 @Service
 @EnableAutoBiDir
 @EnableAuditCollection
+@LogInteraction
 public class JpaOwnerService
         extends JpaCrudService<Owner,Long, OwnerRepository>
                 implements OwnerService  {
 
     public static final String OWNER_OF_THE_YEAR_NAME = "Chad";
 
-    @LogInteraction
     @Transactional(readOnly = true)
     @Override
     public Optional<Owner> findByLastName(String lastName) {
@@ -38,10 +38,4 @@ public class JpaOwnerService
             return owner.getFirstName().equals(OWNER_OF_THE_YEAR_NAME);
         }).findFirst();
     }
-
-    public Class<?> getTargetClass(){
-        return JpaOwnerService.class;
-    }
-
-
 }

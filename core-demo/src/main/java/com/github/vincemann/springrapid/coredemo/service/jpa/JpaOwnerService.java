@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.coredemo.service.jpa;
 
-import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
@@ -22,7 +21,7 @@ public class JpaOwnerService
 
     public static final String OWNER_OF_THE_YEARS_NAME = "Chad";
 
-    @LogInteraction
+
     @Transactional
     @Override
     public Optional<Owner> findByLastName(String lastName) {

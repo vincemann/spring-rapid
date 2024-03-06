@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.acl.framework;
 
-import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
  * Adds more verbose logging
  */
 @Slf4j
-public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implements AopLoggable {
+public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator {
 
     private final AclService aclService;
     private ObjectIdentityRetrievalStrategy objectIdentityRetrievalStrategy = new ObjectIdentityRetrievalStrategyImpl();

@@ -15,11 +15,11 @@ import java.util.Optional;
 @Primary
 @Service
 @EnableAutoBiDir
+@LogInteraction
 public class JpaVetService
         extends JpaCrudService<Vet,Long, VetRepository>
                 implements VetService {
 
-    @LogInteraction
     @Transactional
     @Override
     public Optional<Vet> findByLastName(String lastName) {

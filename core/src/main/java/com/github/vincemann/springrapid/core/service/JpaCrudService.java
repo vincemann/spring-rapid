@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.service;
 
-import com.github.vincemann.aoplog.api.annotation.LogInteraction;
+
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.repo.FilterRepository;
 import com.github.vincemann.springrapid.core.repo.FilterRepositoryImpl;
@@ -151,7 +151,6 @@ public abstract class JpaCrudService
 
     // todo need better bean based solution
     // create own default jpaRepository containing methods (put into JpaRapidRepo)
-    @LogInteraction(disabled = true)
     @Override
     public void afterPropertiesSet() throws Exception {
         this.filterRepository = new FilterRepositoryImpl<>(getEntityClass(), entityManager);

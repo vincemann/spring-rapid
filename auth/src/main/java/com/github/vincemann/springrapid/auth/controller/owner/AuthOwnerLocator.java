@@ -28,7 +28,6 @@ public class AuthOwnerLocator implements OwnerLocator<AuditingEntity> {
         return AuditingEntity.class.isAssignableFrom(clazz);
     }
 
-    //@LogInteraction
     @Override
     public Optional<String> find(AuditingEntity entity) {
         if (entity.getCreatedById() == null) {

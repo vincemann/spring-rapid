@@ -16,11 +16,11 @@ import java.util.Optional;
 
 @Root
 @Service
+@LogInteraction
 public class JpaVetService
         extends JpaUserService<Vet,Long, VetRepository>
                 implements VetService {
 
-    @LogInteraction
     @Transactional
     @Override
     public Optional<Vet> findByLastName(String lastName) {

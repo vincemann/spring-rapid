@@ -78,27 +78,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
-
-
-//	////@LogInteraction(level = LogInteraction.Level.TRACE)
-//	public Authentication createAuthToken(String token) {
-//
-//
-////		LemonUserDto lemonUserDto = LemonValidationUtils.getUserDto(claims);
-////		if (lemonUserDto == null)
-////			lemonUserDto = fetchUserDto(claims);
-////
-////        LemonAuthenticatedPrincipal principal = new LemonAuthenticatedPrincipal(lemonUserDto);
-//        return new UsernamePasswordAuthenticationToken(authenticatedPrincipal, token, authenticatedPrincipal.getAuthorities());
-//	}
-
-//	/**
-//	 * Default behaviour is to throw error. To be overridden in auth service.
-//	 *
-//	 * @return
-//	 */
-//	protected LemonUserDto fetchUserDto(JWTClaimsSet claims) {
-//		throw new AuthenticationCredentialsNotFoundException(
-//				LexUtils.getMessage("com.github.vincemann.userClaimAbsent"));
-//	}
 }

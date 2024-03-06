@@ -1,14 +1,10 @@
 package com.github.vincemann.springrapid.auth.service.token;
 
-import com.github.vincemann.aoplog.Severity;
-import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.annotation.LogInteraction;
+
 import com.nimbusds.jwt.JWTClaimsSet;
-import org.springframework.stereotype.Component;
 
 
-@LogInteraction(Severity.TRACE)
-public interface JwtService extends AopLoggable {
+public interface JwtService {
 
 	String TOKEN_PREFIX = "Bearer ";
 

@@ -72,7 +72,6 @@ public class DelegatingDtoMapperImpl implements DelegatingDtoMapper{
         return result;
     }
 
-    //@LogInteraction
     @Transactional(readOnly = true)
     public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass,String... fieldsToMap) throws BadEntityException {
         // source entity is detached and might not have all collections lazy loaded for this dto mapping -> merge

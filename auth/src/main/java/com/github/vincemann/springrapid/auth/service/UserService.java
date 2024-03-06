@@ -1,15 +1,12 @@
 package com.github.vincemann.springrapid.auth.service;
 
-import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
+
 import com.github.vincemann.springrapid.auth.AuthProperties;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Optional;
 

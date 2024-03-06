@@ -100,9 +100,6 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator,
         }
     }
 
-
-
-    //@LogInteraction
     @Override
     public CrudService find(Class<? extends IdentifiableEntity> entityClass, Class<? extends Annotation> annotation) {
         Map<String, Object> beansWithAnnotation = beanFactory.getBeansWithAnnotation(annotation);
@@ -113,7 +110,6 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator,
         return ((CrudService) result.get(0));
     }
 
-    //@LogInteraction
     @Override
     public CrudService find(Class<? extends IdentifiableEntity> entityClass) {
         return rootServices.get(entityClass);

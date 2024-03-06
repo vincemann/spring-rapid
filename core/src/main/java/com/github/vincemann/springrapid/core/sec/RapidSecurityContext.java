@@ -1,9 +1,6 @@
 package com.github.vincemann.springrapid.core.sec;
 
-import com.github.vincemann.aoplog.Severity;
-import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.annotation.CustomToString;
-import com.github.vincemann.aoplog.api.annotation.LogInteraction;
+
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,19 +11,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.*;
 import java.util.function.Supplier;
 
-@LogInteraction(Severity.TRACE)
-public interface RapidSecurityContext
-        extends AopLoggable {
 
-    @LogInteraction(Severity.DEBUG)
-    @CustomToString(key = "arg1", toStringMethod = "shortToString")
+public interface RapidSecurityContext {
+
     void setAuthenticated(RapidPrincipal principal);
-
-    @LogInteraction(Severity.DEBUG)
     void setAnonAuthenticated();
 
-    @LogInteraction(Severity.DEBUG)
-    @CustomToString(key = "ret", toStringMethod = "shortToString")
     @Nullable
     RapidPrincipal currentPrincipal();
 
