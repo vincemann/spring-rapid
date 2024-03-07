@@ -42,7 +42,6 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 				.andExpect(status().isForbidden());
 	}
 
-	// https://github.com/Gallopsled/pwntools/issues/1783
 	@Test
 	public void cantVerifyContactInformationWithInvalidData() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
