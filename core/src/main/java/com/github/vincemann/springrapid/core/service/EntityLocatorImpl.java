@@ -2,14 +2,12 @@ package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.util.HibernateProxyUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.util.Optional;
 
-@Slf4j
 public class EntityLocatorImpl implements EntityLocator {
     private CrudServiceLocator crudServiceLocator;
 

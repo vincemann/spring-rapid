@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.vincemann.springrapid.core.controller.json.JsonDtoPropertyValidator;
 import com.github.vincemann.springrapid.core.controller.json.JsonDtoPropertyValidatorImpl;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +17,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY;
 
 @Configuration
-@Slf4j
 @EnableWebMvc
 public class RapidJsonAutoConfiguration implements WebMvcConfigurer {
 

@@ -1,14 +1,12 @@
 package com.github.vincemann.springrapid.core.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.filter.WebExtension;
 import com.google.common.collect.Sets;
-import lombok.Getter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -30,7 +28,6 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Getter
 public abstract class AbstractEntityController
         <
                 E extends IdentifiableEntity<ID>,
@@ -154,6 +151,49 @@ public abstract class AbstractEntityController
         }
     }
 
+    public Class<E> getEntityClass() {
+        return entityClass;
+    }
+
+    public Class<ID> getIdClass() {
+        return idClass;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public String getEntityBaseUrl() {
+        return entityBaseUrl;
+    }
+
+    public String getUrlEntityName() {
+        return urlEntityName;
+    }
+
+    public CoreProperties getCoreProperties() {
+        return coreProperties;
+    }
+
+    public EndpointService getEndpointService() {
+        return endpointService;
+    }
+
+    public ObjectMapper getObjectMapper() {
+        return objectMapper;
+    }
+
+    public WebExtensionParser getExtensionParser() {
+        return extensionParser;
+    }
+
+    public List<String> getIgnoredEndPoints() {
+        return ignoredEndPoints;
+    }
+
+    public Set<WebExtension> getExtensions() {
+        return extensions;
+    }
 
     @Autowired
     public void setObjectMapper(ObjectMapper mapper) {

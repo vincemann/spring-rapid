@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import lombok.Setter;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ public abstract class AbstractCrudService
     @SuppressWarnings("all")
     private Class<E> entityClass = (Class<E>) GenericTypeResolver.resolveTypeArguments(this.getClass(),CrudService.class)[0];
     private R repository;
-    @Setter
+
     protected CrudService<E, Id> service; // root version of service
 
     @Override

@@ -9,11 +9,12 @@ import com.github.vincemann.springrapid.core.controller.dto.map.*;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocatorImpl;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -23,8 +24,9 @@ import java.util.List;
 import java.util.Map;
 
 @Configuration
-@Slf4j
 public class RapidDtoAutoConfiguration {
+
+    private final Log log = LogFactory.getLog(RapidDtoAutoConfiguration.class);
 
 
     @ConditionalOnMissingBean(name = "defaultDtoMapper")

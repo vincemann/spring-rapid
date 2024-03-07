@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.core.sec;
 
-import lombok.Builder;
-import lombok.Getter;
+
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.CredentialsContainer;
@@ -17,14 +16,12 @@ import java.util.stream.Collectors;
  * Represents authenticated user.
  * Also contains {@link Authentication#getDetails()} information.
  */
-@Getter
 public class RapidPrincipal implements AuthenticatedPrincipal, CredentialsContainer, UserDetails {
     private String name;
     private Set<String> roles;
     private String password;
     private String id;
 
-    @Builder
     public  RapidPrincipal(String name, String password, Set<String> roles, String id) {
         this.name = name;
         this.password = password;
@@ -48,6 +45,8 @@ public class RapidPrincipal implements AuthenticatedPrincipal, CredentialsContai
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
     }
+
+
 
     // UserDetails ...
 
@@ -102,6 +101,13 @@ public class RapidPrincipal implements AuthenticatedPrincipal, CredentialsContai
         this.id = id;
     }
 
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    public String getId() {
+        return id;
+    }
 
     @Override
     public String toString() {
@@ -122,5 +128,48 @@ public class RapidPrincipal implements AuthenticatedPrincipal, CredentialsContai
 
     public String shortToString(){
         return "[ AuthenticatedPrincipal: " + getName() + " ]";
+    }
+
+    public static final class Builder {
+        private String name;
+        private Set<String> roles;
+        private String password;
+        private String id;
+
+        private Builder() {
+        }
+
+        public static Builder aRapidPrincipal() {
+            return new Builder();
+        }
+
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder withRoles(Set<String> roles) {
+            this.roles = roles;
+            return this;
+        }
+
+        public Builder withPassword(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public Builder withId(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public RapidPrincipal build() {
+            RapidPrincipal rapidPrincipal = new RapidPrincipal();
+            rapidPrincipal.setName(name);
+            rapidPrincipal.setRoles(roles);
+            rapidPrincipal.setPassword(password);
+            rapidPrincipal.setId(id);
+            return rapidPrincipal;
+        }
     }
 }

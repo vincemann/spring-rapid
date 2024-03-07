@@ -8,16 +8,13 @@ import com.github.vincemann.springrapid.core.repo.RapidJpaRepository;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
-import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
+import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.util.*;
-import com.google.common.collect.Sets;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -25,7 +22,8 @@ import javax.persistence.EntityManager;
 import java.io.Serializable;
 import java.util.*;
 
-import static com.github.vincemann.springrapid.core.util.FilterUtils.*;
+import static com.github.vincemann.springrapid.core.util.FilterUtils.toSort;
+import static com.github.vincemann.springrapid.core.util.FilterUtils.toSpec;
 
 
 /**
@@ -36,7 +34,6 @@ import static com.github.vincemann.springrapid.core.util.FilterUtils.*;
  * @param <R>  {@link JpaRepository} Type
  */
 
-@Slf4j
 public abstract class JpaCrudService
         <
                 E extends IdentifiableEntity<Id>,

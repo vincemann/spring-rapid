@@ -7,14 +7,12 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.*;
 
-@Slf4j
 public class DelegatingDtoMapperImpl implements DelegatingDtoMapper{
 
     private List<DtoMapper<?, ?>> delegates = new ArrayList<>();

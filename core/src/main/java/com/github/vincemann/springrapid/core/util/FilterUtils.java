@@ -4,7 +4,6 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.support.SortDefinition;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,7 +17,6 @@ import javax.persistence.criteria.Root;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Slf4j
 public class FilterUtils {
 
     public static <E extends IdentifiableEntity<?>> Set<E> applyMemoryFilters(Set<E> result, List<EntityFilter<? super E>> filters) {

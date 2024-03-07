@@ -1,9 +1,10 @@
 package com.github.vincemann.springrapid.core.util;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.expression.Resolver;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -41,8 +42,9 @@ public class NullAwareBeanUtils {
 //        }
 //    }
 
-    @Slf4j
     private static class WhitelistNullAwareBeanUtilsBean extends BeanUtilsBean {
+
+        private final Log log = LogFactory.getLog(WhitelistNullAwareBeanUtilsBean.class);
 
         private Set<String> whiteList = new HashSet<>();
 
@@ -224,11 +226,6 @@ public class NullAwareBeanUtils {
                 }
             }
         }
-
-
     }
-
-
-
 
 }

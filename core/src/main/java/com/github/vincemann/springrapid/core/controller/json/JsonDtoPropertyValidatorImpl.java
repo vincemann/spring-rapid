@@ -3,13 +3,9 @@ package com.github.vincemann.springrapid.core.controller.json;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.validation.ValidationUtils;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import java.nio.file.AccessDeniedException;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -19,14 +15,10 @@ import java.util.stream.Collectors;
 
 
 
-@Setter
 public class JsonDtoPropertyValidatorImpl implements JsonDtoPropertyValidator {
 
     private ObjectMapper objectMapper;
 
-    public JsonDtoPropertyValidatorImpl() {
-        this.objectMapper = new ObjectMapper();
-    }
 
     @Override
     public void validateDto(String jsonDto, Class dtoClass/*, Class entityClass*/) throws AccessDeniedException, JsonProcessingException {
@@ -63,5 +55,10 @@ public class JsonDtoPropertyValidatorImpl implements JsonDtoPropertyValidator {
                 throw new org.springframework.security.access.AccessDeniedException("Dto Property: " + dtoProperty + " is not allowed for this operation");
             }
         }
+    }
+
+    @Autowired
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 }

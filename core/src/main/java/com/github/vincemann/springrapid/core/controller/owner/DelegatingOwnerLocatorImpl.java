@@ -1,10 +1,7 @@
 package com.github.vincemann.springrapid.core.controller.owner;
 
 
-
-import com.github.vincemann.springrapid.core.controller.json.patch.ExtendedRemoveJsonPatchStrategy;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.log.LogMessage;

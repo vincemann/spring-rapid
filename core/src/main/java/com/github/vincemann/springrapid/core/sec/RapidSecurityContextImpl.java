@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.core.sec;
 
 import com.google.common.collect.Sets;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.log.LogMessage;
@@ -18,8 +17,7 @@ import java.util.function.Supplier;
  * simple static wrapper for {@link org.springframework.security.core.context.SecurityContext}, providing typed access to
  * {@link RapidPrincipal}
  */
-@Slf4j
-// kept non static to allow customization
+// keep non static to allow customization
 public class RapidSecurityContextImpl implements RapidSecurityContext {
 
     private final Log log = LogFactory.getLog(getClass());

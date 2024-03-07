@@ -1,11 +1,10 @@
 package com.github.vincemann.springrapid.core.controller.dto.map;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 
 import java.util.function.Predicate;
 
-@Slf4j
+
 public class DtoMappingsBuilder {
 
     private Predicate<DtoRequestInfo> predicate;

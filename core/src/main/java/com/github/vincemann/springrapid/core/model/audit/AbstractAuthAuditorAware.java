@@ -3,7 +3,6 @@ package com.github.vincemann.springrapid.core.model.audit;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
@@ -13,14 +12,13 @@ import java.io.Serializable;
  * {@link AuditingEntity} fields/columns
  *  
  */
-@Slf4j
-public abstract class AuthAuditorAwareImpl<ID extends Serializable>
+public abstract class AbstractAuthAuditorAware<ID extends Serializable>
 			extends AbstractAuditorAware<ID> {
 
 	private RapidSecurityContext securityContext;
 	private IdConverter<ID> idConverter;
 
-	public AuthAuditorAwareImpl() {
+	public AbstractAuthAuditorAware() {
 
 	}
 

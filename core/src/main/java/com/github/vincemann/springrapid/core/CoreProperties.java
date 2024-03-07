@@ -1,13 +1,7 @@
 package com.github.vincemann.springrapid.core;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.http.MediaType;
-
 import java.util.Map;
 
-@Getter
-@Setter
 public class CoreProperties {
 
     public CoreProperties() {
@@ -42,8 +36,26 @@ public class CoreProperties {
         return shared;
     }
 
-    @Getter
-    @Setter
+    public void setController(Controller controller) {
+        this.controller = controller;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    public void setContextUrl(String contextUrl) {
+        this.contextUrl = contextUrl;
+    }
+
+    public void setApplicationUrl(String applicationUrl) {
+        this.applicationUrl = applicationUrl;
+    }
+
+    public void setShared(Map<String, Object> shared) {
+        this.shared = shared;
+    }
+
     public static class Controller{
 
         // if set to true, BadEntityException will be thrown if user tries to update unsupported field
@@ -51,8 +63,6 @@ public class CoreProperties {
         public boolean strictUpdateMerge = true;
         public Endpoints endpoints = new Endpoints();
 
-        @Getter
-        @Setter
         public static class Endpoints{
             // just the names of the method in url, since url is dynamically build
             public String update = "update";
@@ -67,29 +77,73 @@ public class CoreProperties {
                 return update;
             }
 
+            public void setUpdate(String update) {
+                this.update = update;
+            }
+
             public String getCreate() {
                 return create;
+            }
+
+            public void setCreate(String create) {
+                this.create = create;
             }
 
             public String getFind() {
                 return find;
             }
 
+            public void setFind(String find) {
+                this.find = find;
+            }
+
             public String getFindAll() {
                 return findAll;
+            }
+
+            public void setFindAll(String findAll) {
+                this.findAll = findAll;
             }
 
             public String getFindSome() {
                 return findSome;
             }
 
+            public void setFindSome(String findSome) {
+                this.findSome = findSome;
+            }
+
             public String getDelete() {
                 return delete;
+            }
+
+            public void setDelete(String delete) {
+                this.delete = delete;
             }
 
             public String getFindAllOfParent() {
                 return findAllOfParent;
             }
+
+            public void setFindAllOfParent(String findAllOfParent) {
+                this.findAllOfParent = findAllOfParent;
+            }
+        }
+
+        public boolean isStrictUpdateMerge() {
+            return strictUpdateMerge;
+        }
+
+        public void setStrictUpdateMerge(boolean strictUpdateMerge) {
+            this.strictUpdateMerge = strictUpdateMerge;
+        }
+
+        public Endpoints getEndpoints() {
+            return endpoints;
+        }
+
+        public void setEndpoints(Endpoints endpoints) {
+            this.endpoints = endpoints;
         }
     }
 

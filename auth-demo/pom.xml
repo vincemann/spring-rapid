@@ -14,11 +14,7 @@
 	</parent>
 
 	<dependencies>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
+<!--		SPRING RAPID-->
 
 		<dependency>
 			<groupId>com.github.vincemann.spring-rapid</groupId>
@@ -37,10 +33,9 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>${lombok.version}</version>
+			<version>1.18.8</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
 		<!--        using lower version to be compatible with springs logback-->
 		<dependency>
 			<groupId>org.slf4j</groupId>

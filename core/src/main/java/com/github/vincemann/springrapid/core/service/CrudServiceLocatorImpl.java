@@ -3,8 +3,6 @@ package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.util.Lists;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -25,7 +23,6 @@ import java.util.stream.Collectors;
  * Utilizes {@link ConfigurableListableBeanFactory} to find the {@link com.github.vincemann.springrapid.core.service.CrudService} of a given type
  *
  */
-@Slf4j
 public class CrudServiceLocatorImpl implements CrudServiceLocator,
         ApplicationListener<ContextRefreshedEvent>,
         BeanFactoryAware
@@ -33,7 +30,6 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator,
     /**
      * contains services that either have @{@link com.github.vincemann.springrapid.core.Root} qualifier or are primary.
      */
-    @Getter
     private Map<Class<? extends IdentifiableEntity>, CrudService> rootServices = new HashMap<>();
 
     private ConfigurableListableBeanFactory beanFactory;

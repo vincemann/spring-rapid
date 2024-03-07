@@ -24,8 +24,6 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +47,6 @@ import java.util.stream.Collectors;
 import static com.github.vincemann.springrapid.core.controller.WebExtensionType.*;
 
 
-@Getter
 public abstract class CrudController
         <
                 E extends IdentifiableEntity<Id>,
@@ -243,12 +240,12 @@ public abstract class CrudController
         Principal principal = principalFactory.create(entity);
         log.debug(LogMessage.format("current principal: '%s'", principal.name()));
 
-        return DtoRequestInfo.builder()
-                .authorities(RapidSecurityContext.getRoles())
-                .direction(direction)
-                .request(request)
-                .principal(principal)
-                .endpoint(endpoint)
+        return DtoRequestInfo.Builder.builder()
+                .withAuthorities(RapidSecurityContext.getRoles())
+                .withDirection(direction)
+                .withRequest(request)
+                .withPrincipal(principal)
+                .withEndpoint(endpoint)
                 .build();
     }
 
@@ -358,17 +355,12 @@ public abstract class CrudController
 
     //              URLS
 
-    @Setter
+
     private String findUrl;
-    @Setter
     private String updateUrl;
-    @Setter
     private String findAllUrl;
-    @Setter
     private String findSomeUrl;
-    @Setter
     private String deleteUrl;
-    @Setter
     private String createUrl;
 
     protected void initUrls() {
@@ -493,6 +485,29 @@ public abstract class CrudController
         return service.findById(id);
     }
 
+    public void setFindUrl(String findUrl) {
+        this.findUrl = findUrl;
+    }
+
+    public void setUpdateUrl(String updateUrl) {
+        this.updateUrl = updateUrl;
+    }
+
+    public void setFindAllUrl(String findAllUrl) {
+        this.findAllUrl = findAllUrl;
+    }
+
+    public void setFindSomeUrl(String findSomeUrl) {
+        this.findSomeUrl = findSomeUrl;
+    }
+
+    public void setDeleteUrl(String deleteUrl) {
+        this.deleteUrl = deleteUrl;
+    }
+
+    public void setCreateUrl(String createUrl) {
+        this.createUrl = createUrl;
+    }
 
     //              CONTROLLER CALLBACKS
 
@@ -534,6 +549,73 @@ public abstract class CrudController
     public void afterFindSome(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
+    public String getCreateUrl() {
+        return createUrl;
+    }
+
+    public IdFetchingStrategy<Id> getIdFetchingStrategy() {
+        return idFetchingStrategy;
+    }
+
+    public S getService() {
+        return service;
+    }
+
+    public DelegatingDtoMapper getDtoMapper() {
+        return dtoMapper;
+    }
+
+    public DelegatingOwnerLocator getOwnerLocator() {
+        return ownerLocator;
+    }
+
+    public DtoClassLocator getDtoClassLocator() {
+        return dtoClassLocator;
+    }
+
+    public DtoMappings getDtoMappings() {
+        return dtoMappings;
+    }
+
+    public DtoValidationStrategy getDtoValidationStrategy() {
+        return dtoValidationStrategy;
+    }
+
+    public MergeUpdateStrategy getMergeUpdateStrategy() {
+        return mergeUpdateStrategy;
+    }
+
+    public JsonPatchStrategy getJsonPatchStrategy() {
+        return jsonPatchStrategy;
+    }
+
+    public JsonDtoPropertyValidator getJsonDtoPropertyValidator() {
+        return jsonDtoPropertyValidator;
+    }
+
+    public PrincipalFactory getPrincipalFactory() {
+        return principalFactory;
+    }
+
+    public String getFindUrl() {
+        return findUrl;
+    }
+
+    public String getUpdateUrl() {
+        return updateUrl;
+    }
+
+    public String getFindAllUrl() {
+        return findAllUrl;
+    }
+
+    public String getFindSomeUrl() {
+        return findSomeUrl;
+    }
+
+    public String getDeleteUrl() {
+        return deleteUrl;
+    }
 
     //              INJECT DEPENDENCIES
 

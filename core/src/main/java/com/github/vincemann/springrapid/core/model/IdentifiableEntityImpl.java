@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.core.model;
 
 
-import lombok.NoArgsConstructor;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,7 +9,6 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @MappedSuperclass
-@NoArgsConstructor
 public class IdentifiableEntityImpl<Id extends Serializable>
         implements IdentifiableEntity<Id> {
 
@@ -18,6 +16,9 @@ public class IdentifiableEntityImpl<Id extends Serializable>
     @GeneratedValue(strategy = GenerationType.AUTO)
     @javax.persistence.Id
     private Id id;
+
+    public IdentifiableEntityImpl() {
+    }
 
     @Override
     public Id getId() {

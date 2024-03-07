@@ -3,16 +3,13 @@ package com.github.vincemann.springrapid.core.controller.dto.map;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.google.common.collect.Sets;
-import lombok.NoArgsConstructor;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.modelmapper.*;
+import org.modelmapper.MappingException;
+import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.NamingConvention;
 import org.modelmapper.spi.PropertyType;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.log.LogMessage;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -25,13 +22,15 @@ import java.util.Set;
  * Maps a Dto to its ServiceEntity and vice versa, by using {@link ModelMapper}
  */
 @Transactional
-@NoArgsConstructor
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>, Object> {
 
     @Override
     public boolean supports(Class<?> dtoClass) {
         return true;
+    }
+
+    public BasicDtoMapper() {
     }
 
     @Override

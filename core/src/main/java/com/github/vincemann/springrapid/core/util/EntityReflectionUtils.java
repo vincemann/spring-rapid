@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.util;
 
-import lombok.NonNull;
 import org.springframework.data.util.ReflectionUtils;
+import org.springframework.lang.NonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -17,7 +17,7 @@ public class EntityReflectionUtils {
     private static class AnnotationAndFieldTypeFilter extends org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter {
         private final Class<?> fieldType;
 
-        public AnnotationAndFieldTypeFilter(@NonNull Class<? extends Annotation> annotationType, Class<?> fieldType) {
+        public AnnotationAndFieldTypeFilter(Class<? extends Annotation> annotationType, Class<?> fieldType) {
             super(annotationType);
             this.fieldType = fieldType;
         }

@@ -2,9 +2,6 @@ package com.github.vincemann.springrapid.core.model.audit;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -25,8 +22,6 @@ import java.util.Date;
  * @modifiedBy vincemann
   */
 @MappedSuperclass
-@Getter @Setter
-@NoArgsConstructor
 @JsonIgnoreProperties({ "createdById", "lastModifiedById", "createdDate", "lastModifiedDate", "new" })
 @EntityListeners(AuditingEntityListener.class)
 public class AuditingEntity<ID extends Serializable>
@@ -51,4 +46,45 @@ public class AuditingEntity<ID extends Serializable>
 	@LastModifiedDate
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastModifiedDate;
+
+	public AuditingEntity() {
+	}
+
+	@Override
+	public ID getCreatedById() {
+		return createdById;
+	}
+
+	public void setCreatedById(ID createdById) {
+		this.createdById = createdById;
+	}
+
+	@Override
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	@Override
+	public ID getLastModifiedById() {
+		return lastModifiedById;
+	}
+
+	@Override
+	public void setLastModifiedById(ID lastModifiedById) {
+		this.lastModifiedById = lastModifiedById;
+	}
+
+	@Override
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	@Override
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
 }

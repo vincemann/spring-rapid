@@ -11,13 +11,10 @@ import java.util.Optional;
  * AbstractAuditable columns of AbstractUser
  *  
  * @author Sanjay Patel
+ * @modifiedBy vincemann
  */
-@Slf4j
 public abstract class AbstractAuditorAware<ID extends Serializable>
 				implements AuditorAware<ID> {
-
-
-//    private IdConverter<ID> idConverter;
 
 	protected abstract ID currentId();
 	
@@ -31,10 +28,4 @@ public abstract class AbstractAuditorAware<ID extends Serializable>
 		
 		return Optional.of(id);
 	}
-
-//	@Autowired
-//	public void setIdConverter(IdConverter<ID> idConverter) {
-//		this.idConverter = idConverter;
-//
-//	}
 }

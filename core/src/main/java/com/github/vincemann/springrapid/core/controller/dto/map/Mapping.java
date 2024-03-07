@@ -1,10 +1,8 @@
 package com.github.vincemann.springrapid.core.controller.dto.map;
 
-import lombok.Getter;
 
 import java.util.function.Predicate;
 
-@Getter
 public class Mapping {
     Predicate<DtoRequestInfo> condition;
     Class<?> dtoClass;
@@ -14,4 +12,11 @@ public class Mapping {
         this.dtoClass = dtoClass;
     }
 
+    public Predicate<DtoRequestInfo> getCondition() {
+        return condition;
+    }
+
+    public Class<?> getDtoClass() {
+        return dtoClass;
+    }
 }

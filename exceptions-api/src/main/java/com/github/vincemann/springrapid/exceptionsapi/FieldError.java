@@ -1,15 +1,12 @@
 package com.github.vincemann.springrapid.exceptionsapi;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
 
 /**
  * Holds a field or form error
  * 
  * @author Sanjay Patel
+ * @modifiedBy vincemann
  */
-@Getter @AllArgsConstructor @ToString
 public class FieldError {
 	
 	// Name of the field. Null in case of a form level error. 
@@ -21,4 +18,24 @@ public class FieldError {
 	// Error message
 	private String message;
 
+	public FieldError() {
+	}
+
+	public FieldError(String field, String code, String message) {
+		this.field = field;
+		this.code = code;
+		this.message = message;
+	}
+
+	public String getField() {
+		return field;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public String getMessage() {
+		return message;
+	}
 }
