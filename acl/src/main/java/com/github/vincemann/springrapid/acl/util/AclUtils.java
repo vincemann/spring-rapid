@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acl.util;
 
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
+import org.apache.commons.logging.Log;
 import org.slf4j.Logger;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.PrincipalSid;
@@ -31,7 +32,7 @@ public class AclUtils {
         }
     }
 
-    public static void logAcl(Acl acl, Logger logger){
+    public static void logAcl(Acl acl, Log logger){
         for (String line : aclToString(acl).split("\n")) {
             if (logger.isDebugEnabled())
                 logger.debug(line);

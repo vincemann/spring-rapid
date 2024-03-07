@@ -1,5 +1,8 @@
 package com.github.vincemann.springrapid.core.service;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.core.log.LogMessage;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -10,6 +13,8 @@ import java.lang.reflect.Method;
  */
 public class EndpointService {
 
+    private final Log log = LogFactory.getLog(getClass());
+
 
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
@@ -18,6 +23,7 @@ public class EndpointService {
     }
 
     public void addMapping(RequestMappingInfo requestMappingInfo, Method requestMethod, Object controller)  {
+        log.debug(LogMessage.format("registering endpoint: '%s'",requestMappingInfo.toString()));
         requestMappingHandlerMapping.
                 registerMapping(requestMappingInfo, controller,
                         requestMethod

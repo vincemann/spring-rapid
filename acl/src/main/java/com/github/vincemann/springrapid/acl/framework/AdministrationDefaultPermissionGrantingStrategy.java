@@ -17,7 +17,6 @@ import java.util.List;
 public class AdministrationDefaultPermissionGrantingStrategy extends DefaultPermissionGrantingStrategy {
 
     private final transient AuditLogger auditLogger;
-//    private PermissionStringConverter permissionStringConverter;
 
     public AdministrationDefaultPermissionGrantingStrategy(AuditLogger auditLogger) {
         super(auditLogger);
@@ -107,9 +106,6 @@ public class AdministrationDefaultPermissionGrantingStrategy extends DefaultPerm
     @Override
     protected boolean isGranted(AccessControlEntry ace, Permission p) {
         if (ace.isGranting() && p.getMask() != 0) {
-            //is granting check erstmal nur den boolean ab aus der db, der eig immer true ist
-            //der zweite check zeigt nur, dass hier überhaupt nh valid permission angefragt wird...
-            //jetzt gilt es zu checken, ob die permission p auch von ace getragen wird
             int givenPermissionMask = ace.getPermission().getMask();
             int requestedPermissionMask = p.getMask();
 
@@ -118,27 +114,8 @@ public class AdministrationDefaultPermissionGrantingStrategy extends DefaultPerm
                 return true;
             }
             return super.isGranted(ace,p);
-//            //Admin does not need to have r & w & c &d&a permission, but only a
-//            if(givenPermissionMask== BasePermission.ADMINISTRATION.getMask()){
-//                return true;
-//            }
-//            log.debug("Requested permission: " + PermissionUtils.toString(p)/*+", mask: " + requestedPermissionMask*/);
-//            log.debug("Checking ace with id:"+ ace.getId() /*", " + PermissionUtils.toString(ace.getPermission()) +*/);
-//            log.trace("Content of that ace: " + ace);
-//            log.debug("Sid of ace: " + ace.getSid()+ " has permission: " + PermissionUtils.toString(ace.getPermission()) /*+", mask: " + givenPermissionMask*/);
-
-//            return givenPermissionMask >= requestedPermissionMask;
-//            //return (ace.getPermission().getMask() & p.getMask()) == 0;
-//        } else {
-//            //return ace.getPermission().getMask() == p.getMask();
-//            return false;
         }else {
             return false;
         }
     }
-
-//    @Autowired
-//    public void setPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
-//        this.permissionStringConverter = permissionStringConverter;
-//    }
 }

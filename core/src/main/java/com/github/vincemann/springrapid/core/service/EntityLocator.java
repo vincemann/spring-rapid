@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.Serializable;
 import java.util.Optional;
 
-// dont make transactional - if code needs transaction, it should create it himself, then this call will also be wrapped in its own transaction
+// dont make transactional - if code needs transaction, it should create it itself, then this call will also be wrapped in its transaction
 //@Transactional
 public interface EntityLocator {
 

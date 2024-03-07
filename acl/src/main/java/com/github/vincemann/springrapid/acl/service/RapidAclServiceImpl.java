@@ -4,7 +4,10 @@ import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.sec.Roles;
+import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
@@ -26,8 +29,9 @@ import java.util.*;
  */
 @Service
 @Transactional
-@Slf4j
 public class RapidAclServiceImpl implements RapidAclService {
+
+    private final Log log = LogFactory.getLog(getClass());
 
     private MutableAclService aclService;
     private RapidSecurityContext securityContext;
@@ -106,13 +110,9 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     protected String findAuthenticatedName() {
-        if (RapidSecurityContext.hasRole(Roles.ANON)) {
-            throw new AccessDeniedException("Non anon Authentication required");
-        }
+        VerifyAccess.condition(!RapidSecurityContext.hasRole(Roles.ANON),"Non anon Authentication required");
         String name = RapidSecurityContext.getName();
-        if (name == null) {
-            throw new AccessDeniedException("Authentication required");
-        }
+        VerifyAccess.notNull(name,"Authentication required")
         return name;
     }
 
@@ -241,15 +241,12 @@ public class RapidAclServiceImpl implements RapidAclService {
             if (log.isTraceEnabled()) {
 
                 log.trace("inheriting from parent acl: ");
-//            log.debug(AclUtils.aclToString(parentAcl));
                 AclUtils.logAcl(parentAcl, log);
-//            log.debug(AclUtils.aclToString(childAcl));
             }
 
 
             copyMatchingAces(parentAcl, childAcl, aceFilter);
 
-//        childAcl.setParent(parentAcl);
 
             if (log.isDebugEnabled()) {
                 log.debug("updated acl:");
@@ -268,7 +265,6 @@ public class RapidAclServiceImpl implements RapidAclService {
 
             if (log.isTraceEnabled()) {
                 log.debug("acl of entity before removing: ");
-//            log.debug(AclUtils.aclToString(acl));
                 AclUtils.logAcl(acl, log);
             }
 
@@ -278,7 +274,6 @@ public class RapidAclServiceImpl implements RapidAclService {
 
             if (log.isDebugEnabled()) {
                 log.debug("updated acl: ");
-//            log.debug(AclUtils.aclToString(updated));
                 AclUtils.logAcl(updated, log);
             }
             return removed;
@@ -309,7 +304,6 @@ public class RapidAclServiceImpl implements RapidAclService {
         MutableAcl acl = findOrCreateAcl(oi);
         if (log.isTraceEnabled()) {
             log.trace("acl of entity before adding:");
-//            log.debug(AclUtils.aclToString(acl));
             AclUtils.logAcl(acl, log);
         }
 
@@ -323,7 +317,6 @@ public class RapidAclServiceImpl implements RapidAclService {
 
         if (log.isDebugEnabled()) {
             log.debug("updated acl:");
-//            log.debug(AclUtils.aclToString(updated));
             AclUtils.logAcl(updated, log);
         }
     }

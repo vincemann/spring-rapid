@@ -8,20 +8,24 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.log.LogMessage;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 /**
  * Adds admins from property file, if not already present in database.
  * @see AuthProperties#getAdmins()
  */
 public class AdminInitializer implements CommandLineRunner {
+
+    private final Log log = LogFactory.getLog(getClass());
 
     private UserService userService;
     private AuthProperties authProperties;
@@ -37,7 +41,7 @@ public class AdminInitializer implements CommandLineRunner {
     protected void signupAdmins() throws BadEntityException, AlreadyRegisteredException, EntityNotFoundException {
         List<AuthProperties.Admin> admins = authProperties.getAdmins();
         for (AuthProperties.Admin admin : admins) {
-            log.debug("registering admin:: " + admin.getContactInformation());
+            log.debug(LogMessage.format("registering admin: %s ",admin.getContactInformation()));
 
             // Check if the user already exists
             Optional<AbstractUser<Serializable>> byContactInformation = userService.findByContactInformation(admin.getContactInformation());

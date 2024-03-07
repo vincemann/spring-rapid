@@ -22,7 +22,10 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -40,10 +43,11 @@ import java.util.Optional;
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
 
 
-@Slf4j
 @Getter
 public abstract class AbstractUserController<U extends AbstractUser<Id>, Id extends Serializable, S extends UserService<U,Id>>
 			extends CrudController<U, Id,S> {
+
+	private final Log log = LogFactory.getLog(getClass());
 
 
 	private AuthProperties authProperties;
@@ -61,16 +65,19 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 
 	public ResponseEntity<ReadOwnUserDto> signup(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
+		log.debug("received signup request");
 		String body = readBody(request);
-		SignupDto dto = getObjectMapper().readDto(body, SignupDto.class);
+		SignupDto dto = getObjectMapper().readValue(body, SignupDto.class);
 		getDtoValidationStrategy().validate(dto);
   		AbstractUser saved = signupService.signup(dto);
 		ReadOwnUserDto responseDto = getDtoMapper().mapToDto(saved, ReadOwnUserDto.class);
+		log.debug("signup request successful");
 		return okWithAuthToken(responseDto,saved.getContactInformation());
 	}
 
 	public ResponseEntity<Void> resendVerificationMessage(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
 		String contactInformation = readRequestParam(request, "ci");
+		log.debug(LogMessage.format("received resend verification msg request for: %s",contactInformation));
 		verificationService.resendVerificationMessage(contactInformation);
 		return okNoContent();
 	}
@@ -81,6 +88,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	 */
 	public ResponseEntity<Void> verifyUser(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, BadTokenException {
 		String code = readRequestParam(request, "code");
+		log.debug(LogMessage.format("received verify user request with code: %s",code));
 		AbstractUser updated = verificationService.verifyUser(code);
 		return okWithAuthToken(updated.getContactInformation());
 	}
@@ -91,6 +99,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	 */
 	public ResponseEntity<Void> forgotPassword(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException {
 		String contactInformation = readRequestParam(request, "ci");
+		log.debug(LogMessage.format("received forgot password request for: %s",contactInformation));
 		passwordService.forgotPassword(contactInformation);
 		return okNoContent();
 	}
@@ -99,8 +108,9 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	 * Resets password after it's forgotten
 	 */
 	public ResponseEntity<Void> resetPassword(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, BadTokenException, IOException {
+		log.debug("received reset password request");
 		String body = readBody(request);
-		ResetPasswordDto dto = getObjectMapper().readDto(body, ResetPasswordDto.class);
+		ResetPasswordDto dto = getObjectMapper().readValue(body, ResetPasswordDto.class);
 		getDtoValidationStrategy().validate(dto);
 		AbstractUser updated = passwordService.resetPassword(dto);
 		return okWithAuthToken(updated.getContactInformation());
@@ -108,6 +118,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	public String showResetPassword(HttpServletRequest request, HttpServletResponse response, Model model) throws BadEntityException {
 		String code = readRequestParam(request, "code");
+		log.debug(LogMessage.format("received show reset password request with code: %s",code));
 		model.addAttribute("resetPasswordUrl", getResetPasswordUrl());
 		model.addAttribute("resetPasswordDto", new ResetPasswordView());
 		return "reset-password";
@@ -115,8 +126,9 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 
 	public ResponseEntity<Void> changePassword(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
+		log.debug("received change password request");
 		String body = readBody(request);
-		ChangePasswordDto dto = getObjectMapper().readDto(body, ChangePasswordDto.class);
+		ChangePasswordDto dto = getObjectMapper().readValue(body, ChangePasswordDto.class);
 		getDtoValidationStrategy().validate(dto);
 		AbstractUser updated = passwordService.changePassword(dto);
 		return okWithAuthToken(updated.getContactInformation());
@@ -124,8 +136,9 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 
 	public ResponseEntity<Void> requestContactInformationChange(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException, IOException {
+		log.debug("received request contact information change request");
 		String body = readBody(request);
-		RequestContactInformationChangeDto dto = getObjectMapper().readDto(body, RequestContactInformationChangeDto.class);
+		RequestContactInformationChangeDto dto = getObjectMapper().readValue(body, RequestContactInformationChangeDto.class);
 		getDtoValidationStrategy().validate(dto);
 		contactInformationService.requestContactInformationChange(dto);
 		return okNoContent();
@@ -133,12 +146,14 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	public ResponseEntity<Void> blockUser(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
 		String contactInformation = readRequestParam(request, "ci");
+		log.debug(LogMessage.format("received block user request for: %s",contactInformation));
 		unsecuredService.blockUser(contactInformation);
 		return okNoContent();
 	}
 
 	public ResponseEntity<Void> changeContactInformation(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadTokenException, AlreadyRegisteredException, BadEntityException {
 		String code = readRequestParam(request, "code");
+		log.debug(LogMessage.format("received change contact information request with code: %s",code));
 		AbstractUser updated = contactInformationService.changeContactInformation(code);
 		return okWithAuthToken(updated.getContactInformation());
 	}
@@ -149,6 +164,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	 */
 	public ResponseEntity<String> createNewAuthToken(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, JsonProcessingException, EntityNotFoundException {
 		Optional<String> contactInformation = readOptionalRequestParam(request, "ci");
+		log.debug(LogMessage.format("received create new auth token request for: %s",contactInformation));
 
 		String token;
 		if (contactInformation.isEmpty()){
@@ -157,10 +173,11 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 			token = authTokenService.createNewAuthToken(contactInformation.get());
 		}
 		// result = {token:asfsdfjsdjfnd}
-		return ok(getObjectMapper().writeDto(MapUtils.mapOf("token", token)));
+		return ok(getObjectMapper().writeValueAsString(MapUtils.mapOf("token", token)));
 	}
 
 	public ResponseEntity<Void> testToken(HttpServletRequest request, HttpServletResponse response) {
+		log.debug("received test token request");
 		try {
 			String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 			authorizationTokenService.parseToken(authHeader);
@@ -173,12 +190,13 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	public ResponseEntity<String> findByContactInformation(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
 		String contactInformation = readRequestParam(request, "ci");
+		log.debug(LogMessage.format("received find by contact information request for: %s",contactInformation));
 		Optional<U> byContactInformation = getService().findByContactInformation(contactInformation);
 		VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+contactInformation+" not found");
 		U user = byContactInformation.get();
 		Object responseDto = getDtoMapper().mapToDto(user,
 				createDtoClass(getFindByContactInformationUrl(), Direction.RESPONSE,request, user));
-		return ok(getObjectMapper().writeDto(responseDto));
+		return ok(getObjectMapper().writeValueAsString(responseDto));
 	}
 
 

@@ -98,7 +98,6 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator {
             Acl acl = aclService.readAclById(oid, sids);
             if (log.isDebugEnabled()) {
                 log.debug("acl of oid:");
-//                log.debug(AclUtils.aclToString(acl));
                 AclUtils.logAcl(acl, log);
             }
 

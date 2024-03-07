@@ -40,7 +40,7 @@ public class UrlParamWebExtensionParser implements WebExtensionParser, Applicati
                     if (matching.isEmpty())
                         throw new BadEntityException("No extension found for name: " + extensionName);
                     if (matching.size() > 1)
-                        throw new BadEntityException("Multiple extensions found with name: " + extensionName);
+                        throw new IllegalArgumentException("Multiple extensions found with name: " + extensionName);
 
                     WebExtension<?> extension = matching.get(0);
                     // create new bean if scope is prototype

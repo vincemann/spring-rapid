@@ -2,6 +2,9 @@ package com.github.vincemann.springrapid.auth.msg.mail;
 
 import com.github.vincemann.springrapid.core.util.Message;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.core.log.LogMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -17,8 +20,9 @@ import javax.mail.internet.MimeMessage;
  * @author Sanjay Patel
  *
  */
-@Slf4j
 public class SmtpMailSender implements MailSender<MailData> {
+
+	private final Log log = LogFactory.getLog(getClass());
 	
 
 	private final JavaMailSender javaMailSender;
@@ -35,7 +39,8 @@ public class SmtpMailSender implements MailSender<MailData> {
 	@Async
 	public void send(MailData mail) {
 		
-		log.info("Sending SMTP mail from thread " + Thread.currentThread().getName()); // toString gives more info    	
+		log.info("Sending SMTP mail from thread " + Thread.currentThread().getName()); // toString gives more info
+		log.info(LogMessage.format("mail data: %s",mail.toString()));
 
 		// create a mime-message
 		MimeMessage message = javaMailSender.createMimeMessage();

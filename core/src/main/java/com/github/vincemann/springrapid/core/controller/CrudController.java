@@ -174,7 +174,7 @@ public abstract class CrudController
 
         String patchString = readBody(request);
         Id id = fetchId(request);
-        log.debug(LogMessage.format("update request received for id %s",id));
+        log.debug(LogMessage.format("update request received for id: %s",id));
         log.debug(LogMessage.format("json patch string: %s",patchString));
         //user does also need read permission if he wants to update user, so I can check read permission here instead of using unsecured service
         // i indirectly check if by using secured service.findById
