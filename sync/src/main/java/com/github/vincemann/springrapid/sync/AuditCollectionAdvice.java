@@ -3,6 +3,8 @@ package com.github.vincemann.springrapid.sync;
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.core.util.Entity;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -11,6 +13,7 @@ import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.log.LogMessage;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
@@ -18,18 +21,23 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Set;
+import java.util.logging.LogManager;
 
 import static com.github.vincemann.springrapid.core.util.ReflectionUtils.findFieldsAnnotatedWith;
 
 /**
  * Implements logic related to {@link AuditCollection} and {@link EnableAuditCollection}.
+ * Hooks partial update method of specific service, annotated with {@link EnableAuditCollection}, and detects changes made to collections of updated entity
+ * that are annotated with {@link AuditCollection}.
+ *
+ * @see AuditCollection
  */
 @Aspect
 // should get executed within transaction of service, so when anything fails, the timestamp update is rolled back
 @Order(Ordered.LOWEST_PRECEDENCE)
-@Slf4j
 public class AuditCollectionAdvice {
 
+    private final Log log = LogFactory.getLog(getClass());
 
 
     @AfterReturning(
@@ -50,6 +58,7 @@ public class AuditCollectionAdvice {
 
         for (Field field : auditedCollectionFields) {
             if (updatedFields.contains(field.getName())){
+                log.debug(LogMessage.format("changes detected for audited collection field: %s",field.getName()));
                 // updates detected, should also trigger dirty checking so AuditingEntityHandler also sets lastModifiedById
                 // https://stackoverflow.com/a/63777063/9027032
                 result.setLastModifiedDate(new Date());

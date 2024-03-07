@@ -19,9 +19,12 @@ import com.github.vincemann.springrapid.sync.service.SyncService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.log.LogMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,8 +35,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.github.vincemann.springrapid.core.controller.WebExtensionType.ENTITY_FILTER;
 import static com.github.vincemann.springrapid.core.controller.WebExtensionType.QUERY_FILTER;
@@ -45,11 +50,12 @@ import static com.github.vincemann.springrapid.core.controller.WebExtensionType.
  *
  * @see EntitySyncStatus
  */
-@Slf4j
 @Getter
 public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Serializable>
         extends AbstractEntityController<E, Id>
         implements ApplicationContextAware {
+
+    private final Log log = LogFactory.getLog(getClass());
 
     public static final String DTO_CLASS_URL_PARAM_KEY = "dto";
 
@@ -78,7 +84,9 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
     public ResponseEntity<String> fetchEntitySyncStatus(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, JsonProcessingException {
         try {
             Id id = fetchId(request);
+            log.debug(LogMessage.format("fetching entities sync status for entity with id: %s",id.toString()));
             long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
+            log.debug(LogMessage.format("clients last update was at: %s",new Date(lastUpdateTimestamp).toString()));
             // jpa uses this format
             //            Date lastUpdateDate = DATE_FORMAT.parse(lastUpdateTimestampString);
             Timestamp lastUpdate = new Timestamp(lastUpdateTimestamp);
@@ -86,12 +94,15 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
             LastFetchInfo lastFetchInfo = new LastFetchInfo(id.toString(), lastUpdate);
             EntitySyncStatus syncStatus = findEntitySyncStatus(lastFetchInfo);
             boolean updated = syncStatus != null;
-            if (updated)
+            if (updated){
+                log.debug(LogMessage.format("sync status of entity: %s",syncStatus.toString()));
                 return ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(objectMapper.writeValueAsString(syncStatus));
-            else
+            } else{
+                log.debug("sync status is: no update");
                 return ResponseEntity.noContent().build();
+            }
         } catch (NumberFormatException e) {
             throw new BadEntityException("Invalid timestamp format. Send unix timestamp long value.");
         }
@@ -113,10 +124,10 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
             CollectionType idSetType = getObjectMapper()
                     .getTypeFactory().constructCollectionType(Set.class, LastFetchInfo.class);
             Set<LastFetchInfo> lastClientFetchInfos = getObjectMapper().readValue(json, idSetType);
-//            List<JPQLEntityFilter<E>> filters = HttpServletRequestUtils.extractFilters(request,applicationContext,"jpql-filter");
-
+            log.debug(LogMessage.format("fetch entities sync statuses request received, clients last fetch infos: %s",lastClientFetchInfos.stream().map(LastFetchInfo::toString).collect(Collectors.toSet())));
 
             Set<EntitySyncStatus> syncStatuses = findEntitySyncStatuses(lastClientFetchInfos);
+            log.debug(LogMessage.format("sync statuses of requested entities: %s",syncStatuses.stream().map(EntitySyncStatus::toString).collect(Collectors.toSet())));
             if (syncStatuses.isEmpty())
                 return ResponseEntity.noContent().build();
             else
@@ -141,11 +152,19 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
      */
     public ResponseEntity<String> fetchEntitySyncStatusesSinceTimestamp(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, JsonProcessingException {
         long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
-        List<QueryFilter<? super E>> filters = extractExtensions(request, QUERY_FILTER);
-        List<EntityFilter<? super E>> ramFilters = extractExtensions(request,ENTITY_FILTER);
+
+        log.debug(LogMessage.format("find sync statuses since timestamp request received. Timestamp: %s",new Date(lastUpdateTimestamp).toString()));
+
+        List<QueryFilter<? super E>> queryFilters = extractExtensions(request, QUERY_FILTER);
+        List<EntityFilter<? super E>> entityFilters = extractExtensions(request,ENTITY_FILTER);
+
+        if (!queryFilters.isEmpty())
+            log.debug(LogMessage.format("using query filters: %s",queryFilters));
+        if (!entityFilters.isEmpty())
+            log.debug(LogMessage.format("using entity filters: %s",entityFilters));
 
         Set<EntitySyncStatus> syncStatuses = findUpdatesSinceTimestamp(
-                new Timestamp(lastUpdateTimestamp),filters,ramFilters);
+                new Timestamp(lastUpdateTimestamp),queryFilters,entityFilters);
         if (syncStatuses.isEmpty())
             return ResponseEntity.noContent().build();
         else

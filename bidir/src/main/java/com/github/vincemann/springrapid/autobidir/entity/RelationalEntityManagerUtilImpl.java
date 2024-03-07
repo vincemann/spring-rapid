@@ -13,6 +13,8 @@ import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.HibernateProxyUtils;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.UnknownEntityTypeException;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -25,8 +27,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.github.vincemann.springrapid.core.util.HibernateProxyUtils.getTargetClass;
 
 
-@Slf4j
 public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerUtil {
+
+    private final Log log = LogFactory.getLog(getClass());
 
 
     @Cacheable(value = "entityRelationTypesCache")
@@ -263,7 +266,6 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      * Case 2: Set {@link UniDirChildEntity}Field to null if child is not saved in a collection in this parent.
      *
      * @param toRemove
-     * @throws AutoHanldeEntityRelationShipException
      */
     public void unlinkUniDirChild(IdentifiableEntity parent, IdentifiableEntity toRemove, String... membersToCheck) throws AutoHandleEntityRelationShipException {
         assertEntityRelationType(parent, RelationalEntityType.UniDirParent);

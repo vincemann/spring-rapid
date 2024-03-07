@@ -20,11 +20,12 @@ public class LoginAttemptServiceImpl implements LoginAttemptService{
     public LoginAttemptServiceImpl() {
         super();
         attemptsCache = CacheBuilder.newBuilder().
-                expireAfterWrite(1, TimeUnit.DAYS).build(new CacheLoader<String, Integer>() {
-            public Integer load(String key) {
-                return 0;
-            }
-        });
+                expireAfterWrite(1, TimeUnit.DAYS)
+                .build(new CacheLoader<>() {
+                    public Integer load(String key) {
+                        return 0;
+                    }
+                });
     }
 
     public void loginSucceeded(String key) {
@@ -43,9 +44,6 @@ public class LoginAttemptServiceImpl implements LoginAttemptService{
     }
 
     public boolean isBlocked(String key) {
-        if (!authProperties.isBruteForceProtection()){
-            return false;
-        }
         try {
             return attemptsCache.get(key) >= authProperties.getMaxLoginAttempts();
         } catch (ExecutionException e) {

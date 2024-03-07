@@ -35,7 +35,6 @@ public class IdResolvingDtoPostProcessor implements EntityDtoPostProcessor<Objec
         resolver.setResolvedIds(dto,entity,fieldsToCheck);
     }
 
-    // might need entityManager.merge?
     @Transactional
     @Override
     public void postProcessEntity(IdentifiableEntity<?> entity, Object dto, String... fieldsToCheck) throws BadEntityException, EntityNotFoundException {

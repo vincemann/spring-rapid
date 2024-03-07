@@ -44,7 +44,6 @@ public class JwtPrincipalConverterImpl implements JwtPrincipalConverter {
             Optional<AbstractUser<?>> byContactInformation = userService.findByContactInformation(contactInformation);
             VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+contactInformation+" not found");
             AbstractUser<?> user = byContactInformation.get();
-//            return new RapidAuthAuthenticatedPrincipal(user);
             return authenticatedPrincipalFactory.create(user);
         } catch (EntityNotFoundException e) {
             throw new AuthenticationCredentialsNotFoundException("User with in token encoded contactInformation: " + contactInformation + " does not exist.", e);

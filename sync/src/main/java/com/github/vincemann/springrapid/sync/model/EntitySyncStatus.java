@@ -6,10 +6,9 @@ import lombok.*;
  * Sync status response is Set of objects of this class. i.E.: [42a,3u,10u,4r]
  * id concatenated with status char a=added, u=updated, r=removed
  */
-@NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@NoArgsConstructor
 public class EntitySyncStatus {
 
 
@@ -28,4 +27,11 @@ public class EntitySyncStatus {
         this.status = SyncStatus.convert(status);
     }
 
+    @Override
+    public String toString() {
+        return "EntitySyncStatus{" +
+                "id='" + id + '\'' +
+                ", status=" + status.name() +
+                '}';
+    }
 }

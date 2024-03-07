@@ -11,6 +11,8 @@ import com.github.vincemann.springrapid.core.util.JpaUtils;
 import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
 import com.github.vincemann.springrapid.core.util.HibernateProxyUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -29,11 +31,12 @@ import java.util.Optional;
 import java.util.Set;
 
 @Aspect
-@Slf4j
 // needs to be at that order so tx advice is executed before, otherwise this code will not run within the services transaction
 // and I need to rollback these changes as well then service fails -> cant user transactionTemplate
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class RelationalEntityAdvice {
+
+    private final Log log = LogFactory.getLog(getClass());
 
     private RelationalEntityManager relationalEntityManager;
 
