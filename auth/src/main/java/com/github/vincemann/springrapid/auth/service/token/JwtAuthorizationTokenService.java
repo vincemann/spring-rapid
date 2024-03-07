@@ -12,7 +12,6 @@ import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 
@@ -22,7 +21,6 @@ import java.util.Optional;
 import static com.github.vincemann.springrapid.auth.util.JwtUtils.AUTH_CLAIM;
 import static com.github.vincemann.springrapid.auth.util.JwtUtils.create;
 
-@Slf4j
 public class JwtAuthorizationTokenService
         implements AuthorizationTokenService {
 

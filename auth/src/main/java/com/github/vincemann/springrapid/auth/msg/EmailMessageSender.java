@@ -13,7 +13,7 @@ public class EmailMessageSender implements MessageSender {
     public void send(AuthMessage message) {
         String body = Message.get("com.github.vincemann.verifyContactInformation", message.getLink())
                 .replace("contactInformation", "email");
-        MailData mailData = MailData.builder()
+        MailData mailData = MailData.Builder.builder()
                 .to(message.getRecipient())
                 .topic(message.getTopic())
                 .body(body)

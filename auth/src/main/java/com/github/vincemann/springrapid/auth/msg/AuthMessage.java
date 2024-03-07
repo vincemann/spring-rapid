@@ -59,7 +59,7 @@ public class AuthMessage {
         private Builder() {
         }
 
-        public static Builder anAuthMessage() {
+        public static Builder builder() {
             return new Builder();
         }
 

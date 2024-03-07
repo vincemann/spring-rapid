@@ -5,8 +5,8 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.EntityLocator;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.security.acls.model.AclService;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +19,6 @@ import java.util.Optional;
 /**
  * call {@link GlobalSecurityRule#checkAccess(IdentifiableEntity, Object, RapidSecurityContext)} on each permission evaluation.
  */
-@Slf4j
 public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermissionEvaluator {
 
     private List<GlobalSecurityRule> globalSecurityRules = new ArrayList<>();
@@ -83,6 +82,7 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
 
 
 
+    @Nullable
     public Boolean performGlobalSecurityChecks(IdentifiableEntity<?> entity, Object permission){
         for (GlobalSecurityRule globalSecurityRule : globalSecurityRules) {
             Boolean allowAccess = globalSecurityRule.checkAccess(entity,permission,securityContext);

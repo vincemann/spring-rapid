@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.auth.service;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
+import com.github.vincemann.springrapid.auth.msg.mail.SmtpMailSender;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
@@ -16,7 +17,8 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -24,8 +26,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
 
-@Slf4j
 public class VerificationServiceImpl implements VerificationService {
+
+    private final Log log = LogFactory.getLog(VerificationServiceImpl.class);
 
     public static final String VERIFY_CONTACT_INFORMATION_AUDIENCE = "verify";
 
@@ -73,7 +76,7 @@ public class VerificationServiceImpl implements VerificationService {
                 .queryParam("code", verificationCode)
                 .toUriString();
         log.info("verify link: " + verifyLink);
-        AuthMessage message = AuthMessage.builder()
+        AuthMessage message = AuthMessage.Builder.builder()
                 .link(verifyLink)
                 .topic(VERIFY_CONTACT_INFORMATION_AUDIENCE)
                 .code(verificationCode)

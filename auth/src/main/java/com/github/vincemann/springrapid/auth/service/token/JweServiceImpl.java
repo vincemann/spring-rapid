@@ -12,7 +12,6 @@ import com.nimbusds.jose.proc.SimpleSecurityContext;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.text.ParseException;
 
@@ -24,7 +23,6 @@ import java.text.ParseException;
  * https://connect2id.com/products/nimbus-jose-jwt/examples/jwe-with-shared-key
  * https://connect2id.com/products/nimbus-jose-jwt/examples/validating-jwt-access-tokens
  */
-@Slf4j
 public class JweServiceImpl extends JsonJwtService implements JweTokenService {
 
 	private DirectEncrypter encrypter;

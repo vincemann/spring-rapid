@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.auth.util;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.UserService;
+import com.github.vincemann.springrapid.core.sec.AuthorizationTemplate;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyAccess;
@@ -16,7 +17,7 @@ public abstract class UserUtils {
 
 
     public static <T extends AbstractUser> T findAuthenticatedUser(UserService userService){
-        VerifyAccess.condition(RapidSecurityContext.isAuthenticated(),"No user logged in");
+        AuthorizationTemplate.assertAuthenticated();
         Optional<T> userByContactInformation = (Optional<T>) userService.findByContactInformation(RapidSecurityContext.getName());
         try {
             VerifyEntity.isPresent(userByContactInformation,"user with contactInformation: " + RapidSecurityContext.getName()+ " could not be found");

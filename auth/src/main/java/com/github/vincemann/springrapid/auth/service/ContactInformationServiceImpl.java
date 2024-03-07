@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.auth.service;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
+import com.github.vincemann.springrapid.auth.msg.mail.SmtpMailSender;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
@@ -18,7 +19,8 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.util.*;
 import com.nimbusds.jwt.JWTClaimsSet;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -27,8 +29,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.Serializable;
 
 
-@Slf4j
 public class ContactInformationServiceImpl implements ContactInformationService {
+
+    private final Log log = LogFactory.getLog(ContactInformationServiceImpl.class);
 
     public static final String CHANGE_CONTACT_INFORMATION_AUDIENCE = "change-contactInformation";
 
@@ -136,7 +139,7 @@ public class ContactInformationServiceImpl implements ContactInformationService 
                 .queryParam("code", changeContactInformationCode)
                 .toUriString();
         log.info("change contactInformation link: " + changeContactInformationLink);
-        AuthMessage message = AuthMessage.builder()
+        AuthMessage message = AuthMessage.Builder.builder()
                 .link(changeContactInformationLink)
                 .topic(CHANGE_CONTACT_INFORMATION_AUDIENCE)
                 .code(changeContactInformationCode)

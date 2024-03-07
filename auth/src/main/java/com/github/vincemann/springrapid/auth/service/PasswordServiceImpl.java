@@ -1,23 +1,24 @@
 package com.github.vincemann.springrapid.auth.service;
 
-import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.msg.MessageSender;
-import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.msg.AuthMessage;
+import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
 import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +28,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.Serializable;
 import java.util.Optional;
 
-@Slf4j
 public class PasswordServiceImpl implements PasswordService {
+
+    private final Log log = LogFactory.getLog(PasswordServiceImpl.class);
 
     public static final String FORGOT_PASSWORD_AUDIENCE = "forgot-password";
 
@@ -114,7 +116,7 @@ public class PasswordServiceImpl implements PasswordService {
                 .queryParam("code", forgotPasswordCode)
                 .toUriString();
         log.info("forgotPasswordLink: " + forgotPasswordLink);
-        AuthMessage message = AuthMessage.builder()
+        AuthMessage message = AuthMessage.Builder.builder()
                 .link(forgotPasswordLink)
                 .topic(FORGOT_PASSWORD_AUDIENCE)
                 .code(forgotPasswordCode)

@@ -5,12 +5,10 @@ import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.access.AccessDeniedException;
 
-@Slf4j
 public class RapidJweServiceTests {
 	
 
@@ -41,16 +39,16 @@ public class RapidJweServiceTests {
 	
 	private void testParseToken(JweTokenService service) throws BadTokenException {
 		
-		log.info("Creating token ..." + service.getClass().getSimpleName());
+		System.out.println("Creating token ..." + service.getClass().getSimpleName());
 		JWTClaimsSet claims = JwtUtils.create("auth", "subject", 5000L,
 				MapUtils.mapOf("username", "abc@example.com"));
 		String token = service.createToken(claims);
-		
-		log.info("Parsing token ...");
+
+		System.out.println("Parsing token ...");
 		JWTClaimsSet parsedClaims = service.parseToken(token);
 		JwtUtils.validate(parsedClaims,"auth");
-		
-		log.info("Parsed token.");
+
+		System.out.println("Parsed token.");
 		Assertions.assertEquals("subject", parsedClaims.getSubject());
 		Assertions.assertEquals("abc@example.com", parsedClaims.getClaim("username"));
 	}

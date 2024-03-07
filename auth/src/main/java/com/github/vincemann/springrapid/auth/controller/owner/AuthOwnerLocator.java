@@ -7,7 +7,6 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 
 
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -17,7 +16,6 @@ import java.util.Optional;
 /**
  * Find owner (is always a user) of and entity.
  */
-@Slf4j
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class AuthOwnerLocator implements OwnerLocator<AuditingEntity> {
 

@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
+import com.github.vincemann.springrapid.auth.msg.mail.SmtpMailSender;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
@@ -10,15 +11,18 @@ import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
-@Getter
+
+
 public class SignupServiceImpl implements SignupService {
+
+    private final Log log = LogFactory.getLog(SignupServiceImpl.class);
 
     private UserService<AbstractUser<?>,?> userService;
     private VerificationService verificationService;
@@ -69,6 +73,26 @@ public class SignupServiceImpl implements SignupService {
             throw new AlreadyRegisteredException("contact information already present");
     }
 
+
+    protected UserService<AbstractUser<?>, ?> getUserService() {
+        return userService;
+    }
+
+    protected VerificationService getVerificationService() {
+        return verificationService;
+    }
+
+    protected PasswordValidator getPasswordValidator() {
+        return passwordValidator;
+    }
+
+    protected ContactInformationValidator getContactInformationValidator() {
+        return contactInformationValidator;
+    }
+
+    protected RapidAclService getAclService() {
+        return aclService;
+    }
 
     @Root
     @Autowired

@@ -80,7 +80,7 @@ public class MailData {
 		private Builder() {
 		}
 
-		public static Builder aMailData() {
+		public static Builder builder() {
 			return new Builder();
 		}
 

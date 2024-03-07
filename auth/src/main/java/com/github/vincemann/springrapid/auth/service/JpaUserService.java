@@ -10,7 +10,6 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.pass.RapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.util.*;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextAware;
@@ -22,7 +21,6 @@ import java.io.Serializable;
 import java.util.*;
 
 
-@Slf4j
 public abstract class JpaUserService
         <
                 U extends AbstractUser<Id>,

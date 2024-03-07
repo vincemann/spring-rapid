@@ -20,8 +20,6 @@ import com.github.vincemann.springrapid.core.controller.dto.map.Principal;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +41,6 @@ import java.util.Optional;
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
 
 
-@Getter
 public abstract class AbstractUserController<U extends AbstractUser<Id>, Id extends Serializable, S extends UserService<U,Id>>
 			extends CrudController<U, Id,S> {
 
@@ -454,7 +451,161 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return ResponseEntity.status(200).headers(headers).body(body);
 	}
 
+	public AuthProperties getAuthProperties() {
+		return authProperties;
+	}
 
+	public S getUnsecuredService() {
+		return unsecuredService;
+	}
+
+	public UserAuthTokenService getAuthTokenService() {
+		return authTokenService;
+	}
+
+	public UserAuthTokenService getUnsecuredAuthTokenService() {
+		return unsecuredAuthTokenService;
+	}
+
+	public PasswordService getPasswordService() {
+		return passwordService;
+	}
+
+	public SignupService getSignupService() {
+		return signupService;
+	}
+
+	public ContactInformationService getContactInformationService() {
+		return contactInformationService;
+	}
+
+	public VerificationService getVerificationService() {
+		return verificationService;
+	}
+
+	public AuthorizationTokenService getAuthorizationTokenService() {
+		return authorizationTokenService;
+	}
+
+	public String getLoginUrl() {
+		return loginUrl;
+	}
+
+	public String getSignupUrl() {
+		return signupUrl;
+	}
+
+	public String getResetPasswordUrl() {
+		return resetPasswordUrl;
+	}
+
+	public String getResetPasswordViewUrl() {
+		return resetPasswordViewUrl;
+	}
+
+	public String getFindByContactInformationUrl() {
+		return findByContactInformationUrl;
+	}
+
+	public String getChangeContactInformationUrl() {
+		return changeContactInformationUrl;
+	}
+
+	public String getChangeContactInformationViewUrl() {
+		return changeContactInformationViewUrl;
+	}
+
+	public String getVerifyUserUrl() {
+		return verifyUserUrl;
+	}
+
+	public String getResendVerificationMessageUrl() {
+		return resendVerificationMessageUrl;
+	}
+
+	public String getForgotPasswordUrl() {
+		return forgotPasswordUrl;
+	}
+
+	public String getChangePasswordUrl() {
+		return changePasswordUrl;
+	}
+
+	public String getRequestContactInformationChangeUrl() {
+		return requestContactInformationChangeUrl;
+	}
+
+	public String getFetchNewAuthTokenUrl() {
+		return fetchNewAuthTokenUrl;
+	}
+
+	public String getTestTokenUrl() {
+		return testTokenUrl;
+	}
+
+	public String getBlockUserUrl() {
+		return blockUserUrl;
+	}
+
+	public void setLoginUrl(String loginUrl) {
+		this.loginUrl = loginUrl;
+	}
+
+	public void setSignupUrl(String signupUrl) {
+		this.signupUrl = signupUrl;
+	}
+
+	public void setResetPasswordUrl(String resetPasswordUrl) {
+		this.resetPasswordUrl = resetPasswordUrl;
+	}
+
+	public void setResetPasswordViewUrl(String resetPasswordViewUrl) {
+		this.resetPasswordViewUrl = resetPasswordViewUrl;
+	}
+
+	public void setFindByContactInformationUrl(String findByContactInformationUrl) {
+		this.findByContactInformationUrl = findByContactInformationUrl;
+	}
+
+	public void setChangeContactInformationUrl(String changeContactInformationUrl) {
+		this.changeContactInformationUrl = changeContactInformationUrl;
+	}
+
+	public void setChangeContactInformationViewUrl(String changeContactInformationViewUrl) {
+		this.changeContactInformationViewUrl = changeContactInformationViewUrl;
+	}
+
+	public void setVerifyUserUrl(String verifyUserUrl) {
+		this.verifyUserUrl = verifyUserUrl;
+	}
+
+	public void setResendVerificationMessageUrl(String resendVerificationMessageUrl) {
+		this.resendVerificationMessageUrl = resendVerificationMessageUrl;
+	}
+
+	public void setForgotPasswordUrl(String forgotPasswordUrl) {
+		this.forgotPasswordUrl = forgotPasswordUrl;
+	}
+
+	public void setChangePasswordUrl(String changePasswordUrl) {
+		this.changePasswordUrl = changePasswordUrl;
+	}
+
+	public void setRequestContactInformationChangeUrl(String requestContactInformationChangeUrl) {
+		this.requestContactInformationChangeUrl = requestContactInformationChangeUrl;
+	}
+
+	public void setFetchNewAuthTokenUrl(String fetchNewAuthTokenUrl) {
+		this.fetchNewAuthTokenUrl = fetchNewAuthTokenUrl;
+	}
+
+	public void setTestTokenUrl(String testTokenUrl) {
+		this.testTokenUrl = testTokenUrl;
+	}
+
+	public void setBlockUserUrl(String blockUserUrl) {
+		this.blockUserUrl = blockUserUrl;
+	}
 
 	//              INJECT DEPENDENCIES
 
