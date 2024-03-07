@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.autobidir.entity.biDir.child;
+package com.github.vincemann.springrapid.autobidir.entity.bidir.child;
 
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerUtil;
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerUtilImpl;
@@ -6,8 +6,6 @@ import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirC
 import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.UnknownEntityTypeException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -22,8 +20,6 @@ import java.util.Optional;
 class RapidRelationalEntityManagerUtilChildTest {
 
 
-    @Getter
-    @Setter
     private class EntityChild extends IdentifiableEntityImpl<Long>  {
         @BiDirParentEntity
         private EntityParent entityParent;
@@ -31,18 +27,64 @@ class RapidRelationalEntityManagerUtilChildTest {
         private EntityParent unusedParent;
         @BiDirParentEntity
         private SecondEntityParent secondEntityParent;
+
+        public EntityParent getEntityParent() {
+            return entityParent;
+        }
+
+        public void setEntityParent(EntityParent entityParent) {
+            this.entityParent = entityParent;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public EntityParent getUnusedParent() {
+            return unusedParent;
+        }
+
+        public void setUnusedParent(EntityParent unusedParent) {
+            this.unusedParent = unusedParent;
+        }
+
+        public SecondEntityParent getSecondEntityParent() {
+            return secondEntityParent;
+        }
+
+        public void setSecondEntityParent(SecondEntityParent secondEntityParent) {
+            this.secondEntityParent = secondEntityParent;
+        }
     }
-    @Getter
-    @Setter
+
     private class SecondEntityParent extends IdentifiableEntityImpl<Long> {
         @BiDirChildEntity
         private EntityChild entityChild;
+
+        public EntityChild getEntityChild() {
+            return entityChild;
+        }
+
+        public void setEntityChild(EntityChild entityChild) {
+            this.entityChild = entityChild;
+        }
     }
-    @Getter
-    @Setter
+
     private class EntityParent extends IdentifiableEntityImpl<Long> {
         @BiDirChildEntity
         private EntityChild entityChild;
+
+        public EntityChild getEntityChild() {
+            return entityChild;
+        }
+
+        public void setEntityChild(EntityChild entityChild) {
+            this.entityChild = entityChild;
+        }
     }
 
     private EntityChild testEntityChild;

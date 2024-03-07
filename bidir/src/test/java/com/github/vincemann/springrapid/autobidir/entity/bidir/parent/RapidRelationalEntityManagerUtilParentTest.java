@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.autobidir.entity.biDir.parent;
+package com.github.vincemann.springrapid.autobidir.entity.bidir.parent;
 
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerUtilImpl;
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerUtil;
@@ -10,8 +10,6 @@ import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDir
 
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildEntity;
-import lombok.Getter;
-import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,8 +18,6 @@ import java.util.*;
 
 class RapidRelationalEntityManagerUtilParentTest {
 
-    @Getter
-    @Setter
     private class EntityChild extends IdentifiableEntityImpl<Long>  {
         @BiDirParentEntity
         private EntityParent entityParent;
@@ -29,27 +25,88 @@ class RapidRelationalEntityManagerUtilParentTest {
         private EntityParent unusedParent;
         @BiDirParentEntity
         private SecondEntityParent secondEntityParent;
+
+        public EntityParent getEntityParent() {
+            return entityParent;
+        }
+
+        public void setEntityParent(EntityParent entityParent) {
+            this.entityParent = entityParent;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public EntityParent getUnusedParent() {
+            return unusedParent;
+        }
+
+        public void setUnusedParent(EntityParent unusedParent) {
+            this.unusedParent = unusedParent;
+        }
+
+        public SecondEntityParent getSecondEntityParent() {
+            return secondEntityParent;
+        }
+
+        public void setSecondEntityParent(SecondEntityParent secondEntityParent) {
+            this.secondEntityParent = secondEntityParent;
+        }
     }
 
-    @Getter
-    @Setter
+
     private class SecondEntityChild extends IdentifiableEntityImpl<Long>  {
         @BiDirParentEntity
         private EntityParent entityParent;
+
+        public EntityParent getEntityParent() {
+            return entityParent;
+        }
+
+        public void setEntityParent(EntityParent entityParent) {
+            this.entityParent = entityParent;
+        }
     }
-    @Getter
-    @Setter
+
     private class SecondEntityParent extends IdentifiableEntityImpl<Long> {
         @BiDirChildEntity
         private EntityChild entityChild;
+
+        public EntityChild getEntityChild() {
+            return entityChild;
+        }
+
+        public void setEntityChild(EntityChild entityChild) {
+            this.entityChild = entityChild;
+        }
     }
-    @Getter
-    @Setter
+
     private class EntityParent extends IdentifiableEntityImpl<Long> {
         @BiDirChildEntity
         private EntityChild entityChild;
         @BiDirChildCollection(SecondEntityChild.class)
         private Set<SecondEntityChild> secondEntityChildSet = new HashSet<>();
+
+        public EntityChild getEntityChild() {
+            return entityChild;
+        }
+
+        public void setEntityChild(EntityChild entityChild) {
+            this.entityChild = entityChild;
+        }
+
+        public Set<SecondEntityChild> getSecondEntityChildSet() {
+            return secondEntityChildSet;
+        }
+
+        public void setSecondEntityChildSet(Set<SecondEntityChild> secondEntityChildSet) {
+            this.secondEntityChildSet = secondEntityChildSet;
+        }
     }
 
     private EntityChild testEntityChild;

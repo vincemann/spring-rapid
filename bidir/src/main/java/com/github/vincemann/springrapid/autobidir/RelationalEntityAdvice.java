@@ -10,7 +10,6 @@ import com.github.vincemann.springrapid.core.util.Entity;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
 import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
 import com.github.vincemann.springrapid.core.util.HibernateProxyUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
@@ -36,7 +35,7 @@ import java.util.Set;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class RelationalEntityAdvice {
 
-    private final Log log = LogFactory.getLog(getClass());
+    private final Log log = LogFactory.getLog(RelationalEntityAdvice.class);
 
     private RelationalEntityManager relationalEntityManager;
 

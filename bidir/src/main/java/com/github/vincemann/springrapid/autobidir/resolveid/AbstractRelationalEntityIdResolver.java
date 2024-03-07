@@ -7,7 +7,6 @@ import com.github.vincemann.springrapid.core.service.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
@@ -21,7 +20,6 @@ import java.util.Set;
  *  {@code UniDirParentId}, {@code UniDirChildId}
  *  {@code UniDirChildIdCollection}, {@code BiDirChildIdCollection}
  */
-@Getter
 public abstract class AbstractRelationalEntityIdResolver implements EntityIdResolver {
 
     private RelationalDtoManagerUtil relationalDtoManagerUtil;
@@ -67,5 +65,21 @@ public abstract class AbstractRelationalEntityIdResolver implements EntityIdReso
     @Autowired
     public void setCrudServiceLocator(CrudServiceLocator crudServiceLocator) {
         this.crudServiceLocator = crudServiceLocator;
+    }
+
+    public RelationalDtoManagerUtil getRelationalDtoManagerUtil() {
+        return relationalDtoManagerUtil;
+    }
+
+    public RelationalEntityManagerUtil getRelationalEntityManagerUtil() {
+        return relationalEntityManagerUtil;
+    }
+
+    public CrudServiceLocator getCrudServiceLocator() {
+        return crudServiceLocator;
+    }
+
+    public RelationalDtoType getSupportedDtoType() {
+        return supportedDtoType;
     }
 }

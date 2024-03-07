@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.autobidir.controller.uniDir;
+package com.github.vincemann.springrapid.autobidir.controller.unidir;
 
 
 //@Getter

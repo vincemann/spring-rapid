@@ -12,7 +12,6 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.HibernateProxyUtils;
 import com.google.common.collect.Sets;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.UnknownEntityTypeException;
@@ -29,7 +28,7 @@ import static com.github.vincemann.springrapid.core.util.HibernateProxyUtils.get
 
 public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerUtil {
 
-    private final Log log = LogFactory.getLog(getClass());
+    private final Log log = LogFactory.getLog(RelationalEntityManagerUtilImpl.class);
 
 
     @Cacheable(value = "entityRelationTypesCache")

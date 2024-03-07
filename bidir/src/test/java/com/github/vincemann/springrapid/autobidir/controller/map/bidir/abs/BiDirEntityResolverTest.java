@@ -1,12 +1,12 @@
-package com.github.vincemann.springrapid.autobidir.controller.map.biDir.abs;
+package com.github.vincemann.springrapid.autobidir.controller.map.bidir.abs;
 
-import com.github.vincemann.springrapid.autobidir.controller.map.biDir.testEntities.BiDirEntityChild;
-import com.github.vincemann.springrapid.autobidir.controller.map.biDir.testEntities.BiDirEntityParent;
-import com.github.vincemann.springrapid.autobidir.controller.map.biDir.testEntities.BiDirSecondEntityParent;
+import com.github.vincemann.springrapid.autobidir.controller.map.bidir.testEntities.BiDirEntityChild;
+import com.github.vincemann.springrapid.autobidir.controller.map.bidir.testEntities.BiDirEntityParent;
+import com.github.vincemann.springrapid.autobidir.controller.map.bidir.testEntities.BiDirSecondEntityParent;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.CrudServiceLocator;
-import lombok.Getter;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -15,7 +15,6 @@ import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 
-@Getter
 /**
  * Requires @MockitoSettings(strictness = Strictness.LENIENT) class level annotation on ChildClass
  */
@@ -59,5 +58,33 @@ public abstract class BiDirEntityResolverTest {
                 .thenReturn(secondEntityParentCrudService);
         when(crudServiceLocator.find(BiDirEntityChild.class))
                 .thenReturn(entityChildCrudService);
+    }
+
+    public CrudServiceLocator getCrudServiceLocator() {
+        return crudServiceLocator;
+    }
+
+    public CrudService<BiDirEntityChild, Long> getEntityChildCrudService() {
+        return entityChildCrudService;
+    }
+
+    public CrudService<BiDirEntityParent, Long> getEntityParentCrudService() {
+        return entityParentCrudService;
+    }
+
+    public CrudService<BiDirSecondEntityParent, Long> getSecondEntityParentCrudService() {
+        return secondEntityParentCrudService;
+    }
+
+    public BiDirEntityParent getBiDirEntityParent() {
+        return biDirEntityParent;
+    }
+
+    public BiDirSecondEntityParent getBiDirSecondEntityParent() {
+        return biDirSecondEntityParent;
+    }
+
+    public BiDirEntityChild getBiDirChild() {
+        return biDirChild;
     }
 }

@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.autobidir.util;
 
-import lombok.NonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

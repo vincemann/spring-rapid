@@ -3,7 +3,6 @@ package com.github.vincemann.springrapid.autobidir.entity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import static com.github.vincemann.springrapid.core.util.HibernateProxyUtils.getTargetClass;
 
@@ -22,7 +24,7 @@ import static com.github.vincemann.springrapid.core.util.HibernateProxyUtils.get
 @Transactional(propagation = Propagation.MANDATORY)
 public class RelationalEntityManagerImpl implements RelationalEntityManager {
 
-    private final Log log = LogFactory.getLog(getClass());
+    private final Log log = LogFactory.getLog(RelationalEntityManagerImpl.class);
 
     private RelationalEntityManagerUtil helper;
     @PersistenceContext

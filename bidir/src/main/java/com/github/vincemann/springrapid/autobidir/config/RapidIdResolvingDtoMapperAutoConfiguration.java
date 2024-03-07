@@ -7,7 +7,6 @@ import com.github.vincemann.springrapid.core.controller.dto.MergeUpdateStrategy;
 import org.springframework.context.annotation.Configuration;
 import com.github.vincemann.springrapid.autobidir.resolveid.bidir.BiDirChildIdResolver;
 import com.github.vincemann.springrapid.autobidir.resolveid.bidir.BiDirParentIdResolver;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -16,7 +15,6 @@ import org.springframework.context.annotation.Bean;
 import java.util.List;
 
 @Configuration
-@Slf4j
 //overrides mergeUpdateStrategy
 @AutoConfigureBefore(RapidDtoAutoConfiguration.class)
 @AutoConfigureAfter(RapidServiceAutoConfiguration.class)

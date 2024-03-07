@@ -12,7 +12,8 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.google.common.collect.Sets;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.io.Serializable;
@@ -22,8 +23,9 @@ import java.util.*;
 import static com.github.vincemann.springrapid.core.util.HibernateProxyUtils.getTargetClass;
 
 
-@Slf4j
 public class RelationalDtoManagerUtilImpl implements RelationalDtoManagerUtil {
+
+    private final Log log = LogFactory.getLog(RelationalDtoManagerUtilImpl.class);
 
 
     @Cacheable(value = "dtoRelationTypesCache")

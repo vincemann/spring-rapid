@@ -11,7 +11,6 @@ import com.github.vincemann.springrapid.sync.controller.SyncEntityController;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.LastFetchInfo;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
@@ -29,7 +28,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 
-@Getter
 public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
         extends MvcControllerTestTemplate<C> {
 
