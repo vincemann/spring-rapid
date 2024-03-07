@@ -5,7 +5,6 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.AuthorizationTemplate;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -25,7 +24,6 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
 
-@Slf4j
 /**
  *
  *
@@ -49,7 +47,7 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
         try {
             this.triggerCheckMethod = AclTemplateImpl.SecurityObject.class.getMethod("triggerCheck");
         } catch (NoSuchMethodException e) {
-            log.error(e.getMessage(), e);
+            throw new IllegalArgumentException(e);
         }
         parser = new SpelExpressionParser();
     }
@@ -59,13 +57,9 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
         AuthorizationTemplate.assertAuthenticated();
         Collection<E> filtered = new HashSet<>();
         for (E entity : toFilter) {
-
             boolean permitted = _checkPermission(entity.getId(), entity.getClass(), permission);
             if (permitted) {
                 filtered.add(entity);
-            } else {
-                if (log.isWarnEnabled())
-                    log.warn("filtered out entity: " + entity);
             }
         }
         return (C) filtered;

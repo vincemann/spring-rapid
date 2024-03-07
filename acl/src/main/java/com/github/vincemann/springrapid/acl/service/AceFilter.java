@@ -1,8 +1,6 @@
 package com.github.vincemann.springrapid.acl.service;
 
 import com.google.common.collect.Sets;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.security.acls.model.Permission;
@@ -13,12 +11,11 @@ import java.util.Set;
 
 import static com.github.vincemann.springrapid.acl.util.AclUtils.sidToString;
 
-@Getter
 public class AceFilter {
 
     private Set<Permission> permissions;
     private Set<String> sids = new HashSet<>();
-    @Setter
+
     private Boolean principalsOnly = Boolean.TRUE;
     private Set<String> ignoredSids = new HashSet<>();
 
@@ -98,19 +95,21 @@ public class AceFilter {
         return true;
     }
 
-    void setPermissions(Set<Permission> permissions) {
-        this.permissions = permissions;
+
+
+    public Set<Permission> getPermissions() {
+        return permissions;
     }
 
-    void setSids(Set<String> sids) {
-        this.sids = sids;
+    public Set<String> getSids() {
+        return sids;
     }
 
-    void setPrincipalsOnly(Boolean principalsOnly) {
-        this.principalsOnly = principalsOnly;
+    public Boolean getPrincipalsOnly() {
+        return principalsOnly;
     }
 
-    void setIgnoredSids(Set<String> ignoredSids) {
-        this.ignoredSids = ignoredSids;
+    public Set<String> getIgnoredSids() {
+        return ignoredSids;
     }
 }

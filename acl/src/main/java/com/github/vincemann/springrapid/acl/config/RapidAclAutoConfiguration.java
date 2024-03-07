@@ -10,7 +10,6 @@ import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.acl.service.RapidAclServiceImpl;
 import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.sec.Roles;
-import lombok.extern.slf4j.Slf4j;
 import net.sf.ehcache.CacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -38,7 +37,6 @@ import javax.sql.DataSource;
  * Auto-configures AclBeans and Acl-Caching.
  */
 @Configuration
-@Slf4j
 public class RapidAclAutoConfiguration {
 
     public RapidAclAutoConfiguration() {

@@ -1,7 +1,9 @@
 package com.github.vincemann.springrapid.acl.config;
 
+import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Configuration;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
@@ -13,8 +15,9 @@ import javax.sql.DataSource;
  * Creates Acl-Schema in db on startup.
  */
 @Configuration
-@Slf4j
 public class RapidAclSchemaAutoConfiguration {
+
+    private final Log log = LogFactory.getLog(RapidAclSchemaAutoConfiguration.class);
 
     public RapidAclSchemaAutoConfiguration() {
 

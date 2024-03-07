@@ -1,7 +1,9 @@
 package com.github.vincemann.springrapid.acl.framework;
 
 import com.github.vincemann.springrapid.acl.util.AclUtils;
-import lombok.extern.slf4j.Slf4j;
+import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.security.acls.domain.AuditLogger;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy;
@@ -13,8 +15,9 @@ import java.util.List;
  * No exact Permission match is needed, if ADMIN permission is given.
  * Otherwise same as {@link DefaultPermissionGrantingStrategy}.
  */
-@Slf4j
 public class AdministrationDefaultPermissionGrantingStrategy extends DefaultPermissionGrantingStrategy {
+
+    private final Log log = LogFactory.getLog(AdministrationDefaultPermissionGrantingStrategy.class);
 
     private final transient AuditLogger auditLogger;
 
