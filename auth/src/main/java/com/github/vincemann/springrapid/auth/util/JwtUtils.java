@@ -1,7 +1,9 @@
 package com.github.vincemann.springrapid.auth.util;
 
+import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.text.ParseException;
@@ -11,7 +13,6 @@ import java.util.stream.Collectors;
 /**
  * Helper-Methods for creating and validating Jwt's claims
  */
-@Slf4j
 public class JwtUtils {
 
 	public static final String SUBJECT_CLAIM = "sub";
@@ -102,15 +103,9 @@ public class JwtUtils {
 	public static void validateNotExpired(JWTClaimsSet claims) {
 		long expirationTime = (long) claims.getClaim(JwtUtils.EXPIRATION_CLAIM);
 		long currentTime = System.currentTimeMillis();
-		log.debug("Check if token is expired...");
-		log.debug("Expiration time = " + new Date(expirationTime)
-				+ ". Current time = " + new Date(currentTime));
-		log.debug("Expiration time = " + expirationTime
-				+ ". Current time = " + currentTime);
 		if (expirationTime< currentTime){
 			throw new AccessDeniedException("Expired token");
 		}
-		log.debug("Token not expired.");
 	}
 
 	public static void validate(JWTClaimsSet claims, String expectedAud,long issuedAfter) {
@@ -131,14 +126,10 @@ public class JwtUtils {
 	}
 
 	public static void validateIssuedAfter(JWTClaimsSet claims, long issuedAfter)  {
-		log.debug("Check if token is obsolete...");
 		long issueTime = (long) claims.getClaim(ISSUED_AT_CLAIM);
-		log.debug("Token issued at: " + new Date(issueTime) +  ", must be issued after: " + new Date(issuedAfter));
-		log.debug("Token issued at: " + issueTime +  ", must be issued after: " + issuedAfter);
 		if (issueTime < issuedAfter){
 			throw new AccessDeniedException("Token has become obsolete");
 		}
-		log.debug("Token is not obsolete.");
 	}
 	
 

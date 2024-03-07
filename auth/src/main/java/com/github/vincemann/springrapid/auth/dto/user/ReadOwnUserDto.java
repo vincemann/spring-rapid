@@ -7,9 +7,7 @@ import lombok.*;
 
 import java.util.Set;
 
-@Getter
-@Setter
-@NoArgsConstructor
+
 public class ReadOwnUserDto extends AbstractUserDto {
 
     private String id;
@@ -21,11 +19,13 @@ public class ReadOwnUserDto extends AbstractUserDto {
     //    private boolean goodAdmin = false;
 
 
-    @Builder
     public ReadOwnUserDto(String contactInformation, Set<String> roles, String id) {
         super(contactInformation,roles);
         this.id = id;
         initFlags();
+    }
+
+    public ReadOwnUserDto() {
     }
 
     public void initFlags() {
@@ -34,6 +34,46 @@ public class ReadOwnUserDto extends AbstractUserDto {
         admin = getRoles().contains(Roles.ADMIN);
         goodUser = !(!verified || blocked);
 //        goodAdmin = goodUser && admin;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
+    public boolean isGoodUser() {
+        return goodUser;
+    }
+
+    public void setGoodUser(boolean goodUser) {
+        this.goodUser = goodUser;
     }
 
     @Override

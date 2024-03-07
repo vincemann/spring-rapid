@@ -1,9 +1,7 @@
 package com.github.vincemann.springrapid.auth.model;
 
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -15,9 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-@Getter @Setter
 @MappedSuperclass
-@NoArgsConstructor
 public class AbstractUser<Id extends Serializable>
 		extends AuditingEntity<Id>
 {
@@ -52,6 +48,8 @@ public class AbstractUser<Id extends Serializable>
 	@Column(nullable = false)
 	protected Long credentialsUpdatedMillis = System.currentTimeMillis();
 
+	public AbstractUser() {
+	}
 
 	public AbstractUser(String contactInformation, String newContactInformation, String password, Set<String> roles, Long credentialsUpdatedMillis) {
 		this.contactInformation = contactInformation;
@@ -65,5 +63,45 @@ public class AbstractUser<Id extends Serializable>
 		return roles.contains(role);
 	}
 
+	public String getContactInformation() {
+		return contactInformation;
+	}
+
+	public void setContactInformation(String contactInformation) {
+		this.contactInformation = contactInformation;
+	}
+
+	@Nullable
+	public String getNewContactInformation() {
+		return newContactInformation;
+	}
+
+	public void setNewContactInformation(@Nullable String newContactInformation) {
+		this.newContactInformation = newContactInformation;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public Set<String> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<String> roles) {
+		this.roles = roles;
+	}
+
+	public Long getCredentialsUpdatedMillis() {
+		return credentialsUpdatedMillis;
+	}
+
+	public void setCredentialsUpdatedMillis(Long credentialsUpdatedMillis) {
+		this.credentialsUpdatedMillis = credentialsUpdatedMillis;
+	}
 }
 

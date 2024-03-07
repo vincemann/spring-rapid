@@ -1,16 +1,10 @@
 package com.github.vincemann.springrapid.auth.dto.user.abs;
 
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
-@NoArgsConstructor
 public class AbstractUserDto {
 
     private String contactInformation;
@@ -20,5 +14,24 @@ public class AbstractUserDto {
         this.contactInformation = contactInformation;
         if (roles != null)
             this.roles = roles;
+    }
+
+    public AbstractUserDto() {
+    }
+
+    public String getContactInformation() {
+        return contactInformation;
+    }
+
+    public void setContactInformation(String contactInformation) {
+        this.contactInformation = contactInformation;
+    }
+
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
     }
 }

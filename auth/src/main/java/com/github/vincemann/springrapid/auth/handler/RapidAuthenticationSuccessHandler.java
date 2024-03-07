@@ -5,7 +5,9 @@ import com.github.vincemann.springrapid.auth.service.UserAuthTokenService;
 
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import lombok.extern.slf4j.Slf4j;
+import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
@@ -24,9 +26,10 @@ import java.io.IOException;
  * @author Sanjay Patel
  * @modifiedBy vincemann
  */
-@Slf4j
 public class RapidAuthenticationSuccessHandler
 	extends SimpleUrlAuthenticationSuccessHandler {
+
+	private final Log log = LogFactory.getLog(RapidAuthenticationSuccessHandler.class);
 
 
 	private UserAuthTokenService authTokenService;

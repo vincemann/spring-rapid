@@ -1,15 +1,90 @@
 package com.github.vincemann.springrapid.auth.msg;
 
-import lombok.*;
-
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@ToString
 public class AuthMessage {
     private String link;
     private String topic;
     private String code;
     private String recipient;
+
+    public AuthMessage(String link, String topic, String code, String recipient) {
+        this.link = link;
+        this.topic = topic;
+        this.code = code;
+        this.recipient = recipient;
+    }
+
+    public AuthMessage() {
+    }
+
+
+
+
+
+    public String getLink() {
+        return link;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getRecipient() {
+        return recipient;
+    }
+
+    public void setRecipient(String recipient) {
+        this.recipient = recipient;
+    }
+
+    @Override
+    public String toString() {
+        return "AuthMessage{" +
+                "link='" + link + '\'' +
+                ", topic='" + topic + '\'' +
+                ", code='" + code + '\'' +
+                ", recipient='" + recipient + '\'' +
+                '}';
+    }
+
+    public static final class Builder {
+        private String link;
+        private String topic;
+        private String code;
+        private String recipient;
+
+        private Builder() {
+        }
+
+        public static Builder anAuthMessage() {
+            return new Builder();
+        }
+
+        public Builder link(String link) {
+            this.link = link;
+            return this;
+        }
+
+        public Builder topic(String topic) {
+            this.topic = topic;
+            return this;
+        }
+
+        public Builder code(String code) {
+            this.code = code;
+            return this;
+        }
+
+        public Builder recipient(String recipient) {
+            this.recipient = recipient;
+            return this;
+        }
+
+        public AuthMessage build() {
+            return new AuthMessage(link, topic, code, recipient);
+        }
+    }
 }

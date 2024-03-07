@@ -1,8 +1,6 @@
 package com.github.vincemann.springrapid.auth;
 
 import com.github.vincemann.springrapid.core.CoreProperties;
-import lombok.*;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
@@ -10,9 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Validated
-@Slf4j
-@Getter
-@Setter
 public class AuthProperties {
 
 
@@ -26,8 +21,6 @@ public class AuthProperties {
 	public Controller controller;
 
 
-	@Getter
-	@Setter
 	public static class Controller {
 
 		private CoreProperties coreProperties;
@@ -139,6 +132,74 @@ public class AuthProperties {
 		public String getBlockUserUrl() {
 			return blockUserUrl;
 		}
+
+		public void setCoreProperties(CoreProperties coreProperties) {
+			this.coreProperties = coreProperties;
+		}
+
+		public void setUserBaseUrl(String userBaseUrl) {
+			this.userBaseUrl = userBaseUrl;
+		}
+
+		public void setLoginUrl(String loginUrl) {
+			this.loginUrl = loginUrl;
+		}
+
+		public void setSignupUrl(String signupUrl) {
+			this.signupUrl = signupUrl;
+		}
+
+		public void setResetPasswordUrl(String resetPasswordUrl) {
+			this.resetPasswordUrl = resetPasswordUrl;
+		}
+
+		public void setResetPasswordViewUrl(String resetPasswordViewUrl) {
+			this.resetPasswordViewUrl = resetPasswordViewUrl;
+		}
+
+		public void setFindByContactInformationUrl(String findByContactInformationUrl) {
+			this.findByContactInformationUrl = findByContactInformationUrl;
+		}
+
+		public void setChangeContactInformationUrl(String changeContactInformationUrl) {
+			this.changeContactInformationUrl = changeContactInformationUrl;
+		}
+
+		public void setChangeContactInformationViewUrl(String changeContactInformationViewUrl) {
+			this.changeContactInformationViewUrl = changeContactInformationViewUrl;
+		}
+
+		public void setVerifyUserUrl(String verifyUserUrl) {
+			this.verifyUserUrl = verifyUserUrl;
+		}
+
+		public void setResendVerifyContactInformationMsgUrl(String resendVerifyContactInformationMsgUrl) {
+			this.resendVerifyContactInformationMsgUrl = resendVerifyContactInformationMsgUrl;
+		}
+
+		public void setForgotPasswordUrl(String forgotPasswordUrl) {
+			this.forgotPasswordUrl = forgotPasswordUrl;
+		}
+
+		public void setChangePasswordUrl(String changePasswordUrl) {
+			this.changePasswordUrl = changePasswordUrl;
+		}
+
+		public void setRequestContactInformationChangeUrl(String requestContactInformationChangeUrl) {
+			this.requestContactInformationChangeUrl = requestContactInformationChangeUrl;
+		}
+
+		public void setFetchNewAuthTokenUrl(String fetchNewAuthTokenUrl) {
+			this.fetchNewAuthTokenUrl = fetchNewAuthTokenUrl;
+		}
+
+		public void setTestTokenUrl(String testTokenUrl) {
+			this.testTokenUrl = testTokenUrl;
+		}
+
+		public void setBlockUserUrl(String blockUserUrl) {
+			this.blockUserUrl = blockUserUrl;
+		}
 	}
 
 	public CoreProperties getCoreProperties() {
@@ -172,11 +233,6 @@ public class AuthProperties {
 	 * @author Sanjay Patel
 	 * @modifiedBy vincemann
 	 */
-	@AllArgsConstructor
-	@NoArgsConstructor
-	@ToString
-	@Getter
-	@Setter
 	public static class Admin {
 		/**
 		 * Login ID of the initial Admin user to be created 
@@ -188,14 +244,47 @@ public class AuthProperties {
 		 */
 		public String password;
 
+		public Boolean replace;
+
 		public Admin(String contactInformation, String password) {
 			this.contactInformation = contactInformation;
 			this.password = password;
 			this.replace = true;
 		}
 
-		public Boolean replace;
+		public Admin(String contactInformation, String password, Boolean replace) {
+			this.contactInformation = contactInformation;
+			this.password = password;
+			this.replace = replace;
+		}
 
+		public Admin() {
+		}
+
+
+		public String getContactInformation() {
+			return contactInformation;
+		}
+
+		public void setContactInformation(String contactInformation) {
+			this.contactInformation = contactInformation;
+		}
+
+		public String getPassword() {
+			return password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
+		}
+
+		public Boolean getReplace() {
+			return replace;
+		}
+
+		public void setReplace(Boolean replace) {
+			this.replace = replace;
+		}
 	}
 	
 	/**
@@ -203,7 +292,6 @@ public class AuthProperties {
 	 * 
 	 * @author Sanjay Patel
 	 */
-	@Getter @Setter
 	public static class Jwt {
 
 
@@ -221,6 +309,30 @@ public class AuthProperties {
 		 * Expiration milliseconds for short-lived tokens and cookies
 		 */
 		public int shortLivedMillis = 120000; // Two minutes
+
+		public String getSecret() {
+			return secret;
+		}
+
+		public void setSecret(String secret) {
+			this.secret = secret;
+		}
+
+		public long getExpirationMillis() {
+			return expirationMillis;
+		}
+
+		public void setExpirationMillis(long expirationMillis) {
+			this.expirationMillis = expirationMillis;
+		}
+
+		public int getShortLivedMillis() {
+			return shortLivedMillis;
+		}
+
+		public void setShortLivedMillis(int shortLivedMillis) {
+			this.shortLivedMillis = shortLivedMillis;
+		}
 	}
 
 	public Controller getController() {

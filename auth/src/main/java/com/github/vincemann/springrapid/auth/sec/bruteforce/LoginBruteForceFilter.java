@@ -1,7 +1,9 @@
 package com.github.vincemann.springrapid.auth.sec.bruteforce;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import lombok.extern.slf4j.Slf4j;
+import com.github.vincemann.springrapid.auth.msg.mail.SmtpMailSender;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -11,9 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Slf4j
 public class LoginBruteForceFilter extends OncePerRequestFilter {
 
+
+    private final Log log = LogFactory.getLog(LoginBruteForceFilter.class);
     private LoginAttemptService loginAttemptService;
     private AuthProperties properties;
 

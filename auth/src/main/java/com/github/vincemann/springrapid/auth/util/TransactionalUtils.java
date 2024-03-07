@@ -1,9 +1,9 @@
 package com.github.vincemann.springrapid.auth.util;
 
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-@Slf4j
+
 public class TransactionalUtils {
 
     /**
@@ -24,7 +24,6 @@ public class TransactionalUtils {
                         }
                     });
         }else {
-      		log.warn("No Transaction active for 'after tx commit' - runnable -> executing now");
       		runnable.run();
 		}
     }

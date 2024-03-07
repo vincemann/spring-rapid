@@ -5,8 +5,8 @@ import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenSer
 import com.github.vincemann.springrapid.auth.service.token.JwtService;
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -19,16 +19,21 @@ import java.io.IOException;
 /**
  * Filter for token authentication
  */
-@AllArgsConstructor
-@Slf4j
+
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private final Log log = LogFactory.getLog(JwtAuthenticationFilter.class);
 
 
     private AuthorizationTokenService authorizationTokenService;
     private RapidSecurityContext securityContext;
     private AuthProperties authProperties;
 
+    public JwtAuthenticationFilter(AuthorizationTokenService authorizationTokenService, RapidSecurityContext securityContext, AuthProperties authProperties) {
+        this.authorizationTokenService = authorizationTokenService;
+        this.securityContext = securityContext;
+        this.authProperties = authProperties;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

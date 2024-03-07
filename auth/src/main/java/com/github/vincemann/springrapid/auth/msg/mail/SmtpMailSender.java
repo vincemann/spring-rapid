@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.auth.msg.mail;
 
 import com.github.vincemann.springrapid.core.util.Message;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.log.LogMessage;
@@ -22,7 +21,7 @@ import javax.mail.internet.MimeMessage;
  */
 public class SmtpMailSender implements MailSender<MailData> {
 
-	private final Log log = LogFactory.getLog(getClass());
+	private final Log log = LogFactory.getLog(SmtpMailSender.class);
 	
 
 	private final JavaMailSender javaMailSender;

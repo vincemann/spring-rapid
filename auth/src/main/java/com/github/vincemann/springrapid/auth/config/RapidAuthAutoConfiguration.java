@@ -14,7 +14,6 @@ import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.audit.LongIdAuthAuditorAwareImpl;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.ctx.ContextService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -30,7 +29,6 @@ import org.springframework.security.acls.model.AclService;
 import java.util.List;
 
 @Configuration
-@Slf4j
 @EnableConfigurationProperties
 @AutoConfigureBefore({RapidCoreAutoConfiguration.class,RapidAclAutoConfiguration.class}) // permission evaluator is overridden this way
 public class RapidAuthAutoConfiguration {
