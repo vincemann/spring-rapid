@@ -123,19 +123,19 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
     // helper
 
     private <Dto> List<Dto> deserializeToList(String s, Class<Dto> dtoClass) throws IOException {
-        CollectionType setType = getController().getObjectMapper().getObjectMapper()
+        CollectionType setType = getController().getObjectMapper()
                 .getTypeFactory().constructCollectionType(List.class, dtoClass);
         return deserialize(s, setType);
     }
 
     public  <Dto> Set<Dto> deserializeToSet(String s, Class<Dto> dtoClass) throws IOException {
-        CollectionType setType = getController().getObjectMapper().getObjectMapper()
+        CollectionType setType = getController().getObjectMapper()
                 .getTypeFactory().constructCollectionType(Set.class, dtoClass);
         return deserialize(s, setType);
     }
 
     public  <Dto> Dto deserialize(String s, JavaType dtoClass) throws IOException {
-        return (Dto) getController().getObjectMapper().readDto(s,dtoClass);
+        return getController().getObjectMapper().readValue(s,dtoClass);
     }
 
 }

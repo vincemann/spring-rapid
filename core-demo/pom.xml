@@ -34,6 +34,22 @@
             <version>${project.version}</version>
         </dependency>
 
+<!--        UTIL-->
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+        <!--        using lower version to be compatible with springs logback-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+
 <!--        DB-->
         <dependency>
             <groupId>com.h2database</groupId>
