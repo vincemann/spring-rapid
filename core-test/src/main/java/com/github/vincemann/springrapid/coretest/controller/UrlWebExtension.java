@@ -6,7 +6,6 @@ import com.github.vincemann.springrapid.core.service.filter.WebExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
-import lombok.Getter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
@@ -25,7 +24,6 @@ import java.util.List;
  * If not possible call {@link com.github.vincemann.springrapid.coretest.util.RapidTestUtil#addUrlExtensionsToRequest(ApplicationContext, MockHttpServletRequestBuilder, UrlWebExtension...)} to add
  * to mvc request.
  */
-@Getter
 public class UrlWebExtension {
 
     Class<? extends WebExtension<?>> extensionType;
@@ -49,4 +47,12 @@ public class UrlWebExtension {
 //        }
 //    }
 
+
+    public Class<? extends WebExtension<?>> getExtensionType() {
+        return extensionType;
+    }
+
+    public String[] getArgs() {
+        return args;
+    }
 }

@@ -16,9 +16,6 @@ import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.LastFetchInfo;
 import com.github.vincemann.springrapid.sync.service.SyncService;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,23 +47,20 @@ import static com.github.vincemann.springrapid.core.controller.WebExtensionType.
  *
  * @see EntitySyncStatus
  */
-@Getter
 public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Serializable>
         extends AbstractEntityController<E, Id>
         implements ApplicationContextAware {
 
     private final Log log = LogFactory.getLog(getClass());
 
-    public static final String DTO_CLASS_URL_PARAM_KEY = "dto";
-
     private IdFetchingStrategy<Id> idFetchingStrategy;
 
     private SyncService<E, Id> service;
-    @Setter
+
     private String fetchEntitySyncStatusUrl;
-    @Setter
+
     private String fetchEntitySyncStatusesUrl;
-    @Setter
+
     private String fetchEntitySyncStatusesSinceTsUrl;
 
     @SuppressWarnings("unchecked")
@@ -234,7 +228,39 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
 
 
     protected Id fetchId(HttpServletRequest request) throws IdFetchingException {
-        return this.getIdFetchingStrategy().fetchId(request);
+        return idFetchingStrategy.fetchId(request);
+    }
+
+    public IdFetchingStrategy<Id> getIdFetchingStrategy() {
+        return idFetchingStrategy;
+    }
+
+    public SyncService<E, Id> getService() {
+        return service;
+    }
+
+    public String getFetchEntitySyncStatusUrl() {
+        return fetchEntitySyncStatusUrl;
+    }
+
+    public String getFetchEntitySyncStatusesUrl() {
+        return fetchEntitySyncStatusesUrl;
+    }
+
+    public String getFetchEntitySyncStatusesSinceTsUrl() {
+        return fetchEntitySyncStatusesSinceTsUrl;
+    }
+
+    public void setFetchEntitySyncStatusUrl(String fetchEntitySyncStatusUrl) {
+        this.fetchEntitySyncStatusUrl = fetchEntitySyncStatusUrl;
+    }
+
+    public void setFetchEntitySyncStatusesUrl(String fetchEntitySyncStatusesUrl) {
+        this.fetchEntitySyncStatusesUrl = fetchEntitySyncStatusesUrl;
+    }
+
+    public void setFetchEntitySyncStatusesSinceTsUrl(String fetchEntitySyncStatusesSinceTsUrl) {
+        this.fetchEntitySyncStatusesSinceTsUrl = fetchEntitySyncStatusesSinceTsUrl;
     }
 
     @Autowired

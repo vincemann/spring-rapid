@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.core.model.audit;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.AuditorAware;
 
 import java.io.Serializable;

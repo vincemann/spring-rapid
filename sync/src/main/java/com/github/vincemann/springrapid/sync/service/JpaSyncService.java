@@ -49,19 +49,13 @@ public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends S
         // what he is doing
         boolean exists = crudService.getRepository().existsById(convertedId);
         if (!exists) {
-            return EntitySyncStatus.builder()
-                    .id(id)
-                    .status(SyncStatus.REMOVED)
-                    .build();
+            return new EntitySyncStatus(id,SyncStatus.REMOVED);
         }
         EntityUpdateInfo lastServerUpdate = auditingRepository.findUpdateInfo(convertedId);
         if (lastServerUpdate == null)
             throw new IllegalArgumentException("Could not find EntityUpdateInfo for existing entity: " + id);
         if (lastServerUpdate.getLastUpdate().after(clientLastUpdate.getLastUpdate())) {
-            return EntitySyncStatus.builder()
-                    .id(id)
-                    .status(SyncStatus.UPDATED)
-                    .build();
+            return new EntitySyncStatus(id,SyncStatus.UPDATED);
         } else {
             // no update required
             return null;
@@ -77,12 +71,7 @@ public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends S
         // + its often not relevant that something was removed, for example if client didnt know about the entity in the first place
         List<EntityUpdateInfo> updateInfosSince = auditingRepository.findUpdateInfosSince(lastClientFetch, toSpec(jpqlFilters));
         for (EntityUpdateInfo lastUpdateInfo : updateInfosSince) {
-            result.add(
-                    EntitySyncStatus.builder()
-                            .id(lastUpdateInfo.getId())
-                            .status(SyncStatus.UPDATED)
-                            .build());
-
+            result.add(new EntitySyncStatus(lastUpdateInfo.getId(), SyncStatus.UPDATED));
         }
         return result;
     }
@@ -98,11 +87,7 @@ public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends S
         List<E> updatedEntities = auditingRepository.findEntitiesUpdatedSince(lastClientFetch, toSpec(jpqlFilters));
         List<E> filtered = FilterUtils.applyMemoryFilters(updatedEntities, entityFilters);
         for (E entity : filtered) {
-            result.add(
-                    EntitySyncStatus.builder()
-                            .id(entity.getId().toString())
-                            .status(SyncStatus.UPDATED)
-                            .build());
+            result.add(new EntitySyncStatus(entity.getId().toString(), SyncStatus.UPDATED));
 
         }
         return result;

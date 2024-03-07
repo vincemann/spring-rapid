@@ -3,15 +3,10 @@ package com.github.vincemann.springrapid.core.controller.dto.map;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class DelegatingDtoMapperTest {
@@ -19,38 +14,6 @@ class DelegatingDtoMapperTest {
     DtoMapper defaultMapper;
 
     DtoMapper<KnownEntity,KnownDto> customEntityMapper;
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Getter
-    @ToString
-    class KnownEntity extends IdentifiableEntityImpl<Long> {
-        private String name;
-    }
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Getter
-    @ToString
-    class KnownDto extends IdentifiableEntityImpl<Long> {
-        private String name;
-    }
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Getter
-    @ToString
-    class UnknownEntity extends IdentifiableEntityImpl<Long> {
-        private String name;
-    }
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Getter
-    @ToString
-    class UnknownDto extends IdentifiableEntityImpl<Long> {
-        private String name;
-    }
 
     @BeforeEach
     void setUp() {
@@ -90,6 +53,68 @@ class DelegatingDtoMapperTest {
         verify(customEntityMapper).supports(UnknownDto.class);
         verifyNoMoreInteractions(customEntityMapper);
         verify(defaultMapper).mapToDto(entity,UnknownDto.class);
+    }
+
+
+    static class KnownEntity extends IdentifiableEntityImpl<Long> {
+        private String name;
+
+        public KnownEntity() {
+        }
+
+        public KnownEntity(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+
+    static class KnownDto extends IdentifiableEntityImpl<Long> {
+        private String name;
+
+        public KnownDto(String name) {
+            this.name = name;
+        }
+
+        public KnownDto() {
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    static class UnknownEntity extends IdentifiableEntityImpl<Long> {
+        private String name;
+
+        public UnknownEntity(String name) {
+            this.name = name;
+        }
+
+        public UnknownEntity() {
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    static class UnknownDto extends IdentifiableEntityImpl<Long> {
+        private String name;
+
+        public UnknownDto(String name) {
+            this.name = name;
+        }
+
+        public UnknownDto() {
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 
 

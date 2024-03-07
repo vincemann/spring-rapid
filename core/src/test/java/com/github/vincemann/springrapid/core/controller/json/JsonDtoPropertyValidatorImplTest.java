@@ -6,9 +6,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vincemann.springrapid.core.util.JsonPatchUtil;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,37 +28,52 @@ class JsonDtoPropertyValidatorImplTest {
         this.objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
     }
 
-    @NoArgsConstructor
     static class User implements Serializable{
         private String bday;
+
+        public User() {
+        }
     }
 
-    @NoArgsConstructor
     static class TestEntity implements Serializable{
+
         private String name;
         private Set<User> users;
         private String secret;
         private User user;
+
+        public TestEntity() {
+        }
     }
 
-
-
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
     static class TestDto implements Serializable {
         private String name;
         private Set<Long> userIds;
         private Long userId;
+
+        public TestDto() {
+        }
+
+        public TestDto(String name, Set<Long> userIds, Long userId) {
+            this.name = name;
+            this.userIds = userIds;
+            this.userId = userId;
+        }
     }
 
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
     static class ForbiddenTestDto implements Serializable {
         private String name;
         private Set<Long> userIds;
         private String secret;
+
+        public ForbiddenTestDto(String name, Set<Long> userIds, String secret) {
+            this.name = name;
+            this.userIds = userIds;
+            this.secret = secret;
+        }
+
+        public ForbiddenTestDto() {
+        }
     }
 
 //    @Builder
@@ -108,11 +120,7 @@ class JsonDtoPropertyValidatorImplTest {
 
     @Test
     public void validDto() throws BadEntityException, AccessDeniedException, JsonProcessingException {
-        TestDto testDto = TestDto.builder()
-                .name("newName")
-                .userId(6L)
-                .userIds(new HashSet<>())
-                .build();
+        TestDto testDto = new TestDto("newName",new HashSet<>(),6L);
         String jsonDto = objectMapper.writeValueAsString(testDto);
         Assertions.assertDoesNotThrow(() -> jsonDtoPropertyValidator.validateDto(jsonDto,TestDto.class));
 
@@ -132,11 +140,7 @@ class JsonDtoPropertyValidatorImplTest {
 
     @Test
     public void invalidDto_forbiddenProperty() throws BadEntityException, AccessDeniedException, JsonProcessingException {
-        ForbiddenTestDto testDto = ForbiddenTestDto.builder()
-                .name("newName")
-                .userIds(new HashSet<>())
-                .secret("secrettttt")
-                .build();
+        ForbiddenTestDto testDto = new ForbiddenTestDto("newName",new HashSet<>(),"secret");
         String jsonDto = objectMapper.writeValueAsString(testDto);
         Assertions.assertThrows(AccessDeniedException.class, () -> jsonDtoPropertyValidator.validateDto(jsonDto,TestDto.class));
 

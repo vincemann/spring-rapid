@@ -7,7 +7,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.github.vincemann.springrapid.exceptionsapi.AbstractExceptionHandler;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.http.HttpStatus;
 
@@ -16,7 +15,6 @@ import org.springframework.http.HttpStatus;
  * Given an exception, builds an {@link ErrorResponse}.
  *
  */
-@Slf4j
 public class LemonErrorResponseFactory<T extends Throwable>
 		implements ErrorResponseFactory<T> {
 	

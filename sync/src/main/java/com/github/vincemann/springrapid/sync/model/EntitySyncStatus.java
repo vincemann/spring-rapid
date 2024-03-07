@@ -1,14 +1,11 @@
 package com.github.vincemann.springrapid.sync.model;
 
-import lombok.*;
 
 /**
  * Sync status response is Set of objects of this class. i.E.: [42a,3u,10u,4r]
  * id concatenated with status char a=added, u=updated, r=removed
  */
-@Getter
-@Setter
-@NoArgsConstructor
+
 public class EntitySyncStatus {
 
 
@@ -16,7 +13,6 @@ public class EntitySyncStatus {
     private SyncStatus status;
 
 
-    @Builder
     public EntitySyncStatus(String id, SyncStatus status) {
         this.id = id;
         this.status = status;
@@ -25,6 +21,17 @@ public class EntitySyncStatus {
     public EntitySyncStatus(String id, Character status) {
         this.id = id;
         this.status = SyncStatus.convert(status);
+    }
+
+    public EntitySyncStatus() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public SyncStatus getStatus() {
+        return status;
     }
 
     @Override

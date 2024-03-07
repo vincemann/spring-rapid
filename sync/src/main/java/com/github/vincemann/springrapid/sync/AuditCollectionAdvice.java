@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.sync;
 
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.core.util.Entity;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
@@ -21,7 +20,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Set;
-import java.util.logging.LogManager;
 
 import static com.github.vincemann.springrapid.core.util.ReflectionUtils.findFieldsAnnotatedWith;
 

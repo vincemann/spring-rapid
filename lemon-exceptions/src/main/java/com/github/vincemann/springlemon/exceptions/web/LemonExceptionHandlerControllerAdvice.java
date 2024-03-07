@@ -2,7 +2,6 @@ package com.github.vincemann.springlemon.exceptions.web;
 
 import com.github.vincemann.springlemon.exceptions.ErrorResponse;
 import com.github.vincemann.springlemon.exceptions.ErrorResponseFactory;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;

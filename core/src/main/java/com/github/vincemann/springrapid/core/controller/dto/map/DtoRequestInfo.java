@@ -1,15 +1,12 @@
 package com.github.vincemann.springrapid.core.controller.dto.map;
 
 import com.github.vincemann.springrapid.core.util.Lists;
-import lombok.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Represents information about current Request.

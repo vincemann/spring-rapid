@@ -3,7 +3,6 @@ package com.github.vincemann.springrapid.coretest.controller;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
 import com.github.vincemann.springrapid.coretest.MvcAware;
-import lombok.Getter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,7 +11,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -21,11 +19,9 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 
-@Getter
 @AutoConfigureMockMvc
 @SpringBootTest
 @ActiveProfiles("test")
@@ -77,6 +73,13 @@ public abstract class AbstractMvcTest extends InitializingTest implements Initia
         return filtered.get();
     }
 
+    public MockMvc getMvc() {
+        return mvc;
+    }
+
+    public WebApplicationContext getWac() {
+        return wac;
+    }
 
     @Autowired
     public void setWac(WebApplicationContext wac) {

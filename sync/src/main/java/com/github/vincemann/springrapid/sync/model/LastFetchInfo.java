@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.sync.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
-import lombok.*;
 
 import java.util.Date;
 
@@ -14,11 +13,6 @@ import java.util.Date;
  * Client can decide what to do with this information.
  *
  */
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-@AllArgsConstructor
 public class LastFetchInfo {
 
     private String id;
@@ -29,5 +23,29 @@ public class LastFetchInfo {
     public LastFetchInfo(Long id, Date lastUpdate) {
         this.id = String.valueOf(id);
         this.lastUpdate = lastUpdate;
+    }
+
+    public LastFetchInfo(String id, Date lastUpdate) {
+        this.id = id;
+        this.lastUpdate = lastUpdate;
+    }
+
+    public LastFetchInfo() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public Date getLastUpdate() {
+        return lastUpdate;
+    }
+
+    @Override
+    public String toString() {
+        return "LastFetchInfo{" +
+                "id='" + id + '\'' +
+                ", lastUpdate=" + lastUpdate +
+                '}';
     }
 }

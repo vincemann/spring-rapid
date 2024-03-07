@@ -12,8 +12,6 @@ import com.github.vincemann.springrapid.core.util.Message;
 import com.github.vincemann.springrapid.exceptionsapi.FieldError;
 import org.springframework.http.HttpStatus;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 
 /**
  * An exception class which can contain multiple errors.
@@ -21,7 +19,6 @@ import lombok.Getter;
  * 
  * @author Sanjay Patel
  */
-@Getter
 public class MultiErrorException extends RuntimeException {
 
 	private static final long serialVersionUID = 6020532846519363456L;
@@ -36,7 +33,6 @@ public class MultiErrorException extends RuntimeException {
 	private String exceptionId = null;
 	
 	// Set this if you're doing bean validation and using validation groups
-	@Getter(AccessLevel.NONE)
 	private Class<?>[] validationGroups = {};
 	
 	/**
@@ -123,5 +119,17 @@ public class MultiErrorException extends RuntimeException {
 							constraintViolation.getMessageTemplate(),
 							constraintViolation.getMessage()))
 			    .collect(Collectors.toList()));
+	}
+
+	public List<FieldError> getErrors() {
+		return errors;
+	}
+
+	public HttpStatus getStatus() {
+		return status;
+	}
+
+	public String getExceptionId() {
+		return exceptionId;
 	}
 }

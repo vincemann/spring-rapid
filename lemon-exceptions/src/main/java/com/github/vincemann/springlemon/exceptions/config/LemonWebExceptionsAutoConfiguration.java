@@ -6,7 +6,6 @@ import com.github.vincemann.springlemon.exceptions.web.LemonErrorAttributes;
 import com.github.vincemann.springlemon.exceptions.web.LemonErrorController;
 import com.github.vincemann.springlemon.exceptions.web.LemonExceptionHandlerControllerAdvice;
 import com.github.vincemann.springrapid.exceptionsapi.AbstractExceptionHandler;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorViewResolver;
@@ -18,7 +17,6 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
-@Slf4j
 public class LemonWebExceptionsAutoConfiguration {
 
 

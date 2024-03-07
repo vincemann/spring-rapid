@@ -1,9 +1,7 @@
 package com.github.vincemann.springlemon.exceptions.web;
 
 import com.github.vincemann.springlemon.exceptions.ErrorResponseFactory;
-import com.github.vincemann.springlemon.exceptions.LemonErrorResponseFactory;
 import com.github.vincemann.springlemon.exceptions.util.LemonExceptionUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.web.context.request.WebRequest;
 
@@ -14,7 +12,6 @@ import java.util.Map;
  * <code>DefaultExceptionHandlerControllerAdvice</code>,
  * e.g. exceptions thrown in filters.
  */
-@Slf4j
 public class LemonErrorAttributes<T extends Throwable> extends DefaultErrorAttributes {
 	
 

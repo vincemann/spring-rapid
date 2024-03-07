@@ -1,9 +1,6 @@
 package com.github.vincemann.springlemon.exceptions.util;
 
 import com.github.vincemann.springlemon.exceptions.ExceptionIdMaker;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /**
@@ -12,7 +9,6 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  * @author Sanjay Patel
  * @modifiedBy vincemann
  */
-@Slf4j
 public class LemonExceptionUtils {
 	
 
