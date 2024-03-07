@@ -1,22 +1,19 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.auth.msg.AuthMessage;
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
-import lombok.SneakyThrows;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.msg.AuthMessage;
+import com.github.vincemann.springrapid.coretest.util.TransactionalTestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.Serializable;
 
-import static org.hamcrest.Matchers.*;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class VerificationTest extends RapidAuthIntegrationTest {
 
@@ -83,16 +80,12 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 		SignupDto signupDto = createValidSignupDto();
 		AuthMessage msg = userController.signup2xx(signupDto);
 
-		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-			@SneakyThrows
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				AbstractUser<Serializable> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
+		TransactionalTestUtil.withinTransaction(transactionTemplate, () -> {
+			AbstractUser<Serializable> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
 
-				// Credentials updated after the verification token is issued
-				savedUser.setCredentialsUpdatedMillis(System.currentTimeMillis());
-				getUserService().fullUpdate(savedUser);
-			}
+			// Credentials updated after the verification token is issued
+			savedUser.setCredentialsUpdatedMillis(System.currentTimeMillis());
+			getUserService().fullUpdate(savedUser);
 		});
 
 		mvc.perform(userController.verifyContactInformationWithLink(msg.getLink()))

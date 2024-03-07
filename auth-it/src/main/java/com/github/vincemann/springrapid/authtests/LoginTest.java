@@ -1,22 +1,18 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import lombok.SneakyThrows;
+import com.github.vincemann.springrapid.coretest.util.TransactionalTestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.Serializable;
-import java.util.function.Consumer;
 
+import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
 
 public class LoginTest extends RapidAuthIntegrationTest {
@@ -54,15 +50,12 @@ public class LoginTest extends RapidAuthIntegrationTest {
 		// credentials updated
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
-		transactionTemplate.executeWithoutResult(new Consumer<>() {
-			@SneakyThrows
-			@Override
-			public void accept(TransactionStatus transactionStatus) {
-				AbstractUser<Serializable> user = getUserService().findById(getUser().getId()).get();
-				user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-				getUserService().softUpdate(user);
-			}
+		TransactionalTestUtil.withinTransaction(transactionTemplate, () -> {
+			AbstractUser<Serializable> user = getUserService().findById(getUser().getId()).get();
+			user.setCredentialsUpdatedMillis(System.currentTimeMillis());
+			getUserService().softUpdate(user);
 		});
+
 
 
 		assertTokenDoesNotWork(token);

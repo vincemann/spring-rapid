@@ -1,11 +1,10 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.acltest.AclMvcTest;
-
 import com.github.vincemann.springrapid.auth.AuthProperties;
+import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
-import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
@@ -18,8 +17,6 @@ import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.core.util.AopProxyUtils;
 import com.github.vincemann.springrapid.coretest.util.TransactionalTestUtil;
 import com.nimbusds.jwt.JWTClaimsSet;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
@@ -37,18 +34,14 @@ import java.text.ParseException;
 import java.util.Map;
 
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
-import static com.github.vincemann.springrapid.core.util.AopProxyUtils.getUltimateTargetObject;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @SpringBootTest(properties = "rapid-auth.create-admins=false")
-@Getter
-@Slf4j
 //@Sql(scripts = "classpath:/remove-user.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD) // dont do like that because its db impl specific - use service
 public abstract class RapidAuthIntegrationTest extends AclMvcTest {
 
@@ -185,6 +178,74 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
         Mockito.reset(AopProxyUtils.getUltimateTargetObject(msgSender));
         testAdapter.afterEach();
 //        https://github.com/spring-projects/spring-boot/issues/7374  -> @SpyBean beans are automatically reset
+    }
+
+    protected UserService<AbstractUser<Serializable>, Serializable> getUserService() {
+        return userService;
+    }
+
+    protected MessageSender getMsgSender() {
+        return msgSender;
+    }
+
+    protected AuthProperties getProperties() {
+        return properties;
+    }
+
+    protected CoreProperties getCoreProperties() {
+        return coreProperties;
+    }
+
+    protected AuthProperties.Jwt getJwt() {
+        return jwt;
+    }
+
+    protected JweTokenService getJweTokenService() {
+        return jweTokenService;
+    }
+
+    protected AbstractUser<Serializable> getAdmin() {
+        return admin;
+    }
+
+    protected AbstractUser<Serializable> getSecondAdmin() {
+        return secondAdmin;
+    }
+
+    protected AbstractUser<Serializable> getBlockedAdmin() {
+        return blockedAdmin;
+    }
+
+    protected AbstractUser<Serializable> getUser() {
+        return user;
+    }
+
+    protected AbstractUser<Serializable> getSecondUser() {
+        return secondUser;
+    }
+
+    protected AbstractUser<Serializable> getUnverifiedUser() {
+        return unverifiedUser;
+    }
+
+    protected AbstractUser<Serializable> getBlockedUser() {
+        return blockedUser;
+    }
+
+    protected AuthTestAdapter getTestAdapter() {
+        return testAdapter;
+    }
+
+    protected AuthProperties getAuthProperties() {
+        return authProperties;
+    }
+
+    protected UserControllerTestTemplate getUserController() {
+        return userController;
+    }
+
+    protected TransactionTemplate getTransactionTemplate() {
+        return transactionTemplate;
     }
 
     @Autowired

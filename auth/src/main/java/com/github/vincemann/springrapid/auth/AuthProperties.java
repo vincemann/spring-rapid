@@ -12,14 +12,12 @@ public class AuthProperties {
 
 
 	private CoreProperties coreProperties;
+	public Controller controller;
 
 	public AuthProperties(CoreProperties coreProperties) {
 		this.coreProperties = coreProperties;
 		this.controller = new Controller(coreProperties);
 	}
-
-	public Controller controller;
-
 
 	public static class Controller {
 
@@ -353,5 +351,29 @@ public class AuthProperties {
 
 	public Jwt getJwt() {
 		return jwt;
+	}
+
+	public void setCoreProperties(CoreProperties coreProperties) {
+		this.coreProperties = coreProperties;
+	}
+
+	public void setController(Controller controller) {
+		this.controller = controller;
+	}
+
+	public void setMaxLoginAttempts(int maxLoginAttempts) {
+		this.maxLoginAttempts = maxLoginAttempts;
+	}
+
+	public void setBruteForceProtection(boolean bruteForceProtection) {
+		this.bruteForceProtection = bruteForceProtection;
+	}
+
+	public void setAdmins(List<Admin> admins) {
+		this.admins = admins;
+	}
+
+	public void setJwt(Jwt jwt) {
+		this.jwt = jwt;
 	}
 }

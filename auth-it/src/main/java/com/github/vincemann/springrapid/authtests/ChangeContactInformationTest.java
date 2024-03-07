@@ -1,23 +1,20 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.auth.msg.AuthMessage;
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.service.ContactInformationServiceImpl;
-import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.JwtUtils;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import lombok.SneakyThrows;
+import com.github.vincemann.springrapid.auth.util.MapUtils;
+import com.github.vincemann.springrapid.coretest.util.TransactionalTestUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.Serializable;
-import java.util.function.Consumer;
 
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 import static org.hamcrest.Matchers.containsString;
@@ -145,14 +142,10 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
                 new RequestContactInformationChangeDto(getUser().getContactInformation(), NEW_CONTACT_INFORMATION));
         // credentials updated after the request for contactInformation change was made
 
-        transactionTemplate.executeWithoutResult(new Consumer<TransactionStatus>() {
-            @SneakyThrows
-            @Override
-            public void accept(TransactionStatus transactionStatus) {
-                AbstractUser<Serializable> user = getUserService().findById(getUser().getId()).get();
-                user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-                getUserService().fullUpdate(user);
-            }
+        TransactionalTestUtil.withinTransaction(transactionTemplate, () -> {
+            AbstractUser<Serializable> user = getUserService().findById(getUser().getId()).get();
+            user.setCredentialsUpdatedMillis(System.currentTimeMillis());
+            getUserService().fullUpdate(user);
         });
 
         // A new auth token is needed, because old one would be obsolete!
@@ -194,14 +187,10 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 
         // Some other user changed to the same contactInformation, before i could issue my request
 
-        transactionTemplate.executeWithoutResult(new Consumer<TransactionStatus>() {
-            @SneakyThrows
-            @Override
-            public void accept(TransactionStatus transactionStatus) {
-                AbstractUser<Serializable> user = getUserService().findById(getSecondUser().getId()).get();
-                user.setContactInformation(NEW_CONTACT_INFORMATION);
-                getUserService().fullUpdate(user);
-            }
+        TransactionalTestUtil.withinTransaction(transactionTemplate, () -> {
+            AbstractUser<Serializable> user = getUserService().findById(getSecondUser().getId()).get();
+            user.setContactInformation(NEW_CONTACT_INFORMATION);
+            getUserService().fullUpdate(user);
         });
 
 

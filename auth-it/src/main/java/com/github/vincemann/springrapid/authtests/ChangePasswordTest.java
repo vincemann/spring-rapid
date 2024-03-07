@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ChangePasswordTest extends RapidAuthIntegrationTest {
 
 	private ChangePasswordDto changePasswordDto(String contactInformation, String oldPassword){
-		return ChangePasswordDto.builder()
+		return ChangePasswordDto.Builder.builder()
 				.contactInformation(contactInformation)
 				.oldPassword(oldPassword)
 				.newPassword(NEW_PASSWORD)
@@ -25,7 +25,7 @@ public class ChangePasswordTest extends RapidAuthIntegrationTest {
 
 	@Test
 	public void canChangeOwnPassword() throws Exception {
-		ChangePasswordDto changePasswordDto = ChangePasswordDto.builder()
+		ChangePasswordDto changePasswordDto = ChangePasswordDto.Builder.builder()
 				.contactInformation(USER_CONTACT_INFORMATION)
 				.oldPassword(USER_PASSWORD)
 				.newPassword(NEW_PASSWORD)
@@ -86,7 +86,7 @@ public class ChangePasswordTest extends RapidAuthIntegrationTest {
 	public void cantChangeOwnPasswordWithInvalidData() throws Exception {
 
 		// All fields null
-		ChangePasswordDto changePasswordDto = ChangePasswordDto.builder()
+		ChangePasswordDto changePasswordDto = ChangePasswordDto.Builder.builder()
 				.oldPassword(null)
 				.newPassword(null)
 				.contactInformation(null)
@@ -98,7 +98,7 @@ public class ChangePasswordTest extends RapidAuthIntegrationTest {
 
 
 		// invalid pw
-		changePasswordDto = ChangePasswordDto.builder()
+		changePasswordDto = ChangePasswordDto.Builder.builder()
 				.oldPassword(USER_PASSWORD)
 				.newPassword(INVALID_PASSWORD)
 				.contactInformation(USER_CONTACT_INFORMATION)
@@ -109,7 +109,7 @@ public class ChangePasswordTest extends RapidAuthIntegrationTest {
 		login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
 		// wrong old password
-		changePasswordDto = ChangePasswordDto.builder()
+		changePasswordDto = ChangePasswordDto.Builder.builder()
 				.oldPassword(USER_PASSWORD+"wrong")
 				.newPassword(NEW_PASSWORD)
 				.contactInformation(USER_CONTACT_INFORMATION)
@@ -121,7 +121,7 @@ public class ChangePasswordTest extends RapidAuthIntegrationTest {
 
 		// blank contact information
 		// wrong old password
-		changePasswordDto = ChangePasswordDto.builder()
+		changePasswordDto = ChangePasswordDto.Builder.builder()
 				.oldPassword(USER_PASSWORD)
 				.newPassword(NEW_PASSWORD)
 				.contactInformation("")

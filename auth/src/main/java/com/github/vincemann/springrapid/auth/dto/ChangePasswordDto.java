@@ -14,6 +14,8 @@ public class ChangePasswordDto {
     public ChangePasswordDto() {
     }
 
+
+
     @Override
     public String toString() {
         return "ChangePasswordDto{" +
@@ -45,5 +47,41 @@ public class ChangePasswordDto {
 
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
+    }
+
+    public static final class Builder {
+        private String contactInformation;
+        private String oldPassword;
+        private String newPassword;
+
+        private Builder() {
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public Builder contactInformation(String contactInformation) {
+            this.contactInformation = contactInformation;
+            return this;
+        }
+
+        public Builder oldPassword(String oldPassword) {
+            this.oldPassword = oldPassword;
+            return this;
+        }
+
+        public Builder newPassword(String newPassword) {
+            this.newPassword = newPassword;
+            return this;
+        }
+
+        public ChangePasswordDto build() {
+            ChangePasswordDto changePasswordDto = new ChangePasswordDto();
+            changePasswordDto.setContactInformation(contactInformation);
+            changePasswordDto.setOldPassword(oldPassword);
+            changePasswordDto.setNewPassword(newPassword);
+            return changePasswordDto;
+        }
     }
 }
