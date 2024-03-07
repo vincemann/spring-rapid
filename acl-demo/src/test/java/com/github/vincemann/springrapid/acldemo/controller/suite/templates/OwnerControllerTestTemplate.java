@@ -21,7 +21,7 @@ public class OwnerControllerTestTemplate extends CrudControllerTestTemplate<Owne
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
-        return getController().getObjectMapper().readDto(json,ReadOwnOwnerDto.class);
+        return getController().getObjectMapper().readValue(json,ReadOwnOwnerDto.class);
     }
 
     public void addPetsSpectator(long permittedOwner, long targetOwner, String token) throws Exception {

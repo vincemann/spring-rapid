@@ -4,6 +4,8 @@ import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.domain.DefaultPermissionFactory;
@@ -22,8 +24,9 @@ import java.util.stream.Collectors;
 /**
  * Adds more verbose logging
  */
-@Slf4j
 public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator {
+
+    private final Log log = LogFactory.getLog(getClass());
 
     private final AclService aclService;
     private ObjectIdentityRetrievalStrategy objectIdentityRetrievalStrategy = new ObjectIdentityRetrievalStrategyImpl();

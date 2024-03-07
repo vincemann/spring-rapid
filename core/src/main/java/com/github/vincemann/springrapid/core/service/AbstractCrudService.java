@@ -22,7 +22,7 @@ public abstract class AbstractCrudService
         implements CrudService<E, Id>, ApplicationContextAware, BeanNameAware {
 
     private String beanName;
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("all")
     private Class<E> entityClass = (Class<E>) GenericTypeResolver.resolveTypeArguments(this.getClass(),CrudService.class)[0];
     private R repository;
     @Setter

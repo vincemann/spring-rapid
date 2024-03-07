@@ -19,7 +19,7 @@ public class VetControllerTestTemplate extends CrudControllerTestTemplate<VetCon
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
-        return getController().getObjectMapper().readDto(json,ReadVetDto.class);
+        return getController().getObjectMapper().readValue(json,ReadVetDto.class);
     }
 }
 

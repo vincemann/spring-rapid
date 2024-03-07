@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class RapidSyncJsonMapperAutoConfiguration {
+public class RapidSyncObjectMapperAutoConfiguration {
 
     @Autowired
     public void configureObjectMapper(ObjectMapper mapper){

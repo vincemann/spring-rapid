@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.acl.service;
 
 import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.sec.AuthorizationTemplate;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.sec.Roles;
 import com.github.vincemann.springrapid.core.util.VerifyAccess;
@@ -27,7 +28,6 @@ import java.util.*;
  *
  * Adds some features for conditional inheritance and provides api for simple use cases
  */
-@Service
 @Transactional
 public class RapidAclServiceImpl implements RapidAclService {
 
@@ -36,8 +36,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     private MutableAclService aclService;
     private RapidSecurityContext securityContext;
 
-    /**/
-    @Autowired
+
     public RapidAclServiceImpl(MutableAclService aclService) {
         this.aclService = aclService;
     }
@@ -110,10 +109,8 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     protected String findAuthenticatedName() {
-        VerifyAccess.condition(!RapidSecurityContext.hasRole(Roles.ANON),"Non anon Authentication required");
-        String name = RapidSecurityContext.getName();
-        VerifyAccess.notNull(name,"Authentication required")
-        return name;
+        AuthorizationTemplate.assertAuthenticated();
+        return RapidSecurityContext.getName();
     }
 
     protected MutableAcl findAcl(ObjectIdentity oi) throws AclNotFoundException {
