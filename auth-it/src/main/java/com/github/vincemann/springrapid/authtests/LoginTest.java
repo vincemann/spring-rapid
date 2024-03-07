@@ -3,9 +3,7 @@ package com.github.vincemann.springrapid.authtests;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.coretest.util.TransactionalTestUtil;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.Serializable;
 
@@ -17,8 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class LoginTest extends RapidAuthIntegrationTest {
 
-	@Autowired
-	TransactionTemplate transactionTemplate;
 
 	@Test
 	public void canLogin() throws Exception {

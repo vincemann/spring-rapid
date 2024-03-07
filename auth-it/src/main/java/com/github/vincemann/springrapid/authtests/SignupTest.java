@@ -23,7 +23,7 @@ import static com.github.vincemann.springrapid.core.util.AopProxyUtils.getUltima
 public class SignupTest extends RapidAuthIntegrationTest {
 
 	@Autowired
-	private PasswordEncoder passwordEncoder;
+	PasswordEncoder passwordEncoder;
 
 	@Test
 	public void cantSignupWithInvalidData() throws Exception {

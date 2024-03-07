@@ -21,8 +21,6 @@ public class ChangePasswordTest extends RapidAuthIntegrationTest {
 				.build();
 	}
 
-
-
 	@Test
 	public void canChangeOwnPassword() throws Exception {
 		ChangePasswordDto changePasswordDto = ChangePasswordDto.Builder.builder()

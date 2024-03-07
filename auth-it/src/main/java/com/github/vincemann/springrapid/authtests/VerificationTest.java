@@ -17,8 +17,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class VerificationTest extends RapidAuthIntegrationTest {
 
-	@Autowired
-	TransactionTemplate transactionTemplate;
 	
 	@Test
 	public void canVerifyContactInformation() throws Exception {
@@ -29,8 +27,6 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
 
 	}
-
-
 	@Test
 	public void cantVerifyContactInformationTwiceWithSameCode() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
