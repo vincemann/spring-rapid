@@ -5,9 +5,7 @@ import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.coretest.util.TransactionalTestUtil;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.Serializable;
 
@@ -19,71 +17,70 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 
 	
 	@Test
-	public void canVerifyContactInformation() throws Exception {
+	public void givenUserSignedUp_whenFollowingLinkInMsg_thenUserGetsVerified() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		AuthMessage msg = userController.signup2xx(signupDto);
-		mvc.perform(userController.verifyContactInformationWithLink(msg.getLink()))
+		mvc.perform(userController.verifyUserWithLink(msg.getLink()))
 				.andExpect(status().is(204))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
 
 	}
 	@Test
-	public void cantVerifyContactInformationTwiceWithSameCode() throws Exception {
+	public void cantVerifyTwiceWithSameCode() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		AuthMessage msg = userController.signup2xx(signupDto);
-		mvc.perform(userController.verifyContactInformationWithLink(msg.getLink()))
+		mvc.perform(userController.verifyUserWithLink(msg.getLink()))
 				.andExpect(status().is2xxSuccessful());
 
-		mvc.perform(userController.verifyContactInformationWithLink(msg.getLink()))
+		mvc.perform(userController.verifyUserWithLink(msg.getLink()))
 				.andExpect(status().isForbidden());
 	}
 
 	@Test
-	public void cantVerifyContactInformationWithInvalidData() throws Exception {
+	public void cantVerifyWithInvalidCode() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		AuthMessage msg = userController.signup2xx(signupDto);
 
 		// null code
-		mvc.perform(userController.verifyContactInformation(null))
+		mvc.perform(userController.verifyUser(null))
 				.andExpect(status().isBadRequest());
 
 		// blank code
-		mvc.perform(userController.verifyContactInformation(""))
+		mvc.perform(userController.verifyUser(""))
 				.andExpect(status().isUnauthorized());
 
 		// Wrong audience
 		String code = modifyCode(msg.getCode(),"wrong-audience",null,null,null,null);
-		mvc.perform(userController.verifyContactInformation(code))
+		mvc.perform(userController.verifyUser(code))
 				.andExpect(status().isForbidden());
 	}
 
 	@Test
-	public void cantVerifyContactInformationWithExpiredCode() throws Exception {
+	public void cantVerifyWithExpiredCode() throws Exception {
 
 		SignupDto signupDto = createValidSignupDto();
 		mockJwtExpirationTime(50L);
 		AuthMessage msg = userController.signup2xx(signupDto);
-		AbstractUser<Serializable> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
+		AbstractUser<Serializable> user = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
 		// expired token
 		Thread.sleep(51L);
-		mvc.perform(userController.verifyContactInformationWithLink(msg.getLink()))
+		mvc.perform(userController.verifyUserWithLink(msg.getLink()))
 				.andExpect(status().isForbidden());
 	}
 
 	@Test
-	public void usersCredentialsUpdatedAfterSignup_cantUseObsoleteVerificationCode() throws Exception {
+	public void givenUsersCredentialsUpdatedAfterSignup_whenTryingToUseNowObsoleteVerificationCode_thenForbidden() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		AuthMessage msg = userController.signup2xx(signupDto);
 
 		TransactionalTestUtil.withinTransaction(transactionTemplate, () -> {
 			AbstractUser<Serializable> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
-
 			// Credentials updated after the verification token is issued
 			savedUser.setCredentialsUpdatedMillis(System.currentTimeMillis());
 			getUserService().fullUpdate(savedUser);
 		});
 
-		mvc.perform(userController.verifyContactInformationWithLink(msg.getLink()))
+		mvc.perform(userController.verifyUserWithLink(msg.getLink()))
 				.andExpect(status().isForbidden());
 	}
 }

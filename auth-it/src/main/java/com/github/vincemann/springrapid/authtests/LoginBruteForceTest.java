@@ -23,7 +23,7 @@ public class LoginBruteForceTest extends RapidAuthIntegrationTest {
     LoginAttemptService loginAttemptService;
 
     @Test
-    public void tooManyLoginTries_tooManyRequestsResponse() throws Exception {
+    public void givenUserTriedToLoginTooOften_whenTryingAgain_thenTooManyRequestError() throws Exception {
         String wrongPassword = "bruteWrongPw";
         for (int i =0 ;i<MAX_LOGIN_TRIES;i++){
             mvc.perform(userController.login(ADMIN_CONTACT_INFORMATION,wrongPassword+i))
@@ -35,7 +35,7 @@ public class LoginBruteForceTest extends RapidAuthIntegrationTest {
     }
 
     @Test
-    public void maxLoginTries_thenCorrectLogin_resetsEverything() throws Exception {
+    public void givenUserTriedToLoginALotButIsNotBlockedYet_whenLoggingInSuccessfully_thenAmountTriesResetForUser() throws Exception {
         String wrongPassword = "bruteWrongPw";
         for (int i =0 ;i<MAX_LOGIN_TRIES-1;i++){
             mvc.perform(userController.login(ADMIN_CONTACT_INFORMATION,wrongPassword+i))

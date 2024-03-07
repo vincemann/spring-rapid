@@ -15,11 +15,10 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static com.github.vincemann.springrapid.core.util.AopProxyUtils.getUltimateTargetObject;
+
 public class SignupTest extends RapidAuthIntegrationTest {
 
 	@Autowired
@@ -35,7 +34,7 @@ public class SignupTest extends RapidAuthIntegrationTest {
 	}
 
 	@Test
-	public void canSignup() throws Exception {
+	public void signup() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 
 		mvc.perform(userController.signup(signupDto))
@@ -68,7 +67,7 @@ public class SignupTest extends RapidAuthIntegrationTest {
 	}
 	
 	@Test
-	public void cantSignupWithDuplicateContactInformation() throws Exception {
+	public void cantSignupWithAlreadyRegisteredContactInformation() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		userController.signup2xx(signupDto);
 		signupDto.setPassword(signupDto.getPassword()+"new");

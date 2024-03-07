@@ -8,7 +8,7 @@ public class MyResetPasswordTest extends ResetPasswordTest {
 
     @Test
     @Override
-    public void getDirectedToForgotPasswordPage() throws Exception {
-        super.getDirectedToForgotPasswordPage();
+    public void givenForgotPasswordAndClickedOnCodeInMsg_thenGetDirectedToForgotPasswordPage() throws Exception {
+        super.givenForgotPasswordAndClickedOnCodeInMsg_thenGetDirectedToForgotPasswordPage();
     }
 }

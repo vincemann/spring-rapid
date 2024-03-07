@@ -16,8 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-import java.io.Serializable;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
@@ -65,12 +63,6 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         mvc.perform(signup(dto))
                 .andExpect(status().is2xxSuccessful());
         return verifyMsgWasSent(dto.getContactInformation());
-    }
-
-    public MockHttpServletRequestBuilder resendVerificationMessage(Serializable id, String token) throws Exception {
-        return post(getController().getResendVerificationMessageUrl())
-                .param("id",id.toString())
-                .header(HttpHeaders.AUTHORIZATION, token);
     }
 
     public String login(AbstractUser user) throws Exception {
@@ -187,19 +179,25 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
+    public <D> D findByContactInformation2xx(String contactInformation, String token, Class<D> dtoClass) throws Exception {
+        return deserialize(mvc.perform(withToken(findByContactInformation(contactInformation),token))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn().getResponse().getContentAsString(),dtoClass);
+    }
+
     public String login2xx(String contactInformation, String password) throws Exception {
         return getMvc().perform(login(contactInformation, password))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getHeader(HttpHeaders.AUTHORIZATION);
     }
 
-    public MockHttpServletRequestBuilder verifyContactInformation(String code) throws Exception {
+    public MockHttpServletRequestBuilder verifyUser(String code) throws Exception {
         return get(getController().getVerifyUserUrl())
                 .param("code", code)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
-    public RequestBuilder verifyContactInformationWithLink(String link) throws Exception {
+    public RequestBuilder verifyUserWithLink(String link) throws Exception {
         return get(link)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
@@ -217,16 +215,14 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
 
-    public MockHttpServletRequestBuilder resendVerificationContactInformation(String contactInformation, String token) throws Exception {
+    public MockHttpServletRequestBuilder resendVerificationMsg(String contactInformation, String token) throws Exception {
         return post(getController().getResendVerificationMessageUrl())
                 .param("ci", contactInformation)
                 .header(HttpHeaders.AUTHORIZATION, token);
     }
 
-    public AuthMessage resendVerificationContactInformation2xx(String contactInformation, String token) throws Exception {
-        mvc.perform(post(getController().getResendVerificationMessageUrl())
-                .param("ci", contactInformation)
-                .header(HttpHeaders.AUTHORIZATION, token))
+    public AuthMessage resendVerificationMsg2xx(String contactInformation, String token) throws Exception {
+        mvc.perform(resendVerificationMsg(contactInformation,token))
                 .andExpect(status().is2xxSuccessful());
         return verifyMsgWasSent(contactInformation);
     }

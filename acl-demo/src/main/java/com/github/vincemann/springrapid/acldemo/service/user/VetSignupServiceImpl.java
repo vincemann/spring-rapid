@@ -41,6 +41,7 @@ public class VetSignupServiceImpl implements VetSignupService {
     }
 
     @Autowired
+    @Root
     public void setVerificationService(VerificationService verificationService) {
         this.verificationService = verificationService;
     }

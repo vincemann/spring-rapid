@@ -15,8 +15,6 @@ import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.github.vincemann.springrapid.core.util.AopProxyUtils.getUltimateTargetObject;
-
 
 public class AuthContextTest extends RapidAuthIntegrationTest {
 
@@ -34,7 +32,7 @@ public class AuthContextTest extends RapidAuthIntegrationTest {
 
 
 	@Test
-	public void authenticatedAdminCanGetFullContextInformation() throws Exception {
+	public void adminCanGetFullContextInformation() throws Exception {
 
 		String token = login2xx(ADMIN_CONTACT_INFORMATION, ADMIN_PASSWORD);
 		mvc.perform(get(coreProperties.getContextUrl())
@@ -62,7 +60,7 @@ public class AuthContextTest extends RapidAuthIntegrationTest {
 	}
 	
 	@Test
-	public void anonCanGetOnlySharedContextInformation() throws Exception {
+	public void anonCanOnlyGetLimitedContextInformation() throws Exception {
 
 		mvc.perform(get(coreProperties.getContextUrl()))
 				.andExpect(status().is(200))

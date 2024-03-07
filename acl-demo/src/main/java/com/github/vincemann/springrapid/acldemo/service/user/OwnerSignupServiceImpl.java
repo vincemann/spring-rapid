@@ -41,6 +41,7 @@ public class OwnerSignupServiceImpl implements OwnerSignupService {
     }
 
     @Autowired
+    @Root
     public void setVerificationService(VerificationService verificationService) {
         this.verificationService = verificationService;
     }

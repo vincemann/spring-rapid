@@ -50,7 +50,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
 
         // when
         AuthMessage msg = userController.verifyMsgWasSent(dicaprio.getContactInformation());
-        userController.perform(userController.verifyContactInformationWithLink(msg.getLink()))
+        userController.perform(userController.verifyUserWithLink(msg.getLink()))
         // then
                 .andExpect(status().is2xxSuccessful());
 

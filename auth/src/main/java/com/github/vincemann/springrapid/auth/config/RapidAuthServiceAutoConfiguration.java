@@ -55,6 +55,7 @@ public class RapidAuthServiceAutoConfiguration {
 
 
     @Bean
+    @Root
     @ConditionalOnMissingBean(name = "verificationService")
     public VerificationService verificationService(){
         return new VerificationServiceImpl();
@@ -107,6 +108,13 @@ public class RapidAuthServiceAutoConfiguration {
     @ConditionalOnMissingBean(name = "securedPasswordService")
     public PasswordService securedPasswordService(@Root PasswordService service){
         return new SecuredPasswordService(service);
+    }
+
+    @Secured
+    @Bean
+    @ConditionalOnMissingBean(name = "securedVerificationService")
+    public VerificationService securedVerificationService(@Root VerificationService service){
+        return new SecuredVerificationService(service);
     }
 
 

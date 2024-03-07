@@ -100,6 +100,7 @@ public class SignupServiceImpl implements SignupService {
         this.userService = userService;
     }
     @Autowired
+    @Root
     public void setVerificationService(VerificationService verificationService) {
         this.verificationService = verificationService;
     }

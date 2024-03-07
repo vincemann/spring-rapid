@@ -21,7 +21,7 @@ public class ResetPasswordTest extends RapidAuthIntegrationTest {
     }
 
     @Test
-    public void getDirectedToForgotPasswordPage() throws Exception {
+    public void givenForgotPasswordAndClickedOnCodeInMsg_thenGetDirectedToForgotPasswordPage() throws Exception {
         AuthMessage msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
         String code = msg.getCode();
         String html = mvc.perform(userController.getResetPasswordView(msg.getLink()))
@@ -31,7 +31,7 @@ public class ResetPasswordTest extends RapidAuthIntegrationTest {
     }
 
     @Test
-    public void canResetPasswordWithCorrectCode() throws Exception {
+    public void userCanResetPasswordWithCorrectCode() throws Exception {
         AuthMessage msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
         mvc.perform(userController.resetPassword(resetPasswordDto(NEW_PASSWORD,msg.getCode())))
                 .andExpect(status().is2xxSuccessful())
@@ -69,7 +69,7 @@ public class ResetPasswordTest extends RapidAuthIntegrationTest {
     }
 
     @Test
-    public void cantResetPasswordWithInvalidPassword() throws Exception {
+    public void cantResetPasswordWithInvalidNewPassword() throws Exception {
         // Blank password
         AuthMessage msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
         mvc.perform(userController.resetPassword(resetPasswordDto("",msg.getCode())))

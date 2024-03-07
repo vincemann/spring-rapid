@@ -657,6 +657,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	}
 
 	@Autowired
+	@Secured
 	public void setVerificationService(VerificationService verificationService) {
 		this.verificationService = verificationService;
 	}

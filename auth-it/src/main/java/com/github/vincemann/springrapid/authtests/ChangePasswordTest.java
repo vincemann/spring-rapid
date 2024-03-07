@@ -22,7 +22,7 @@ public class ChangePasswordTest extends RapidAuthIntegrationTest {
 	}
 
 	@Test
-	public void canChangeOwnPassword() throws Exception {
+	public void userCanChangeOwnPassword() throws Exception {
 		ChangePasswordDto changePasswordDto = ChangePasswordDto.Builder.builder()
 				.contactInformation(USER_CONTACT_INFORMATION)
 				.oldPassword(USER_PASSWORD)

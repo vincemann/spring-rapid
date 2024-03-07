@@ -23,7 +23,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 
 
     @Test
-    public void canChangeOwnContactInformation() throws Exception {
+    public void userCanChangeOwnContactInformation() throws Exception {
         String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
         AuthMessage msg = userController.requestContactInformationChange2xx(token,
                 new RequestContactInformationChangeDto(getUser().getContactInformation(), NEW_CONTACT_INFORMATION));
@@ -59,7 +59,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
     }
 
     @Test
-    public void cantChangeContactInformationOfDiffUser() throws Exception {
+    public void userCantChangeContactInformationOfDiffUser() throws Exception {
         String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
         AuthMessage msg = userController.requestContactInformationChange2xx(token,
                 new RequestContactInformationChangeDto(getUser().getContactInformation(), NEW_CONTACT_INFORMATION));

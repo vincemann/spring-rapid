@@ -60,6 +60,7 @@ public class MySignupServiceImpl implements MySignupService {
     }
 
     @Autowired
+    @Root
     public void setVerificationService(VerificationService verificationService) {
         this.verificationService = verificationService;
     }
