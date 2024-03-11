@@ -19,11 +19,16 @@ import java.util.Set;
 /**
  * adds basic acl permission checks to crud operations
  *
- * @param <S> decorated crud service
- * @param <E> entity type of crud service
+ * @param <S>  decorated crud service
+ * @param <E>  entity type of crud service
  * @param <Id> id type of entity
  */
-public class SecuredCrudServiceDecorator<S extends CrudService<E, Id>, E extends IdentifiableEntity<Id>, Id extends Serializable>
+public class SecuredCrudServiceDecorator
+        <
+                S extends CrudService<E, Id>,
+                E extends IdentifiableEntity<Id>,
+                Id extends Serializable
+                >
         extends CrudServiceDecorator<S, E, Id> {
 
     private AclTemplate aclTemplate;
@@ -68,21 +73,21 @@ public class SecuredCrudServiceDecorator<S extends CrudService<E, Id>, E extends
     @Override
     public Set<E> findSome(Set<Id> ids) {
         Set<E> entities = super.findSome(ids);
-        entities.forEach(entity -> getAclTemplate().checkPermission(entity,BasePermission.READ));
+        entities.forEach(entity -> getAclTemplate().checkPermission(entity, BasePermission.READ));
         return entities;
     }
 
     @Override
     public Set<E> findAll() {
         Set<E> entities = super.findAll();
-        entities.forEach(entity -> getAclTemplate().checkPermission(entity,BasePermission.READ));
+        entities.forEach(entity -> getAclTemplate().checkPermission(entity, BasePermission.READ));
         return entities;
     }
 
     @Override
     public Set<E> findAll(List<QueryFilter<? super E>> jpqlFilters, List<EntityFilter<? super E>> entityFilters, List<SortingExtension> sortingStrategies) {
-        Set<E> entities = super.findAll(jpqlFilters,entityFilters,sortingStrategies);
-        entities.forEach(entity -> getAclTemplate().checkPermission(entity,BasePermission.READ));
+        Set<E> entities = super.findAll(jpqlFilters, entityFilters, sortingStrategies);
+        entities.forEach(entity -> getAclTemplate().checkPermission(entity, BasePermission.READ));
         return entities;
     }
 
@@ -90,7 +95,7 @@ public class SecuredCrudServiceDecorator<S extends CrudService<E, Id>, E extends
     @Override
     public void deleteById(Id id) throws EntityNotFoundException {
         Optional<E> entity = super.findById(id);
-        entity.ifPresent(e -> getAclTemplate().checkPermission(e,BasePermission.DELETE));
+        entity.ifPresent(e -> getAclTemplate().checkPermission(e, BasePermission.DELETE));
         super.deleteById(id);
     }
 

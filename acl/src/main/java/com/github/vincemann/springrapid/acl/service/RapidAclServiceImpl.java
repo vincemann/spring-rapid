@@ -64,10 +64,7 @@ public class RapidAclServiceImpl implements RapidAclService {
 
     @Override
     public void revokeAuthenticatedPermissionForEntity(IdentifiableEntity<?> entity, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
-        securityContext.executeAsSystemUser( () -> {
-            String authenticatedName = findAuthenticatedName();
-            revokeUsersPermissionForEntity(authenticatedName, entity,ignoreNotFound, permissions);
-        });
+        revokeUsersPermissionForEntity(findAuthenticatedName(), entity,ignoreNotFound, permissions);
     }
 
     @Override
@@ -80,10 +77,7 @@ public class RapidAclServiceImpl implements RapidAclService {
 
     @Override
     public void grantAuthenticatedPermissionForEntity(IdentifiableEntity<?> entity, Permission... permissions) {
-        securityContext.executeAsSystemUser( () -> {
-            String authenticatedName = findAuthenticatedName();
-            grantUserPermissionForEntity(authenticatedName, entity, permissions);
-        });
+        grantUserPermissionForEntity(findAuthenticatedName(), entity, permissions);
     }
 
 

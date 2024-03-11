@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.log.LogMessage;
 import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.domain.DefaultPermissionFactory;
 import org.springframework.security.acls.domain.ObjectIdentityRetrievalStrategyImpl;
@@ -87,13 +88,14 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator {
             List<String> stringPermissions = requiredPermissions.stream()
                     .map(p -> permissionStringConverter.convert(p))
                     .collect(Collectors.toList());
-            log.debug("Checking if User: " + name + " has permissions: " + stringPermissions + "\n" +
-                    "that are required for an operation over: " + AclUtils.objectIdentityToString(oid) + " ?"
-            );
+            log.debug(LogMessage.format(
+                    "Checking if user: '%s' has permissions: '%s' for: '%s'"
+                    ,name,stringPermissions,AclUtils.objectIdentityToString(oid)));
         }
 
-        if (log.isDebugEnabled())
-            log.debug("User has sid's: " + sids);
+        if (log.isDebugEnabled()){
+            log.debug(LogMessage.format("User has sids: '%s'",sids));
+        }
 
         try {
             // Lookup only ACL for SIDs we're interested in
@@ -116,7 +118,7 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator {
 
         } catch (NotFoundException nfe) {
             if (log.isDebugEnabled()) {
-                log.debug("No ACL found for oid: " + AclUtils.objectIdentityToString(oid));
+                log.debug(LogMessage.format("No acl found for oid: '%s'",AclUtils.objectIdentityToString(oid)));
                 log.debug("Access not granted");
             }
         }
