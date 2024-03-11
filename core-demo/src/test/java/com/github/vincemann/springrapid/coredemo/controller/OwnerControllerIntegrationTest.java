@@ -453,7 +453,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         UrlWebExtension hasPetsFilter = new UrlWebExtension(HasPetsFilter.class);
         UrlWebExtension sortByNameAsc = new UrlWebExtension(LastNameAscSorting.class);
         List<ReadOwnOwnerDto> responseDtos = ownerController.findAll2xx(ReadOwnOwnerDto.class, hasPetsFilter, sortByNameAsc);
-        RapidSecurityContext.unsetAuthenticated();
+        RapidSecurityContext.clear();
 
         // one dto findOwnDto and one findForeign
         Assertions.assertEquals(2,responseDtos.size());

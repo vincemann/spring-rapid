@@ -7,7 +7,6 @@ import com.github.vincemann.springrapid.core.controller.dto.map.PrincipalFactory
 import com.github.vincemann.springrapid.core.controller.dto.map.PrincipalFactoryImpl;
 import com.github.vincemann.springrapid.core.model.audit.LongIdSecurityAuditorAware;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContextImpl;
 import com.github.vincemann.springrapid.core.service.ctx.ContextService;
 import com.github.vincemann.springrapid.core.service.ctx.CoreContextService;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
@@ -67,12 +66,6 @@ public class RapidCoreAutoConfiguration {
     @ConditionalOnMissingBean(ContextService.class)
     public ContextService contextService(){
         return new CoreContextService();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(RapidSecurityContextImpl.class)
-    public RapidSecurityContextImpl rapidSecurityContext(){
-        return new RapidSecurityContextImpl();
     }
 
     @Bean

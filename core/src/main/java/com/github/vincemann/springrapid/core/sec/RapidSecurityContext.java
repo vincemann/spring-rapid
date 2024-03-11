@@ -1,38 +1,45 @@
 package com.github.vincemann.springrapid.core.sec;
 
-
+import com.google.common.collect.Sets;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.core.log.LogMessage;
 import org.springframework.lang.Nullable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.Assert;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Supplier;
 
+/**
+ * simple static wrapper for {@link org.springframework.security.core.context.SecurityContext}, providing typed access to
+ * {@link RapidPrincipal}
+ */
+// keep non static to allow customization
+public abstract class RapidSecurityContext {
 
-public interface RapidSecurityContext {
+    private final static Log log = LogFactory.getLog(RapidSecurityContext.class);
 
-    void setAuthenticated(RapidPrincipal principal);
-    void setAnonAuthenticated();
+    public static void setAuthenticated(RapidPrincipal principal) {
+        log.debug(LogMessage.format("authenticated user set to: %s",principal.getUsername()));
+        _setAuthenticated(principal);
+    }
 
-    @Nullable
-    RapidPrincipal currentPrincipal();
-
-    public static void unsetAuthenticated(){
-        SecurityContextHolder.clearContext();
+    public static void _setAuthenticated(RapidPrincipal principal){
+        SecurityContextHolder.getContext().setAuthentication(createToken(principal));
     }
 
 
-    public void executeAsSystemUser(Runnable aclOperation);
-    public <T> T executeAsSystemUser(Supplier<T> supplier);
-
-
-    // i hardcode these methods as static, because this information is retrieved like that in the whole framework
-    // creating them as interfaced methods could result in inconsistent state
-    public static boolean hasRole(String role) {
-        return RapidSecurityContext.getRoles().contains(role);
+    public static void setAnonAuthenticated() {
+        setAuthenticated(getAnonUser());
     }
 
     public static List<String> getRoles() {
@@ -52,6 +59,62 @@ public interface RapidSecurityContext {
     }
 
     @Nullable
+    public static RapidPrincipal currentPrincipal() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return null;
+        }
+        Object principal = authentication.getPrincipal();
+        Assert.isInstanceOf(RapidPrincipal.class, principal, "principal must be of type RapidPrincipal");
+        return (RapidPrincipal) authentication.getPrincipal();
+    }
+
+    public static void executeAsSystemUser(Runnable runnable) {
+        if (systemUserAuthenticated()) {
+            runnable.run();
+            return;
+        }
+        Authentication originalAuth = SecurityContextHolder.getContext().getAuthentication();
+        try {
+            _setAuthenticated(getSystemUser());
+            runnable.run();
+        } finally {
+            SecurityContextHolder.getContext().setAuthentication(originalAuth);
+        }
+    }
+
+    public static <T> T executeAsSystemUser(Supplier<T> supplier) {
+        if (systemUserAuthenticated())
+            return supplier.get();
+        Authentication originalAuth = SecurityContextHolder.getContext().getAuthentication();
+        try {
+            // dont go through authentication manager, bc system only exists in ram
+            _setAuthenticated(getSystemUser());
+            return supplier.get();
+        } finally {
+            SecurityContextHolder.getContext().setAuthentication(originalAuth);
+        }
+    }
+
+    public static boolean systemUserAuthenticated() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null)
+            return false;
+        if (authentication.getName() == null)
+            return false;
+        return authentication.getName().equals(getSystemUser().getName());
+    }
+
+    public static RapidPrincipal getAnonUser() {
+        RapidPrincipal principal = new RapidPrincipal();
+        principal.setRoles(Sets.newHashSet(Roles.ANON));
+        return principal;
+    }
+
+    public static boolean hasRole(String role) {
+        return RapidSecurityContext.getRoles().contains(role);
+    }
+
     public static String getName(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication==null){
@@ -75,8 +138,21 @@ public interface RapidSecurityContext {
             return true;
         }
     }
-
     public static void clear(){
         SecurityContextHolder.clearContext();
     }
+
+
+    public static RapidPrincipal getSystemUser() {
+        RapidPrincipal principal = new RapidPrincipal();
+        principal.setName("system");
+        principal.setRoles(Sets.newHashSet(Roles.SYSTEM));
+        return principal;
+    }
+
+    public static Authentication createToken(RapidPrincipal principal) {
+        return new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities());
+    }
+
+
 }

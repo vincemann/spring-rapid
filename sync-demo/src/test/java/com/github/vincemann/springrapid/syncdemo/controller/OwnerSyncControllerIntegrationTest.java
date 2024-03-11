@@ -157,10 +157,10 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         // now should need update
         EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
+        RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
         ReadOwnOwnerDto updatedEG = ownerController.find2xx(status.getId()
                 , ReadOwnOwnerDto.class);
-        RapidSecurityContext.unsetAuthenticated();
+        RapidSecurityContext.clear();
 
         Assertions.assertEquals(updatedFirstName,updatedEG.getFirstName());
     }
@@ -212,9 +212,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(owner2SyncStatus.getId(),owner3SyncStatus.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
-        RapidSecurityContext.unsetAuthenticated();
+        RapidSecurityContext.clear();
 
 
         Assertions.assertEquals(2,updatedOwners.size());
@@ -270,9 +270,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(kahnSyncStatus.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
-        RapidSecurityContext.unsetAuthenticated();
+        RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedOwners.size());
 
@@ -330,9 +330,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(owner2SyncStatus.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
-        RapidSecurityContext.unsetAuthenticated();
+        RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedOwners.size());
 
@@ -436,9 +436,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(owner2SyncStatus.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
-        RapidSecurityContext.unsetAuthenticated();
+        RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedOwners.size());
 
@@ -491,9 +491,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(owner3SyncStatus.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
-        RapidSecurityContext.unsetAuthenticated();
+        RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedOwners.size());
 
@@ -545,9 +545,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(kahnSyncStatus.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
-        RapidSecurityContext.unsetAuthenticated();
+        RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedOwners.size());
 
@@ -605,9 +605,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(belloSyncStatus.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadPetDto> updatedPets= petController.findSome2xx(idsToSync,ReadPetDto.class);
-        RapidSecurityContext.unsetAuthenticated();
+        RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedPets.size());
 
@@ -650,9 +650,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(status.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadPetDto> updatedPets= petController.findSome2xx(idsToSync,ReadPetDto.class);
-        RapidSecurityContext.unsetAuthenticated();
+        RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedPets.size());
 
@@ -735,9 +735,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(owner.getId().toString());
 
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
-        RapidSecurityContext.unsetAuthenticated();
+        RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedOwners.size());
 
@@ -830,9 +830,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 //        EntitySyncStatus status = fetchOwnerSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
         EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
         ReadOwnOwnerDto readOwnOwnerDto = ownerController.find2xx(status.getId(), ReadOwnOwnerDto.class);
-        RapidSecurityContext.unsetAuthenticated();
+        RapidSecurityContext.clear();
 
         Assertions.assertEquals(updatedHobbies,readOwnOwnerDto.getHobbies());
     }
@@ -876,9 +876,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(status.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
-        RapidSecurityContext.unsetAuthenticated();
+        RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedOwners.size());
 
@@ -926,9 +926,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(status.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.withName(KAHN));
+        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
-        RapidSecurityContext.unsetAuthenticated();
+        RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedOwners.size());
 
