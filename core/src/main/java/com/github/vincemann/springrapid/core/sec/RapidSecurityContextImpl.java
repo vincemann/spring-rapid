@@ -7,7 +7,6 @@ import org.springframework.core.log.LogMessage;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.Assert;
 
@@ -23,11 +22,14 @@ public class RapidSecurityContextImpl implements RapidSecurityContext {
     private final Log log = LogFactory.getLog(getClass());
 
     public void setAuthenticated(RapidPrincipal principal) {
-        // dont log for executeAsSystemUser
-        if (!principal.getUsername().equals("system"))
-            log.debug(LogMessage.format("authenticated user set to: %s",principal.getUsername()));
+        log.debug(LogMessage.format("authenticated user set to: %s",principal.getUsername()));
+        _setAuthenticated(principal);
+    }
+
+    protected void _setAuthenticated(RapidPrincipal principal){
         SecurityContextHolder.getContext().setAuthentication(createToken(principal));
     }
+
 
     public void setAnonAuthenticated() {
         setAuthenticated(getAnonUser());
@@ -53,7 +55,7 @@ public class RapidSecurityContextImpl implements RapidSecurityContext {
         }
         Authentication originalAuth = SecurityContextHolder.getContext().getAuthentication();
         try {
-            setAuthenticated(getSystemUser());
+            _setAuthenticated(getSystemUser());
             runnable.run();
         } finally {
             SecurityContextHolder.getContext().setAuthentication(originalAuth);
@@ -67,7 +69,7 @@ public class RapidSecurityContextImpl implements RapidSecurityContext {
         Authentication originalAuth = SecurityContextHolder.getContext().getAuthentication();
         try {
             // dont go through authentication manager, bc system only exists in ram
-            setAuthenticated(getSystemUser());
+            _setAuthenticated(getSystemUser());
             return supplier.get();
         } finally {
             SecurityContextHolder.getContext().setAuthentication(originalAuth);
@@ -78,12 +80,9 @@ public class RapidSecurityContextImpl implements RapidSecurityContext {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null)
             return false;
-        if (authentication.getAuthorities() == null)
+        if (authentication.getName() == null)
             return false;
-        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(Roles.SYSTEM))) {
-            return true;
-        }
-        return false;
+        return authentication.getName().equals(getSystemUser().getName());
     }
 
     protected RapidPrincipal getAnonUser() {
