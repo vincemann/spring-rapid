@@ -21,13 +21,6 @@ public class TestPrincipal {
         return principal;
     }
 
-    public static RapidPrincipal withName(String name){
-        RapidPrincipal principal = new RapidPrincipal();
-        principal.setName(name);
-        principal.setPassword("password");
-        principal.setRoles(new HashSet<>());
-        return principal;
-    }
 
     public static RapidPrincipal withRoles(String... roles){
         RapidPrincipal principal = new RapidPrincipal();

@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.coretest.util;
 
+import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.WebExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
@@ -9,6 +10,10 @@ import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
 import com.google.common.collect.Sets;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -22,6 +27,14 @@ import static com.github.vincemann.springrapid.core.controller.UrlParamWebExtens
 import static com.github.vincemann.springrapid.core.controller.WebExtensionType.*;
 
 public class RapidTestUtil {
+
+    public static SecurityContext createMockSecurityContext(RapidPrincipal principal){
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                principal, principal.getPassword(), principal.getAuthorities());
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        return context;
+    }
 
     public static String[] dtoIdProperties(Class<?> entityClass) {
         List<String> idFields = new ArrayList<>();
