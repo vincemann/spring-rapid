@@ -81,8 +81,6 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
             log.debug(LogMessage.format("fetching entities sync status for entity with id: %s",id.toString()));
             long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
             log.debug(LogMessage.format("clients last update was at: %s",new Date(lastUpdateTimestamp).toString()));
-            // jpa uses this format
-            //            Date lastUpdateDate = DATE_FORMAT.parse(lastUpdateTimestampString);
             Timestamp lastUpdate = new Timestamp(lastUpdateTimestamp);
             VerifyEntity.isPresent(lastUpdateTimestamp, "need timestamp parameter 'ts'");
             LastFetchInfo lastFetchInfo = new LastFetchInfo(id.toString(), lastUpdate);
@@ -269,7 +267,6 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
     }
 
     @Autowired
-    @Lazy
     public void setService(SyncService<E,Id> service) {
         this.service = service;
     }

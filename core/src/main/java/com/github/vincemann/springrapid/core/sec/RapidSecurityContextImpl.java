@@ -24,7 +24,7 @@ public class RapidSecurityContextImpl implements RapidSecurityContext {
 
     public void setAuthenticated(RapidPrincipal principal) {
         // dont log for executeAsSystemUser
-        if (!systemUserAuthenticated())
+        if (!principal.getUsername().equals("system"))
             log.debug(LogMessage.format("authenticated user set to: %s",principal.getUsername()));
         SecurityContextHolder.getContext().setAuthentication(createToken(principal));
     }

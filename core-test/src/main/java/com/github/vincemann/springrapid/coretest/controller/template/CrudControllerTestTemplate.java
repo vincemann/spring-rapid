@@ -91,6 +91,10 @@ public abstract class CrudControllerTestTemplate<C extends CrudController>
         return perform2xxAndDeserializeToSet(findAll(),dtoClass);
     }
 
+    public <D> Set<D> findAll2xx(String token, Class<D> dtoClass) throws Exception {
+        return perform2xxAndDeserializeToSet(withToken(findAll(),token),dtoClass);
+    }
+
     public  MockHttpServletRequestBuilder findSome(Set<String> ids) throws Exception {
         return post(controller.getFindSomeUrl())
                 .content(getController().getObjectMapper().writeValueAsString(ids))

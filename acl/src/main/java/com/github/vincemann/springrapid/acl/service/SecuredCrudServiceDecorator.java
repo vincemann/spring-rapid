@@ -32,6 +32,25 @@ public class SecuredCrudServiceDecorator<S extends CrudService<E, Id>, E extends
         super(decorated);
     }
 
+
+    @Override
+    public E softUpdate(E entity) throws EntityNotFoundException {
+        aclTemplate.checkPermission(entity, BasePermission.WRITE);
+        return super.softUpdate(entity);
+    }
+
+    @Override
+    public E partialUpdate(E update, String... fieldsToUpdate) throws EntityNotFoundException {
+        aclTemplate.checkPermission(update, BasePermission.WRITE);
+        return super.partialUpdate(update, fieldsToUpdate);
+    }
+
+    @Override
+    public E fullUpdate(E update) throws EntityNotFoundException {
+        aclTemplate.checkPermission(update, BasePermission.WRITE);
+        return super.fullUpdate(update);
+    }
+
     @Override
     public Optional<E> findById(Id id) {
         Optional<E> entity = super.findById(id);

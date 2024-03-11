@@ -621,7 +621,6 @@ public abstract class CrudController
 
 
     @Autowired
-    @Lazy
     public void setCrudService(S crudService) {
         this.service = crudService;
     }

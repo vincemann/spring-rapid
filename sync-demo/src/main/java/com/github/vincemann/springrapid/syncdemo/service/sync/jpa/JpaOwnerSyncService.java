@@ -10,5 +10,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class JpaOwnerSyncService
         extends JpaSyncService<Owner,Long>
-                implements OwnerSyncService {
+                implements OwnerSyncService
+{
 }

@@ -26,12 +26,13 @@ import java.util.stream.Collectors;
 import static com.github.vincemann.springrapid.core.util.FilterUtils.toSpec;
 
 
-public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends Serializable>
+public abstract class JpaSyncService
+        <
+                E extends IAuditingEntity<Id>,
+                Id extends Serializable>
         implements SyncService<E, Id>, InitializingBean {
 
     protected IdConverter<Id> idConverter;
-    // could not merge my custom repo with jpa repo for some reason, so custom repos are seperated
-    // and everything that can be auto impl via jpaRepoInterface is subTypeRequirement for Repo generic type
     protected AuditingRepository<E, Id> auditingRepository;
     protected AbstractCrudService<E, Id,?> crudService;
     protected EntityManager entityManager;
@@ -106,7 +107,6 @@ public abstract class JpaSyncService<E extends IAuditingEntity<Id>, Id extends S
                 .collect(Collectors.toSet());
     }
 
-    @Lazy
     @Autowired
     public void setCrudService(AbstractCrudService<E, Id, ?> crudService) {
         this.crudService = crudService;

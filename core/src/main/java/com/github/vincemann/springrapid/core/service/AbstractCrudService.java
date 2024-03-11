@@ -59,4 +59,7 @@ public abstract class AbstractCrudService
         return entityClass;
     }
 
+    public void setService(CrudService<E, Id> service) {
+        this.service = service;
+    }
 }

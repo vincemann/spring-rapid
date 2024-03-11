@@ -107,7 +107,6 @@ public class MyIntegrationTest extends AbstractMvcTest {
 
 
     @Autowired
-    @Lazy
     protected ClinicCardService clinicCardService;
     @Autowired
     protected ClinicCardRepository clinicCardRepository;
