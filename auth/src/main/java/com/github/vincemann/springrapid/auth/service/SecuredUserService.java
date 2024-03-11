@@ -15,9 +15,13 @@ import java.util.Optional;
 
 public class SecuredUserService
         // looks ugly but is just UserService in raw form
-        extends AbstractSecuredUserServiceDecorator<UserService<AbstractUser<Serializable>,Serializable>, AbstractUser<Serializable>, Serializable>
-        implements UserService<AbstractUser<Serializable>,Serializable>
-{
+        extends AbstractSecuredUserServiceDecorator
+        <
+                UserService<AbstractUser<Serializable>, Serializable>,
+                AbstractUser<Serializable>,
+                Serializable
+                >
+        implements UserService<AbstractUser<Serializable>, Serializable> {
 
 
     public SecuredUserService(UserService<AbstractUser<Serializable>, Serializable> decorated) {

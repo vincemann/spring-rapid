@@ -17,7 +17,7 @@ public class LoginTest extends RapidAuthIntegrationTest {
 
 
 	@Test
-	public void canLogin() throws Exception {
+	public void login() throws Exception {
 		String token = mvc.perform(userController.login(USER_CONTACT_INFORMATION, USER_PASSWORD))
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
@@ -71,7 +71,7 @@ public class LoginTest extends RapidAuthIntegrationTest {
 
 	@Test
 	public void cantUseWrongToken() throws Exception {
-		mvc.perform(get(authProperties.getController().getTestTokenUrl())
+		mvc.perform(get(properties.getController().getTestTokenUrl())
 				.header(HttpHeaders.AUTHORIZATION, "Bearer a-wrong-token"))
 				.andExpect(status().isUnauthorized());
 	}

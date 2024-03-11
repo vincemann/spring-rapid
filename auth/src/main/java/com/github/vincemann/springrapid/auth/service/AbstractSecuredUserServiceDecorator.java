@@ -18,14 +18,18 @@ import java.util.Optional;
  * Extend this class for creating own user service security decorator.
  * Default impl: {@link SecuredUserService}.
  *
- * @param <S> decorated user service (service to secure)
- * @param <U> user entity type
+ * @param <S>  decorated user service (service to secure)
+ * @param <U>  user entity type
  * @param <Id> id type of user
  */
-public abstract class AbstractSecuredUserServiceDecorator<S extends UserService<U,Id>,U extends AbstractUser<Id>,Id extends Serializable>
+public abstract class AbstractSecuredUserServiceDecorator
+        <
+                S extends UserService<U, Id>,
+                U extends AbstractUser<Id>,
+                Id extends Serializable
+                >
         extends SecuredCrudServiceDecorator<S, U, Id>
-        implements UserService<U,Id>
-{
+        implements UserService<U, Id> {
 
     public AbstractSecuredUserServiceDecorator(S decorated) {
         super(decorated);
@@ -56,36 +60,35 @@ public abstract class AbstractSecuredUserServiceDecorator<S extends UserService<
     @Override
     public U addRole(Id userId, String role) throws EntityNotFoundException, BadEntityException {
         AuthorizationTemplate.assertHasRoles(AuthRoles.ADMIN);
-        return getDecorated().addRole(userId,role);
+        return getDecorated().addRole(userId, role);
     }
 
     @Override
     public U removeRole(Id userId, String role) throws EntityNotFoundException, BadEntityException {
         AuthorizationTemplate.assertHasRoles(AuthRoles.ADMIN);
-        return getDecorated().removeRole(userId,role);
+        return getDecorated().removeRole(userId, role);
     }
 
     @Override
     public U updatePassword(Id userId, String password) throws EntityNotFoundException, BadEntityException {
-        getAclTemplate().checkPermission(userId,getEntityClass(), BasePermission.WRITE);
-        return getDecorated().updatePassword(userId,password);
+        getAclTemplate().checkPermission(userId, getEntityClass(), BasePermission.WRITE);
+        return getDecorated().updatePassword(userId, password);
     }
 
     @Override
     public U updateContactInformation(Id userId, String contactInformation) throws EntityNotFoundException, BadEntityException {
         getAclTemplate().checkPermission(userId, getEntityClass(), BasePermission.WRITE);
-        return getDecorated().updateContactInformation(userId,contactInformation);
+        return getDecorated().updateContactInformation(userId, contactInformation);
     }
-
 
     @Override
     public U createUser() {
-        throw new IllegalArgumentException("for internal use only");
+        throw new UnsupportedOperationException("for internal use only");
     }
 
     @Override
     public U createAdmin(AuthProperties.Admin admin) {
-        throw new IllegalArgumentException("for internal use only");
+        throw new UnsupportedOperationException("for internal use only");
     }
 
     @Override

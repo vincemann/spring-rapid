@@ -42,7 +42,6 @@ public class AbstractUser<Id extends Serializable>
 	protected Set<String> roles = new HashSet<>();
 
 
-
 	// A JWT issued before this won't be valid
 	@NotNull
 	@Column(nullable = false)

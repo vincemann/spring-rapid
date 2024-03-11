@@ -14,9 +14,9 @@ import java.util.Optional;
  * 
  * @see <a href="http://stackoverflow.com/questions/27545276/how-to-implement-a-spring-data-repository-for-a-mappedsuperclass">how-to-implement-a-spring-data-repository-for-a-mappedsuperclass</a>
  * @author Sanjay Patel
+ * @modifiedBy vincemann
  */
 @NoRepositoryBean
-
 public interface AbstractUserRepository<U extends AbstractUser<ID>, ID extends Serializable>
 		extends RapidJpaRepository<U, ID> {
 

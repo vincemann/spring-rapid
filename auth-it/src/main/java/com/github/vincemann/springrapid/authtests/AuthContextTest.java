@@ -1,15 +1,19 @@
 package com.github.vincemann.springrapid.authtests;
 
 import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.sec.Roles;
 import com.github.vincemann.springrapid.core.util.AopProxyUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.util.AopTestUtils;
+
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
 import java.util.HashMap;
@@ -25,8 +29,9 @@ public class AuthContextTest extends RapidAuthIntegrationTest {
 		Map<String,Object> testSharedProperties = new HashMap<>();
 		testSharedProperties.put("testKey","testValue");
 
-		Mockito.when(AopProxyUtils.getUltimateTargetObject(coreProperties).getShared())
-				.thenReturn(testSharedProperties);
+		CoreProperties coreProperties = AopTestUtils.getUltimateTargetObject(this.coreProperties);
+		Mockito.doReturn(testSharedProperties)
+						.when(AopProxyUtils.getUltimateTargetObject(coreProperties)).getShared();
 	}
 
 
@@ -41,7 +46,7 @@ public class AuthContextTest extends RapidAuthIntegrationTest {
 				.andExpect(jsonPath("$.shared").value(hasEntry("testKey","testValue")))
 
 				.andExpect(jsonPath("$.user.id").value(getAdmin().getId()))
-				.andExpect(jsonPath("$.user.roles[0]").value(Roles.ADMIN))
+				.andExpect(jsonPath("$.user.roles").value(hasItem(Roles.ADMIN)))
 				.andExpect(jsonPath("$.user.password").doesNotExist());
 	}
 
@@ -55,7 +60,7 @@ public class AuthContextTest extends RapidAuthIntegrationTest {
 				.andExpect(jsonPath("$.shared").value(hasEntry("testKey","testValue")))
 
 				.andExpect(jsonPath("$.user.id").value(getUser().getId()))
-				.andExpect(jsonPath("$.user.roles[0]").value(Roles.USER))
+				.andExpect(jsonPath("$.user.roles").value(hasItem(Roles.USER)))
 				.andExpect(jsonPath("$.user.password").doesNotExist());
 	}
 	

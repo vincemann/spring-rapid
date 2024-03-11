@@ -48,9 +48,6 @@ public abstract class JpaUserService
         return adminUser;
     }
 
-
-
-
     @Override
     public U createUser() {
         return BeanUtils.instantiateClass(getEntityClass());
@@ -148,12 +145,11 @@ public abstract class JpaUserService
     public U blockUser(String contactInformation) throws EntityNotFoundException, BadEntityException {
         VerifyEntity.notEmpty(contactInformation,"contact-information");
 
-        Optional<U> user = findByContactInformation(contactInformation);
-        VerifyEntity.isPresent(user,contactInformation,getEntityClass());
-        if (user.get().hasRole(AuthRoles.BLOCKED)){
+        U user = findPresentByContactInformation(contactInformation);
+        if (user.hasRole(AuthRoles.BLOCKED)){
             throw new BadEntityException("user is already blocked");
         }
-        return addRole(user.get().getId(),AuthRoles.BLOCKED);
+        return addRole(user.getId(),AuthRoles.BLOCKED);
     }
 
     @Transactional

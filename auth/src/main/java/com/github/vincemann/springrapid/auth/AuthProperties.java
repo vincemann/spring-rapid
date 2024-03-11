@@ -45,8 +45,8 @@ public class AuthProperties {
 			changePasswordUrl = getUserBaseUrl() +"/change-password";
 			requestContactInformationChangeUrl = getUserBaseUrl() +"/request-change-ci";
 			fetchNewAuthTokenUrl = getUserBaseUrl() +"/new-token";
-			testTokenUrl = getUserBaseUrl() + "test-token";
-			blockUserUrl = getUserBaseUrl() + "block";
+			testTokenUrl = getUserBaseUrl() + "/test-token";
+			blockUserUrl = getUserBaseUrl() + "/block";
 		}
 
 		public String userBaseUrl;

@@ -144,7 +144,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	public ResponseEntity<Void> blockUser(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
 		String contactInformation = readRequestParam(request, "ci");
 		log.debug(LogMessage.format("received block user request for: %s",contactInformation));
-		unsecuredService.blockUser(contactInformation);
+		getService().blockUser(contactInformation);
 		return okNoContent();
 	}
 
@@ -200,6 +200,9 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	//             INIT
 
 
+	/**
+	 * overwrite this for own dto configuration
+	 */
 	@Override
 	protected void configureDtoMappings(DtoMappingsBuilder builder) {
 
@@ -218,8 +221,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		builder.when(direction(Direction.RESPONSE)
 						.and(principal(Principal.OWN)))
 				.thenReturn(ReadOwnUserDto.class);
-
-
 	}
 
 	// URLS

@@ -26,6 +26,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.util.AopTestUtils;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -77,8 +78,6 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
     @Autowired
     protected AuthTestAdapter testAdapter;
 
-    @Autowired
-    protected AuthProperties authProperties;
 
     @Autowired
     protected UserControllerTestTemplate userController;
@@ -92,16 +91,16 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
         System.err.println("creating test users");
         createTestUsers();
         System.err.println("test users created");
-        System.err.println("logging in test users");
-//        loginTestUsers();
-        System.err.println("test users logged in");
         setupSpies();
         System.err.println("TEST STARTS HERE -----------------------------------------------------------------------------------------------------------------");
     }
 
     protected void setupSpies() {
         jwt = Mockito.spy(properties.getJwt());
-        Mockito.doReturn(jwt).when(AopProxyUtils.getUltimateTargetObject(properties)).getJwt();
+        AuthProperties properties = AopTestUtils.getUltimateTargetObject(this.properties);
+        Mockito.doReturn(jwt)
+                .when(properties)
+                .getJwt();
     }
 
 
@@ -138,13 +137,13 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
     }
 
     protected void assertTokenWorks(String token, Serializable id) throws Exception {
-        mvc.perform(get(authProperties.getController().getTestTokenUrl())
+        mvc.perform(get(properties.getController().getTestTokenUrl())
                         .header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().is2xxSuccessful());
     }
 
     protected void assertTokenDoesNotWork(String token) throws Exception {
-        mvc.perform(get(authProperties.getController().getTestTokenUrl())
+        mvc.perform(get(properties.getController().getTestTokenUrl())
                         .header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().isUnauthorized());
     }
@@ -234,10 +233,6 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
 
     protected AuthTestAdapter getTestAdapter() {
         return testAdapter;
-    }
-
-    protected AuthProperties getAuthProperties() {
-        return authProperties;
     }
 
     protected UserControllerTestTemplate getUserController() {
