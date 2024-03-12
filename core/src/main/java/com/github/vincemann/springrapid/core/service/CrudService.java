@@ -20,7 +20,11 @@ import java.util.Set;
  * @param <E>       Type of entity
  * @param <Id>      Id type of entity
  */
-public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Serializable>
+public interface CrudService
+        <
+                E extends IdentifiableEntity<Id>,
+                Id extends Serializable
+                >
 {
 
         Class<E> getEntityClass();
