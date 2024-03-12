@@ -13,9 +13,11 @@ import com.github.vincemann.springrapid.acldemo.dto.visit.ReadVisitDto;
 import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.service.*;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
+import com.github.vincemann.springrapid.authtest.RapidAuthTestUtil;
 import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.coretest.MvcAware;
 import com.github.vincemann.springrapid.coretest.TestMethodInitializable;
@@ -126,15 +128,19 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
 
     public Owner signupKahnWithBella() throws Exception {
         Owner owner = signupOwner(testData.getKahn());
+        RapidAuthTestUtil.authenticate(owner);
         testData.getBella().setOwner(owner);
         Pet bella = petService.create(testData.getBella());
+        RapidSecurityContext.clear();
         return ownerService.findPresentById(owner.getId());
     }
 
     public Owner signupMeierWithBello() throws Exception {
         Owner owner = signupOwner(testData.getMeier());
+        RapidAuthTestUtil.authenticate(owner);
         testData.getBello().setOwner(owner);
         Pet bello = petService.create(testData.getBello());
+        RapidSecurityContext.clear();
         return ownerService.findPresentById(owner.getId());
     }
 
