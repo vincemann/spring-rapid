@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.acldemo.service.VetService;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.service.AbstractSecuredUserServiceDecorator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +26,8 @@ public class SecuredVetService
 
     @Transactional(readOnly = true)
     @Override
+    @PostAuthorize("returnObject.isPresent() ? hasPermission(returnObject.get(), 'read') : true")
     public Optional<Vet> findByLastName(String name) {
-        Optional<Vet> vet = getDecorated().findByLastName(name);
-        vet.ifPresent(o -> getAclTemplate().checkPermission(o, BasePermission.READ));
-        return vet;
+        return getDecorated().findByLastName(name);
     }
 }

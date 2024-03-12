@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import static com.github.vincemann.springrapid.acldemo.controller.suite.TestData.*;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -71,6 +72,21 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
                 .andExpect(status().isForbidden());
 
         Assertions.assertFalse(petService.findByName(BELLA).isPresent());
+    }
+
+    @Test
+    public void ownerCantFindForeignOwnerByName() throws Exception {
+        // given
+        Owner kahn = helper.signupKahnWithBella();
+        Owner meier = helper.signupMeierWithBello();
+
+        // when
+        String kahnToken = userController.login2xx(kahn.getContactInformation(), OWNER_KAHN_PASSWORD);
+        mvc.perform(get(ownerController.getController().getFindByNameUrl())
+                .param("name",meier.getLastName())
+                        .header(HttpHeaders.AUTHORIZATION,kahnToken))
+                // then
+                .andExpect(status().isForbidden());
     }
 
     @Test

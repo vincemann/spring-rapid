@@ -24,6 +24,7 @@ public class OwnerControllerTestTemplate extends CrudControllerTestTemplate<Owne
         return getController().getObjectMapper().readValue(json,ReadOwnOwnerDto.class);
     }
 
+
     public void addPetsSpectator(long permittedOwner, long targetOwner, String token) throws Exception {
         getMvc().perform(withToken(get(getController().getAddPetSpectatorUrl())
                 .param("permitted",String.valueOf(permittedOwner))

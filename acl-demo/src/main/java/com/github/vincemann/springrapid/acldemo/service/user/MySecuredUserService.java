@@ -5,6 +5,8 @@ import com.github.vincemann.springrapid.acldemo.model.abs.User;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.service.AbstractSecuredUserServiceDecorator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +27,8 @@ public class MySecuredUserService
 
     @Transactional(readOnly = true)
     @Override
+    @PostAuthorize("returnObject.isPresent() ? hasPermission(returnObject.get(), 'read') : true")
     public Optional<User> findByLastName(String name) {
-        Optional<User> owner = getDecorated().findByLastName(name);
-        owner.ifPresent(o -> getAclTemplate().checkPermission(o, BasePermission.READ));
-        return owner;
+        return getDecorated().findByLastName(name);
     }
 }

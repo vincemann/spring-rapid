@@ -15,6 +15,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,17 +33,20 @@ public class SecuredVisitService
     }
 
 
+    @Transactional
+    @PreAuthorize("hasPermission(#visitId, 'com.github.vincemann.springrapid.acldemo.model.Visit', 'administration')")
     @Override
     public void addSpectator(Long spectatorId, Long visitId) throws EntityNotFoundException {
-        getAclTemplate().checkPermission(visitId,Visit.class, BasePermission.ADMINISTRATION);
         getDecorated().addSpectator(spectatorId,visitId);
     }
 
+    @Transactional
+    @PreAuthorize("hasPermission(#visitId, 'com.github.vincemann.springrapid.acldemo.model.Visit', 'administration')")
     @Override
     public void removeSpectator(Long spectatorId, Long visitId) throws EntityNotFoundException {
-        getAclTemplate().checkPermission(visitId,Visit.class, BasePermission.ADMINISTRATION);
         getDecorated().removeSpectator(spectatorId,visitId);
     }
+
 
     @Transactional
     @Override

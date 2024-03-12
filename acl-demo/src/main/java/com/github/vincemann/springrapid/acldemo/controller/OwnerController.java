@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.acl.Secured;
 import com.github.vincemann.springrapid.acl.SecuredCrudController;
 import com.github.vincemann.springrapid.acldemo.Roles;
@@ -16,8 +17,10 @@ import com.github.vincemann.springrapid.core.controller.dto.map.Principal;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.Lists;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,8 +28,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
 
@@ -37,6 +42,8 @@ public class OwnerController extends SecuredCrudController<Owner, Long, OwnerSer
     private String signupUrl;
     @Getter
     private String addPetSpectatorUrl;
+    @Getter
+    private String findByNameUrl;
     private OwnerSignupService signupService;
 
     @Override
@@ -44,6 +51,7 @@ public class OwnerController extends SecuredCrudController<Owner, Long, OwnerSer
         super.initUrls();
         this.signupUrl = "/api/core/owner/signup";
         this.addPetSpectatorUrl = "/api/core/owner/add-pet-spectator";
+        this.findByNameUrl = "/api/core/owner/find-by-name";
     }
 
     @Override
@@ -68,6 +76,15 @@ public class OwnerController extends SecuredCrudController<Owner, Long, OwnerSer
     public ResponseEntity<?> addPetSpectator(@RequestParam("permitted") long permittedOwnerId, @RequestParam("target") long targetOwnerId) throws EntityNotFoundException {
         getService().addPetSpectator(permittedOwnerId, targetOwnerId);
         return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping(value = "/api/core/owner/find-by-name")
+    public ResponseEntity<String> addPetSpectator(@RequestParam("name") String name, HttpServletRequest request) throws EntityNotFoundException, BadEntityException, JsonProcessingException {
+        Optional<Owner> owner = getService().findByLastName(name);
+        VerifyEntity.isPresent(owner,name,Owner.class);
+        Object dto = getDtoMapper().mapToDto(owner.get(), createDtoClass(getFindByNameUrl(), Direction.RESPONSE, request, owner.get()));
+        return ResponseEntity.ok(objectMapper.writeValueAsString(dto));
     }
 
 
