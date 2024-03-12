@@ -30,7 +30,6 @@ public class RapidAclServiceImpl implements RapidAclService {
     private final Log log = LogFactory.getLog(getClass());
 
     private MutableAclService aclService;
-    private RapidSecurityContext securityContext;
 
 
     public RapidAclServiceImpl(MutableAclService aclService) {
@@ -39,7 +38,7 @@ public class RapidAclServiceImpl implements RapidAclService {
 
     @Override
     public void grantRolePermissionForEntity(String role, IdentifiableEntity<?> entity, Permission... permissions) {
-        securityContext.executeAsSystemUser( () -> {
+        RapidSecurityContext.executeAsSystemUser( () -> {
             final Sid sid = new GrantedAuthoritySid(role);
             addPermissionsForSid(entity, sid, permissions);
         });
@@ -47,7 +46,7 @@ public class RapidAclServiceImpl implements RapidAclService {
 
     @Override
     public void revokeRolesPermissionForEntity(String role, IdentifiableEntity<?> entity, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
-        securityContext.executeAsSystemUser( () -> {
+        RapidSecurityContext.executeAsSystemUser( () -> {
             final Sid sid = new GrantedAuthoritySid(role);
             deletePermissionForSid(entity, sid, ignoreNotFound, permissions);
         });
@@ -56,7 +55,7 @@ public class RapidAclServiceImpl implements RapidAclService {
 
     @Override
     public void grantUserPermissionForEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) {
-        securityContext.executeAsSystemUser( () -> {
+        RapidSecurityContext.executeAsSystemUser( () -> {
             final Sid sid = new PrincipalSid(user);
             addPermissionsForSid(entity, sid, permissions);
         });
@@ -69,7 +68,7 @@ public class RapidAclServiceImpl implements RapidAclService {
 
     @Override
     public void revokeUsersPermissionForEntity(String user, IdentifiableEntity<?> entity, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
-        securityContext.executeAsSystemUser( () -> {
+        RapidSecurityContext.executeAsSystemUser( () -> {
             final Sid sid = new PrincipalSid(user);
             deletePermissionForSid(entity, sid, ignoreNotFound, permissions);
         });
@@ -83,7 +82,7 @@ public class RapidAclServiceImpl implements RapidAclService {
 
     @Override
     public void deleteAclOfEntity(Class<? extends IdentifiableEntity> clazz, Serializable id, boolean deleteCascade) {
-        securityContext.executeAsSystemUser( () -> {
+        RapidSecurityContext.executeAsSystemUser( () -> {
             ObjectIdentity oi = new ObjectIdentityImpl(clazz, id);
             aclService.deleteAcl(oi, deleteCascade);
         });
@@ -92,7 +91,7 @@ public class RapidAclServiceImpl implements RapidAclService {
 
     @Override
     public void deleteAclOfEntity(IdentifiableEntity<?> entity, boolean deleteCascade) {
-        securityContext.executeAsSystemUser( () -> {
+        RapidSecurityContext.executeAsSystemUser( () -> {
             ObjectIdentity oi = new ObjectIdentityImpl(entity.getClass(), entity.getId());
             aclService.deleteAcl(oi, deleteCascade);
         });
@@ -123,7 +122,7 @@ public class RapidAclServiceImpl implements RapidAclService {
 
     @Override
     public void inheritAces(IdentifiableEntity<?> parent, List<AclCascadeInfo> infos) throws AclNotFoundException {
-        securityContext.executeAsSystemUser( () -> {
+        RapidSecurityContext.executeAsSystemUser( () -> {
             AclCascadeInfo info = getParentInfo(parent, infos);
             if (info == null)
                 return;
@@ -144,7 +143,7 @@ public class RapidAclServiceImpl implements RapidAclService {
 
     @Override
     public void removeAces(IdentifiableEntity<?> parent, List<AclCascadeInfo> infos) throws AclNotFoundException {
-        securityContext.executeAsSystemUser( () -> {
+        RapidSecurityContext.executeAsSystemUser( () -> {
             AclCascadeInfo info = getParentInfo(parent, infos);
             if (info == null)
                 return;
@@ -166,7 +165,7 @@ public class RapidAclServiceImpl implements RapidAclService {
 
     @Override
     public void inheritAces(Collection<? extends IdentifiableEntity<?>> parents, List<AclCascadeInfo> infos) throws AclNotFoundException {
-        securityContext.executeAsSystemUser( () -> {
+        RapidSecurityContext.executeAsSystemUser( () -> {
             for (IdentifiableEntity<?> parent : parents) {
                 inheritAces(parent, infos);
             }
@@ -184,7 +183,7 @@ public class RapidAclServiceImpl implements RapidAclService {
 
     @Override
     public void updateEntriesInheriting(boolean value, IdentifiableEntity<?> child, IdentifiableEntity<?> parent) throws AclNotFoundException {
-        securityContext.executeAsSystemUser( () -> {
+        RapidSecurityContext.executeAsSystemUser( () -> {
             ObjectIdentity childOi = new ObjectIdentityImpl(child.getClass(), child.getId());
             ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
 
@@ -212,7 +211,7 @@ public class RapidAclServiceImpl implements RapidAclService {
 
     @Override
     public void copyParentAces(IdentifiableEntity<?> child, IdentifiableEntity<?> parent, AceFilter aceFilter) throws AclNotFoundException {
-        securityContext.executeAsSystemUser( () -> {
+        RapidSecurityContext.executeAsSystemUser( () -> {
             ObjectIdentity childOi = new ObjectIdentityImpl(child.getClass(), child.getId());
             ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
 
@@ -245,7 +244,7 @@ public class RapidAclServiceImpl implements RapidAclService {
 
     @Override
     public int removeAces(IdentifiableEntity<?> target, AceFilter aceFilter) throws AclNotFoundException {
-        return securityContext.executeAsSystemUser( () -> {
+        return RapidSecurityContext.executeAsSystemUser( () -> {
             ObjectIdentity oi = new ObjectIdentityImpl(target.getClass(), target.getId());
 
             MutableAcl acl = findAcl(oi);
@@ -345,11 +344,6 @@ public class RapidAclServiceImpl implements RapidAclService {
     @Autowired
     public void setAclService(MutableAclService aclService) {
         this.aclService = aclService;
-    }
-
-    @Autowired
-    public void setSecurityContext(RapidSecurityContext securityContext) {
-        this.securityContext = securityContext;
     }
 
 }

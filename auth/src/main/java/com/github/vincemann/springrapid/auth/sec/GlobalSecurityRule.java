@@ -14,5 +14,5 @@ public interface GlobalSecurityRule {
      * you can also return true,false meaning access allowed, denied respectively. Otherwise return null
      */
     @Nullable
-    Boolean checkAccess(IdentifiableEntity<?> entity, Object permission, RapidSecurityContext securityContext);
+    Boolean checkAccess(IdentifiableEntity<?> entity, Object permission);
 }

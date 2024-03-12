@@ -26,12 +26,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
     private AuthorizationTokenService authorizationTokenService;
-    private RapidSecurityContext securityContext;
     private AuthProperties authProperties;
 
-    public JwtAuthenticationFilter(AuthorizationTokenService authorizationTokenService, RapidSecurityContext securityContext, AuthProperties authProperties) {
+    public JwtAuthenticationFilter(AuthorizationTokenService authorizationTokenService, AuthProperties authProperties) {
         this.authorizationTokenService = authorizationTokenService;
-        this.securityContext = securityContext;
         this.authProperties = authProperties;
     }
 
@@ -62,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             try {
                 RapidPrincipal principal = authorizationTokenService.parseToken(token);
-                securityContext.setAuthenticated(principal);
+                RapidSecurityContext.setAuthenticated(principal);
                 log.debug("Token authentication successful");
                 log.debug("Principal: " + principal + " logged in");
 
@@ -79,7 +77,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } else {
             // no token found -> let downstream filters log user in or block this request
             log.debug("No token found in request -> authenticate as anon user");
-            securityContext.setAnonAuthenticated();
+            RapidSecurityContext.setAnonAuthenticated();
         }
         filterChain.doFilter(request, response);
     }

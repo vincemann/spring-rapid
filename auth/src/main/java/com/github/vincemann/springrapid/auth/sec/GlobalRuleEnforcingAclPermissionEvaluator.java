@@ -17,12 +17,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * call {@link GlobalSecurityRule#checkAccess(IdentifiableEntity, Object, RapidSecurityContext)} on each permission evaluation.
+ * call {@link GlobalSecurityRule#checkAccess(IdentifiableEntity, Object)} on each permission evaluation.
  */
 public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermissionEvaluator {
 
     private List<GlobalSecurityRule> globalSecurityRules = new ArrayList<>();
-    private RapidSecurityContext securityContext;
 
     private IdConverter idConverter;
 
@@ -31,10 +30,9 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
 
 
 
-    public GlobalRuleEnforcingAclPermissionEvaluator(AclService aclService, List<GlobalSecurityRule> globalSecurityRules, RapidSecurityContext securityContext) {
+    public GlobalRuleEnforcingAclPermissionEvaluator(AclService aclService, List<GlobalSecurityRule> globalSecurityRules) {
         super(aclService);
         this.globalSecurityRules = globalSecurityRules;
-        this.securityContext = securityContext;
     }
 
     /**
@@ -85,7 +83,7 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
     @Nullable
     public Boolean performGlobalSecurityChecks(IdentifiableEntity<?> entity, Object permission){
         for (GlobalSecurityRule globalSecurityRule : globalSecurityRules) {
-            Boolean allowAccess = globalSecurityRule.checkAccess(entity,permission,securityContext);
+            Boolean allowAccess = globalSecurityRule.checkAccess(entity,permission);
             if (allowAccess != null)
                 return allowAccess;
         }

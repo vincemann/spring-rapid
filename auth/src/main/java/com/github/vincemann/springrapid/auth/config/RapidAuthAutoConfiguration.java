@@ -73,8 +73,8 @@ public class RapidAuthAutoConfiguration {
 
     @ConditionalOnMissingBean(PermissionEvaluator.class)
     @Bean
-    public PermissionEvaluator permissionEvaluator(AclService aclService, @Autowired(required = false) List<GlobalSecurityRule> globalSecurityRules, RapidSecurityContext securityContext){
-        return new GlobalRuleEnforcingAclPermissionEvaluator(aclService,globalSecurityRules,securityContext);
+    public PermissionEvaluator permissionEvaluator(AclService aclService, @Autowired(required = false) List<GlobalSecurityRule> globalSecurityRules){
+        return new GlobalRuleEnforcingAclPermissionEvaluator(aclService,globalSecurityRules);
     }
 
     // there can only be ONE Factory

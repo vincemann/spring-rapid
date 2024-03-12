@@ -11,12 +11,10 @@ import static com.github.vincemann.springrapid.auth.util.PrincipalUtils.isAnon;
 
 public class AuthContextService extends CoreContextService {
 
-    private RapidSecurityContext securityContext;
-
     @Override
     public Map<String, Object> getContext() {
         Map<String, Object> context = super.getContext();
-        RapidPrincipal principal = securityContext.currentPrincipal();
+        RapidPrincipal principal = RapidSecurityContext.currentPrincipal();
         if (principal != null) {
             if (!isAnon(principal)) {
                 RapidPrincipal withoutPw = new RapidPrincipal(principal);
@@ -26,10 +24,5 @@ public class AuthContextService extends CoreContextService {
         }
 
         return context;
-    }
-
-    @Autowired
-    public void setSecurityContext(RapidSecurityContext securityContext) {
-        this.securityContext = securityContext;
     }
 }

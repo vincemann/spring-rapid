@@ -11,7 +11,7 @@ public class DenyBlockedGlobalSecurityRule implements GlobalSecurityRule {
 
     @Nullable
     @Override
-    public Boolean checkAccess(IdentifiableEntity<?> entity, Object permission, RapidSecurityContext securityContext) {
+    public Boolean checkAccess(IdentifiableEntity<?> entity, Object permission) {
         AuthorizationTemplate.assertNotHasRoles(AuthRoles.BLOCKED);
         return null;
     }

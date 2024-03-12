@@ -26,7 +26,6 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	protected AuthProperties properties;
 	protected AuthorizationTokenService authorizationTokenService;
-	protected RapidSecurityContext securityContext;
 	protected RapidAuthenticationSuccessHandler authenticationSuccessHandler;
 	protected BruteForceProtectionConfigurer bruteForceProtectionConfigurer;
 
@@ -152,7 +151,7 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	protected void tokenAuthentication(HttpSecurity http) throws Exception {
 		//needs to be created with new, cant be autowired for some spring internal reasons
-		http.addFilterBefore(new JwtAuthenticationFilter(authorizationTokenService,securityContext,properties),
+		http.addFilterBefore(new JwtAuthenticationFilter(authorizationTokenService,properties),
 				UsernamePasswordAuthenticationFilter.class);
 	}
 
@@ -192,11 +191,6 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	public void setAuthorizationTokenService(AuthorizationTokenService authorizationTokenService) {
 		this.authorizationTokenService = authorizationTokenService;
-	}
-
-	@Autowired
-	public void setSecurityContext(RapidSecurityContext securityContext) {
-		this.securityContext = securityContext;
 	}
 
 	@Autowired

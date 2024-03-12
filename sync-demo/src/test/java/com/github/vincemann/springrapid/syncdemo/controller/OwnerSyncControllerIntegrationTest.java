@@ -53,9 +53,6 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
     @Autowired
     ClinicCardControllerTestTemplate clinicCardController;
 
-    @Autowired
-    RapidSecurityContext securityContext;
-
 
     @Test
     public void givenClientTimestampWasRecordedBeforeCreating_whenFindSyncStatus_thenMarkedAsUpdated() throws Exception {
@@ -212,7 +209,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(owner2SyncStatus.getId(),owner3SyncStatus.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
+        RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
         RapidSecurityContext.clear();
 
@@ -270,7 +267,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(kahnSyncStatus.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
+        RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
         RapidSecurityContext.clear();
 
@@ -330,7 +327,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(owner2SyncStatus.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
+        RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
         RapidSecurityContext.clear();
 
@@ -436,7 +433,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(owner2SyncStatus.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
+        RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
         RapidSecurityContext.clear();
 
@@ -491,7 +488,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(owner3SyncStatus.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
+        RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
         RapidSecurityContext.clear();
 
@@ -545,7 +542,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(kahnSyncStatus.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
+        RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
         RapidSecurityContext.clear();
 
@@ -605,7 +602,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(belloSyncStatus.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
+        RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadPetDto> updatedPets= petController.findSome2xx(idsToSync,ReadPetDto.class);
         RapidSecurityContext.clear();
 
@@ -650,7 +647,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(status.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
+        RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadPetDto> updatedPets= petController.findSome2xx(idsToSync,ReadPetDto.class);
         RapidSecurityContext.clear();
 
@@ -735,7 +732,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(owner.getId().toString());
 
-        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
+        RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
         RapidSecurityContext.clear();
 
@@ -830,7 +827,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 //        EntitySyncStatus status = fetchOwnerSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
         EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
-        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
+        RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
         ReadOwnOwnerDto readOwnOwnerDto = ownerController.find2xx(status.getId(), ReadOwnOwnerDto.class);
         RapidSecurityContext.clear();
 
@@ -876,7 +873,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(status.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
+        RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
         RapidSecurityContext.clear();
 
@@ -926,7 +923,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         Set<String> idsToSync = Sets.newHashSet(status.getId());
 
-        securityContext.setAuthenticated(TestPrincipal.create(KAHN));
+        RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
         Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
         RapidSecurityContext.clear();
 

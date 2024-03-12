@@ -15,7 +15,6 @@ import java.io.Serializable;
 public abstract class AbstractAuthAuditorAware<ID extends Serializable>
 			extends AbstractAuditorAware<ID> {
 
-	private RapidSecurityContext securityContext;
 	private IdConverter<ID> idConverter;
 
 	public AbstractAuthAuditorAware() {
@@ -24,7 +23,7 @@ public abstract class AbstractAuthAuditorAware<ID extends Serializable>
 
 	@Override
 	protected ID currentId() {
-		RapidPrincipal principal = securityContext.currentPrincipal();
+		RapidPrincipal principal = RapidSecurityContext.currentPrincipal();
 		if (principal==null){
 			return null;
 		}
@@ -34,12 +33,6 @@ public abstract class AbstractAuthAuditorAware<ID extends Serializable>
 		}
 		return idConverter.toId(id);
 	}
-
-	@Autowired
-	public void setSecurityContext(RapidSecurityContext securityContext) {
-		this.securityContext = securityContext;
-	}
-
 	@Autowired
 	public void setIdIdConverter(IdConverter<ID> idIdConverter) {
 		this.idConverter = idIdConverter;

@@ -41,8 +41,6 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
     private ApplicationContext applicationContext;
     private PermissionStringConverter permissionStringConverter;
 
-    private RapidSecurityContext securityContext;
-
     public AclTemplateImpl() {
         try {
             this.triggerCheckMethod = AclTemplateImpl.SecurityObject.class.getMethod("triggerCheck");
@@ -70,7 +68,7 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
 
         boolean permitted = _checkPermission(id, clazz, permission);
         if (!permitted) {
-            RapidPrincipal principal = securityContext.currentPrincipal();
+            RapidPrincipal principal = RapidSecurityContext.currentPrincipal();
             String permissionString = permissionStringConverter.convert(permission);
             throw new AccessDeniedException("Permission not Granted! Principal: " + principal.shortToString() +
                     " does not have Permission: " + permissionString + " for entity: {" + clazz.getSimpleName() + ", id: " + id + "}");
@@ -97,7 +95,7 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
 
         boolean permitted = _checkPermission(entity.getId(), entity.getClass(), permission);
         if (!permitted) {
-            RapidPrincipal principal = securityContext.currentPrincipal();
+            RapidPrincipal principal = RapidSecurityContext.currentPrincipal();
             String permissionString = permissionStringConverter.convert(permission);
             throw new AccessDeniedException("Permission not Granted! Principal: " + principal.shortToString() +
                     " does not have Permission: " + permissionString + " for entity: " + entity);
@@ -132,10 +130,4 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
     public void setPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
         this.permissionStringConverter = permissionStringConverter;
     }
-
-    @Autowired
-    public void setSecurityContext(RapidSecurityContext securityContext) {
-        this.securityContext = securityContext;
-    }
-
 }

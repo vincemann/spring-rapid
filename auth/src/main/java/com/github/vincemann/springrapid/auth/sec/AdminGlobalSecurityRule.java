@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 public class AdminGlobalSecurityRule implements GlobalSecurityRule{
 
     @Override
-    public Boolean checkAccess(IdentifiableEntity<?> entity, Object permission, RapidSecurityContext securityContext) {
+    public Boolean checkAccess(IdentifiableEntity<?> entity, Object permission) {
         boolean isAdmin = RapidSecurityContext.getRoles().contains(AuthRoles.ADMIN);
         if (isAdmin)
             return true;

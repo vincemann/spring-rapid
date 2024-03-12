@@ -20,8 +20,6 @@ public class UserAuthTokenServiceImpl implements UserAuthTokenService {
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
     private AuthorizationTokenService authorizationTokenService;
 
-    private RapidSecurityContext securityContext;
-
     public String createNewAuthToken(String contactInformation) throws EntityNotFoundException, BadEntityException {
         VerifyEntity.notEmpty(contactInformation,"contact-information");
         AbstractUser byContactInformation = userService.findPresentByContactInformation(contactInformation);
@@ -31,7 +29,7 @@ public class UserAuthTokenServiceImpl implements UserAuthTokenService {
     public String createNewAuthToken() throws EntityNotFoundException {
         Assert.isTrue(!RapidSecurityContext.getRoles().contains(AuthRoles.ANON),"cannot create token for anon user");
         Assert.isTrue(!RapidSecurityContext.getRoles().contains(AuthRoles.SYSTEM),"cannot create token for system user");
-        RapidPrincipal authenticated = securityContext.currentPrincipal();
+        RapidPrincipal authenticated = RapidSecurityContext.currentPrincipal();
         Assert.isTrue(authenticated != null,"must be authenticated");
         try {
             return createNewAuthToken(authenticated.getName());
@@ -57,9 +55,4 @@ public class UserAuthTokenServiceImpl implements UserAuthTokenService {
         this.authorizationTokenService = authorizationTokenService;
     }
 
-
-    @Autowired
-    public void setSecurityContext(RapidSecurityContext securityContext) {
-        this.securityContext = securityContext;
-    }
 }
