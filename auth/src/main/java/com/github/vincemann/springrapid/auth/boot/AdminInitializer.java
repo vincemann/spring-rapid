@@ -43,8 +43,8 @@ public class AdminInitializer implements CommandLineRunner {
             log.debug(LogMessage.format("registering admin: %s ",admin.getContactInformation()));
 
             // Check if the user already exists
-            Optional<AbstractUser<Serializable>> byContactInformation = userService.findByContactInformation(admin.getContactInformation());
-            if (byContactInformation.isPresent()) {
+            Optional<AbstractUser<Serializable>> saved = userService.findByContactInformation(admin.getContactInformation());
+            if (saved.isPresent()) {
                 log.debug("admin already exists.");
                 Boolean replace = admin.getReplace();
                 if (replace == null){
@@ -53,7 +53,7 @@ public class AdminInitializer implements CommandLineRunner {
                 }
                 if (replace){
                     log.debug("replacing...");
-                    userService.deleteById(byContactInformation.get().getId());
+                    userService.deleteById(saved.get().getId());
                 }else {
                     log.debug("keeping old admin");
                     continue;

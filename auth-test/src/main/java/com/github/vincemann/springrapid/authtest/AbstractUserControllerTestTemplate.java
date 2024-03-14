@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.authtest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
@@ -166,11 +167,11 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
 
-    public MockHttpServletRequestBuilder login(String contactInformation, String password) {
+    public MockHttpServletRequestBuilder login(String contactInformation, String password) throws JsonProcessingException {
+        LoginDto dto = new LoginDto(contactInformation,password);
         return post(getController().getLoginUrl())
-                .param("username", contactInformation)
-                .param("password", password)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
+                .content(serialize(dto))
+                .header("contentType", MediaType.APPLICATION_JSON);
     }
 
     public MockHttpServletRequestBuilder findByContactInformation(String contactInformation) throws Exception {

@@ -1,10 +1,11 @@
 package com.github.vincemann.springrapid.auth.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vincemann.springrapid.auth.AuthProperties;
+import com.github.vincemann.springrapid.auth.framework.CustomLoginConfigurer;
 import com.github.vincemann.springrapid.auth.handler.RapidAuthenticationSuccessHandler;
 import com.github.vincemann.springrapid.auth.sec.JwtAuthenticationFilter;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -28,6 +29,8 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected AuthorizationTokenService authorizationTokenService;
 	protected RapidAuthenticationSuccessHandler authenticationSuccessHandler;
 	protected BruteForceProtectionConfigurer bruteForceProtectionConfigurer;
+
+	protected ObjectMapper objectMapper;
 
 	public RapidWebSecurityConfig() {
 
@@ -62,19 +65,9 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 			http.apply(bruteForceProtectionConfigurer);
 	}
 
-//	protected void disableFilterForLogin(WebSecurity web){
-//		web.antMatchers(loginPage()).per
-//	}
 
-	/**
-	 * Configuring authentication.
-	 */
-	protected void login(HttpSecurity http) throws Exception {
 
-		http
-				.formLogin() // form login
-				.loginPage(loginPage())
-				// make sure to enable Spring Security when testing with mvc
+	// make sure to enable Spring Security when testing with mvc
 				/*
 
 				@Override
@@ -84,22 +77,22 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 					return mvcBuilder;
 				}
 				 */
-
-				/******************************************
-				 * Setting a successUrl would redirect the user there. Instead,
-				 * let's send 200 and the userDto along with an Authorization token.
-				 *****************************************/
+	/**
+	 * Configuring authentication.
+	 */
+	protected void login(HttpSecurity http) throws Exception {
+		// using custom login configurer here to allow safer authentication by sending credentials in body
+		http.apply(new CustomLoginConfigurer<>(objectMapper))
+				.loginPage(loginPage())
+				.loginProcessingUrl(loginProcessingUrl())
 				.successHandler(authenticationSuccessHandler)
-
-				/*******************************************
-				 * Setting the failureUrl will redirect the user to
-				 * that url if login fails. Instead, we need to send
-				 * 401. So, let's set failureHandler instead.
-				 *******************************************/
 				.failureHandler(new SimpleUrlAuthenticationFailureHandler());
 	}
 
 
+	protected String loginProcessingUrl(){
+		return properties.getController().getLoginUrl();
+	}
 	/**
 	 * Override this to change login URL
 	 *
@@ -201,6 +194,11 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	public void setAuthenticationSuccessHandler(RapidAuthenticationSuccessHandler authenticationSuccessHandler) {
 		this.authenticationSuccessHandler = authenticationSuccessHandler;
+	}
+
+	@Autowired
+	public void setObjectMapper(ObjectMapper objectMapper) {
+		this.objectMapper = objectMapper;
 	}
 
 	@Autowired(required = false)
