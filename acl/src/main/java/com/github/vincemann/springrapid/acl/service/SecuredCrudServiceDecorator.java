@@ -15,6 +15,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.BasePermission;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,7 +37,7 @@ public class SecuredCrudServiceDecorator
 
     private AclTemplate aclTemplate;
 
-    private List<FilterRule> filterRules;
+    private List<FilterRule> filterRules = new ArrayList<>();
 
     public SecuredCrudServiceDecorator(S decorated) {
         super(decorated);
@@ -108,10 +109,7 @@ public class SecuredCrudServiceDecorator
         for (WebExtension<? super E> filter : filters) {
             for (FilterRule rule : filterRules) {
                 if (rule.getClazz().equals(filter.getClass())){
-                    if (!rule.test(filter)){
-                        throw new AccessDeniedException("filter rule: " + rule.getClass().getSimpleName()
-                                + " is violated. " + rule.getDescription());
-                    }
+                    rule.apply(filter);
                 }
             }
         }
