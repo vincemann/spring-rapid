@@ -188,9 +188,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	public ResponseEntity<String> findByContactInformation(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
 		String contactInformation = readRequestParam(request, "ci");
 		log.debug(LogMessage.format("received find by contact information request for: %s",contactInformation));
-		Optional<U> byContactInformation = getService().findByContactInformation(contactInformation);
-		VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+contactInformation+" not found");
-		U user = byContactInformation.get();
+		U user = getService().findPresentByContactInformation(contactInformation);
 		Object responseDto = getDtoMapper().mapToDto(user,
 				createDtoClass(getFindByContactInformationUrl(), Direction.RESPONSE,request, user));
 		return ok(getObjectMapper().writeValueAsString(responseDto));

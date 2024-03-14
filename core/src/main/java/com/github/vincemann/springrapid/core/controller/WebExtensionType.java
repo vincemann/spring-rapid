@@ -11,12 +11,19 @@ public enum WebExtensionType {
     SORTING;
 
     public static WebExtensionType get(WebExtension<?> extension){
-        if (extension instanceof QueryFilter)
+       return get(extension.getClass());
+    }
+
+    public static WebExtensionType get(Class<?> clazz){
+        if (QueryFilter.class.isAssignableFrom(clazz)){
             return WebExtensionType.QUERY_FILTER;
-        if (extension instanceof EntityFilter)
+        }
+        if (EntityFilter.class.isAssignableFrom(clazz)){
             return WebExtensionType.ENTITY_FILTER;
-        if (extension instanceof SortingExtension)
+        }
+        if (SortingExtension.class.isAssignableFrom(clazz)){
             return WebExtensionType.SORTING;
-        throw new IllegalArgumentException("unknown extension type: " + extension.getClass());
+        }
+        throw new IllegalArgumentException("unknown extension type: " + clazz);
     }
 }
