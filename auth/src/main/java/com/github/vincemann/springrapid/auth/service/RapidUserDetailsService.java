@@ -5,11 +5,8 @@ import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
 
 
-
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.Message;
-import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,40 +16,33 @@ import java.util.Optional;
 
 /**
  * UserDetailsService, as required by Spring Security.
- * 
  */
 public class RapidUserDetailsService
-		implements UserDetailsService {
+        implements UserDetailsService {
 
-	private UserService userService;
-	private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
+    private UserService userService;
+    private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
 
 
-	@Transactional
-	@Override
-	public RapidPrincipal loadUserByUsername(String contactInformation) throws UsernameNotFoundException {
-		AbstractUser<?> user;
-		try {
-			Optional<AbstractUser<?>> byContactInformation = userService.findByContactInformation(contactInformation);
-			VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+contactInformation+" not found");
-			user = byContactInformation.get();
-		} catch (EntityNotFoundException e) {
-			throw new UsernameNotFoundException(
-					Message.get("com.github.vincemann.userNotFound", contactInformation)
-					,e);
-		}
+    @Transactional
+    @Override
+    public RapidPrincipal loadUserByUsername(String contactInformation) throws UsernameNotFoundException {
+        Optional<AbstractUser<?>> user = userService.findByContactInformation(contactInformation);
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException(
+                    Message.get("com.github.vincemann.userNotFound", contactInformation));
+        }
+        return authenticatedPrincipalFactory.create(user.get());
+    }
 
-		return authenticatedPrincipalFactory.create(user);
-	}
+    @Autowired
+    public void setAuthenticatedPrincipalFactory(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {
+        this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
+    }
 
-	@Autowired
-	public void setPrincipalUserConverter(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {
-		this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
-	}
-
-	@Autowired
-	@Root
-	public void setUserService(UserService userService) {
-		this.userService = userService;
-	}
+    @Autowired
+    @Root
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 }

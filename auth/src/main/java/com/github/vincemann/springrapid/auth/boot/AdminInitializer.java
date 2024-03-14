@@ -37,7 +37,7 @@ public class AdminInitializer implements CommandLineRunner {
     }
 
 
-    protected void signupAdmins() throws BadEntityException, AlreadyRegisteredException, EntityNotFoundException {
+    public void signupAdmins() throws BadEntityException, AlreadyRegisteredException, EntityNotFoundException {
         List<AuthProperties.Admin> admins = authProperties.getAdmins();
         for (AuthProperties.Admin admin : admins) {
             log.debug(LogMessage.format("registering admin: %s ",admin.getContactInformation()));

@@ -283,6 +283,15 @@ public class AuthProperties {
 		public void setReplace(Boolean replace) {
 			this.replace = replace;
 		}
+
+		@Override
+		public String toString() {
+			return "Admin{" +
+					"contactInformation='" + contactInformation + '\'' +
+					", password='" + password + '\'' +
+					", replace=" + replace +
+					'}';
+		}
 	}
 	
 	/**
