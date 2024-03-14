@@ -101,7 +101,6 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator {
             // Lookup only ACL for SIDs we're interested in
             Acl acl = aclService.readAclById(oid, sids);
             if (log.isDebugEnabled()) {
-                log.debug("acl of oid:");
                 AclUtils.logAcl(acl, log);
             }
 
@@ -119,6 +118,7 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator {
         } catch (NotFoundException nfe) {
             if (log.isDebugEnabled()) {
                 log.debug(LogMessage.format("No acl found for oid: '%s'",AclUtils.objectIdentityToString(oid)));
+                log.debug("details: " + nfe.getMessage());
                 log.debug("Access not granted");
             }
         }

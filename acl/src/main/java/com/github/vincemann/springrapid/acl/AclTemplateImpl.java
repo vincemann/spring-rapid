@@ -45,7 +45,7 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
         try {
             this.triggerCheckMethod = AclTemplateImpl.SecurityObject.class.getMethod("triggerCheck");
         } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException(e);
+            throw new RuntimeException(e);
         }
         parser = new SpelExpressionParser();
     }

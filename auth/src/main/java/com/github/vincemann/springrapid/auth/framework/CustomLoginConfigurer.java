@@ -12,7 +12,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 public class CustomLoginConfigurer<H extends HttpSecurityBuilder<H>> extends
-        AbstractAuthenticationFilterConfigurer<H, CustomLoginConfigurer<H>, UsernamePasswordAuthenticationFilter> {
+        AbstractAuthenticationFilterConfigurer<H, CustomLoginConfigurer<H>, UsernamePasswordAuthenticationFilter>
+{
 
 
     public CustomLoginConfigurer(ObjectMapper mapper) {
