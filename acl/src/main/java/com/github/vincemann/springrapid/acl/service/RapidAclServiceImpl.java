@@ -320,8 +320,11 @@ public class RapidAclServiceImpl implements RapidAclService {
         for (AccessControlEntry ace : parentAcl.getEntries()) {
             for (AceFilterMapping filterMapping : filterMappings) {
                 if (filterMapping.getFilter().test(ace)){
-                    if (!AclUtils.isAcePresent(ace, childAcl))
-                        childAcl.insertAce(childAcl.getEntries().size(), filterMapping.getPermission(), filterMapping.getSid(), ace.isGranting());
+                    if (!AclUtils.isAcePresent(ace, childAcl)){
+                        Permission permission = filterMapping.getPermission() == null ? ace.getPermission() : filterMapping.getPermission();
+                        Sid sid = (filterMapping.getSid() == null) ? ace.getSid() : filterMapping.getSid();
+                        childAcl.insertAce(childAcl.getEntries().size(), permission, sid, ace.isGranting());
+                    }
                 }
             }
         }

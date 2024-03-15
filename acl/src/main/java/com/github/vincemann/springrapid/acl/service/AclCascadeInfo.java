@@ -21,10 +21,11 @@ public class AclCascadeInfo<S extends IdentifiableEntity,T extends IdentifiableE
 
 
     public AclCascadeInfo(Class<S> source, Predicate<S> sourceFilter, Predicate<T> targetFilter, Predicate<AccessControlEntry> aceFilter, TargetSupplier<S,T> target) {
-        if (source == null)
-            this.source = (Class<S>) GenericTypeResolver.resolveTypeArguments(this.getClass(),AclCascadeInfo.class)[0];
-        else
-            this.source = source;
+//        if (source == null)
+//            this.source = (Class<S>) GenericTypeResolver.resolveTypeArguments(this.getClass(),AclCascadeInfo.class)[0];
+//        else
+//            this.source = source;
+        this.source = source;
         this.sourceFilter = sourceFilter;
         this.target = target;
         this.targetFilter = targetFilter;
@@ -128,7 +129,7 @@ public class AclCascadeInfo<S extends IdentifiableEntity,T extends IdentifiableE
         }
 
         public AclCascadeInfo<S,T> build() {
-            return new AclCascadeInfo<S,T>(source,sourceFilter, targetFilter, aceFilter, targetSupplier);
+            return new AclCascadeInfo<>(source,sourceFilter, targetFilter, aceFilter, targetSupplier);
         }
     }
 }
