@@ -7,6 +7,7 @@ import org.springframework.security.acls.model.Permission;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public interface RapidAclService {
@@ -37,6 +38,7 @@ public interface RapidAclService {
     void updateEntriesInheriting(boolean value, IdentifiableEntity<?> child, IdentifiableEntity<?> parent) throws AclNotFoundException;
 
     void copyParentAces(IdentifiableEntity<?> child, IdentifiableEntity<?> parent, Predicate<AccessControlEntry> filter) throws AclNotFoundException;
+    void copyParentAces(IdentifiableEntity<?> child, IdentifiableEntity<?> parent, AceFilterMapping... filterMappings) throws AclNotFoundException;
 
     int removeAces(IdentifiableEntity<?> target, Predicate<AccessControlEntry> aceFilter) throws AclNotFoundException;
 }

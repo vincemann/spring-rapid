@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.acl.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.util.Assert;
@@ -16,25 +15,25 @@ public class AclCascadeInfo<S extends IdentifiableEntity,T extends IdentifiableE
 
     private Class<S> source;
     private Predicate<S> sourceFilter;
-    private TargetSupplier<S,T> targetSupplier;
+    private TargetSupplier<S,T> target;
     private Predicate<T> targetFilter;
     private Predicate<AccessControlEntry> aceFilter;
 
 
-    public AclCascadeInfo(Class<S> source, Predicate<S> sourceFilter, Predicate<T> targetFilter, Predicate<AccessControlEntry> aceFilter, TargetSupplier<S,T> targetSupplier) {
+    public AclCascadeInfo(Class<S> source, Predicate<S> sourceFilter, Predicate<T> targetFilter, Predicate<AccessControlEntry> aceFilter, TargetSupplier<S,T> target) {
         if (source == null)
             this.source = (Class<S>) GenericTypeResolver.resolveTypeArguments(this.getClass(),AclCascadeInfo.class)[0];
         else
             this.source = source;
         this.sourceFilter = sourceFilter;
-        this.targetSupplier = targetSupplier;
+        this.target = target;
         this.targetFilter = targetFilter;
         this.aceFilter = aceFilter;
     }
 
     public Collection<T> getTargetCollection(S parent){
-        Assert.notNull(targetSupplier,"no target supplier set for cascade info: " + this);
-        return targetSupplier.get(parent);
+        Assert.notNull(target,"no target supplier set for cascade info: " + this);
+        return target.get(parent);
 
     }
 
@@ -69,8 +68,8 @@ public class AclCascadeInfo<S extends IdentifiableEntity,T extends IdentifiableE
         return sourceFilter;
     }
 
-    public TargetSupplier<S,T> getTargetSupplier() {
-        return targetSupplier;
+    public TargetSupplier<S,T> getTarget() {
+        return target;
     }
 
     public Predicate<T> getTargetFilter() {
@@ -88,7 +87,7 @@ public class AclCascadeInfo<S extends IdentifiableEntity,T extends IdentifiableE
                 '}';
     }
 
-    public static <S,T> Builder<S,T> builder(){
+    public static <S extends IdentifiableEntity,T extends IdentifiableEntity> Builder<S,T> builder(){
         return new Builder<>();
     }
 
@@ -113,7 +112,7 @@ public class AclCascadeInfo<S extends IdentifiableEntity,T extends IdentifiableE
             return this;
         }
 
-        public Builder<S,T> targetSupplier(TargetSupplier<S, T> targetSupplier) {
+        public Builder<S,T> target(TargetSupplier<S, T> targetSupplier) {
             this.targetSupplier = targetSupplier;
             return this;
         }

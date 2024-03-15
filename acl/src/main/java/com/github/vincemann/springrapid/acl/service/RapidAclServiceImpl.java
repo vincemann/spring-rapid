@@ -247,6 +247,39 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
+    public void copyParentAces(IdentifiableEntity<?> child, IdentifiableEntity<?> parent, AceFilterMapping... filterMappings) throws AclNotFoundException {
+        RapidSecurityContext.executeAsSystemUser( () -> {
+            ObjectIdentity childOi = new ObjectIdentityImpl(child.getClass(), child.getId());
+            ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
+
+            MutableAcl childAcl = findOrCreateAcl(childOi);
+            MutableAcl parentAcl = findAcl(parentOi);
+
+            if (log.isTraceEnabled()) {
+                log.trace("child acl of entity before copying: ");
+//            log.debug(AclUtils.aclToString(childAcl));
+                AclUtils.logAcl(childAcl, log);
+            }
+
+            if (log.isTraceEnabled()) {
+
+                log.trace("inheriting from parent acl: ");
+                AclUtils.logAcl(parentAcl, log);
+            }
+
+
+            copyMatchingAces(parentAcl, childAcl, filterMappings);
+
+
+            if (log.isDebugEnabled()) {
+                log.debug("updated acl:");
+                AclUtils.logAcl(childAcl, log);
+            }
+            aclService.updateAcl(childAcl);
+        });
+    }
+
+    @Override
     public int removeAces(IdentifiableEntity<?> target, Predicate<AccessControlEntry> aceFilter) throws AclNotFoundException {
         return RapidSecurityContext.executeAsSystemUser( () -> {
             ObjectIdentity oi = new ObjectIdentityImpl(target.getClass(), target.getId());
@@ -279,6 +312,17 @@ public class RapidAclServiceImpl implements RapidAclService {
             if (aceFilter.test(ace)) {
                 if (!AclUtils.isAcePresent(ace, childAcl))
                     childAcl.insertAce(childAcl.getEntries().size(), ace.getPermission(), ace.getSid(), ace.isGranting());
+            }
+        }
+    }
+
+    protected void copyMatchingAces(MutableAcl parentAcl, MutableAcl childAcl, AceFilterMapping... filterMappings) {
+        for (AccessControlEntry ace : parentAcl.getEntries()) {
+            for (AceFilterMapping filterMapping : filterMappings) {
+                if (filterMapping.getFilter().test(ace)){
+                    if (!AclUtils.isAcePresent(ace, childAcl))
+                        childAcl.insertAce(childAcl.getEntries().size(), filterMapping.getPermission(), filterMapping.getSid(), ace.isGranting());
+                }
             }
         }
     }
