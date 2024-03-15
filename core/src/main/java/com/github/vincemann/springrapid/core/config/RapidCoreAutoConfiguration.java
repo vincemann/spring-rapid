@@ -55,7 +55,7 @@ public class RapidCoreAutoConfiguration {
     public CoreProperties coreProperties(){
         return new CoreProperties();
     }
-    
+
 
     @ConditionalOnMissingBean(name = "rapidSecurityAuditorAware")
     @Bean
