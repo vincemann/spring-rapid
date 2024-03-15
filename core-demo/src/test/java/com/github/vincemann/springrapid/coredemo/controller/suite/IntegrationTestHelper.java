@@ -13,25 +13,15 @@ import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.pet.ReadPetDto;
 import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.coredemo.service.*;
-import com.github.vincemann.springrapid.coretest.MvcAware;
+import com.github.vincemann.springrapid.coretest.controller.MvcAware;
 import com.github.vincemann.springrapid.coretest.TestMethodInitializable;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
-import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Component

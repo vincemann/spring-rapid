@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coretest.controller.template;
 
-import com.github.vincemann.springrapid.coretest.MvcAware;
+import com.github.vincemann.springrapid.coretest.controller.MvcAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;

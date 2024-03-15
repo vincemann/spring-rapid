@@ -1,9 +1,13 @@
 package com.github.vincemann.springrapid.core.config;
 
+import com.github.vincemann.springrapid.core.controller.UrlParamWebExtensionParser;
+import com.github.vincemann.springrapid.core.controller.WebExtensionParser;
 import com.github.vincemann.springrapid.core.controller.dto.DtoValidationStrategy;
 import com.github.vincemann.springrapid.core.controller.dto.MergeUpdateStrategy;
 import com.github.vincemann.springrapid.core.controller.dto.MergeUpdateStrategyImpl;
 import com.github.vincemann.springrapid.core.controller.dto.map.JavaXDtoValidationStrategy;
+import com.github.vincemann.springrapid.core.controller.dto.map.PrincipalFactory;
+import com.github.vincemann.springrapid.core.controller.dto.map.PrincipalFactoryImpl;
 import com.github.vincemann.springrapid.core.controller.id.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.id.LongUrlParamIdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.json.patch.ExtendedRemoveJsonPatchStrategy;
@@ -22,6 +26,18 @@ public class RapidCrudControllerAutoConfiguration {
 
     public RapidCrudControllerAutoConfiguration() {
 
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PrincipalFactory.class)
+    public PrincipalFactory principalFactory(){
+        return new PrincipalFactoryImpl();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(WebExtensionParser.class)
+    public WebExtensionParser webExtensionParser(){
+        return new UrlParamWebExtensionParser();
     }
 
     @Bean

@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.coretest.controller;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
-import com.github.vincemann.springrapid.coretest.MvcAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

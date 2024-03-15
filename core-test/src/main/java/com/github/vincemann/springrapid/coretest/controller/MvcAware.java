@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coretest;
+package com.github.vincemann.springrapid.coretest.controller;
 
 import org.springframework.test.web.servlet.MockMvc;
 

@@ -19,7 +19,7 @@ import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.coretest.MvcAware;
+import com.github.vincemann.springrapid.coretest.controller.MvcAware;
 import com.github.vincemann.springrapid.coretest.TestMethodInitializable;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -21,8 +21,6 @@ public class RapidServiceAutoConfiguration {
     @Autowired(required = false)
     EntityManager entityManager;
 
-
-
     @Bean
     @ConditionalOnMissingBean(CrudServiceLocator.class)
     public CrudServiceLocator crudServiceLocator(){

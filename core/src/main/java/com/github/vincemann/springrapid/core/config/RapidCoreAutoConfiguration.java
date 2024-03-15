@@ -55,24 +55,7 @@ public class RapidCoreAutoConfiguration {
     public CoreProperties coreProperties(){
         return new CoreProperties();
     }
-
-    @Bean
-    @ConditionalOnMissingBean(WebExtensionParser.class)
-    public WebExtensionParser webExtensionParser(){
-        return new UrlParamWebExtensionParser();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(ContextService.class)
-    public ContextService contextService(){
-        return new CoreContextService();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(PrincipalFactory.class)
-    public PrincipalFactory principalFactory(){
-        return new PrincipalFactoryImpl();
-    }
+    
 
     @ConditionalOnMissingBean(name = "rapidSecurityAuditorAware")
     @Bean
