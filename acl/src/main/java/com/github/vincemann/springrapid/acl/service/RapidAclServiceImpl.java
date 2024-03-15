@@ -16,6 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static com.github.vincemann.springrapid.acl.service.AceFilters.*;
 
 /**
  * Api for managing acl data.
@@ -126,13 +130,13 @@ public class RapidAclServiceImpl implements RapidAclService {
             AclCascadeInfo info = getParentInfo(parent, infos);
             if (info == null)
                 return;
-            EntityFilter filter = info.getSourceFilter();
+            Predicate filter = info.getSourceFilter();
             if (filter != null) {
-                if (!filter.matches(parent)) {
+                if (!filter.test(parent)) {
                     return;
                 }
             }
-            Collection<IdentifiableEntity<?>> children = getAclChildren(parent, info);
+            Collection<? extends IdentifiableEntity> children = getAclChildren(parent, info);
             for (IdentifiableEntity<?> child : children) {
                 copyParentAces(child, parent, info.getAceFilter());
                 // recursion
@@ -147,14 +151,14 @@ public class RapidAclServiceImpl implements RapidAclService {
             AclCascadeInfo info = getParentInfo(parent, infos);
             if (info == null)
                 return;
-            EntityFilter filter = info.getSourceFilter();
+            Predicate filter = info.getSourceFilter();
             if (filter != null) {
-                if (!filter.matches(parent)) {
+                if (!filter.test(parent)) {
                     return;
                 }
             }
-            Collection<IdentifiableEntity<?>> children = getAclChildren(parent, info);
-            for (IdentifiableEntity<?> child : children) {
+            Collection<? extends IdentifiableEntity> children = getAclChildren(parent, info);
+            for (IdentifiableEntity child : children) {
                 // cannot work with check if all acl entries deleted, bc I cant know how many should be deleted
                 removeAces(child, info.getAceFilter());
                 // recursion
@@ -172,11 +176,11 @@ public class RapidAclServiceImpl implements RapidAclService {
         });
     }
 
-    protected Collection<IdentifiableEntity<?>> getAclChildren(IdentifiableEntity<?> parent, AclCascadeInfo info) {
-        Collection<IdentifiableEntity<?>> children = info.getTargetCollection(parent);
-        EntityFilter filter = info.getTargetFilter();
+    protected Collection<? extends IdentifiableEntity> getAclChildren(IdentifiableEntity<?> parent, AclCascadeInfo info) {
+        Collection<? extends IdentifiableEntity> children = info.getTargetCollection(parent);
+        Predicate filter = info.getTargetFilter();
         if (filter != null)
-            return filter.apply(children);
+            return (Collection<? extends IdentifiableEntity>) children.stream().filter(filter).collect(Collectors.toList());
         else
             return children;
     }
@@ -210,7 +214,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void copyParentAces(IdentifiableEntity<?> child, IdentifiableEntity<?> parent, AceFilter aceFilter) throws AclNotFoundException {
+    public void copyParentAces(IdentifiableEntity<?> child, IdentifiableEntity<?> parent, Predicate<AccessControlEntry> aceFilter) throws AclNotFoundException {
         RapidSecurityContext.executeAsSystemUser( () -> {
             ObjectIdentity childOi = new ObjectIdentityImpl(child.getClass(), child.getId());
             ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
@@ -243,7 +247,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public int removeAces(IdentifiableEntity<?> target, AceFilter aceFilter) throws AclNotFoundException {
+    public int removeAces(IdentifiableEntity<?> target, Predicate<AccessControlEntry> aceFilter) throws AclNotFoundException {
         return RapidSecurityContext.executeAsSystemUser( () -> {
             ObjectIdentity oi = new ObjectIdentityImpl(target.getClass(), target.getId());
 
@@ -267,12 +271,12 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     /**
-     * Copy all aces from parentAcl to childAcl that match aceFilter: {@link AceFilter#matches(AccessControlEntry)}
+     * Copy all aces from parentAcl to childAcl that match aceFilter
      * and are not already present in childAcl.
      */
-    protected void copyMatchingAces(MutableAcl parentAcl, MutableAcl childAcl, AceFilter aceFilter) {
+    protected void copyMatchingAces(MutableAcl parentAcl, MutableAcl childAcl, Predicate<AccessControlEntry> aceFilter) {
         for (AccessControlEntry ace : parentAcl.getEntries()) {
-            if (aceFilter.matches(ace)) {
+            if (aceFilter.test(ace)) {
                 if (!AclUtils.isAcePresent(ace, childAcl))
                     childAcl.insertAce(childAcl.getEntries().size(), ace.getPermission(), ace.getSid(), ace.isGranting());
             }
@@ -313,17 +317,18 @@ public class RapidAclServiceImpl implements RapidAclService {
 
         boolean principalsOnly = !(sid instanceof GrantedAuthoritySid);
 
-        int removed = removeAces(targetObj, AceFilter.builder()
-                .sid(AclUtils.sidToString(sid))
-                .principalsOnly(principalsOnly)
-                .permissions(permissions)
-                .build());
+        Predicate<AccessControlEntry> filter = sids(sid)
+                .and(permissions(permissions));
+        if (principalsOnly)
+            filter = filter.and(principalsOnly());
+
+        int removed = removeAces(targetObj, filter);
 
         if (removed != permissions.length && !ignoreNotFound)
             throw new AceNotFoundException("Cant remove permissions: " + AclUtils.permissionsToString(permissions) + " for sid: " + AclUtils.sidToString(sid) + " on target: " + targetObj + ", bc not all matching aces found");
     }
 
-    protected int removeAces(MutableAcl acl, AceFilter aceFilter) {
+    protected int removeAces(MutableAcl acl, Predicate<AccessControlEntry> aceFilter) {
         // create new list here, so I dont create concurrent modification down below - there is no exception, but it does not seem safe
         List<AccessControlEntry> aces = new ArrayList<>(acl.getEntries());
         Iterator<AccessControlEntry> aceIterator = aces.iterator();
@@ -331,7 +336,7 @@ public class RapidAclServiceImpl implements RapidAclService {
         int index = 0;
         while (aceIterator.hasNext()) {
             AccessControlEntry ace = aceIterator.next();
-            if (aceFilter.matches(ace)) {
+            if (aceFilter.test(ace)) {
                 acl.deleteAce(index - removed);
                 removed++;
             }

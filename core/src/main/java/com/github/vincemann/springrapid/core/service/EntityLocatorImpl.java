@@ -20,7 +20,7 @@ public class EntityLocatorImpl implements EntityLocator {
     public <E extends IdentifiableEntity> Optional<E> findEntity(Class clazz, Serializable id) {
         Assert.notNull(id,"id must not be null");
         CrudService service = crudServiceLocator.find((Class<IdentifiableEntity>) clazz);
-        Assert.notNull(service,"no service found for entity with id " + id + " and clazz: " + clazz.getSimpleName());
+        Assert.notNull(service,"no service found for entity clazz: " + clazz.getSimpleName());
         return service.findById(id);
     }
 

@@ -2,31 +2,37 @@ package com.github.vincemann.springrapid.acl.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 
+import org.springframework.core.GenericTypeResolver;
+import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.function.Predicate;
 
 
-public class AclCascadeInfo {
+public class AclCascadeInfo<S extends IdentifiableEntity,T extends IdentifiableEntity> {
 
-    private Class<?> source;
-    private EntityFilter<?> sourceFilter;
-    private TargetSupplier targetSupplier;
-    private EntityFilter<?> targetFilter;
-    private AceFilter aceFilter;
+    private Class<S> source;
+    private Predicate<S> sourceFilter;
+    private TargetSupplier<S,T> targetSupplier;
+    private Predicate<T> targetFilter;
+    private Predicate<AccessControlEntry> aceFilter;
 
 
-    public AclCascadeInfo(Class<?> source, EntityFilter<?> sourceFilter, EntityFilter<?> targetFilter, AceFilter aceFilter, TargetSupplier targetSupplier) {
-        this.source = source;
+    public AclCascadeInfo(Class<S> source, Predicate<S> sourceFilter, Predicate<T> targetFilter, Predicate<AccessControlEntry> aceFilter, TargetSupplier<S,T> targetSupplier) {
+        if (source == null)
+            this.source = (Class<S>) GenericTypeResolver.resolveTypeArguments(this.getClass(),AclCascadeInfo.class)[0];
+        else
+            this.source = source;
         this.sourceFilter = sourceFilter;
         this.targetSupplier = targetSupplier;
         this.targetFilter = targetFilter;
         this.aceFilter = aceFilter;
     }
 
-    public Collection<IdentifiableEntity<?>> getTargetCollection(IdentifiableEntity<?> parent){
+    public Collection<T> getTargetCollection(S parent){
         Assert.notNull(targetSupplier,"no target supplier set for cascade info: " + this);
         return targetSupplier.get(parent);
 
@@ -59,23 +65,21 @@ public class AclCascadeInfo {
         return source;
     }
 
-    public EntityFilter<?> getSourceFilter() {
+    public Predicate<S> getSourceFilter() {
         return sourceFilter;
     }
 
-    public TargetSupplier getTargetSupplier() {
+    public TargetSupplier<S,T> getTargetSupplier() {
         return targetSupplier;
     }
 
-    public EntityFilter<?> getTargetFilter() {
+    public Predicate<T> getTargetFilter() {
         return targetFilter;
     }
 
-    public AceFilter getAceFilter() {
+    public Predicate<AccessControlEntry> getAceFilter() {
         return aceFilter;
     }
-
-
 
     @Override
     public String toString() {
@@ -84,47 +88,48 @@ public class AclCascadeInfo {
                 '}';
     }
 
-    public static final class Builder {
-        private Class<?> source;
-        private EntityFilter<?> sourceFilter;
-        private TargetSupplier targetSupplier;
-        private EntityFilter<?> targetFilter;
-        private AceFilter aceFilter;
+    public static <S,T> Builder<S,T> builder(){
+        return new Builder<>();
+    }
+
+    public static final class Builder<S extends IdentifiableEntity,T extends IdentifiableEntity> {
+        private Class<S> source;
+        private Predicate<S> sourceFilter;
+        private TargetSupplier<S, T> targetSupplier;
+        private Predicate<T> targetFilter;
+        private Predicate<AccessControlEntry> aceFilter;
 
         private Builder() {
         }
 
-        public static Builder builder() {
-            return new Builder();
-        }
 
-        public Builder source(Class<?> source) {
+        public Builder<S,T> source(Class<S> source) {
             this.source = source;
             return this;
         }
 
-        public Builder sourceFilter(EntityFilter<?> sourceFilter) {
+        public Builder<S,T> sourceFilter(Predicate<S> sourceFilter) {
             this.sourceFilter = sourceFilter;
             return this;
         }
 
-        public Builder targetSupplier(TargetSupplier<?> targetSupplier) {
+        public Builder<S,T> targetSupplier(TargetSupplier<S, T> targetSupplier) {
             this.targetSupplier = targetSupplier;
             return this;
         }
 
-        public Builder targetFilter(EntityFilter<?> targetFilter) {
+        public Builder<S,T> targetFilter(Predicate<T> targetFilter) {
             this.targetFilter = targetFilter;
             return this;
         }
 
-        public Builder aceFilter(AceFilter aceFilter) {
+        public Builder<S,T> aceFilter(Predicate<AccessControlEntry> aceFilter) {
             this.aceFilter = aceFilter;
             return this;
         }
 
-        public AclCascadeInfo build() {
-            return new AclCascadeInfo(source, sourceFilter, targetFilter, aceFilter, targetSupplier);
+        public AclCascadeInfo<S,T> build() {
+            return new AclCascadeInfo<S,T>(source,sourceFilter, targetFilter, aceFilter, targetSupplier);
         }
     }
 }

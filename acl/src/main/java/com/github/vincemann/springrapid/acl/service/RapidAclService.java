@@ -1,11 +1,13 @@
 package com.github.vincemann.springrapid.acl.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.security.acls.model.Permission;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 
 public interface RapidAclService {
 
@@ -34,7 +36,7 @@ public interface RapidAclService {
 
     void updateEntriesInheriting(boolean value, IdentifiableEntity<?> child, IdentifiableEntity<?> parent) throws AclNotFoundException;
 
-    void copyParentAces(IdentifiableEntity<?> child, IdentifiableEntity<?> parent, AceFilter aceFilter) throws AclNotFoundException;
+    void copyParentAces(IdentifiableEntity<?> child, IdentifiableEntity<?> parent, Predicate<AccessControlEntry> filter) throws AclNotFoundException;
 
-    int removeAces(IdentifiableEntity<?> target, AceFilter aceFilter) throws AclNotFoundException;
+    int removeAces(IdentifiableEntity<?> target, Predicate<AccessControlEntry> aceFilter) throws AclNotFoundException;
 }
