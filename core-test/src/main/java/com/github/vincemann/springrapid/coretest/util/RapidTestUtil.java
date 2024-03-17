@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.coretest.util;
 
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
+import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.WebExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
@@ -35,6 +36,7 @@ public class RapidTestUtil {
         context.setAuthentication(authentication);
         return context;
     }
+
 
     public static String[] dtoIdProperties(Class<?> entityClass) {
         List<String> idFields = new ArrayList<>();
