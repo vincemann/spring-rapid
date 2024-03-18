@@ -52,7 +52,7 @@ public class JsonDtoPropertyValidatorImpl implements JsonDtoPropertyValidator {
             String dtoProperty = propertyNameIterator.next();
             if (!dtoClassFieldNames.contains(dtoProperty)) {
                 // property not allowed
-                throw new org.springframework.security.access.AccessDeniedException("Dto Property: " + dtoProperty + " is not allowed for this operation");
+                throw new org.springframework.security.access.AccessDeniedException("Dto Property: " + dtoProperty + " is not allowed for this operation. Dto class: " + dtoClass.getSimpleName());
             }
         }
     }
