@@ -153,22 +153,12 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
         int[] position = {-1};
         Optional elementToDelete = Optional.empty();
         Collection collection;
-//        if (IdPropertyNameUtils.isCollectionIdField(path.replace("/", ""))) {
         log.debug("Removing from entity collection, value will be interpreted as id");
         collection = (Collection) collectionField.get(dto);
         elementToDelete = ((Collection<?>)collection).stream()
                 .peek(x -> position[0]++)  // increment every element encounter
                 .filter(o -> o.toString().equals(value))
                 .findFirst();
-//        }
-//        else {
-//            log.debug("removing from normal collection (assuming comparable by String Type)");
-//            collection = (Collection) collectionField.get(savedEntity);
-//            elementToDelete = collection.stream()
-//                    .peek(x -> position[0]++)  // increment every element encounter
-//                    .filter(o -> o.toString().equals(value))
-//                    .findFirst();
-//        }
 
         if (elementToDelete.isEmpty()) {
             throw new BadEntityException("Element to delete: "+value+" not found");

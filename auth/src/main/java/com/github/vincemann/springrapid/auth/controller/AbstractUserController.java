@@ -3,23 +3,19 @@ package com.github.vincemann.springrapid.auth.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.acl.Secured;
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.dto.*;
-import com.github.vincemann.springrapid.auth.dto.user.AdminUpdatesUserDto;
-import com.github.vincemann.springrapid.auth.dto.user.ReadOwnUserDto;
+import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
+import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
+import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
+import com.github.vincemann.springrapid.auth.dto.ResetPasswordView;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.*;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.core.Root;
-import com.github.vincemann.springrapid.core.controller.CrudController;
-import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
-import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
-import com.github.vincemann.springrapid.core.controller.dto.map.Principal;
+import com.github.vincemann.springrapid.core.controller.AbstractEntityController;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +34,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Optional;
 
-import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
-
 
 public abstract class AbstractUserController<U extends AbstractUser<Id>, Id extends Serializable, S extends UserService<U,Id>>
-			extends CrudController<U, Id,S> {
+			extends AbstractEntityController<U, Id> {
 
 	private final Log log = LogFactory.getLog(getClass());
 
@@ -53,24 +47,13 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	private UserAuthTokenService authTokenService;
 	private UserAuthTokenService unsecuredAuthTokenService;
 	private PasswordService passwordService;
-	private SignupService signupService;
 	private ContactInformationService contactInformationService;
 	private VerificationService verificationService;
 	private AuthorizationTokenService authorizationTokenService;
 
+	private UserService userService;
+
 	//              CONTROLLER METHODS
-
-
-	public ResponseEntity<ReadOwnUserDto> signup(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
-		log.debug("received signup request");
-		String body = readBody(request);
-		SignupDto dto = getObjectMapper().readValue(body, SignupDto.class);
-		getDtoValidationStrategy().validate(dto);
-  		AbstractUser saved = signupService.signup(dto);
-		ReadOwnUserDto responseDto = getDtoMapper().mapToDto(saved, ReadOwnUserDto.class);
-		log.debug("signup request successful");
-		return okWithAuthToken(responseDto,saved.getContactInformation());
-	}
 
 	public ResponseEntity<Void> resendVerificationMessage(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
 		String contactInformation = readRequestParam(request, "ci");
@@ -108,7 +91,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		log.debug("received reset password request");
 		String body = readBody(request);
 		ResetPasswordDto dto = getObjectMapper().readValue(body, ResetPasswordDto.class);
-		getDtoValidationStrategy().validate(dto);
+		validateDto(dto);
 		AbstractUser updated = passwordService.resetPassword(dto);
 		return okWithAuthToken(updated.getContactInformation());
 	}
@@ -126,7 +109,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		log.debug("received change password request");
 		String body = readBody(request);
 		ChangePasswordDto dto = getObjectMapper().readValue(body, ChangePasswordDto.class);
-		getDtoValidationStrategy().validate(dto);
+		validateDto(dto);
 		AbstractUser updated = passwordService.changePassword(dto);
 		return okWithAuthToken(updated.getContactInformation());
 	}
@@ -136,7 +119,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		log.debug("received request contact information change request");
 		String body = readBody(request);
 		RequestContactInformationChangeDto dto = getObjectMapper().readValue(body, RequestContactInformationChangeDto.class);
-		getDtoValidationStrategy().validate(dto);
+		validateDto(dto);
 		contactInformationService.requestContactInformationChange(dto);
 		return okNoContent();
 	}
@@ -144,7 +127,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	public ResponseEntity<Void> blockUser(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
 		String contactInformation = readRequestParam(request, "ci");
 		log.debug(LogMessage.format("received block user request for: %s",contactInformation));
-		getService().blockUser(contactInformation);
+		userService.blockUser(contactInformation);
 		return okNoContent();
 	}
 
@@ -185,47 +168,9 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	}
 
 
-	public ResponseEntity<String> findByContactInformation(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
-		String contactInformation = readRequestParam(request, "ci");
-		log.debug(LogMessage.format("received find by contact information request for: %s",contactInformation));
-		U user = getService().findPresentByContactInformation(contactInformation);
-		Object responseDto = getDtoMapper().mapToDto(user,
-				createDtoClass(getFindByContactInformationUrl(), Direction.RESPONSE,request, user));
-		return ok(getObjectMapper().writeValueAsString(responseDto));
-	}
-
-
-	//             INIT
-
-
-	/**
-	 * overwrite this for own dto configuration
-	 */
-	@Override
-	protected void configureDtoMappings(DtoMappingsBuilder builder) {
-
-		// admin can gather all information about all users
-		builder.when(direction(Direction.RESPONSE)
-						.and(roles(AuthRoles.ADMIN)))
-				.thenReturn(ReadOwnUserDto.class);
-
-		// admin can update all information of user
-		builder.when(endpoint(getUpdateUrl())
-				.and(roles(AuthRoles.ADMIN))
-				.and(direction(Direction.REQUEST)))
-						.thenReturn(AdminUpdatesUserDto.class);
-
-		// user can gather all information about self
-		builder.when(direction(Direction.RESPONSE)
-						.and(principal(Principal.OWN)))
-				.thenReturn(ReadOwnUserDto.class);
-	}
-
 	// URLS
 
 	private String loginUrl;
-
-	private String signupUrl;
 	private String resetPasswordUrl;
 	private String resetPasswordViewUrl;
 	private String findByContactInformationUrl;
@@ -247,7 +192,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		loginUrl = getAuthProperties().getController().getLoginUrl();
 
 		findByContactInformationUrl = getAuthProperties().getController().getFindByContactInformationUrl();
-		signupUrl = getAuthProperties().getController().getSignupUrl();
 		resetPasswordUrl = getAuthProperties().getController().getResetPasswordUrl();
 		resetPasswordViewUrl = getAuthProperties().getController().getResetPasswordViewUrl();
 		changeContactInformationUrl = getAuthProperties().getController().getChangeContactInformationUrl();
@@ -267,11 +211,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	@Override
 	protected void registerEndpoints() throws NoSuchMethodException {
-		super.registerEndpoints();
-
-		if (!getIgnoredEndPoints().contains(getSignupUrl())){
-			registerEndpoint(createSignupRequestMappingInfo(),"signup");
-		}
 		if (!getIgnoredEndPoints().contains(getResendVerificationMessageUrl())){
 			registerEndpoint(createResendVerificationContactInformationRequestMappingInfo(),"resendVerificationMessage");
 		}
@@ -316,16 +255,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	}
 
-
-
-	protected RequestMappingInfo createSignupRequestMappingInfo() {
-		return RequestMappingInfo
-				.paths(getSignupUrl())
-				.methods(RequestMethod.POST)
-				.consumes(MediaType.APPLICATION_JSON_VALUE)
-				.produces(MediaType.APPLICATION_JSON_VALUE)
-				.build();
-	}
 
 	protected RequestMappingInfo createTestTokenRequestMappingInfo() {
 		return RequestMappingInfo
@@ -432,7 +361,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 				.build();
 	}
 
-
 	//				HELPERS
 
 
@@ -470,9 +398,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return passwordService;
 	}
 
-	public SignupService getSignupService() {
-		return signupService;
-	}
 
 	public ContactInformationService getContactInformationService() {
 		return contactInformationService;
@@ -488,10 +413,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	public String getLoginUrl() {
 		return loginUrl;
-	}
-
-	public String getSignupUrl() {
-		return signupUrl;
 	}
 
 	public String getResetPasswordUrl() {
@@ -550,10 +471,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		this.loginUrl = loginUrl;
 	}
 
-	public void setSignupUrl(String signupUrl) {
-		this.signupUrl = signupUrl;
-	}
-
 	public void setResetPasswordUrl(String resetPasswordUrl) {
 		this.resetPasswordUrl = resetPasswordUrl;
 	}
@@ -608,11 +525,11 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 
 	//              INJECT DEPENDENCIES
 
+
 	@Autowired
 	@Secured
-	@Override
-	public void setCrudService(S crudService) {
-		super.setCrudService(crudService);
+	public void setUserService(UserService userService) {
+		this.userService = userService;
 	}
 
 	@Autowired
@@ -642,11 +559,6 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 	@Secured
 	public void setPasswordService(PasswordService passwordService) {
 		this.passwordService = passwordService;
-	}
-
-	@Autowired
-	public void setSignupService(SignupService signupService) {
-		this.signupService = signupService;
 	}
 
 	@Autowired

@@ -180,8 +180,6 @@ public abstract class CrudController
         Class<?> dtoClass = createDtoClass(getUpdateUrl(), Direction.REQUEST,request, saved);
         beforeUpdate(dtoClass, id, patchString, request, response);
         jsonDtoPropertyValidator.validatePatch(patchString, dtoClass);
-
-
         PatchInfo patchInfo = jsonPatchStrategy.createPatchInfo(patchString);
         Object patchDto = dtoMapper.mapToDto(saved, dtoClass, patchInfo.getUpdatedFields().toArray(new String[0]));
         patchDto = jsonPatchStrategy.applyPatch(patchDto, patchString);
@@ -258,37 +256,6 @@ public abstract class CrudController
         return dtoMapper.mapToEntity(dto, getEntityClass());
     }
 
-
-    protected String readRequestParam(HttpServletRequest request, String key) throws BadEntityException {
-        String param = request.getParameter(key);
-        if (param == null) {
-            throw new BadEntityException("RequestParam with key: " + key + " not found");
-        } else {
-            return param;
-        }
-    }
-
-    protected Optional<String> readOptionalRequestParam(HttpServletRequest request, String key) {
-        String param = request.getParameter(key);
-        if (param != null) {
-            return Optional.of(param);
-        } else {
-            return Optional.empty();
-        }
-    }
-
-
-    protected ResponseEntity<String> ok(String jsonDto) {
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(jsonDto);
-    }
-
-
-
-    protected ResponseEntity<Void> okNoContent() {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
 
 //    protected ResponseEntity<String> okCreated(String jsonDto) {
 //        return ResponseEntity.status(HttpStatus.CREATED)

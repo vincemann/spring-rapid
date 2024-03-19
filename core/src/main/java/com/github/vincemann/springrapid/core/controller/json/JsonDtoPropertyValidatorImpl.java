@@ -21,13 +21,13 @@ public class JsonDtoPropertyValidatorImpl implements JsonDtoPropertyValidator {
 
 
     @Override
-    public void validateDto(String jsonDto, Class dtoClass/*, Class entityClass*/) throws AccessDeniedException, JsonProcessingException {
+    public void validateDto(String jsonDto, Class<?> dtoClass) throws JsonProcessingException {
         Iterator<String> propertyNameIterator = objectMapper.readTree(jsonDto).fieldNames();
         checkPropertyNames(propertyNameIterator, dtoClass/*,entityClass*/);
     }
 
     @Override
-    public void validatePatch(String patch, Class dtoClass/*, Class entityClass*/) throws AccessDeniedException, JsonProcessingException {
+    public void validatePatch(String patch, Class<?> dtoClass) throws JsonProcessingException {
         JsonNode rootNode = objectMapper.readTree(patch);
         List<JsonNode> pathNodes = rootNode.findValues("path");
         Set<String> propertyNames = pathNodes.stream()
@@ -45,7 +45,7 @@ public class JsonDtoPropertyValidatorImpl implements JsonDtoPropertyValidator {
         return path;
     }
 
-    protected void checkPropertyNames(Iterator<String> propertyNameIterator, Class dtoClass/*, Class entityClass*/) {
+    protected void checkPropertyNames(Iterator<String> propertyNameIterator, Class<?> dtoClass/*, Class entityClass*/) {
         Set<String> dtoClassFieldNames = new HashSet<>();
         ReflectionUtils.doWithFields(dtoClass, field -> dtoClassFieldNames.add(field.getName()), ReflectionUtils.COPYABLE_FIELDS);
         while (propertyNameIterator.hasNext()) {

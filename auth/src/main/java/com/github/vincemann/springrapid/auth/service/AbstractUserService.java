@@ -5,14 +5,13 @@ import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.*;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
-import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.pass.RapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.util.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.GenericTypeResolver;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -21,21 +20,25 @@ import java.io.Serializable;
 import java.util.*;
 
 
-public abstract class JpaUserService
+public abstract class AbstractUserService
         <
                 U extends AbstractUser<Id>,
                 Id extends Serializable,
                 R extends AbstractUserRepository<U, Id>
                 >
-        extends JpaCrudService<U, Id, R>
-        implements UserService<U, Id>,
-        ApplicationContextAware
+        implements UserService<U, Id>
 {
 
     private RapidPasswordEncoder passwordEncoder;
     private PasswordValidator passwordValidator;
     private RapidAclService aclService;
+    private R repository;
 
+    private Class<U> entityClass;
+
+    public AbstractUserService() {
+        this.entityClass = (Class<U>) GenericTypeResolver.resolveTypeArguments(this.getClass(),AbstractUserService.class)[0];
+    }
 
     //only called internally
     public U createAdmin(AuthProperties.Admin admin) {
@@ -50,7 +53,7 @@ public abstract class JpaUserService
 
     @Override
     public U createUser() {
-        return BeanUtils.instantiateClass(getEntityClass());
+        return BeanUtils.instantiateClass(entityClass);
     }
 
     @Transactional
@@ -64,7 +67,7 @@ public abstract class JpaUserService
         if (user.getPassword() != null && !passwordEncoder.isEncoded(user.getPassword()))
             passwordValidator.validate(user.getPassword());
         user.setPassword(encodePasswordIfNeeded(user.getPassword()));
-        U saved = super.create(user);
+        U saved = repository.save(user);
         saveAclInfo(saved);
         return saved;
     }
@@ -78,7 +81,7 @@ public abstract class JpaUserService
     public U findPresentByContactInformation(String contactInformation) throws EntityNotFoundException {
         Assert.notNull(contactInformation);
         Optional<U> user = findByContactInformation(contactInformation);
-        VerifyEntity.isPresent(user,contactInformation,getEntityClass());
+        VerifyEntity.isPresent(user,contactInformation, entityClass);
         return user.get();
     }
 
@@ -91,30 +94,24 @@ public abstract class JpaUserService
         Assert.notNull(role,"role to add must not be null");
         Assert.notNull(userId,"user id must not be null");
 
-        U oldEntity = findOldEntity(userId);
-        Set<String> newRoles = new HashSet<>(oldEntity.getRoles());
-        newRoles.add(role);
-        U update = Entity.createUpdate(oldEntity);
-        update.setRoles(newRoles);
-        update.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        return service.partialUpdate(update, "roles", "credentialsUpdatedMillis");
+        U user = RepositoryUtil.findPresentById(repository,userId);
+        user.getRoles().add(role);
+        user.setCredentialsUpdatedMillis(System.currentTimeMillis());
+        return user;
     }
 
 
     @Transactional
     @Override
-    public U removeRole(Id userId, String role) throws EntityNotFoundException, BadEntityException {
+    public U removeRole(Id userId, String role) throws EntityNotFoundException {
         Assert.notNull(role,"role to remove must not be null");
         Assert.notNull(userId,"user id must not be null");
 
-        U oldEntity = findOldEntity(userId);
-        Set<String> newRoles = new HashSet<>(oldEntity.getRoles());
-        boolean removed = newRoles.remove(role);
-        Assert.isTrue(removed,"user did not contain role: " + role);
-        U update = Entity.createUpdate(oldEntity);
-        update.setRoles(newRoles);
-        update.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        return service.partialUpdate(update,"roles", "credentialsUpdatedMillis");
+        U user = RepositoryUtil.findPresentById(repository,userId);
+        boolean removed = user.getRoles().remove(role);
+        Assert.isTrue(removed,"user did not contain role to remove: " + role);
+        user.setCredentialsUpdatedMillis(System.currentTimeMillis());
+        return user;
     }
 
 
@@ -126,10 +123,10 @@ public abstract class JpaUserService
 
         if (!passwordEncoder.isEncoded(password))
             passwordValidator.validate(password);
-        U update = Entity.createUpdate(getEntityClass(), userId);
-        update.setPassword(encodePasswordIfNeeded(password));
-        update.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        return service.partialUpdate(update,"password", "credentialsUpdatedMillis");
+        U user = RepositoryUtil.findPresentById(repository,userId);
+        user.setPassword(encodePasswordIfNeeded(password));
+        user.setCredentialsUpdatedMillis(System.currentTimeMillis());
+        return user;
     }
     
     protected String encodePasswordIfNeeded(String password){
@@ -154,14 +151,14 @@ public abstract class JpaUserService
 
     @Transactional
     @Override
-    public U updateContactInformation(Id userId, String contactInformation) throws EntityNotFoundException, BadEntityException {
+    public U updateContactInformation(Id userId, String contactInformation) throws EntityNotFoundException {
         Assert.notNull(userId);
         Assert.notNull(contactInformation);
 
-        U update = Entity.createUpdate(getEntityClass(), userId);
-        update.setContactInformation(contactInformation);
-        update.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        return service.partialUpdate(update,"contactInformation", "credentialsUpdatedMillis");
+        U user = RepositoryUtil.findPresentById(repository, userId);
+        user.setContactInformation(contactInformation);
+        user.setCredentialsUpdatedMillis(System.currentTimeMillis());
+        return user;
     }
 
 
@@ -173,10 +170,9 @@ public abstract class JpaUserService
     }
 
     @Transactional
-    @Override
-    public void deleteById(Id id) throws EntityNotFoundException {
+    public void delete(Id id) throws EntityNotFoundException {
         aclService.deleteAclOfEntity(getEntityClass(),id,false);
-        super.deleteById(id);
+        repository.deleteById(id);
     }
 
     @Autowired
@@ -195,6 +191,19 @@ public abstract class JpaUserService
         this.aclService = aclService;
     }
 
+    @Autowired
+    public void setRepository(R repository) {
+        this.repository = repository;
+    }
+
+    public R getRepository() {
+        return repository;
+    }
+
+    public Class<U> getEntityClass() {
+        return entityClass;
+    }
+
     protected RapidPasswordEncoder getPasswordEncoder() {
         return passwordEncoder;
     }
@@ -206,32 +215,6 @@ public abstract class JpaUserService
     protected RapidAclService getAclService() {
         return aclService;
     }
-
-    //    protected boolean rolesUpdated(U update) throws EntityNotFoundException {
-//        U old = findOldEntity(update.getId());
-//        if (!old.getRoles().equals(update))
-//            return true;
-//        else
-//            return false;
-//    }
-
-//    protected void checkForBlacklistedProperties(String... properties){
-//        ArrayList<String> updatedProperties = Lists.newArrayList(properties);
-//        if (updatedProperties.contains(propertyNameOf(new AbstractUser()::getRoles))
-//            || updatedProperties.contains(propertyNameOf(new AbstractUser()::getContactInformation))
-//            || updatedProperties.contains(propertyNameOf(new AbstractUser()::getPassword)){
-//            throw new IllegalArgumentException("user specialized methods for updating fields like: roles, contactInformation or password");
-//        }
-//    }
-//
-//    protected boolean rolesPartialUpdated(U update, String... fieldsToUpdate){
-//        Set<String> updatedFields = Entity.findPartialUpdatedFields(update, fieldsToUpdate);
-//        if (Lists.newArrayList(updatedFields).contains()){
-//            return true;
-//        }else{
-//            return false;
-//        }
-//    }
 
 
 }

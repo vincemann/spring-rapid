@@ -18,11 +18,17 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.log.LogMessage;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
@@ -45,12 +51,12 @@ public abstract class AbstractEntityController
     protected String urlEntityName;
     protected CoreProperties coreProperties;
     protected EndpointService endpointService;
+
     protected ObjectMapper objectMapper;
-    protected WebExtensionParser extensionParser;
+
+    protected Validator validator;
 
     protected List<String> ignoredEndPoints = new ArrayList<>();
-    protected Set<WebExtension> extensions = new HashSet<>();
-
     protected ApplicationContext applicationContext;
 
     @Override
@@ -73,38 +79,6 @@ public abstract class AbstractEntityController
         this.urlEntityName = createUrlEntityName();
         this.baseUrl = createBaseUrl();
         this.entityBaseUrl = baseUrl + "/" + urlEntityName + "/";
-    }
-
-
-    /**
-     * call this method in order to add whitelisted {@link WebExtension}.
-     * Given extensions are only used to retrieve {@link WebExtension#getName()} and getClass.
-     * When extension matches request, applicationContext.getBean(extension.getClass()) is executed and bean
-     * retrieved from context will be used - you can use {@link org.springframework.context.annotation.Scope} Prototype
-     * if you want a new instance of extension to be created for each request.
-     *
-     * Example:
-     *
-     * @Autowired
-     * public void registerAllowedExtensions(ModuleParentFilter parentFilter) {
-     *     registerExtensions(parentFilter);
-     * }
-     *
-     * or
-     *
-     * public void MyController() {
-     *     super()
-     *     registerExtensions(new ModuleParentFilter());
-     * }
-     */
-    protected final void registerExtensions(WebExtension<? super E>... extensions){
-        log.debug(LogMessage.format("Registering extensions: %s", Arrays.stream(extensions).map(WebExtension::getName).collect(Collectors.toSet())));
-        this.extensions.addAll(Sets.newHashSet(extensions));
-    }
-
-
-    protected <Ex extends WebExtension<? super E>> List<Ex> extractExtensions(HttpServletRequest request, WebExtensionType type) throws BadEntityException {
-        return (List<Ex>) extensionParser.parse(request,extensions,type);
     }
 
 
@@ -151,6 +125,40 @@ public abstract class AbstractEntityController
         }
     }
 
+    protected ResponseEntity<Void> okNoContent() {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    protected String readRequestParam(HttpServletRequest request, String key) throws BadEntityException {
+        String param = request.getParameter(key);
+        if (param == null) {
+            throw new BadEntityException("RequestParam with key: " + key + " not found");
+        } else {
+            return param;
+        }
+    }
+
+    protected ResponseEntity<String> ok(String jsonDto) {
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(jsonDto);
+    }
+
+    protected Optional<String> readOptionalRequestParam(HttpServletRequest request, String key) {
+        String param = request.getParameter(key);
+        if (param != null) {
+            return Optional.of(param);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public void validateDto(Object dto) throws ConstraintViolationException {
+        Set<ConstraintViolation<Object>> constraintViolations = validator.validate(dto);
+        if(!constraintViolations.isEmpty())
+            throw new ConstraintViolationException(constraintViolations);
+    }
+
     public Class<E> getEntityClass() {
         return entityClass;
     }
@@ -183,27 +191,14 @@ public abstract class AbstractEntityController
         return objectMapper;
     }
 
-    public WebExtensionParser getExtensionParser() {
-        return extensionParser;
-    }
 
     public List<String> getIgnoredEndPoints() {
         return ignoredEndPoints;
     }
 
-    public Set<WebExtension> getExtensions() {
-        return extensions;
-    }
-
     @Autowired
     public void setObjectMapper(ObjectMapper mapper) {
         this.objectMapper = mapper;
-    }
-
-
-    @Autowired
-    public void setExtensionParser(WebExtensionParser extensionParser) {
-        this.extensionParser = extensionParser;
     }
 
     @Autowired

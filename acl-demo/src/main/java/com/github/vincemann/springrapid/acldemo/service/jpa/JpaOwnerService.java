@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
-import com.github.vincemann.springrapid.auth.service.JpaUserService;
+import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -18,7 +18,7 @@ import java.util.Optional;
 @Service
 @EnableAutoBiDir
 public class JpaOwnerService
-        extends JpaUserService<Owner,Long, OwnerRepository>
+        extends AbstractUserService<Owner,Long, OwnerRepository>
                 implements OwnerService
 {
 

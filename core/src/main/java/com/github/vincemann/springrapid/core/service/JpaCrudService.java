@@ -141,10 +141,6 @@ public abstract class JpaCrudService
         getRepository().deleteById(id);
     }
 
-    protected E findOldEntity(Id id) throws EntityNotFoundException {
-        Assert.notNull(id,"id must not be null");
-        return findById(id).orElseThrow(() -> new EntityNotFoundException(id, getEntityClass()));
-    }
 
     // todo need better bean based solution
     // create own default jpaRepository containing methods (put into JpaRapidRepo)

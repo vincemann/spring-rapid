@@ -15,7 +15,6 @@ public class ReadOwnUserDto extends AbstractUserDto {
     private boolean blocked = false;
     private boolean admin = false;
     private boolean goodUser = false;
-    //    private boolean goodAdmin = false;
 
 
     public ReadOwnUserDto(String contactInformation, Set<String> roles, String id) {

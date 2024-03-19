@@ -1,12 +1,14 @@
 package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.acl.service.SecuredCrudServiceDecorator;
+import com.github.vincemann.springrapid.acl.service.SecuredDecorator;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.core.sec.AuthorizationTemplate;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import org.springframework.core.GenericTypeResolver;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,18 +30,15 @@ public abstract class AbstractSecuredUserServiceDecorator
                 U extends AbstractUser<Id>,
                 Id extends Serializable
                 >
-        extends SecuredCrudServiceDecorator<S, U, Id>
+        extends SecuredDecorator<S>
         implements UserService<U, Id> {
 
+    private Class<U> entityClass;
     public AbstractSecuredUserServiceDecorator(S decorated) {
         super(decorated);
+        this.entityClass = (Class<U>) GenericTypeResolver.resolveTypeArguments(this.getClass(),AbstractSecuredUserServiceDecorator.class)[1];
     }
 
-    @Override
-    public U create(U entity) throws BadEntityException {
-        AuthorizationTemplate.assertHasRoles(AuthRoles.ADMIN);
-        return getDecorated().create(entity);
-    }
 
     @Transactional
     @Override
@@ -95,5 +94,9 @@ public abstract class AbstractSecuredUserServiceDecorator
     public U blockUser(String contactInformation) throws EntityNotFoundException, BadEntityException {
         AuthorizationTemplate.assertHasRoles(AuthRoles.ADMIN);
         return getDecorated().blockUser(contactInformation);
+    }
+
+    public Class<U> getEntityClass() {
+        return entityClass;
     }
 }

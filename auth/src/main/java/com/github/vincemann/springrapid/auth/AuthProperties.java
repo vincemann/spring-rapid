@@ -75,10 +75,6 @@ public class AuthProperties {
 			return loginUrl;
 		}
 
-		public String getSignupUrl() {
-			return signupUrl;
-		}
-
 		public String getResetPasswordUrl() {
 			return resetPasswordUrl;
 		}

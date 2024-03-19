@@ -12,11 +12,11 @@ import java.util.Optional;
 
 // only do validation on highest level, that is exposed to user, not when only using internally
 public interface UserService<U extends AbstractUser<ID>, ID extends Serializable>
-        extends CrudService<U,ID>
 {
 
-    public Optional<U> findByContactInformation(String contactInformation);
-    public U findPresentByContactInformation(String contactInformation) throws EntityNotFoundException;
+    U create(U user) throws BadEntityException;
+    Optional<U> findByContactInformation(String contactInformation);
+    U findPresentByContactInformation(String contactInformation) throws EntityNotFoundException;
 
     U addRole(ID userId, String role) throws EntityNotFoundException, BadEntityException;
 
@@ -26,20 +26,11 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
     U updateContactInformation(ID userId, String contactInformation) throws EntityNotFoundException, BadEntityException;
 
-
-    // keep it like that, otherwise the AbstractUser type wont be in impl methods
-    @Override
-    U partialUpdate(U update, String... fieldsToUpdate) throws EntityNotFoundException;
-
-    @Override
-    U fullUpdate(U update) throws EntityNotFoundException;
-
-    @Override
-    U softUpdate(U entity) throws EntityNotFoundException;
-
     U createUser();
 
     U createAdmin(AuthProperties.Admin admin);
 
     U blockUser(String contactInformation) throws EntityNotFoundException, BadEntityException;
+
+    void delete(long id);
 }
