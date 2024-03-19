@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.autobidir.controller.map.bidir.testEntit
 import com.github.vincemann.springrapid.autobidir.controller.map.bidir.testEntities.BiDirSecondEntityParent;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.CrudServiceLocator;
+import com.github.vincemann.springrapid.core.service.RepositoryLocator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 public abstract class BiDirEntityResolverTest {
 
     @Mock
-    private CrudServiceLocator crudServiceLocator;
+    private RepositoryLocator crudServiceLocator;
     @Mock
     private CrudService<BiDirEntityChild,Long> entityChildCrudService;
     @Mock
@@ -60,7 +60,7 @@ public abstract class BiDirEntityResolverTest {
                 .thenReturn(entityChildCrudService);
     }
 
-    public CrudServiceLocator getCrudServiceLocator() {
+    public RepositoryLocator getCrudServiceLocator() {
         return crudServiceLocator;
     }
 

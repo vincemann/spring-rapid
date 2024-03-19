@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.autobidir;
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManager;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.CrudServiceLocator;
+import com.github.vincemann.springrapid.core.service.RepositoryLocator;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.Entity;
@@ -39,7 +39,7 @@ public class RelationalEntityAdvice {
 
     private RelationalEntityManager relationalEntityManager;
 
-    private CrudServiceLocator crudServiceLocator;
+    private RepositoryLocator crudServiceLocator;
 
 
 
@@ -163,7 +163,7 @@ public class RelationalEntityAdvice {
     }
 
     @Autowired
-    public void setCrudServiceLocator(CrudServiceLocator crudServiceLocator) {
+    public void setCrudServiceLocator(RepositoryLocator crudServiceLocator) {
         this.crudServiceLocator = crudServiceLocator;
     }
 }

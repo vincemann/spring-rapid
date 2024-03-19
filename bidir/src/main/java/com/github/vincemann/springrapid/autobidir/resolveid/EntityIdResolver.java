@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.autobidir.resolveid;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.CrudServiceLocator;
+import com.github.vincemann.springrapid.core.service.RepositoryLocator;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 
@@ -17,7 +17,7 @@ import java.io.Serializable;
  *
  *  The resolving of the ids is done, by calling {@link CrudService#findById(Serializable)} of the {@link CrudService},
  *  that belongs to the Annotated Id's Entity Type.
- *  The needed CrudService is found with {@link CrudServiceLocator}.
+ *  The needed CrudService is found with {@link RepositoryLocator}.
  *
  * @see com.github.vincemann.springrapid.autobidir.resolveid.bidir.BiDirChildIdResolver
  * @see DelegatingEntityIdResolver

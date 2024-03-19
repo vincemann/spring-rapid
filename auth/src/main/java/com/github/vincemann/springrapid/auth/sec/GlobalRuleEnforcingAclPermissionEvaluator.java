@@ -4,8 +4,10 @@ import com.github.vincemann.springrapid.acl.framework.VerboseAclPermissionEvalua
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.EntityLocator;
+import com.github.vincemann.springrapid.core.service.RepositoryAccessor;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.lang.Nullable;
 import org.springframework.security.acls.model.AclService;
 import org.springframework.security.core.Authentication;
@@ -25,7 +27,7 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
 
     private IdConverter idConverter;
 
-    private EntityLocator entityLocator;
+    private RepositoryAccessor repositoryAccessor;
 
 
 
@@ -65,7 +67,9 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
     public boolean hasPermission(Authentication authentication,
                                  Serializable targetId, String targetType, Object permission) {
         try {
-            Optional<IdentifiableEntity> entity = entityLocator.findEntity(Class.forName(targetType), idConverter.toId(targetId.toString()));
+            Serializable id = idConverter.toId(targetId.toString());
+            CrudRepository repo = repositoryAccessor.getRepositoryForEntityClass(Class.forName(targetType));
+            Optional<IdentifiableEntity> entity = repo.findById(id);
             if (entity.isEmpty())
                 throw new IllegalArgumentException("entity permission is checked for does not exist, check before checking acl info");
             Boolean allowAccess = performGlobalSecurityChecks(entity.get(),permission);
@@ -92,8 +96,8 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
     }
 
     @Autowired
-    public void setEntityLocator(EntityLocator entityLocator) {
-        this.entityLocator = entityLocator;
+    public void setRepositoryAccessor(RepositoryAccessor repositoryAccessor) {
+        this.repositoryAccessor = repositoryAccessor;
     }
 
     @Autowired

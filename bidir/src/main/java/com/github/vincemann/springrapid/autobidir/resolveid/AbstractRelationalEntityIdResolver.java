@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.autobidir.resolveid;
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerUtil;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.CrudServiceLocator;
+import com.github.vincemann.springrapid.core.service.RepositoryLocator;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
@@ -24,7 +24,7 @@ public abstract class AbstractRelationalEntityIdResolver implements EntityIdReso
 
     private RelationalDtoManagerUtil relationalDtoManagerUtil;
     private RelationalEntityManagerUtil relationalEntityManagerUtil;
-    private CrudServiceLocator crudServiceLocator;
+    private RepositoryLocator crudServiceLocator;
 
     private RelationalDtoType supportedDtoType;
 
@@ -63,7 +63,7 @@ public abstract class AbstractRelationalEntityIdResolver implements EntityIdReso
     }
 
     @Autowired
-    public void setCrudServiceLocator(CrudServiceLocator crudServiceLocator) {
+    public void setCrudServiceLocator(RepositoryLocator crudServiceLocator) {
         this.crudServiceLocator = crudServiceLocator;
     }
 
@@ -75,7 +75,7 @@ public abstract class AbstractRelationalEntityIdResolver implements EntityIdReso
         return relationalEntityManagerUtil;
     }
 
-    public CrudServiceLocator getCrudServiceLocator() {
+    public RepositoryLocator getCrudServiceLocator() {
         return crudServiceLocator;
     }
 
