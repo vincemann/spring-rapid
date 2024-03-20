@@ -2,10 +2,9 @@ package com.github.vincemann.springrapid.sync.model;
 
 
 /**
- * Sync status response is Set of objects of this class. i.E.: [42a,3u,10u,4r]
- * id concatenated with status char a=added, u=updated, r=removed
+ * Response entity returned by controller for client.
+ * Encapsulates minimal information about sync status of specific entity.
  */
-
 public class EntitySyncStatus {
 
 

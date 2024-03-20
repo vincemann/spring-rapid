@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 
 
+/**
+ * Encapsulates minimal update information for entity with given {@link #id}.
+ */
 public class EntityUpdateInfo {
     private String id;
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)

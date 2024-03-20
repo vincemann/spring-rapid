@@ -1,14 +1,12 @@
 package com.github.vincemann.springrapid.syncdemo.service.sync.jpa;
 
-import org.springframework.stereotype.Component;
-import com.github.vincemann.springrapid.sync.service.JpaSyncService;
+import com.github.vincemann.springrapid.sync.service.DefaultSyncService;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
-import com.github.vincemann.springrapid.syncdemo.repo.PetRepository;
 import com.github.vincemann.springrapid.syncdemo.service.sync.PetSyncService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class JpaPetSyncService
-        extends JpaSyncService<Pet,Long>
+        extends DefaultSyncService<Pet,Long>
                 implements PetSyncService {
 }

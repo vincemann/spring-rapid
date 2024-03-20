@@ -3,14 +3,11 @@ package com.github.vincemann.springrapid.sync.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.controller.AbstractEntityController;
-import com.github.vincemann.springrapid.core.controller.id.IdFetchingException;
-import com.github.vincemann.springrapid.core.controller.id.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.audit.IAuditingEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
-import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
+import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
@@ -20,7 +17,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.log.LogMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +33,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.github.vincemann.springrapid.core.controller.WebExtensionType.ENTITY_FILTER;
-import static com.github.vincemann.springrapid.core.controller.WebExtensionType.QUERY_FILTER;
-
 /**
  * Offers methods for evaluating {@link EntitySyncStatus} of an entity or multiple entities.
  * Entities need to record audit information -> {@link AuditingEntity}.
@@ -53,8 +46,6 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
 
     private final Log log = LogFactory.getLog(getClass());
 
-    private IdFetchingStrategy<Id> idFetchingStrategy;
-
     private SyncService<E, Id> service;
 
     private String fetchEntitySyncStatusUrl;
@@ -62,6 +53,8 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
     private String fetchEntitySyncStatusesUrl;
 
     private String fetchEntitySyncStatusesSinceTsUrl;
+
+    private IdConverter<Id> idConverter;
 
     @SuppressWarnings("unchecked")
     public SyncEntityController() {
@@ -77,7 +70,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
      */
     public ResponseEntity<String> fetchEntitySyncStatus(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, JsonProcessingException {
         try {
-            Id id = fetchId(request);
+            Id id = idConverter.toId(readRequestParam(request,"id"));
             log.debug(LogMessage.format("fetching entities sync status for entity with id: %s",id.toString()));
             long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
             log.debug(LogMessage.format("clients last update was at: %s",new Date(lastUpdateTimestamp).toString()));
@@ -118,7 +111,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
             Set<LastFetchInfo> lastClientFetchInfos = getObjectMapper().readValue(json, idSetType);
             log.debug(LogMessage.format("fetch entities sync statuses request received, clients last fetch infos: %s",lastClientFetchInfos.stream().map(LastFetchInfo::toString).collect(Collectors.toSet())));
 
-            Set<EntitySyncStatus> syncStatuses = findEntitySyncStatuses(lastClientFetchInfos);
+            List<EntitySyncStatus> syncStatuses = findEntitySyncStatuses(lastClientFetchInfos);
             log.debug(LogMessage.format("sync statuses of requested entities: %s",syncStatuses.stream().map(EntitySyncStatus::toString).collect(Collectors.toSet())));
             if (syncStatuses.isEmpty())
                 return ResponseEntity.noContent().build();
@@ -133,30 +126,19 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
 
     /**
      * client passes timestamp, of when last update for find-all (with potential filter) was performed, to server.
-     * searched entity space can be reduced with {@link EntityFilter}s.
      * Client can pass list of filters bean names, that should be applied in that order.
      * <p>
      * Server returns Set of {@link EntitySyncStatus} of all entities, that have been removed, added or updated since then.
      * <p>
-     * GET /api/core/entity/fetch-entity-sync-statuses-since-ts?ts=...&jpql-filter=filter1:arg1:arg2,filter2
+     * GET /api/core/entity/fetch-entity-sync-statuses-since-ts?ts=...
      *
-     * Filters are optional and only {@link QueryFilter} is supported.
      */
     public ResponseEntity<String> fetchEntitySyncStatusesSinceTimestamp(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, JsonProcessingException {
         long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
 
         log.debug(LogMessage.format("find sync statuses since timestamp request received. Timestamp: %s",new Date(lastUpdateTimestamp).toString()));
 
-        List<QueryFilter<? super E>> queryFilters = extractExtensions(request, QUERY_FILTER);
-        List<EntityFilter<? super E>> entityFilters = extractExtensions(request,ENTITY_FILTER);
-
-        if (!queryFilters.isEmpty())
-            log.debug(LogMessage.format("using query filters: %s",queryFilters));
-        if (!entityFilters.isEmpty())
-            log.debug(LogMessage.format("using entity filters: %s",entityFilters));
-
-        Set<EntitySyncStatus> syncStatuses = findUpdatesSinceTimestamp(
-                new Timestamp(lastUpdateTimestamp),queryFilters,entityFilters);
+        List<EntitySyncStatus> syncStatuses = findUpdatesSinceTimestamp(new Timestamp(lastUpdateTimestamp));
         if (syncStatuses.isEmpty())
             return ResponseEntity.noContent().build();
         else
@@ -181,15 +163,12 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
         return service.findEntitySyncStatus(clientLastFetch);
     }
 
-    protected Set<EntitySyncStatus> findEntitySyncStatuses(Set<LastFetchInfo> lastUpdateInfos) throws EntityNotFoundException {
-        return service.findEntitySyncStatuses(lastUpdateInfos);
+    protected List<EntitySyncStatus> findEntitySyncStatuses(Set<LastFetchInfo> lastFetchInfos) throws EntityNotFoundException {
+        return service.findEntitySyncStatuses(lastFetchInfos);
     }
 
-    protected Set<EntitySyncStatus> findUpdatesSinceTimestamp(Timestamp lastUpdate, List<QueryFilter<? super E>> filters, List<EntityFilter<? super E>> ramFilters) {
-        if (ramFilters.isEmpty())
-            return service.findEntitySyncStatusesSinceTimestamp(lastUpdate,filters);
-        else
-            return service.findEntitySyncStatusesSinceTimestamp(lastUpdate,filters,ramFilters);
+    protected List<EntitySyncStatus> findUpdatesSinceTimestamp(Timestamp lastUpdate) {
+        return service.findEntitySyncStatusesSinceTimestamp(lastUpdate);
     }
 
     protected RequestMappingInfo createFetchEntitySyncStatusRequestMappingInfo() {
@@ -225,14 +204,6 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
     }
 
 
-    protected Id fetchId(HttpServletRequest request) throws IdFetchingException {
-        return idFetchingStrategy.fetchId(request);
-    }
-
-    public IdFetchingStrategy<Id> getIdFetchingStrategy() {
-        return idFetchingStrategy;
-    }
-
     public SyncService<E, Id> getService() {
         return service;
     }
@@ -262,8 +233,8 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
     }
 
     @Autowired
-    public void setIdFetchingStrategy(IdFetchingStrategy<Id> idFetchingStrategy) {
-        this.idFetchingStrategy = idFetchingStrategy;
+    public void setIdConverter(IdConverter<Id> idConverter) {
+        this.idConverter = idConverter;
     }
 
     @Autowired

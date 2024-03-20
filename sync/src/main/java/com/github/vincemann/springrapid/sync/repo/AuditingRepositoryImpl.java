@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.audit.IAuditingEntity;
 import com.github.vincemann.springrapid.core.util.Specs;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.JpaEntityInformationSupport;
@@ -54,24 +55,35 @@ public class AuditingRepositoryImpl<E extends IAuditingEntity<Id>,Id extends Ser
     }
     @Override
     public List<E> findEntitiesUpdatedSince(Timestamp since, Specification<E> spec) {
-        Specification<E> specs = Specification.where(spec)
-                .and(updatedSince(since));
+        Specification<E> specification = createSpec(spec, since);
+        Sort sort = Sort.by(Sort.Direction.DESC, AuditingEntity.LAST_MOD_FIELD);
+        return super.findAll(specification, sort);
+    }
 
-        return super.findAll(specs);
+    protected Specification<E> createSpec(@Nullable Specification<E> specification, Timestamp timestamp){
+        if (specification != null){
+            return Specification.where(specification)
+                    .and(updatedSince(timestamp));
+        }
+        else{
+            return Specification.where(updatedSince(timestamp));
+        }
     }
 
    // faster then the other method
     @Override
-    public List<EntityUpdateInfo> findUpdateInfosSince(Timestamp since, Specification<E> spec) {
+    public List<EntityUpdateInfo> findUpdateInfosSince(Timestamp since,@Nullable Specification<E> spec) {
 
 
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<EntityUpdateInfo> cq = cb.createQuery(EntityUpdateInfo.class);
-        Specification<E> specs = Specification.where(spec)
-                .and(updatedSince(since));
+        Specification<E> specification = createSpec(spec, since);
 
-        Root<E> root = applySpecificationToCriteria(specs,entityClass,cq);
+        Root<E> root = applySpecificationToCriteria(specification,entityClass,cq);
+
+        // Apply sorting
+        cq.orderBy(cb.desc(root.get(AuditingEntity.LAST_MOD_FIELD)));
 
         // Construct the EntityLastUpdateInfo with the required fields
         cq.select(cb.construct(EntityUpdateInfo.class,

@@ -30,7 +30,6 @@
         <module>auth-test</module>
         <module>auth-it</module>
         <module>core</module>
-        <module>bidir</module>
         <module>acl</module>
         <module>core-test</module>
         <module>core-demo</module>

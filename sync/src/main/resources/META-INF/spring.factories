@@ -1,4 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.github.vincemann.springrapid.sync.config.RapidSyncAutoConfiguration, \
-com.github.vincemann.springrapid.sync.config.RapidSyncObjectMapperAutoConfiguration, \
-com.github.vincemann.springrapid.sync.config.RapidSyncCacheAutoConfiguration
+com.github.vincemann.springrapid.sync.config.RapidSyncAutoConfiguration
