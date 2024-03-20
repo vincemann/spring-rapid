@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.auth.sec;
 
 import com.github.vincemann.springrapid.acl.framework.VerboseAclPermissionEvaluator;
 import com.github.vincemann.springrapid.core.model.IdAwareEntity;
-import com.github.vincemann.springrapid.core.service.EntityLocator;
 import com.github.vincemann.springrapid.core.service.RepositoryAccessor;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import org.springframework.beans.factory.annotation.Autowired;

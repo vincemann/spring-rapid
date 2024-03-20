@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.acl.AclTemplate;
+import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
@@ -16,10 +17,14 @@ import org.springframework.util.Assert;
 
 import java.io.Serializable;
 
+import static com.github.vincemann.springrapid.auth.util.UserUtils.findPresentByContactInformation;
+
 public class SecuredContactInformationService implements ContactInformationService{
 
     private ContactInformationService decorated;
     private JweTokenService jweTokenService;
+    private AbstractUserRepository userRepository;
+
     private UserService userService;
     private AclTemplate aclTemplate;
 
@@ -40,7 +45,7 @@ public class SecuredContactInformationService implements ContactInformationServi
     @Transactional
     @Override
     public AbstractUser requestContactInformationChange(RequestContactInformationChangeDto dto) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException {
-        AbstractUser user = userService.findPresentByContactInformation(dto.getOldContactInformation());
+        AbstractUser user = findPresentByContactInformation(userRepository,dto.getOldContactInformation());
         aclTemplate.checkPermission(user, BasePermission.WRITE);
         return decorated.requestContactInformationChange(dto);
     }
@@ -50,10 +55,16 @@ public class SecuredContactInformationService implements ContactInformationServi
         this.jweTokenService = jweTokenService;
     }
 
+
     @Autowired
     @Root
     public void setUserService(UserService userService) {
         this.userService = userService;
+    }
+
+    @Autowired
+    public void setUserRepository(AbstractUserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Autowired

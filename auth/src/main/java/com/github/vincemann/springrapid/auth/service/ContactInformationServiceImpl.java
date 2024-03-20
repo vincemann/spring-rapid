@@ -1,9 +1,11 @@
 package com.github.vincemann.springrapid.auth.service;
 
+import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.auth.msg.mail.SmtpMailSender;
+import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
@@ -28,6 +30,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
 
+import static com.github.vincemann.springrapid.auth.util.UserUtils.findPresentByContactInformation;
+import static com.github.vincemann.springrapid.core.util.RepositoryUtil.findPresentById;
+
 
 public class ContactInformationServiceImpl implements ContactInformationService {
 
@@ -35,7 +40,7 @@ public class ContactInformationServiceImpl implements ContactInformationService 
 
     public static final String CHANGE_CONTACT_INFORMATION_AUDIENCE = "change-contactInformation";
 
-    private UserService<AbstractUser<Serializable>,Serializable> userService;
+    private UserService userService;
 
     private JweTokenService jweTokenService;
 
@@ -48,6 +53,8 @@ public class ContactInformationServiceImpl implements ContactInformationService 
     private ContactInformationValidator contactInformationValidator;
 
     private IdConverter idConverter;
+
+    private AbstractUserRepository userRepository;
 
     @Transactional
     @Override
@@ -72,18 +79,14 @@ public class ContactInformationServiceImpl implements ContactInformationService 
 
         // update the fields
         userService.updateContactInformation(user.getId(), user.getNewContactInformation());
-
-        // changing newContactInformation to null is too high level to put into low level updateContactInformation method -> need two update calls
-        AbstractUser update = Entity.createUpdate(user);
-        update.setNewContactInformation(null);
-        AbstractUser updated = userService.partialUpdate(update, "newContactInformation");
+        user.setNewContactInformation(null);
 
         // make the user verified if he is not
         if (user.hasRole(AuthRoles.UNVERIFIED))
             verificationService.makeVerified(user);
 
 
-        return updated;
+        return user;
     }
 
 
@@ -96,25 +99,22 @@ public class ContactInformationServiceImpl implements ContactInformationService 
 
         contactInformationValidator.validate(newContactInformation);
 
-        AbstractUser oldUser = userService.findPresentByContactInformation(dto.getOldContactInformation());
+        AbstractUser user = findPresentByContactInformation(userRepository,dto.getOldContactInformation());
 
 
         checkUniqueContactInformation(newContactInformation);
 
 //        // preserves the new contactInformation id
-        AbstractUser update = Entity.createUpdate(oldUser);
-        update.setNewContactInformation(newContactInformation);
-
-        AbstractUser updated = userService.partialUpdate(update);
+        user.setNewContactInformation(newContactInformation);
 
         // needs to be done bc validation exceptions are thrown after transaction ends, otherwise validation fails but
         // message is still sent
-        TransactionalUtils.afterCommit(() -> sendChangeContactInformationMessage(updated));
-        return updated;
+        TransactionalUtils.afterCommit(() -> sendChangeContactInformationMessage(user));
+        return user;
     }
 
     protected void checkUniqueContactInformation(String contactInformation) throws AlreadyRegisteredException {
-        if (userService.findByContactInformation(contactInformation).isPresent())
+        if (userRepository.findByContactInformation(contactInformation).isPresent())
             throw new AlreadyRegisteredException("contact information already present");
     }
 
@@ -154,7 +154,7 @@ public class ContactInformationServiceImpl implements ContactInformationService 
         Serializable id = idConverter.toId(claims.getSubject());
         Assert.notNull(id);
         // fetch the user
-        return userService.findPresentById(id);
+        return (AbstractUser) findPresentById(userRepository,id);
     }
 
     @Autowired
@@ -182,6 +182,11 @@ public class ContactInformationServiceImpl implements ContactInformationService 
     @Root
     public void setVerificationService(VerificationService verificationService) {
         this.verificationService = verificationService;
+    }
+
+    @Autowired
+    public void setUserRepository(AbstractUserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Autowired

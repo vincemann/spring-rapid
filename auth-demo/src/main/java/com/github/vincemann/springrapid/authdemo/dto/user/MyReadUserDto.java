@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.authdemo.dto.user;
 
-import com.github.vincemann.springrapid.auth.dto.user.ReadOwnUserDto;
+import com.github.vincemann.springrapid.auth.dto.user.ReadUserDto;
 import lombok.*;
 
 import java.util.Set;
@@ -8,10 +8,10 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MyReadOwnUserDto extends ReadOwnUserDto {
+public class MyReadUserDto extends ReadUserDto {
     private String name;
 
-    public MyReadOwnUserDto(String contactInformation, Set<String> roles, String id, String name) {
+    public MyReadUserDto(String contactInformation, Set<String> roles, String id, String name) {
         super(contactInformation, roles, id);
         this.name = name;
     }

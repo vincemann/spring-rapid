@@ -16,6 +16,19 @@ public abstract class UserUtils {
 
     private UserUtils(){}
 
+    public static <T extends AbstractUser> T findPresentByContactInformation(AbstractUserRepository repository, String contactInformation) throws EntityNotFoundException {
+        Optional<T> user = repository.findByContactInformation(contactInformation);
+        VerifyEntity.isPresent(user,"no entity found with contact information : " + contactInformation
+                + ", managed by: " + repository.getClass().getSimpleName());
+        return user.get();
+    }
+
+    public static <T extends AbstractUser> T findPresentByContactInformation(UserService service, String contactInformation) throws EntityNotFoundException {
+        Optional<T> user = service.findByContactInformation(contactInformation);
+        VerifyEntity.isPresent(user,"no entity found with contact information : " + contactInformation
+                + ", managed by: " + service.getClass().getSimpleName());
+        return user.get();
+    }
 
     public static <T extends AbstractUser> T findAuthenticatedUser(AbstractUserRepository userRepository){
         AuthorizationTemplate.assertAuthenticated();

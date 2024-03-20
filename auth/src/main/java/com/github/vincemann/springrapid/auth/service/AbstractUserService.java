@@ -19,6 +19,8 @@ import org.springframework.util.Assert;
 import java.io.Serializable;
 import java.util.*;
 
+import static com.github.vincemann.springrapid.auth.util.UserUtils.findPresentByContactInformation;
+
 
 public abstract class AbstractUserService
         <
@@ -74,15 +76,6 @@ public abstract class AbstractUserService
 
     protected void saveAclInfo(U saved){
         aclService.grantUserPermissionForEntity(saved.getContactInformation(),saved, BasePermission.ADMINISTRATION);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public U findPresentByContactInformation(String contactInformation) throws EntityNotFoundException {
-        Assert.notNull(contactInformation);
-        Optional<U> user = findByContactInformation(contactInformation);
-        VerifyEntity.isPresent(user,contactInformation, entityClass);
-        return user.get();
     }
 
 
@@ -142,7 +135,7 @@ public abstract class AbstractUserService
     public U blockUser(String contactInformation) throws EntityNotFoundException, BadEntityException {
         VerifyEntity.notEmpty(contactInformation,"contact-information");
 
-        U user = findPresentByContactInformation(contactInformation);
+        U user = findPresentByContactInformation(repository,contactInformation);
         if (user.hasRole(AuthRoles.BLOCKED)){
             throw new BadEntityException("user is already blocked");
         }
@@ -171,6 +164,8 @@ public abstract class AbstractUserService
 
     @Transactional
     public void delete(Id id) throws EntityNotFoundException {
+        if (!repository.existsById(id))
+            throw new EntityNotFoundException(id,getEntityClass());
         aclService.deleteAclOfEntity(getEntityClass(),id,false);
         repository.deleteById(id);
     }
@@ -200,6 +195,7 @@ public abstract class AbstractUserService
         return repository;
     }
 
+    @Override
     public Class<U> getEntityClass() {
         return entityClass;
     }

@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.acl.framework;
 
 import com.github.vincemann.springrapid.acl.util.AclUtils;
-import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.acls.domain.AuditLogger;

@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 /**
  * This is used as a qualifier for dependency injection.
  * Indicates, that service bean annotated with this annotation is secured.
- * Usually used in combination with {@link com.github.vincemann.springrapid.core.service.CrudServiceDecorator}.
+ * Usually used in combination with {@link com.github.vincemann.springrapid.acl.service.SecuredServiceDecorator}.
  * Usually it exists one "normal" version of the bean and one "secured" version of the bean. The secured service decorates
  * the root service with security checks.
  *
@@ -21,15 +21,16 @@ import java.lang.annotation.*;
  *     ...
  * }
  *
- * class SecuredFooService implements FooService{
+ * class SecuredFooService extends SecuredServiceDecorator<FooService> implements FooService{
  *
- *     private FooService decorated;
- *     private AclTemplate aclTemplate;
+ *      public SecuredFooService(FooService decorated){
+ *          super(decorated);
+ *      }
  *
  *     @Overwrite
  *     public Object foo(){
- *         aclTemplate.checkWritePermission(...)
- *         return decorated.foo()
+ *         getAclTemplate().checkWritePermission(...)
+ *         return getDecorated().foo()
  *     }
  *
  * }
@@ -45,8 +46,6 @@ import java.lang.annotation.*;
  *     return new SecuredFooService(service);
  * }
  *
- * @see com.github.vincemann.springrapid.core.service.CrudServiceDecorator
- * @see com.github.vincemann.springrapid.acl.service.SecuredCrudServiceDecorator
  *
  */
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE})

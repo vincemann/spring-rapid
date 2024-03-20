@@ -3,11 +3,11 @@ package com.github.vincemann.springrapid.acl.service;
 import com.github.vincemann.springrapid.acl.AclTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class SecuredDecorator<T>{
+public class SecuredServiceDecorator<T>{
     private T decorated;
     private AclTemplate aclTemplate;
 
-    public SecuredDecorator(T decorator) {
+    public SecuredServiceDecorator(T decorator) {
         this.decorated = decorator;
     }
 

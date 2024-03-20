@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.auth.service;
 
-import com.github.vincemann.springrapid.acl.service.SecuredCrudServiceDecorator;
-import com.github.vincemann.springrapid.acl.service.SecuredDecorator;
+import com.github.vincemann.springrapid.acl.service.SecuredServiceDecorator;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
@@ -24,23 +23,23 @@ import java.util.Optional;
  * @param <U>  user entity type
  * @param <Id> id type of user
  */
-public abstract class AbstractSecuredUserServiceDecorator
+public abstract class SecuredUserServiceDecorator
         <
                 S extends UserService<U, Id>,
                 U extends AbstractUser<Id>,
                 Id extends Serializable
                 >
-        extends SecuredDecorator<S>
+        extends SecuredServiceDecorator<S>
         implements UserService<U, Id> {
 
     private Class<U> entityClass;
-    public AbstractSecuredUserServiceDecorator(S decorated) {
+    public SecuredUserServiceDecorator(S decorated) {
         super(decorated);
-        this.entityClass = (Class<U>) GenericTypeResolver.resolveTypeArguments(this.getClass(),AbstractSecuredUserServiceDecorator.class)[1];
+        this.entityClass = (Class<U>) GenericTypeResolver.resolveTypeArguments(this.getClass(), SecuredUserServiceDecorator.class)[1];
     }
 
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Optional<U> findByContactInformation(String contactInformation) {
         Optional<U> user = getDecorated().findByContactInformation(contactInformation);
@@ -50,30 +49,40 @@ public abstract class AbstractSecuredUserServiceDecorator
 
     @Transactional
     @Override
-    public U findPresentByContactInformation(String contactInformation) throws EntityNotFoundException {
-        U user = getDecorated().findPresentByContactInformation(contactInformation);
-        getAclTemplate().checkPermission(user, BasePermission.READ);
-        return user;
+    public U create(U user) throws BadEntityException {
+        AuthorizationTemplate.assertHasRoles(AuthRoles.ADMIN);
+        return getDecorated().create(user);
     }
 
+    @Transactional
+    @Override
+    public void delete(Id id) throws EntityNotFoundException {
+        getAclTemplate().checkPermission(id,getEntityClass(), BasePermission.DELETE);
+        getDecorated().delete(id);
+    }
+
+    @Transactional
     @Override
     public U addRole(Id userId, String role) throws EntityNotFoundException, BadEntityException {
         AuthorizationTemplate.assertHasRoles(AuthRoles.ADMIN);
         return getDecorated().addRole(userId, role);
     }
 
+    @Transactional
     @Override
     public U removeRole(Id userId, String role) throws EntityNotFoundException, BadEntityException {
         AuthorizationTemplate.assertHasRoles(AuthRoles.ADMIN);
         return getDecorated().removeRole(userId, role);
     }
 
+    @Transactional
     @Override
     public U updatePassword(Id userId, String password) throws EntityNotFoundException, BadEntityException {
         getAclTemplate().checkPermission(userId, getEntityClass(), BasePermission.WRITE);
         return getDecorated().updatePassword(userId, password);
     }
 
+    @Transactional
     @Override
     public U updateContactInformation(Id userId, String contactInformation) throws EntityNotFoundException, BadEntityException {
         getAclTemplate().checkPermission(userId, getEntityClass(), BasePermission.WRITE);
@@ -90,6 +99,7 @@ public abstract class AbstractSecuredUserServiceDecorator
         throw new UnsupportedOperationException("for internal use only");
     }
 
+    @Transactional
     @Override
     public U blockUser(String contactInformation) throws EntityNotFoundException, BadEntityException {
         AuthorizationTemplate.assertHasRoles(AuthRoles.ADMIN);

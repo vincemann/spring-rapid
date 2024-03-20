@@ -3,7 +3,6 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 
@@ -14,9 +13,9 @@ import java.util.Optional;
 public interface UserService<U extends AbstractUser<ID>, ID extends Serializable>
 {
 
+    Class<U> getEntityClass();
     U create(U user) throws BadEntityException;
     Optional<U> findByContactInformation(String contactInformation);
-    U findPresentByContactInformation(String contactInformation) throws EntityNotFoundException;
 
     U addRole(ID userId, String role) throws EntityNotFoundException, BadEntityException;
 
@@ -32,5 +31,5 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
     U blockUser(String contactInformation) throws EntityNotFoundException, BadEntityException;
 
-    void delete(long id);
+    void delete(ID id) throws EntityNotFoundException;
 }

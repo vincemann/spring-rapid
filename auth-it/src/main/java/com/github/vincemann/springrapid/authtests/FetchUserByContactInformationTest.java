@@ -1,7 +1,5 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.auth.dto.user.ReadOwnUserDto;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 

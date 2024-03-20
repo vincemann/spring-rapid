@@ -24,7 +24,7 @@ public class SignupServiceImpl implements SignupService {
 
     private final Log log = LogFactory.getLog(SignupServiceImpl.class);
 
-    private UserService<AbstractUser<?>,?> userService;
+    private UserService userService;
     private VerificationService verificationService;
     private PasswordValidator passwordValidator;
     private ContactInformationValidator contactInformationValidator;

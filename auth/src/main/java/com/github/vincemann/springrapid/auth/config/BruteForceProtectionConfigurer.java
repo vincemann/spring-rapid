@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @ConditionalOnProperty(name = "rapid-auth.bruteforce-protection", havingValue = "true")
 public class BruteForceProtectionConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
+
     private final LoginAttemptService loginAttemptService;
     private final AuthProperties properties;
 

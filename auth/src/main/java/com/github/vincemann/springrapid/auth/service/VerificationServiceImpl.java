@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.service;
 
+import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
@@ -15,6 +16,7 @@ import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
+import com.github.vincemann.springrapid.core.util.RepositoryUtil;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.apache.commons.logging.Log;
@@ -25,6 +27,8 @@ import org.springframework.util.Assert;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
+
+import static com.github.vincemann.springrapid.auth.util.UserUtils.findPresentByContactInformation;
 
 public class VerificationServiceImpl implements VerificationService {
 
@@ -38,7 +42,9 @@ public class VerificationServiceImpl implements VerificationService {
 
     private MessageSender messageSender;
 
-    private UserService<AbstractUser<Serializable>,Serializable> userService;
+    private UserService userService;
+
+    private AbstractUserRepository userRepository;
 
     private IdConverter idConverter;
 
@@ -92,7 +98,7 @@ public class VerificationServiceImpl implements VerificationService {
     @Override
     public AbstractUser resendVerificationMessage(String contactInformation) throws EntityNotFoundException, BadEntityException {
         VerifyEntity.notEmpty(contactInformation,"contact-information");
-        AbstractUser user = userService.findPresentByContactInformation(contactInformation);
+        AbstractUser user = findPresentByContactInformation(userRepository,contactInformation);
         // must be unverified
         VerifyEntity.isTrue(user.getRoles().contains(AuthRoles.UNVERIFIED), " Already verified");
 
@@ -125,7 +131,12 @@ public class VerificationServiceImpl implements VerificationService {
         Serializable id = idConverter.toId(claims.getSubject());
         Assert.notNull(id);
         // fetch the user
-        return userService.findPresentById(id);
+        return (AbstractUser) RepositoryUtil.findPresentById(userRepository,id);
+    }
+
+    @Autowired
+    public void setUserRepository(AbstractUserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Autowired

@@ -53,7 +53,7 @@ public class AdminInitializer implements CommandLineRunner {
                 }
                 if (replace){
                     log.debug("replacing...");
-                    userService.deleteById(saved.get().getId());
+                    userService.delete(saved.get().getId());
                 }else {
                     log.debug("keeping old admin");
                     continue;

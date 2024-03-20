@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acldemo.service.user;
 import com.github.vincemann.springrapid.acl.Secured;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
-import com.github.vincemann.springrapid.auth.service.AbstractSecuredUserServiceDecorator;
+import com.github.vincemann.springrapid.auth.service.SecuredUserServiceDecorator;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import java.util.Optional;
 @Service
 @Secured
 public class SecuredOwnerService
-        extends AbstractSecuredUserServiceDecorator<OwnerService, Owner,Long>
+        extends SecuredUserServiceDecorator<OwnerService, Owner,Long>
         implements OwnerService {
 
 

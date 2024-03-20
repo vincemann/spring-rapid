@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.core.sec.Roles;
 import java.util.Set;
 
 
-public class ReadOwnUserDto extends AbstractUserDto {
+public class ReadUserDto extends AbstractUserDto {
 
     private String id;
 
@@ -17,13 +17,13 @@ public class ReadOwnUserDto extends AbstractUserDto {
     private boolean goodUser = false;
 
 
-    public ReadOwnUserDto(String contactInformation, Set<String> roles, String id) {
+    public ReadUserDto(String contactInformation, Set<String> roles, String id) {
         super(contactInformation,roles);
         this.id = id;
         initFlags();
     }
 
-    public ReadOwnUserDto() {
+    public ReadUserDto() {
     }
 
     public void initFlags() {

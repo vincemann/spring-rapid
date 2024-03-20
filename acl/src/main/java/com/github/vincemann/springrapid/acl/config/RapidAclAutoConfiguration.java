@@ -82,16 +82,6 @@ public class RapidAclAutoConfiguration {
         return factoryBean;
     }
 
-//    @ConditionalOnMissingBean(EhCacheManagerFactoryBean.class)
-//    @Bean
-//    @Primary
-//    public EhCacheManagerFactoryBean aclCacheManagerBean() {
-//        //for unit tests, es soll nicht immer wieder neuer manager erstellt werden, der dann cacheFactory mit selben name kreiert, was die rules violated
-//        EhCacheManagerFactoryBean ehCacheManagerFactoryBean = new EhCacheManagerFactoryBean();
-////        ehCacheManagerFactoryBean.setShared(true);
-//        return ehCacheManagerFactoryBean;
-//    }
-
     @ConditionalOnMissingBean(PermissionGrantingStrategy.class)
     @Bean
     public PermissionGrantingStrategy permissionGrantingStrategy() {

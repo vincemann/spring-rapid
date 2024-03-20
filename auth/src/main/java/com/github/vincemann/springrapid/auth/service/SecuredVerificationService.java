@@ -2,7 +2,9 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.acl.AclTemplate;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
+import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -13,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SecuredVerificationService implements VerificationService{
 
     private VerificationService decorated;
-    private UserService userService;
+    private AbstractUserRepository repository;
     private AclTemplate aclTemplate;
 
     public SecuredVerificationService(VerificationService decorated) {
@@ -33,7 +35,7 @@ public class SecuredVerificationService implements VerificationService{
     @Transactional
     @Override
     public AbstractUser resendVerificationMessage(String contactInformation) throws EntityNotFoundException, BadEntityException {
-        AbstractUser user = userService.findPresentByContactInformation(contactInformation);
+        AbstractUser user = UserUtils.findPresentByContactInformation(repository,contactInformation);
         aclTemplate.checkPermission(user, BasePermission.ADMINISTRATION);
         return decorated.resendVerificationMessage(contactInformation);
     }
@@ -45,9 +47,8 @@ public class SecuredVerificationService implements VerificationService{
     }
 
     @Autowired
-    @Root
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    public void setRepository(AbstractUserRepository repository) {
+        this.repository = repository;
     }
 
     @Autowired

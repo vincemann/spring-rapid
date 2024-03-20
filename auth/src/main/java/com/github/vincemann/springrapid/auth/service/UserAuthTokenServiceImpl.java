@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.service;
 
+import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
@@ -13,17 +14,19 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
+import static com.github.vincemann.springrapid.auth.util.UserUtils.findPresentByContactInformation;
+
 // need this class as a wrapper so I can implement security extension properly
 public class UserAuthTokenServiceImpl implements UserAuthTokenService {
 
-    private UserService userService;
+    private AbstractUserRepository userRepository;
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
     private AuthorizationTokenService authorizationTokenService;
 
     public String createNewAuthToken(String contactInformation) throws EntityNotFoundException, BadEntityException {
         VerifyEntity.notEmpty(contactInformation,"contact-information");
-        AbstractUser byContactInformation = userService.findPresentByContactInformation(contactInformation);
-        return authorizationTokenService.createToken(authenticatedPrincipalFactory.create(byContactInformation));
+        AbstractUser user = findPresentByContactInformation(userRepository,contactInformation);
+        return authorizationTokenService.createToken(authenticatedPrincipalFactory.create(user));
     }
 
     public String createNewAuthToken() throws EntityNotFoundException {
@@ -39,9 +42,8 @@ public class UserAuthTokenServiceImpl implements UserAuthTokenService {
     }
 
     @Autowired
-    @Root
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    public void setUserRepository(AbstractUserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Autowired

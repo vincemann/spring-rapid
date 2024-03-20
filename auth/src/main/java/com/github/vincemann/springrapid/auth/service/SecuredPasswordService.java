@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.acl.AclTemplate;
+import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
@@ -14,10 +15,12 @@ import org.springframework.security.acls.domain.BasePermission;
 
 import java.util.Optional;
 
+import static com.github.vincemann.springrapid.auth.util.UserUtils.findPresentByContactInformation;
+
 public class SecuredPasswordService implements PasswordService {
 
     private PasswordService decorated;
-    private UserService userService;
+    private AbstractUserRepository userRepository;
     private AclTemplate aclTemplate;
 
     public SecuredPasswordService(PasswordService decorated) {
@@ -41,15 +44,14 @@ public class SecuredPasswordService implements PasswordService {
         VerifyEntity.notEmpty(dto.getContactInformation(),"contact information");
         VerifyEntity.notEmpty(dto.getNewPassword(),"new password");
         VerifyEntity.notEmpty(dto.getOldPassword(),"old password");
-        AbstractUser user = userService.findPresentByContactInformation(dto.getContactInformation());
+        AbstractUser user = findPresentByContactInformation(userRepository,dto.getContactInformation());
         aclTemplate.checkPermission(user, BasePermission.WRITE);
         return decorated.changePassword(dto);
     }
 
     @Autowired
-    @Root
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    public void setUserRepository(AbstractUserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Autowired

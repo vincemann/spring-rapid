@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
@@ -15,6 +16,7 @@ import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
+import com.github.vincemann.springrapid.core.util.RepositoryUtil;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.apache.commons.logging.Log;
@@ -28,6 +30,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.Serializable;
 import java.util.Optional;
 
+import static com.github.vincemann.springrapid.auth.util.UserUtils.findPresentByContactInformation;
+
 public class PasswordServiceImpl implements PasswordService {
 
     private final Log log = LogFactory.getLog(PasswordServiceImpl.class);
@@ -35,13 +39,15 @@ public class PasswordServiceImpl implements PasswordService {
     public static final String FORGOT_PASSWORD_AUDIENCE = "forgot-password";
 
 
-    private UserService<AbstractUser<Serializable>,Serializable> userService;
+    private UserService userService;
     private AuthProperties properties;
     private JweTokenService jweTokenService;
     private MessageSender messageSender;
     private IdConverter idConverter;
     private PasswordEncoder passwordEncoder;
     private PasswordValidator passwordValidator;
+
+    private AbstractUserRepository userRepository;
 
 
 
@@ -51,10 +57,9 @@ public class PasswordServiceImpl implements PasswordService {
     public AbstractUser forgotPassword(String contactInformation) throws EntityNotFoundException, BadEntityException {
         VerifyEntity.notEmpty(contactInformation,"need non emtpy contact information");
         // fetch the user record from database
-        Optional<AbstractUser<Serializable>> user = userService.findByContactInformation(contactInformation);
-        VerifyEntity.isPresent(user, "User with contactInformation: " + contactInformation + " not found");
-        TransactionalUtils.afterCommit(() -> sendForgotPasswordMessage(user.get()));
-        return user.get();
+        AbstractUser user = findPresentByContactInformation(userRepository,contactInformation);
+        TransactionalUtils.afterCommit(() -> sendForgotPasswordMessage(user));
+        return user;
     }
 
     @Transactional
@@ -82,7 +87,7 @@ public class PasswordServiceImpl implements PasswordService {
         VerifyEntity.notEmpty(dto.getOldPassword(),"old password");
         VerifyEntity.notEmpty(dto.getContactInformation(),"contact-information");
 
-        AbstractUser<Serializable> user = userService.findPresentByContactInformation(dto.getContactInformation());
+        AbstractUser user = findPresentByContactInformation(userRepository,dto.getContactInformation());
         String oldPassword = user.getPassword();
 
         VerifyEntity.isTrue(
@@ -134,9 +139,13 @@ public class PasswordServiceImpl implements PasswordService {
         Serializable id = idConverter.toId(claims.getSubject());
         Assert.notNull(id);
         // fetch the user
-        return userService.findPresentById(id);
+        return (AbstractUser) RepositoryUtil.findPresentById(userRepository,(id));
     }
 
+    @Autowired
+    public void setUserRepository(AbstractUserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Autowired
     @Root

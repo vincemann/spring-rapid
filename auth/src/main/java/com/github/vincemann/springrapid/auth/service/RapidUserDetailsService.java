@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.service;
 
+import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
@@ -20,14 +21,14 @@ import java.util.Optional;
 public class RapidUserDetailsService
         implements UserDetailsService {
 
-    private UserService userService;
+    private AbstractUserRepository userRepository;
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
 
 
     @Transactional
     @Override
     public RapidPrincipal loadUserByUsername(String contactInformation) throws UsernameNotFoundException {
-        Optional<AbstractUser<?>> user = userService.findByContactInformation(contactInformation);
+        Optional<AbstractUser<?>> user = userRepository.findByContactInformation(contactInformation);
         if (user.isEmpty()) {
             throw new UsernameNotFoundException(
                     Message.get("com.github.vincemann.userNotFound", contactInformation));
@@ -41,8 +42,7 @@ public class RapidUserDetailsService
     }
 
     @Autowired
-    @Root
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    public void setUserRepository(AbstractUserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 }

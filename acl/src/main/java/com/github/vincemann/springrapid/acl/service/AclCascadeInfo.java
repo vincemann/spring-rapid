@@ -20,10 +20,6 @@ public class AclCascadeInfo<S extends IdAwareEntity,T extends IdAwareEntity> {
 
 
     public AclCascadeInfo(Class<S> source, Predicate<S> sourceFilter, Predicate<T> targetFilter, Predicate<AccessControlEntry> aceFilter, TargetSupplier<S,T> target) {
-//        if (source == null)
-//            this.source = (Class<S>) GenericTypeResolver.resolveTypeArguments(this.getClass(),AclCascadeInfo.class)[0];
-//        else
-//            this.source = source;
         this.source = source;
         this.sourceFilter = sourceFilter;
         this.target = target;

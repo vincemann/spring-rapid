@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.authdemo.dto.*;
-import com.github.vincemann.springrapid.authdemo.dto.user.MyReadOwnUserDto;
+import com.github.vincemann.springrapid.authdemo.dto.user.MyReadUserDto;
 import com.github.vincemann.springrapid.authdemo.dto.user.MyAdminUpdatesUserDto;
 import com.github.vincemann.springrapid.authdemo.dto.user.UserUpdatesUserDto;
 import com.github.vincemann.springrapid.authdemo.model.User;
@@ -43,16 +43,16 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
                 .thenReturn(UserUpdatesUserDto.class);
 
         builder.when(direction(Direction.RESPONSE).and(principal(Principal.OWN)))
-                .thenReturn(MyReadOwnUserDto.class);
+                .thenReturn(MyReadUserDto.class);
 
 
         super.configureDtoMappings(builder);
     }
 
     @PostMapping(path = "/api/core/user/signup",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MyReadOwnUserDto> signup(@Valid @RequestBody MySignupDto signupDto) throws BadEntityException, EntityNotFoundException, AlreadyRegisteredException {
+    public ResponseEntity<MyReadUserDto> signup(@Valid @RequestBody MySignupDto signupDto) throws BadEntityException, EntityNotFoundException, AlreadyRegisteredException {
         User saved = signupService.signup(signupDto);
-        MyReadOwnUserDto dto = getDtoMapper().mapToDto(saved, MyReadOwnUserDto.class);
+        MyReadUserDto dto = getDtoMapper().mapToDto(saved, MyReadUserDto.class);
         return okWithAuthToken(dto,saved.getContactInformation());
     }
 
