@@ -1,52 +1,60 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
-import com.github.vincemann.springrapid.acl.SecuredCrudController;
-import com.github.vincemann.springrapid.acldemo.Roles;
-import com.github.vincemann.springrapid.acldemo.dto.pet.*;
+import com.github.vincemann.springrapid.acl.Secured;
+import com.github.vincemann.springrapid.acldemo.controller.map.PetMappingService;
+import com.github.vincemann.springrapid.acldemo.dto.pet.CreatePetDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerReadsOwnPetDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.UpdatePetsIllnessesDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.VetReadsPetDto;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
-import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
-import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
-import com.github.vincemann.springrapid.core.controller.dto.map.Principal;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
-import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
+import java.util.Optional;
 
 
 @Controller
-public class PetController extends SecuredCrudController<Pet, Long, PetService> {
+@RequestMapping("/api/core/pet/")
+public class PetController {
 
-    @Override
-    protected void configureDtoMappings(DtoMappingsBuilder builder) {
+    private PetService petService;
+    private PetMappingService mappingService;
 
-        builder.when(endpoint(getCreateUrl())
-                        .and(roles(Roles.OWNER))
-                        .and(direction(Direction.REQUEST)))
-                .thenReturn(CreatePetDto.class);
+    @PostMapping("create")
+    public OwnerReadsOwnPetDto create(@RequestBody CreatePetDto dto) throws EntityNotFoundException {
+        Pet pet = petService.create(dto);
+        return mappingService.mapToOwnerReadsOwnPetDto(pet);
+    }
 
-        builder.when(endpoint(getUpdateUrl())
-                        .and(roles(Roles.OWNER))
-                        .and(direction(Direction.REQUEST)))
-                .thenReturn(OwnerUpdatesPetDto.class);
+    @GetMapping("find")
+    public Object find(@RequestParam("name") String name){
+        Optional<Pet> pet = petService.findByName(name);
+        return mappingService.mapToReadPetDto(pet.get());
+    }
 
-        builder.when(roles(Roles.OWNER)
-                        .and(direction(Direction.RESPONSE))
-                        .and(principal(Principal.OWN)))
-                .thenReturn(OwnerReadsOwnPetDto.class);
+    @PutMapping("update-illnesses")
+    public VetReadsPetDto updatePetsIllnesses(@RequestBody UpdatePetsIllnessesDto dto) throws EntityNotFoundException {
+        Pet pet = petService.updateIllnesses(dto);
+        return mappingService.mapToVetReadsPetDto(pet);
+    }
 
-        builder.when(roles(Roles.OWNER)
-                        .and(direction(Direction.RESPONSE))
-                        .and(principal(Principal.FOREIGN)))
-                .thenReturn(OwnerReadsForeignPetDto.class);
+    @PutMapping("update-name")
+    public void updatePetsName(@RequestParam("old") String oldName, @RequestParam("new") String newName) throws EntityNotFoundException, BadEntityException {
+        petService.updateName(oldName,newName);
+    }
 
-        builder.when(endpoint(getUpdateUrl())
-                        .and(roles(Roles.VET))
-                        .and(direction(Direction.REQUEST)))
-                .thenReturn(VetUpdatesPetDto.class);
+    @Autowired
+    @Secured
+    public void setPetService(PetService petService) {
+        this.petService = petService;
+    }
 
-        builder.when(roles(Roles.VET)
-                        .and(direction(Direction.RESPONSE)))
-                .thenReturn(VetReadsPetDto.class);
-
+    @Autowired
+    public void setMappingService(PetMappingService mappingService) {
+        this.mappingService = mappingService;
     }
 }

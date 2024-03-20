@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.syncdemo.controller;
 
-import com.github.vincemann.springrapid.core.controller.CrudController;
+import com.github.vincemann.springrapid.core.controller.FetchableEntityController;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
 import com.github.vincemann.springrapid.syncdemo.dto.VetDto;
 import com.github.vincemann.springrapid.syncdemo.model.Vet;
@@ -11,7 +11,7 @@ import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappin
 
 @Controller
 public class VetController
-        extends CrudController<Vet, Long, VetService> {
+        extends FetchableEntityController<Vet, Long, VetService> {
 
 
     @Override

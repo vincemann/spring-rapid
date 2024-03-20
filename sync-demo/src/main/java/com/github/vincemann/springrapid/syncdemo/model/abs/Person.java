@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.syncdemo.model.abs;
 
-import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
+import com.github.vincemann.springrapid.sync.model.audit.AuditingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

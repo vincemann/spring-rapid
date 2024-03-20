@@ -8,8 +8,7 @@ import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
-import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.core.sec.AuthorizationTemplate;
+import com.github.vincemann.springrapid.core.sec.AuthorizationUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyAccess;
@@ -52,7 +51,7 @@ public class SecuredVisitService
     @Override
     public Visit create(Visit visit) throws BadEntityException {
         // must not be unverified
-        AuthorizationTemplate.assertNotHasRoles(AuthRoles.UNVERIFIED);
+        AuthorizationUtils.assertNotHasRoles(AuthRoles.UNVERIFIED);
 
         // need to have create permission on vet
         Vet vet = visit.getVet();

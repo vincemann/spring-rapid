@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.sync.softdelete;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
+import com.github.vincemann.springrapid.sync.model.audit.AuditingEntity;
 
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;

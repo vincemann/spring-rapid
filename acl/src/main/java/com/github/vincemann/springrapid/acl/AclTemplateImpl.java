@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acl;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
-import com.github.vincemann.springrapid.core.sec.AuthorizationTemplate;
+import com.github.vincemann.springrapid.core.sec.AuthorizationUtils;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +52,7 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
 
     @Override
     public <E extends IdAwareEntity<? extends Serializable>, C extends Collection<E>> C filter(C toFilter, Permission permission) {
-        AuthorizationTemplate.assertAuthenticated();
+        AuthorizationUtils.assertAuthenticated();
         Collection<E> filtered = new HashSet<>();
         for (E entity : toFilter) {
             boolean permitted = _checkPermission(entity.getId(), entity.getClass(), permission);
@@ -82,7 +82,7 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
         Assert.notNull(clazz,"entity class must not be null");
         Assert.notNull(id,"id must not be null");
 
-        AuthorizationTemplate.assertAuthenticated();
+        AuthorizationUtils.assertAuthenticated();
 
         String permissionString = permissionStringConverter.convert(permission);
         return checkExpression("hasPermission(" + id + ",'" + clazz.getName() + "','" + permissionString + "')");

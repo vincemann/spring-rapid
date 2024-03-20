@@ -1,11 +1,10 @@
 package com.github.vincemann.springrapid.sync.repo;
 
-import com.github.vincemann.springrapid.core.model.audit.IAuditingEntity;
+import com.github.vincemann.springrapid.sync.model.audit.IAuditingEntity;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 
-import javax.validation.constraints.Null;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;

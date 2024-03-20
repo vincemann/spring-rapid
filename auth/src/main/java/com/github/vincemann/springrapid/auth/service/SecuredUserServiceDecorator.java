@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.acl.service.SecuredServiceDecorator;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
-import com.github.vincemann.springrapid.core.sec.AuthorizationTemplate;
+import com.github.vincemann.springrapid.core.sec.AuthorizationUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.core.GenericTypeResolver;
@@ -50,7 +50,7 @@ public abstract class SecuredUserServiceDecorator
     @Transactional
     @Override
     public U create(U user) throws BadEntityException {
-        AuthorizationTemplate.assertHasRoles(AuthRoles.ADMIN);
+        AuthorizationUtils.assertHasRoles(AuthRoles.ADMIN);
         return getDecorated().create(user);
     }
 
@@ -64,14 +64,14 @@ public abstract class SecuredUserServiceDecorator
     @Transactional
     @Override
     public U addRole(Id userId, String role) throws EntityNotFoundException, BadEntityException {
-        AuthorizationTemplate.assertHasRoles(AuthRoles.ADMIN);
+        AuthorizationUtils.assertHasRoles(AuthRoles.ADMIN);
         return getDecorated().addRole(userId, role);
     }
 
     @Transactional
     @Override
     public U removeRole(Id userId, String role) throws EntityNotFoundException, BadEntityException {
-        AuthorizationTemplate.assertHasRoles(AuthRoles.ADMIN);
+        AuthorizationUtils.assertHasRoles(AuthRoles.ADMIN);
         return getDecorated().removeRole(userId, role);
     }
 
@@ -102,7 +102,7 @@ public abstract class SecuredUserServiceDecorator
     @Transactional
     @Override
     public U blockUser(String contactInformation) throws EntityNotFoundException, BadEntityException {
-        AuthorizationTemplate.assertHasRoles(AuthRoles.ADMIN);
+        AuthorizationUtils.assertHasRoles(AuthRoles.ADMIN);
         return getDecorated().blockUser(contactInformation);
     }
 

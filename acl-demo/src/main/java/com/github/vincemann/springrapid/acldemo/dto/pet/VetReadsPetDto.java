@@ -17,7 +17,6 @@ import java.util.Set;
 @NoArgsConstructor
 public class VetReadsPetDto extends AbstractReadPetDto {
 
-    @BiDirChildIdCollection(Illness.class)
     private Set<Long> illnessIds = new HashSet<>();
 
     @Builder

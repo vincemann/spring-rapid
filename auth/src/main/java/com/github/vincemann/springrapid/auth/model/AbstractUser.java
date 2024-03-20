@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.model;
 
+import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 
 import org.springframework.lang.Nullable;
@@ -15,7 +16,7 @@ import java.util.Set;
 
 @MappedSuperclass
 public class AbstractUser<Id extends Serializable>
-		extends AuditingEntity<Id>
+		extends IdAwareEntityImpl<Id>
 {
 	public static final int CONTACT_INFORMATION_MAX = 250;
 

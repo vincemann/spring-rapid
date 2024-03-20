@@ -2,12 +2,8 @@ package com.github.vincemann.springrapid.core.service;
 
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.ResolvableType;
 import org.springframework.data.repository.CrudRepository;
 
@@ -22,7 +18,7 @@ public class RepositoryAccessor implements ApplicationContextAware {
     }
 
     @SuppressWarnings("unchecked")
-    public <T, ID> CrudRepository<T, ID> getRepositoryForEntityClass(Class<T> entityClass) {
+    public <T, ID> CrudRepository<T, ID> findRepository(Class<T> entityClass) {
         // Iterate over all beans of type CrudRepository
         String[] repoBeanNames = applicationContext.getBeanNamesForType(CrudRepository.class);
         for (String beanName : repoBeanNames) {

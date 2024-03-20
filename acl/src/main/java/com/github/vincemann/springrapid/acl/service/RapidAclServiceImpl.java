@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.acl.service;
 
 import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.model.IdAwareEntity;
-import com.github.vincemann.springrapid.core.sec.AuthorizationTemplate;
+import com.github.vincemann.springrapid.core.sec.AuthorizationUtils;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.sec.Roles;
 import org.apache.commons.logging.Log;
@@ -102,7 +102,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     protected String findAuthenticatedName() {
-        AuthorizationTemplate.assertAuthenticated();
+        AuthorizationUtils.assertAuthenticated();
         return RapidSecurityContext.getName();
     }
 

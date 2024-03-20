@@ -66,7 +66,7 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
                                  Serializable targetId, String targetType, Object permission) {
         try {
             Serializable id = idConverter.toId(targetId.toString());
-            CrudRepository repo = repositoryAccessor.getRepositoryForEntityClass(Class.forName(targetType));
+            CrudRepository repo = repositoryAccessor.findRepository(Class.forName(targetType));
             Optional<IdAwareEntity> entity = repo.findById(id);
             if (entity.isEmpty())
                 throw new IllegalArgumentException("entity permission is checked for does not exist, check before checking acl info");

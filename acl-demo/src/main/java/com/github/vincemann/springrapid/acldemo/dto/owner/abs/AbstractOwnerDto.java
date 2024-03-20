@@ -23,8 +23,6 @@ public abstract class AbstractOwnerDto{
     private String telephone;
 
     private Set<String> hobbies = new HashSet<>();
-
-    @BiDirChildIdCollection(Pet.class)
     private Set<Long> petIds = new HashSet<>();
 
     public AbstractOwnerDto(String firstName, String lastName, String address, String city, String telephone, Set<String> hobbies, @Nullable Set<Long> petIds) {

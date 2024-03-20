@@ -23,7 +23,6 @@ public class Owner extends User {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner",fetch = FetchType.EAGER)
     @JsonManagedReference
-    @BiDirChildCollection(Pet.class)
     private Set<Pet> pets = new HashSet<>();
 
 
@@ -77,10 +76,6 @@ public class Owner extends User {
                 ", password='" + getPassword() + '\'' +
                 ", roles=" + getRoles() +
                 ", credentialsUpdatedMillis=" + getCredentialsUpdatedMillis() +
-                ", createdById=" + getCreatedById() +
-                ", createdDate=" + getCreatedDate() +
-                ", lastModifiedById=" + getLastModifiedById() +
-                ", lastModifiedDate=" + getLastModifiedDate() +
                 ", id=" + getId() +
                 '}';
     }

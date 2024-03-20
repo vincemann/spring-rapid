@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.core.config;
 
 import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.core.model.audit.RapidAuditorAware;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.RepositoryAccessor;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
@@ -16,7 +15,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.Validator;
@@ -76,12 +74,6 @@ public class RapidCoreAutoConfiguration {
     @ConditionalOnMissingBean(name = "repositoryAccessor")
     public RepositoryAccessor repositoryAccessor(){
         return new RepositoryAccessor();
-    }
-
-    @ConditionalOnMissingBean(AuditorAware.class)
-    @Bean
-    public AuditorAware<Long> auditorAware(){
-        return new RapidAuditorAware<>();
     }
 
 }

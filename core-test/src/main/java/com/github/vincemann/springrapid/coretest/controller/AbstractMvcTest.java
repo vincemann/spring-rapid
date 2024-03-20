@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.coretest.controller;
 
 import com.github.vincemann.springrapid.core.model.IdAwareEntity;
-import com.github.vincemann.springrapid.coretest.InitializingTest;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @AutoConfigureMockMvc
 @SpringBootTest
 @ActiveProfiles("test")
-public abstract class AbstractMvcTest extends InitializingTest implements InitializingBean
+public abstract class AbstractMvcTest implements InitializingBean
 {
 
 

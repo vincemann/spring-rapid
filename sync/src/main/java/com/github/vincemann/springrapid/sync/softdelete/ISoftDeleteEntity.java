@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.sync.softdelete;
 
-import com.github.vincemann.springrapid.core.model.audit.IAuditingEntity;
+import com.github.vincemann.springrapid.sync.model.audit.IAuditingEntity;
 
 import java.io.Serializable;
 import java.util.Date;

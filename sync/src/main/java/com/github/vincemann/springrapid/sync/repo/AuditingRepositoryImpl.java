@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.sync.repo;
 
-import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
-import com.github.vincemann.springrapid.core.model.audit.IAuditingEntity;
+import com.github.vincemann.springrapid.sync.model.audit.AuditingEntity;
+import com.github.vincemann.springrapid.sync.model.audit.IAuditingEntity;
 import com.github.vincemann.springrapid.core.util.Specs;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import org.springframework.data.domain.Sort;

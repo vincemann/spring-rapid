@@ -6,10 +6,9 @@ import org.springframework.lang.Nullable;
 
 import java.util.Set;
 
-@NoArgsConstructor
 @Getter
 @Setter
-
+@NoArgsConstructor
 public class ReadOwnOwnerDto extends AbstractReadOwnerDto {
 
 
@@ -21,3 +20,5 @@ public class ReadOwnOwnerDto extends AbstractReadOwnerDto {
         this.secret = secret;
     }
 }
+
+

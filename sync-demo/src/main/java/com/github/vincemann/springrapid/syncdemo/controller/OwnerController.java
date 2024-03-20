@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.syncdemo.controller;
 
-import com.github.vincemann.springrapid.core.controller.CrudController;
+import com.github.vincemann.springrapid.core.controller.FetchableEntityController;
 import com.github.vincemann.springrapid.core.controller.dto.map.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingsBuilder;
 import com.github.vincemann.springrapid.core.controller.dto.map.Principal;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Controller;
 import static com.github.vincemann.springrapid.core.controller.dto.map.DtoMappingConditions.*;
 
 @Controller
-public class OwnerController extends CrudController<Owner, Long, OwnerService> {
+public class OwnerController extends FetchableEntityController<Owner, Long, OwnerService> {
 
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {

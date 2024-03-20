@@ -30,10 +30,10 @@ public abstract class RapidSecurityContext {
 
     public static void setAuthenticated(RapidPrincipal principal) {
         log.debug(LogMessage.format("authenticated user set to: %s",principal.getUsername()));
-        _setAuthenticated(principal);
+        doSetAuthenticated(principal);
     }
 
-    public static void _setAuthenticated(RapidPrincipal principal){
+    public static void doSetAuthenticated(RapidPrincipal principal){
         SecurityContextHolder.getContext().setAuthentication(createToken(principal));
     }
 
@@ -76,7 +76,7 @@ public abstract class RapidSecurityContext {
         }
         Authentication originalAuth = SecurityContextHolder.getContext().getAuthentication();
         try {
-            _setAuthenticated(getSystemUser());
+            doSetAuthenticated(getSystemUser());
             runnable.run();
         } finally {
             SecurityContextHolder.getContext().setAuthentication(originalAuth);
@@ -89,7 +89,7 @@ public abstract class RapidSecurityContext {
         Authentication originalAuth = SecurityContextHolder.getContext().getAuthentication();
         try {
             // dont go through authentication manager, bc system only exists in ram
-            _setAuthenticated(getSystemUser());
+            doSetAuthenticated(getSystemUser());
             return supplier.get();
         } finally {
             SecurityContextHolder.getContext().setAuthentication(originalAuth);
