@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.auth.dto.*;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.core.util.AopProxyUtils;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
+import com.github.vincemann.springrapid.coretest.controller.template.MvcControllerTestTemplate;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @param <C> UserController type
  */
 public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserController>
-        extends CrudControllerTestTemplate<C> {
+        extends MvcControllerTestTemplate<C> {
     /**
      * needs to be mocked and put into context
      * just use {@link org.springframework.boot.test.mock.mockito.MockBean}
@@ -52,18 +53,6 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     @Override
     public void setMvc(MockMvc mvc) {
         super.setMvc(mvc);
-    }
-
-    public MockHttpServletRequestBuilder signup(SignupDto dto) throws Exception {
-        return post(getController().getSignupUrl())
-                .content(serialize(dto))
-                .contentType(MediaType.APPLICATION_JSON);
-    }
-
-    public AuthMessage signup2xx(SignupDto dto) throws Exception {
-        mvc.perform(signup(dto))
-                .andExpect(status().is2xxSuccessful());
-        return verifyMsgWasSent(dto.getContactInformation());
     }
 
     public String login(AbstractUser user) throws Exception {

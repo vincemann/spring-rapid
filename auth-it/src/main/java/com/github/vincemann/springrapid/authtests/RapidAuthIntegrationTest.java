@@ -4,6 +4,7 @@ import com.github.vincemann.acltest.AclMvcTest;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.auth.service.UserService;
@@ -84,6 +85,9 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
 
     @Autowired
     protected TransactionTemplate transactionTemplate;
+
+    @Autowired
+    protected AbstractUserRepository userRepository;
 
     @BeforeEach
     protected void setup() throws Exception {
@@ -171,7 +175,7 @@ public abstract class RapidAuthIntegrationTest extends AclMvcTest {
     protected void tearDown() throws Exception {
         System.err.println("TEST ENDS HERE -----------------------------------------------------------------------------------------------------------------");
         System.err.println("deleting users");
-        TransactionalTestUtil.clear(userService, transactionTemplate);
+        TransactionalTestUtil.clear(userRepository, transactionTemplate);
         System.err.println("deleted users");
 
         Mockito.reset(AopProxyUtils.getUltimateTargetObject(msgSender));
