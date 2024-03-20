@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.sync.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import com.github.vincemann.springrapid.core.controller.AbstractEntityController;
+import com.github.vincemann.springrapid.core.controller.EntityController;
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.audit.IAuditingEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * @see EntitySyncStatus
  */
 public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Serializable>
-        extends AbstractEntityController<E, Id>
+        extends EntityController<E, Id>
         implements ApplicationContextAware {
 
     private final Log log = LogFactory.getLog(getClass());

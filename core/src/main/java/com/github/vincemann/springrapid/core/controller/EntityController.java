@@ -34,7 +34,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class AbstractEntityController
+public abstract class EntityController
         <
                 E extends IdAwareEntity<ID>,
                 ID extends Serializable
@@ -65,9 +65,9 @@ public abstract class AbstractEntityController
     }
 
     @SuppressWarnings({"all"})
-    public AbstractEntityController() {
-        this.entityClass = (Class<E>) GenericTypeResolver.resolveTypeArguments(this.getClass(),AbstractEntityController.class)[0];
-        this.idClass = (Class<ID>) GenericTypeResolver.resolveTypeArguments(this.getClass(),AbstractEntityController.class)[1];
+    public EntityController() {
+        this.entityClass = (Class<E>) GenericTypeResolver.resolveTypeArguments(this.getClass(), EntityController.class)[0];
+        this.idClass = (Class<ID>) GenericTypeResolver.resolveTypeArguments(this.getClass(), EntityController.class)[1];
     }
 
     @Override

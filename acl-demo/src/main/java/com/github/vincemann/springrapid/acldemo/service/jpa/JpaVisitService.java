@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import com.github.vincemann.springrapid.acldemo.service.user.MyUserService;
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.core.Root;
-import com.github.vincemann.springrapid.core.service.JpaCrudService;
+import com.github.vincemann.springrapid.core.service.AbstractCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @EnableAutoBiDir
 public class JpaVisitService
-        extends JpaCrudService<Visit, Long, VisitRepository>
+        extends AbstractCrudService<Visit, Long, VisitRepository>
         implements VisitService {
 
 

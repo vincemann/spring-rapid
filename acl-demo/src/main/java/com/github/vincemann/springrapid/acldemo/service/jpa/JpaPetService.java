@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.repo.PetRepository;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
-import com.github.vincemann.springrapid.core.service.JpaCrudService;
+import com.github.vincemann.springrapid.core.service.AbstractCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import java.util.Optional;
 @Service
 @EnableAutoBiDir
 public class JpaPetService
-        extends JpaCrudService<Pet, Long, PetRepository>
+        extends AbstractCrudService<Pet, Long, PetRepository>
                 implements PetService {
 
     private RapidAclService aclService;

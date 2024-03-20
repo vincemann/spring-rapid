@@ -13,7 +13,7 @@ import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenSer
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.core.Root;
-import com.github.vincemann.springrapid.core.controller.AbstractEntityController;
+import com.github.vincemann.springrapid.core.controller.EntityController;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.apache.commons.logging.Log;
@@ -36,7 +36,7 @@ import java.util.Optional;
 
 
 public abstract class AbstractUserController<U extends AbstractUser<Id>, Id extends Serializable, S extends UserService<U,Id>>
-			extends AbstractEntityController<U, Id> {
+			extends EntityController<U, Id> {
 
 	private final Log log = LogFactory.getLog(getClass());
 

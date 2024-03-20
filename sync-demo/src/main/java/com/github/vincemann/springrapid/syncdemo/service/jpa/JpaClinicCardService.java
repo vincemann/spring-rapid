@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.syncdemo.service.jpa;
 
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
-import com.github.vincemann.springrapid.core.service.JpaCrudService;
+import com.github.vincemann.springrapid.core.service.AbstractCrudService;
 import com.github.vincemann.springrapid.syncdemo.model.ClinicCard;
 import com.github.vincemann.springrapid.syncdemo.repo.ClinicCardRepository;
 import com.github.vincemann.springrapid.syncdemo.service.ClinicCardService;
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @EnableAutoBiDir
 public class JpaClinicCardService
-        extends JpaCrudService<ClinicCard,Long, ClinicCardRepository>
+        extends AbstractCrudService<ClinicCard,Long, ClinicCardRepository>
             implements ClinicCardService
 {
 }

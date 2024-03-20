@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.service.jpa;
 
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
-import com.github.vincemann.springrapid.core.service.JpaCrudService;
+import com.github.vincemann.springrapid.core.service.AbstractCrudService;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
@@ -15,7 +15,7 @@ import java.util.Optional;
 @Service
 @EnableAutoBiDir
 public class JpaOwnerService
-        extends JpaCrudService<Owner,Long, OwnerRepository>
+        extends AbstractCrudService<Owner,Long, OwnerRepository>
                 implements OwnerService
 {
 
