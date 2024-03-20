@@ -1,13 +1,11 @@
 package com.github.vincemann.springrapid.autobidir.resolveid;
 
 import com.github.vincemann.springrapid.core.controller.dto.EntityDtoPostProcessor;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * Resolves id fields, referencing parent/child entities.
@@ -17,7 +15,7 @@ import java.util.List;
  * @see DelegatingEntityIdResolver
  */
 @Order(1000)
-public class IdResolvingDtoPostProcessor implements EntityDtoPostProcessor<Object, IdentifiableEntity<?>> {
+public class IdResolvingDtoPostProcessor implements EntityDtoPostProcessor<Object, IdAwareEntity<?>> {
 
     private DelegatingEntityIdResolver resolver;
 
@@ -31,13 +29,13 @@ public class IdResolvingDtoPostProcessor implements EntityDtoPostProcessor<Objec
     }
 
     @Override
-    public void postProcessDto(Object dto, IdentifiableEntity<?> entity, String... fieldsToCheck) {
+    public void postProcessDto(Object dto, IdAwareEntity<?> entity, String... fieldsToCheck) {
         resolver.setResolvedIds(dto,entity,fieldsToCheck);
     }
 
     @Transactional
     @Override
-    public void postProcessEntity(IdentifiableEntity<?> entity, Object dto, String... fieldsToCheck) throws BadEntityException, EntityNotFoundException {
+    public void postProcessEntity(IdAwareEntity<?> entity, Object dto, String... fieldsToCheck) throws BadEntityException, EntityNotFoundException {
         resolver.setResolvedEntities(entity,dto,fieldsToCheck);
     }
 

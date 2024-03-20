@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.util;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import org.hibernate.LazyInitializationException;
 
 import javax.persistence.EntityManager;
@@ -40,7 +40,7 @@ public class LazyToStringUtil {
         }
     }
 
-    public static <T extends IdentifiableEntity> String toIdIfLoaded(Set<T> entities){
+    public static <T extends IdAwareEntity> String toIdIfLoaded(Set<T> entities){
         try {
             if (entities == null)
                 return "null";
@@ -48,7 +48,7 @@ public class LazyToStringUtil {
                 return UNLOADED_IGNORED;
             else
                 return entities.stream()
-                        .map(IdentifiableEntity::getId)
+                        .map(IdAwareEntity::getId)
                         .collect(Collectors.toSet())
                         .toString();
         }catch (LazyInitializationException e){
@@ -56,7 +56,7 @@ public class LazyToStringUtil {
         }
     }
 
-    public static <T extends IdentifiableEntity> String toIdIfLoaded(T entity){
+    public static <T extends IdAwareEntity> String toIdIfLoaded(T entity){
         try {
             if (entity == null)
                 return "null";
@@ -75,7 +75,7 @@ public class LazyToStringUtil {
         }
     }
 
-    public static <T extends IdentifiableEntity> String toStringIfLoaded(T entity, Function<? super T, ? extends String> mapper){
+    public static <T extends IdAwareEntity> String toStringIfLoaded(T entity, Function<? super T, ? extends String> mapper){
         try {
             if (entity == null)
                 return "null";

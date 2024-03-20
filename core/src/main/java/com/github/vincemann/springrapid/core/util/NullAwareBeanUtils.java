@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.util;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.expression.Resolver;
 import org.apache.commons.logging.Log;
@@ -165,8 +165,8 @@ public class NullAwareBeanUtils {
                             if (targetCollection != null) {
                                 boolean containsIdentifiableEntity = false;
                                 for (Object entity : targetCollection) {
-                                    if (entity instanceof IdentifiableEntity) {
-                                        if (HibernateProxyUtils.jpaEquals((IdentifiableEntity) entity, (IdentifiableEntity) item)) {
+                                    if (entity instanceof IdAwareEntity) {
+                                        if (HibernateProxyUtils.jpaEquals((IdAwareEntity) entity, (IdAwareEntity) item)) {
                                             containsIdentifiableEntity = true;
                                             break;
                                         }
@@ -187,20 +187,20 @@ public class NullAwareBeanUtils {
                     if (targetCollection != null) {
                         // Remove entities not in the source collection
                         targetCollection.removeIf(entity -> {
-                            if (entity instanceof IdentifiableEntity) {
+                            if (entity instanceof IdAwareEntity) {
                                 return !((Collection<Object>) value).stream()
-                                        .anyMatch(item -> HibernateProxyUtils.jpaEquals((IdentifiableEntity) entity, (IdentifiableEntity) item));
+                                        .anyMatch(item -> HibernateProxyUtils.jpaEquals((IdAwareEntity) entity, (IdAwareEntity) item));
                             } else {
                                 return !((Collection<Object>) value).contains(entity);
                             }
                         });
                         // Add entities from the source collection if not already present
                         for (Object item : (Collection<Object>) value) {
-                            if (item instanceof IdentifiableEntity) {
+                            if (item instanceof IdAwareEntity) {
                                 boolean containsIdentifiableEntity = false;
                                 for (Object entity : targetCollection) {
-                                    if (entity instanceof IdentifiableEntity) {
-                                        if (HibernateProxyUtils.jpaEquals((IdentifiableEntity) entity, (IdentifiableEntity) item)) {
+                                    if (entity instanceof IdAwareEntity) {
+                                        if (HibernateProxyUtils.jpaEquals((IdAwareEntity) entity, (IdAwareEntity) item)) {
                                             containsIdentifiableEntity = true;
                                             break;
                                         }

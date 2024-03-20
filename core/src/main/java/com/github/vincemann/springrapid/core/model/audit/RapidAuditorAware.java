@@ -8,7 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.Serializable;
 
-public abstract class AbstractSecurityAuditorAware<Id extends Serializable> extends AbstractAuditorAware<Id> {
+public class RapidAuditorAware<Id extends Serializable> extends AbstractAuditorAware<Id> {
 
     private IdConverter<Id> idIdConverter;
 

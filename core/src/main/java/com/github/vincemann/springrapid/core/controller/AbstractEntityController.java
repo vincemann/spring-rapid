@@ -2,11 +2,9 @@ package com.github.vincemann.springrapid.core.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.filter.WebExtension;
-import com.google.common.collect.Sets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -17,7 +15,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,12 +28,15 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class AbstractEntityController
         <
-                E extends IdentifiableEntity<ID>,
+                E extends IdAwareEntity<ID>,
                 ID extends Serializable
         >
         implements ApplicationListener<ContextRefreshedEvent>, InitializingBean, ApplicationContextAware

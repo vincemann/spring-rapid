@@ -1,10 +1,8 @@
 package com.github.vincemann.springrapid.core.util;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import org.springframework.util.ReflectionUtils;
 
 import javax.persistence.Id;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;

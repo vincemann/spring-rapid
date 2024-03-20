@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 import lombok.*;
 
 
@@ -17,7 +17,7 @@ import javax.validation.constraints.NotEmpty;
 @Entity
 @Table(name = "pet_types", uniqueConstraints = @UniqueConstraint(name = "unique name", columnNames = "name"))
 @Builder
-public class PetType extends IdentifiableEntityImpl<Long> {
+public class PetType extends IdAwareEntityImpl<Long> {
 
     @NotEmpty
     @Column(name = "name", nullable = false, unique = true)

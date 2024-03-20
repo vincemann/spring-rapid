@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.acl.service;
 
 import com.github.vincemann.springrapid.acl.AclTemplate;
 import com.github.vincemann.springrapid.core.controller.WebExtensionType;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.CrudServiceDecorator;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -11,7 +11,6 @@ import com.github.vincemann.springrapid.core.service.filter.WebExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.BasePermission;
 
 import java.io.Serializable;
@@ -30,7 +29,7 @@ import java.util.Set;
 public class SecuredCrudServiceDecorator
         <
                 S extends CrudService<E, Id>,
-                E extends IdentifiableEntity<Id>,
+                E extends IdAwareEntity<Id>,
                 Id extends Serializable
                 >
         extends CrudServiceDecorator<S, E, Id> {

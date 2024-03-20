@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.UniDirChildEntity;
@@ -28,7 +28,7 @@ import java.util.Set;
         @UniqueConstraint(columnNames = {"name"})
 })
 @Entity
-public class Pet extends IdentifiableEntityImpl<Long> {
+public class Pet extends IdAwareEntityImpl<Long> {
 
     @NotEmpty
     @Column(name = "name", nullable = false, unique = true)

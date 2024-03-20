@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.autobidir.resolveid.annotation.parent.Bi
 import com.github.vincemann.springrapid.autobidir.resolveid.annotation.parent.BiDirParentIdCollection;
 import com.github.vincemann.springrapid.autobidir.util.RelationalEntityReflectionUtils;
 import com.github.vincemann.springrapid.autobidir.util.RelationalEntityIdAnnotationUtils;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.google.common.collect.Sets;
@@ -72,7 +72,7 @@ public class RelationalDtoManagerUtilImpl implements RelationalDtoManagerUtil {
 //        return findChildId(childClazz,UniDirChildId.class);
 //    }
 
-    public Map<Class<IdentifiableEntity>, Serializable> findUniDirChildIds(Object parent){
+    public Map<Class<IdAwareEntity>, Serializable> findUniDirChildIds(Object parent){
         return findEntityIds(parent,UniDirChildId.class);
     }
 
@@ -85,12 +85,12 @@ public class RelationalDtoManagerUtilImpl implements RelationalDtoManagerUtil {
 
 
 
-    public Map<Class<IdentifiableEntity>, Collection<Serializable>> findUniDirChildIdCollections(Object parent, String... fieldsToCheck){
+    public Map<Class<IdAwareEntity>, Collection<Serializable>> findUniDirChildIdCollections(Object parent, String... fieldsToCheck){
         return findEntityIdCollections(parent,UniDirChildIdCollection.class,fieldsToCheck);
     }
 
 
-    public Map<Class<IdentifiableEntity>, Collection<Serializable>> findAllUniDirChildIds(Object parent,String... fieldsToCheck){
+    public Map<Class<IdAwareEntity>, Collection<Serializable>> findAllUniDirChildIds(Object parent, String... fieldsToCheck){
         return findAllEntityIds(parent, UniDirChildId.class, UniDirChildIdCollection.class,fieldsToCheck);
     }
 
@@ -99,7 +99,7 @@ public class RelationalDtoManagerUtilImpl implements RelationalDtoManagerUtil {
      *
      * @param child
      */
-    public void addUniDirChildId(IdentifiableEntity child, Object parent) {
+    public void addUniDirChildId(IdAwareEntity child, Object parent) {
         addEntityId(child,parent, UniDirChildId.class, UniDirChildIdCollection.class);
     }
 
@@ -118,7 +118,7 @@ public class RelationalDtoManagerUtilImpl implements RelationalDtoManagerUtil {
 
     // BIDIR PARENT METHODS
 
-    public Map<Class<IdentifiableEntity>, Serializable> findBiDirChildIds(Object parent) {
+    public Map<Class<IdAwareEntity>, Serializable> findBiDirChildIds(Object parent) {
         return findEntityIds(parent,BiDirChildId.class);
     }
 
@@ -126,11 +126,11 @@ public class RelationalDtoManagerUtilImpl implements RelationalDtoManagerUtil {
 //        return findChildIdCollection(childClazz,BiDirChildIdCollection.class);
 //    }
 
-    public Map<Class<IdentifiableEntity>, Collection<Serializable>> findBiDirChildIdCollections(Object parent, String... fieldsToCheck) {
+    public Map<Class<IdAwareEntity>, Collection<Serializable>> findBiDirChildIdCollections(Object parent, String... fieldsToCheck) {
         return findEntityIdCollections(parent,BiDirChildIdCollection.class,fieldsToCheck);
     }
 
-    public Map<Class<IdentifiableEntity>, Collection<Serializable>> findAllBiDirChildIds(Object parent, String... fieldsToCheck){
+    public Map<Class<IdAwareEntity>, Collection<Serializable>> findAllBiDirChildIds(Object parent, String... fieldsToCheck){
         return findAllEntityIds(parent, BiDirChildId.class, BiDirChildIdCollection.class,fieldsToCheck);
     }
 
@@ -142,29 +142,29 @@ public class RelationalDtoManagerUtilImpl implements RelationalDtoManagerUtil {
      *
      * @param child
      */
-    public void addBiDirChildId(IdentifiableEntity child, Object parent) {
+    public void addBiDirChildId(IdAwareEntity child, Object parent) {
         addEntityId(child,parent, BiDirChildId.class, BiDirChildIdCollection.class);
     }
     
     
     // BIDIR CHILD METHODS
 
-    public Map<Class<IdentifiableEntity>, Serializable> findBiDirParentIds(Object child) {
+    public Map<Class<IdAwareEntity>, Serializable> findBiDirParentIds(Object child) {
         return findEntityIds(child,BiDirParentId.class);
     }
 
 
 
-    public Map<Class<IdentifiableEntity>, Collection<Serializable>> findBiDirParentIdCollections(Object child, String... fieldsToCheck) {
+    public Map<Class<IdAwareEntity>, Collection<Serializable>> findBiDirParentIdCollections(Object child, String... fieldsToCheck) {
         return findEntityIdCollections(child,BiDirParentIdCollection.class,fieldsToCheck);
     }
 
     // adds parents id to child
-    public void addBiDirParentId(IdentifiableEntity parent, Object child) {
+    public void addBiDirParentId(IdAwareEntity parent, Object child) {
         addEntityId(parent,child,BiDirParentId.class,BiDirParentIdCollection.class);
     }
 
-    public Map<Class<IdentifiableEntity>, Collection<Serializable>> findAllBiDirParentIds(Object parent, String... fieldsToCheck){
+    public Map<Class<IdAwareEntity>, Collection<Serializable>> findAllBiDirParentIds(Object parent, String... fieldsToCheck){
         return findAllEntityIds(parent, BiDirParentId.class, BiDirParentIdCollection.class, fieldsToCheck);
     }
 
@@ -197,21 +197,21 @@ public class RelationalDtoManagerUtilImpl implements RelationalDtoManagerUtil {
         return result;
     }
 
-    protected Map<Class<IdentifiableEntity>, Collection<Serializable>> findAllEntityIds(Object entity,Class<? extends Annotation> entityIdAnnotationType, Class<? extends Annotation> entityCollectionIdAnnotationType, String... fieldsToCheck){
-        Map<Class<IdentifiableEntity>, Collection<Serializable>> entityIdCollections = findEntityIdCollections(entity,entityCollectionIdAnnotationType, fieldsToCheck);
-        Map<Class<IdentifiableEntity>, Serializable> uniDirChildIds = findEntityIds(entity,entityIdAnnotationType);
+    protected Map<Class<IdAwareEntity>, Collection<Serializable>> findAllEntityIds(Object entity, Class<? extends Annotation> entityIdAnnotationType, Class<? extends Annotation> entityCollectionIdAnnotationType, String... fieldsToCheck){
+        Map<Class<IdAwareEntity>, Collection<Serializable>> entityIdCollections = findEntityIdCollections(entity,entityCollectionIdAnnotationType, fieldsToCheck);
+        Map<Class<IdAwareEntity>, Serializable> uniDirChildIds = findEntityIds(entity,entityIdAnnotationType);
         uniDirChildIds.forEach((clazz, id) -> entityIdCollections.put(clazz,new HashSet<>(Lists.newArrayList(id))));
         return entityIdCollections;
     }
 
-    protected void addEntityId(IdentifiableEntity src, Object target, Class<? extends Annotation> entityIdAnnotationClass, Class<? extends Annotation> entityIdCollectionAnnotationClass) {
+    protected void addEntityId(IdAwareEntity src, Object target, Class<? extends Annotation> entityIdAnnotationClass, Class<? extends Annotation> entityIdCollectionAnnotationClass) {
         Serializable entityId = src.getId();
         if (entityId == null) {
             throw new IllegalArgumentException("EntityId must not be null");
         }
-        Map<Class<IdentifiableEntity>, Collection<Serializable>> entityIdCollections = findEntityIdCollections(target,entityIdCollectionAnnotationClass);
+        Map<Class<IdAwareEntity>, Collection<Serializable>> entityIdCollections = findEntityIdCollections(target,entityIdCollectionAnnotationClass);
         //child collections
-        for (Map.Entry<Class<IdentifiableEntity>, Collection<Serializable>> entityIdCollectionEntry : entityIdCollections.entrySet()) {
+        for (Map.Entry<Class<IdAwareEntity>, Collection<Serializable>> entityIdCollectionEntry : entityIdCollections.entrySet()) {
             if (entityIdCollectionEntry.getKey().equals(getTargetClass(src))) {
                 //need to add
                 Collection<Serializable> idCollection = entityIdCollectionEntry.getValue();

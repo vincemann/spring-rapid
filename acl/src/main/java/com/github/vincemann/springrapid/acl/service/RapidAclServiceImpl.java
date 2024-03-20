@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acl.service;
 
 import com.github.vincemann.springrapid.acl.util.AclUtils;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.sec.AuthorizationTemplate;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.sec.Roles;
@@ -41,7 +41,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void grantRolePermissionForEntity(String role, IdentifiableEntity<?> entity, Permission... permissions) {
+    public void grantRolePermissionForEntity(String role, IdAwareEntity<?> entity, Permission... permissions) {
         RapidSecurityContext.executeAsSystemUser( () -> {
             final Sid sid = new GrantedAuthoritySid(role);
             addPermissionsForSid(entity, sid, permissions);
@@ -49,7 +49,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void revokeRolesPermissionForEntity(String role, IdentifiableEntity<?> entity, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+    public void revokeRolesPermissionForEntity(String role, IdAwareEntity<?> entity, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         RapidSecurityContext.executeAsSystemUser( () -> {
             final Sid sid = new GrantedAuthoritySid(role);
             deletePermissionForSid(entity, sid, ignoreNotFound, permissions);
@@ -58,7 +58,7 @@ public class RapidAclServiceImpl implements RapidAclService {
 
 
     @Override
-    public void grantUserPermissionForEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) {
+    public void grantUserPermissionForEntity(String user, IdAwareEntity<?> entity, Permission... permissions) {
         RapidSecurityContext.executeAsSystemUser( () -> {
             final Sid sid = new PrincipalSid(user);
             addPermissionsForSid(entity, sid, permissions);
@@ -66,12 +66,12 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void revokeAuthenticatedPermissionForEntity(IdentifiableEntity<?> entity, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+    public void revokeAuthenticatedPermissionForEntity(IdAwareEntity<?> entity, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         revokeUsersPermissionForEntity(findAuthenticatedName(), entity,ignoreNotFound, permissions);
     }
 
     @Override
-    public void revokeUsersPermissionForEntity(String user, IdentifiableEntity<?> entity, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+    public void revokeUsersPermissionForEntity(String user, IdAwareEntity<?> entity, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         RapidSecurityContext.executeAsSystemUser( () -> {
             final Sid sid = new PrincipalSid(user);
             deletePermissionForSid(entity, sid, ignoreNotFound, permissions);
@@ -79,13 +79,13 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void grantAuthenticatedPermissionForEntity(IdentifiableEntity<?> entity, Permission... permissions) {
+    public void grantAuthenticatedPermissionForEntity(IdAwareEntity<?> entity, Permission... permissions) {
         grantUserPermissionForEntity(findAuthenticatedName(), entity, permissions);
     }
 
 
     @Override
-    public void deleteAclOfEntity(Class<? extends IdentifiableEntity> clazz, Serializable id, boolean deleteCascade) {
+    public void deleteAclOfEntity(Class<? extends IdAwareEntity> clazz, Serializable id, boolean deleteCascade) {
         RapidSecurityContext.executeAsSystemUser( () -> {
             ObjectIdentity oi = new ObjectIdentityImpl(clazz, id);
             aclService.deleteAcl(oi, deleteCascade);
@@ -94,7 +94,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void deleteAclOfEntity(IdentifiableEntity<?> entity, boolean deleteCascade) {
+    public void deleteAclOfEntity(IdAwareEntity<?> entity, boolean deleteCascade) {
         RapidSecurityContext.executeAsSystemUser( () -> {
             ObjectIdentity oi = new ObjectIdentityImpl(entity.getClass(), entity.getId());
             aclService.deleteAcl(oi, deleteCascade);
@@ -125,7 +125,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void inheritAces(IdentifiableEntity<?> parent, List<AclCascadeInfo> infos) throws AclNotFoundException {
+    public void inheritAces(IdAwareEntity<?> parent, List<AclCascadeInfo> infos) throws AclNotFoundException {
         RapidSecurityContext.executeAsSystemUser( () -> {
             AclCascadeInfo info = getParentInfo(parent, infos);
             if (info == null)
@@ -136,8 +136,8 @@ public class RapidAclServiceImpl implements RapidAclService {
                     return;
                 }
             }
-            Collection<? extends IdentifiableEntity> children = getAclChildren(parent, info);
-            for (IdentifiableEntity<?> child : children) {
+            Collection<? extends IdAwareEntity> children = getAclChildren(parent, info);
+            for (IdAwareEntity<?> child : children) {
                 copyParentAces(child, parent, info.getAceFilter());
                 // recursion
                 inheritAces(child, infos);
@@ -146,7 +146,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void removeAces(IdentifiableEntity<?> parent, List<AclCascadeInfo> infos) throws AclNotFoundException {
+    public void removeAces(IdAwareEntity<?> parent, List<AclCascadeInfo> infos) throws AclNotFoundException {
         RapidSecurityContext.executeAsSystemUser( () -> {
             AclCascadeInfo info = getParentInfo(parent, infos);
             if (info == null)
@@ -157,8 +157,8 @@ public class RapidAclServiceImpl implements RapidAclService {
                     return;
                 }
             }
-            Collection<? extends IdentifiableEntity> children = getAclChildren(parent, info);
-            for (IdentifiableEntity child : children) {
+            Collection<? extends IdAwareEntity> children = getAclChildren(parent, info);
+            for (IdAwareEntity child : children) {
                 // cannot work with check if all acl entries deleted, bc I cant know how many should be deleted
                 removeAces(child, info.getAceFilter());
                 // recursion
@@ -168,25 +168,25 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void inheritAces(Collection<? extends IdentifiableEntity<?>> parents, List<AclCascadeInfo> infos) throws AclNotFoundException {
+    public void inheritAces(Collection<? extends IdAwareEntity<?>> parents, List<AclCascadeInfo> infos) throws AclNotFoundException {
         RapidSecurityContext.executeAsSystemUser( () -> {
-            for (IdentifiableEntity<?> parent : parents) {
+            for (IdAwareEntity<?> parent : parents) {
                 inheritAces(parent, infos);
             }
         });
     }
 
-    protected Collection<? extends IdentifiableEntity> getAclChildren(IdentifiableEntity<?> parent, AclCascadeInfo info) {
-        Collection<? extends IdentifiableEntity> children = info.getTargetCollection(parent);
+    protected Collection<? extends IdAwareEntity> getAclChildren(IdAwareEntity<?> parent, AclCascadeInfo info) {
+        Collection<? extends IdAwareEntity> children = info.getTargetCollection(parent);
         Predicate filter = info.getTargetFilter();
         if (filter != null)
-            return (Collection<? extends IdentifiableEntity>) children.stream().filter(filter).collect(Collectors.toList());
+            return (Collection<? extends IdAwareEntity>) children.stream().filter(filter).collect(Collectors.toList());
         else
             return children;
     }
 
     @Override
-    public void updateEntriesInheriting(boolean value, IdentifiableEntity<?> child, IdentifiableEntity<?> parent) throws AclNotFoundException {
+    public void updateEntriesInheriting(boolean value, IdAwareEntity<?> child, IdAwareEntity<?> parent) throws AclNotFoundException {
         RapidSecurityContext.executeAsSystemUser( () -> {
             ObjectIdentity childOi = new ObjectIdentityImpl(child.getClass(), child.getId());
             ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
@@ -204,7 +204,7 @@ public class RapidAclServiceImpl implements RapidAclService {
         });
     }
 
-    protected AclCascadeInfo getParentInfo(IdentifiableEntity<?> parent, List<AclCascadeInfo> infos) {
+    protected AclCascadeInfo getParentInfo(IdAwareEntity<?> parent, List<AclCascadeInfo> infos) {
         // first info is always parent
         Optional<AclCascadeInfo> info = infos.stream()
                 .filter(i -> i.matches(parent.getClass()))
@@ -214,7 +214,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void copyParentAces(IdentifiableEntity<?> child, IdentifiableEntity<?> parent, Predicate<AccessControlEntry> aceFilter) throws AclNotFoundException {
+    public void copyParentAces(IdAwareEntity<?> child, IdAwareEntity<?> parent, Predicate<AccessControlEntry> aceFilter) throws AclNotFoundException {
         RapidSecurityContext.executeAsSystemUser( () -> {
             ObjectIdentity childOi = new ObjectIdentityImpl(child.getClass(), child.getId());
             ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
@@ -247,7 +247,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public void copyParentAces(IdentifiableEntity<?> child, IdentifiableEntity<?> parent, AceFilterMapping... filterMappings) throws AclNotFoundException {
+    public void copyParentAces(IdAwareEntity<?> child, IdAwareEntity<?> parent, AceFilterMapping... filterMappings) throws AclNotFoundException {
         RapidSecurityContext.executeAsSystemUser( () -> {
             ObjectIdentity childOi = new ObjectIdentityImpl(child.getClass(), child.getId());
             ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
@@ -280,7 +280,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
     @Override
-    public int removeAces(IdentifiableEntity<?> target, Predicate<AccessControlEntry> aceFilter) throws AclNotFoundException {
+    public int removeAces(IdAwareEntity<?> target, Predicate<AccessControlEntry> aceFilter) throws AclNotFoundException {
         return RapidSecurityContext.executeAsSystemUser( () -> {
             ObjectIdentity oi = new ObjectIdentityImpl(target.getClass(), target.getId());
 
@@ -331,7 +331,7 @@ public class RapidAclServiceImpl implements RapidAclService {
     }
 
 
-    protected void addPermissionsForSid(IdentifiableEntity<?> targetObj, Sid sid, Permission... permissions) {
+    protected void addPermissionsForSid(IdAwareEntity<?> targetObj, Sid sid, Permission... permissions) {
         final ObjectIdentity oi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
         if (log.isDebugEnabled())
             log.debug("sid: " + AclUtils.sidToString(sid) + " will gain permissions: "
@@ -358,7 +358,7 @@ public class RapidAclServiceImpl implements RapidAclService {
         }
     }
 
-    protected void deletePermissionForSid(IdentifiableEntity<?> targetObj, Sid sid, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+    protected void deletePermissionForSid(IdAwareEntity<?> targetObj, Sid sid, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         if (log.isDebugEnabled())
             log.debug("sid: " + AclUtils.sidToString(sid) + " will loose permission: " + AclUtils.permissionsToString(permissions) + " over entity: " + targetObj);
 

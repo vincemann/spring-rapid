@@ -1,8 +1,7 @@
 package com.github.vincemann.springrapid.auth.sec;
 
 import com.github.vincemann.springrapid.acl.framework.VerboseAclPermissionEvaluator;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.service.EntityLocator;
 import com.github.vincemann.springrapid.core.service.RepositoryAccessor;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
@@ -19,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * call {@link GlobalSecurityRule#checkAccess(IdentifiableEntity, Object)} on each permission evaluation.
+ * call {@link GlobalSecurityRule#checkAccess(IdAwareEntity, Object)} on each permission evaluation.
  */
 public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermissionEvaluator {
 
@@ -55,7 +54,7 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
         if (targetDomainObject == null)    // if no domain object is provided,
             return true;                // let's pass, allowing the service method
         // to throw a more sensible error message
-        Boolean allowAccess = performGlobalSecurityChecks((IdentifiableEntity<?>) targetDomainObject,permission);
+        Boolean allowAccess = performGlobalSecurityChecks((IdAwareEntity<?>) targetDomainObject,permission);
         if (allowAccess != null)
             return allowAccess;
         else
@@ -69,7 +68,7 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
         try {
             Serializable id = idConverter.toId(targetId.toString());
             CrudRepository repo = repositoryAccessor.getRepositoryForEntityClass(Class.forName(targetType));
-            Optional<IdentifiableEntity> entity = repo.findById(id);
+            Optional<IdAwareEntity> entity = repo.findById(id);
             if (entity.isEmpty())
                 throw new IllegalArgumentException("entity permission is checked for does not exist, check before checking acl info");
             Boolean allowAccess = performGlobalSecurityChecks(entity.get(),permission);
@@ -85,7 +84,7 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
 
 
     @Nullable
-    public Boolean performGlobalSecurityChecks(IdentifiableEntity<?> entity, Object permission){
+    public Boolean performGlobalSecurityChecks(IdAwareEntity<?> entity, Object permission){
         for (GlobalSecurityRule globalSecurityRule : globalSecurityRules) {
             Boolean allowAccess = globalSecurityRule.checkAccess(entity,permission);
             if (allowAccess != null)

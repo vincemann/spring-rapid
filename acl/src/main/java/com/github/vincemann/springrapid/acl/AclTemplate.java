@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.acl;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import org.springframework.stereotype.Component;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.model.Permission;
 
@@ -19,7 +18,7 @@ public interface AclTemplate {
      * Filters a collection based on permission the authenticated User has.
      *
      */
-    public <E extends IdentifiableEntity<? extends Serializable>, C extends Collection<E>>
+    public <E extends IdAwareEntity<? extends Serializable>, C extends Collection<E>>
     C filter(C toFilter, Permission permission);
 
 
@@ -32,7 +31,7 @@ public interface AclTemplate {
      */
     public void checkPermission(Serializable id, Class<?> clazz, Permission permission) throws AccessDeniedException;
 
-    public void checkPermission(IdentifiableEntity<?> entity, Permission permission) throws AccessDeniedException;
+    public void checkPermission(IdAwareEntity<?> entity, Permission permission) throws AccessDeniedException;
 
 
 

@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 
 import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentCollection;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
@@ -9,7 +9,6 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,7 +17,7 @@ import java.util.Set;
 @Setter
 @Table(name = "illnesss", uniqueConstraints = @UniqueConstraint(name = "unique name", columnNames = "name"))
 @Entity
-public class Illness extends IdentifiableEntityImpl<Long> {
+public class Illness extends IdAwareEntityImpl<Long> {
 
     @NotBlank
     @Size(min = 2, max = 30)

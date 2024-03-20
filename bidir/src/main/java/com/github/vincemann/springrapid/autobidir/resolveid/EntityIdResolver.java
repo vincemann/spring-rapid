@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.autobidir.resolveid;
 
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.RepositoryLocator;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -33,14 +33,14 @@ public interface EntityIdResolver {
      * @param entity source entity, from which entity will be taken and resolved to ids
      * @param fieldsToCheck optional: you can limit the fields scanned by giving only the relevant field names
      */
-    void setResolvedEntities(IdentifiableEntity entity, Object targetDto, String... fieldsToCheck) throws BadEntityException, EntityNotFoundException;
+    void setResolvedEntities(IdAwareEntity entity, Object targetDto, String... fieldsToCheck) throws BadEntityException, EntityNotFoundException;
 
     /**
      * Resolve entities by id from {@param dto} and inject (set) them into {@param target} entity.
      * @param targetEntity target entity, that will be modified in this process
      * @param dto source dto, from which ids will be taken and resolved to entities
      */
-    void setResolvedIds(Object dto, IdentifiableEntity targetEntity, String... fieldsToCheck);
+    void setResolvedIds(Object dto, IdAwareEntity targetEntity, String... fieldsToCheck);
 
 
 

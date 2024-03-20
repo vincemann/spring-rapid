@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.github.vincemann.springrapid.core.controller.json.JsonDtoPropertyValidator;
-import com.github.vincemann.springrapid.core.controller.json.JsonDtoPropertyValidatorImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,12 +37,6 @@ public class RapidJsonAutoConfiguration implements WebMvcConfigurer {
         //otherwise actuator fails sometimes
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS,false);
         return mapper;
-    }
-
-    @ConditionalOnMissingBean(JsonDtoPropertyValidator.class)
-    @Bean
-    public JsonDtoPropertyValidator jsonDtoPropertyValidator(){
-        return new JsonDtoPropertyValidatorImpl();
     }
 
 }

@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.controller.suite;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coredemo.controller.suite.template.*;
@@ -135,7 +135,7 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
         SpecialtyDto createSpecialtyDto = new SpecialtyDto(specialty);
         createSpecialtyDto.setVetIds(new HashSet<>(
                 Arrays.stream(vets)
-                        .map(IdentifiableEntityImpl::getId)
+                        .map(IdAwareEntityImpl::getId)
                         .collect(Collectors.toList())));
         return specialtyController.create2xx(createSpecialtyDto,SpecialtyDto.class);
     }
@@ -144,7 +144,7 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
         VetDto createVetDto = new VetDto(vet);
         createVetDto.setSpecialtyIds(new HashSet<>(
                 Arrays.stream(specialtys)
-                        .map(IdentifiableEntityImpl::getId)
+                        .map(IdAwareEntityImpl::getId)
                         .collect(Collectors.toList())));
         return vetController.create2xx(createVetDto,VetDto.class);
     }

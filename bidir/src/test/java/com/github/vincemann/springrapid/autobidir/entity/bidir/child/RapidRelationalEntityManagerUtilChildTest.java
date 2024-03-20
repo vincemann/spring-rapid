@@ -4,8 +4,8 @@ import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManager
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerUtilImpl;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildEntity;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 import org.hibernate.UnknownEntityTypeException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -20,7 +20,7 @@ import java.util.Optional;
 class RapidRelationalEntityManagerUtilChildTest {
 
 
-    private class EntityChild extends IdentifiableEntityImpl<Long>  {
+    private class EntityChild extends IdAwareEntityImpl<Long> {
         @BiDirParentEntity
         private EntityParent entityParent;
         private String name;
@@ -61,7 +61,7 @@ class RapidRelationalEntityManagerUtilChildTest {
         }
     }
 
-    private class SecondEntityParent extends IdentifiableEntityImpl<Long> {
+    private class SecondEntityParent extends IdAwareEntityImpl<Long> {
         @BiDirChildEntity
         private EntityChild entityChild;
 
@@ -74,7 +74,7 @@ class RapidRelationalEntityManagerUtilChildTest {
         }
     }
 
-    private class EntityParent extends IdentifiableEntityImpl<Long> {
+    private class EntityParent extends IdAwareEntityImpl<Long> {
         @BiDirChildEntity
         private EntityChild entityChild;
 
@@ -204,7 +204,7 @@ class RapidRelationalEntityManagerUtilChildTest {
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
         //when
-        Collection<IdentifiableEntity> parents = relationalEntityManagerUtil.findSingleBiDirParents(testEntityChild);
+        Collection<IdAwareEntity> parents = relationalEntityManagerUtil.findSingleBiDirParents(testEntityChild);
         //then
         Assertions.assertEquals(2,parents.size());
     }
@@ -215,10 +215,10 @@ class RapidRelationalEntityManagerUtilChildTest {
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
         Assertions.assertNull(testEntityChild.getUnusedParent());
         //when
-        Collection<IdentifiableEntity> parents = relationalEntityManagerUtil.findSingleBiDirParents(testEntityChild);
+        Collection<IdAwareEntity> parents = relationalEntityManagerUtil.findSingleBiDirParents(testEntityChild);
         //then
         Assertions.assertEquals(1,parents.size());
-        Optional<IdentifiableEntity> biDirParent = parents.stream().findFirst();
+        Optional<IdAwareEntity> biDirParent = parents.stream().findFirst();
         Assertions.assertTrue(biDirParent.isPresent());
         Assertions.assertSame(testEntityParent,biDirParent.get());
     }

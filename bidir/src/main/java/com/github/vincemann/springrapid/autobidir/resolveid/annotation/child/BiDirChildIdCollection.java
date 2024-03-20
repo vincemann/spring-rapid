@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.autobidir.resolveid.annotation.child;
 
 
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -18,5 +18,5 @@ public @interface BiDirChildIdCollection {
      * Type of Children which belong to the annotated id Collection
      * @return
      */
-    Class<? extends IdentifiableEntity> value();
+    Class<? extends IdAwareEntity> value();
 }

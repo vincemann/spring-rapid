@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.autobidir;
 
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManager;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.RepositoryLocator;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -55,7 +55,7 @@ public class RelationalEntityAdvice {
 
         assertTransactionActive();
 
-        Optional<IdentifiableEntity> entity = findById(joinPoint, id);
+        Optional<IdAwareEntity> entity = findById(joinPoint, id);
         if (entity.isPresent()) {
             relationalEntityManager.delete(entity.get());
         } else {
@@ -70,14 +70,14 @@ public class RelationalEntityAdvice {
                     "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.fullUpdateOperation() && " +
                     "args(update)")
-    public void beforeFullUpdate(JoinPoint joinPoint, IdentifiableEntity update) throws EntityNotFoundException, BadEntityException {
+    public void beforeFullUpdate(JoinPoint joinPoint, IdAwareEntity update) throws EntityNotFoundException, BadEntityException {
         if (skip(joinPoint))
             return;
 
         assertTransactionActive();
 
-        IdentifiableEntity old = findById(joinPoint, update.getId()).get();
-        IdentifiableEntity detachedOldEntity = JpaUtils.deepDetach(old);
+        IdAwareEntity old = findById(joinPoint, update.getId()).get();
+        IdAwareEntity detachedOldEntity = JpaUtils.deepDetach(old);
 
         relationalEntityManager.fullUpdate(old, detachedOldEntity, update);
     }
@@ -87,18 +87,18 @@ public class RelationalEntityAdvice {
                     "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.partialUpdateOperation() && " +
                     "args(update,fieldsToUpdate)")
-    public void beforePartialUpdate(JoinPoint joinPoint, IdentifiableEntity update, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
+    public void beforePartialUpdate(JoinPoint joinPoint, IdAwareEntity update, String... fieldsToUpdate) throws EntityNotFoundException, BadEntityException {
         if (skip(joinPoint))
             return;
 
         assertTransactionActive();
 
-        IdentifiableEntity old = findById(joinPoint, update.getId()).get();
+        IdAwareEntity old = findById(joinPoint, update.getId()).get();
 
         Set<String> updatedFields = Entity.findPartialUpdatedFields(update, fieldsToUpdate);
 
         // expects all collections to be initialized and not of Persistent Type
-        IdentifiableEntity detachedOldEntity = BeanUtils.instantiateClass(HibernateProxyUtils.getTargetClass(update));
+        IdAwareEntity detachedOldEntity = BeanUtils.instantiateClass(HibernateProxyUtils.getTargetClass(update));
         NullAwareBeanUtils.copyProperties(detachedOldEntity, old, updatedFields);
 
         relationalEntityManager.partialUpdate(old, detachedOldEntity, update, updatedFields.toArray(new String[0]));
@@ -109,7 +109,7 @@ public class RelationalEntityAdvice {
                     "com.github.vincemann.springrapid.core.RapidArchitecture.serviceOperation() && " +
                     "com.github.vincemann.springrapid.core.RapidArchitecture.createOperation() && " +
                     "args(entity)")
-    public void beforeCreate(JoinPoint joinPoint, IdentifiableEntity entity) {
+    public void beforeCreate(JoinPoint joinPoint, IdAwareEntity entity) {
         if (skip(joinPoint))
             return;
 
@@ -149,7 +149,7 @@ public class RelationalEntityAdvice {
             throw new IllegalArgumentException("service method must be called within transaction, otherwise auto bidir wont work");
     }
 
-    protected Optional<IdentifiableEntity> findById(JoinPoint joinPoint, Serializable id) {
+    protected Optional<IdAwareEntity> findById(JoinPoint joinPoint, Serializable id) {
         // need to get to target, otherwise cant cast to CrudService
         CrudService service = (CrudService) com.github.vincemann.springrapid.core.util.AopProxyUtils.getUltimateTargetObject(joinPoint.getTarget());
         // go via crud service locator so aop is not stripped off

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.model.audit;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -25,7 +25,7 @@ import java.util.Date;
 @JsonIgnoreProperties({ "createdById", "lastModifiedById", "createdDate", "lastModifiedDate", "new" })
 @EntityListeners(AuditingEntityListener.class)
 public class AuditingEntity<ID extends Serializable>
-			extends IdentifiableEntityImpl<ID>
+			extends IdAwareEntityImpl<ID>
 				implements IAuditingEntity<ID>
 {
 

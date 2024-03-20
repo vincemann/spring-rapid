@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.syncdemo.model;
 
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.UniDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.UniDirChildEntity;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +20,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "visits")
-public class Visit extends IdentifiableEntityImpl<Long> {
+public class Visit extends IdAwareEntityImpl<Long> {
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "pet_id")

@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.util;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -21,7 +21,7 @@ public abstract class HibernateProxyUtils {
         }
     }
 
-    public static boolean jpaEquals(IdentifiableEntity entity, IdentifiableEntity other) {
+    public static boolean jpaEquals(IdAwareEntity entity, IdAwareEntity other) {
         if (entity == other) return true;
         if (entity == null || other == null ||
                 HibernateProxyUtils.getTargetClass(entity) != HibernateProxyUtils.getTargetClass(other)) {

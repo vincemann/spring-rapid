@@ -1,16 +1,15 @@
 package com.github.vincemann.springrapid.acl;
 
 import com.github.vincemann.springrapid.core.controller.CrudController;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 
 import java.io.Serializable;
 
 public abstract class SecuredCrudController
         <
-                E extends IdentifiableEntity<Id>,
+                E extends IdAwareEntity<Id>,
                 Id extends Serializable,
                 S extends CrudService<E,Id>
                 >

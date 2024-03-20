@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.syncdemo.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import lombok.*;
 
@@ -17,7 +17,7 @@ import javax.validation.constraints.NotEmpty;
 @Table(name = "toys",uniqueConstraints = @UniqueConstraint(name = "unique name", columnNames = "name"))
 @Entity
 @Builder
-public class Toy extends IdentifiableEntityImpl<Long> {
+public class Toy extends IdAwareEntityImpl<Long> {
 
 
     @NotEmpty

@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.controller.dto.map;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,7 +56,7 @@ class DelegatingDtoMapperTest {
     }
 
 
-    static class KnownEntity extends IdentifiableEntityImpl<Long> {
+    static class KnownEntity extends IdAwareEntityImpl<Long> {
         private String name;
 
         public KnownEntity() {
@@ -72,7 +72,7 @@ class DelegatingDtoMapperTest {
     }
 
 
-    static class KnownDto extends IdentifiableEntityImpl<Long> {
+    static class KnownDto extends IdAwareEntityImpl<Long> {
         private String name;
 
         public KnownDto(String name) {
@@ -87,7 +87,7 @@ class DelegatingDtoMapperTest {
         }
     }
 
-    static class UnknownEntity extends IdentifiableEntityImpl<Long> {
+    static class UnknownEntity extends IdAwareEntityImpl<Long> {
         private String name;
 
         public UnknownEntity(String name) {
@@ -102,7 +102,7 @@ class DelegatingDtoMapperTest {
         }
     }
 
-    static class UnknownDto extends IdentifiableEntityImpl<Long> {
+    static class UnknownDto extends IdAwareEntityImpl<Long> {
         private String name;
 
         public UnknownDto(String name) {

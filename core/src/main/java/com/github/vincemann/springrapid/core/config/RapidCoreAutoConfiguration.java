@@ -1,17 +1,14 @@
 package com.github.vincemann.springrapid.core.config;
 
 import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.core.controller.UrlParamWebExtensionParser;
-import com.github.vincemann.springrapid.core.controller.WebExtensionParser;
-import com.github.vincemann.springrapid.core.controller.dto.map.PrincipalFactory;
-import com.github.vincemann.springrapid.core.controller.dto.map.PrincipalFactoryImpl;
-import com.github.vincemann.springrapid.core.model.audit.LongIdSecurityAuditorAware;
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.service.ctx.ContextService;
-import com.github.vincemann.springrapid.core.service.ctx.CoreContextService;
+import com.github.vincemann.springrapid.core.model.audit.RapidAuditorAware;
+import com.github.vincemann.springrapid.core.service.EndpointService;
+import com.github.vincemann.springrapid.core.service.RepositoryAccessor;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.service.id.LongIdConverter;
-import com.github.vincemann.springrapid.core.util.*;
+import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
+import com.github.vincemann.springrapid.core.util.Message;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -24,6 +21,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+
+import javax.persistence.EntityManager;
 
 @Configuration
 @EnableConfigurationProperties
@@ -31,6 +31,10 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableJpaAuditing
 public class RapidCoreAutoConfiguration {
+
+
+    @Autowired(required = false)
+    EntityManager entityManager;
 
     @Bean
     @ConditionalOnMissingBean(Validator.class)
@@ -56,11 +60,28 @@ public class RapidCoreAutoConfiguration {
         return new CoreProperties();
     }
 
+    @ConditionalOnMissingBean(EndpointService.class)
+    @Bean
+    public EndpointService endpointService(RequestMappingHandlerMapping requestMappingHandlerMapping){
+        return new EndpointService(requestMappingHandlerMapping);
+    }
 
-    @ConditionalOnMissingBean(name = "rapidSecurityAuditorAware")
+    @Autowired
+    public void configureLazyToStringUtil(){
+        LazyToStringUtil.setEntityManager(entityManager);
+    }
+
+
+    @Bean
+    @ConditionalOnMissingBean(name = "repositoryAccessor")
+    public RepositoryAccessor repositoryAccessor(){
+        return new RepositoryAccessor();
+    }
+
+    @ConditionalOnMissingBean(AuditorAware.class)
     @Bean
     public AuditorAware<Long> auditorAware(){
-        return new LongIdSecurityAuditorAware();
+        return new RapidAuditorAware<>();
     }
 
 }

@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.sync;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
 
 import java.lang.annotation.ElementType;
@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * and {@link AuditingEntity#getLastModifiedById()} .
  * Usually used to detect changes to foreign-key relations with other entities.
  *
- * Only works for direct updates via {@link com.github.vincemann.springrapid.core.service.CrudService#partialUpdate(IdentifiableEntity, String...)}
+ * Only works for direct updates via {@link com.github.vincemann.springrapid.core.service.CrudService#partialUpdate(IdAwareEntity, String...)}
  * example:
  * class FooEntity{
  *     @AuditCollection

@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.autobidir.entity.annotation.child.UniDir
 import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentCollection;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
 import com.github.vincemann.springrapid.autobidir.util.RelationalEntityAnnotationUtils;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.HibernateProxyUtils;
 import com.google.common.collect.Sets;
@@ -33,7 +33,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
 
     @Cacheable(value = "entityRelationTypesCache")
     @Override
-    public Set<RelationalEntityType> inferTypes(Class<? extends IdentifiableEntity> entityClass) {
+    public Set<RelationalEntityType> inferTypes(Class<? extends IdAwareEntity> entityClass) {
         Set<RelationalEntityType> relationalEntityTypes = new HashSet<>();
         org.springframework.util.ReflectionUtils.doWithFields(entityClass, field -> {
             org.springframework.util.ReflectionUtils.makeAccessible(field);
@@ -79,9 +79,9 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      * -> set backreference of child
      */
     @Override
-    public void linkBiDirParentsChild(IdentifiableEntity child, String... membersToCheck) {
+    public void linkBiDirParentsChild(IdAwareEntity child, String... membersToCheck) {
         //set backreferences
-        for (IdentifiableEntity parent : findAllBiDirParents(child, membersToCheck)) {
+        for (IdAwareEntity parent : findAllBiDirParents(child, membersToCheck)) {
             linkBiDirChild(parent, child, membersToCheck);
         }
     }
@@ -93,7 +93,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      *
      */
     @Override
-    public Map<Class<IdentifiableEntity>, Collection<IdentifiableEntity>> findBiDirParentCollections(IdentifiableEntity child, String... membersToCheck) {
+    public Map<Class<IdAwareEntity>, Collection<IdAwareEntity>> findBiDirParentCollections(IdAwareEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         return findEntityCollections(child, BiDirParentCollection.class, membersToCheck);
     }
@@ -102,20 +102,20 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      * @return all parents of this, that are not null
      */
     @Override
-    public Collection<IdentifiableEntity> findSingleBiDirParents(IdentifiableEntity child, String... membersToCheck) {
+    public Collection<IdAwareEntity> findSingleBiDirParents(IdAwareEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         return findSingleEntities(child, BiDirParentEntity.class, membersToCheck);
     }
 
     @Override
-    public Collection<IdentifiableEntity> findAllBiDirParents(IdentifiableEntity child, String... membersToCheck) {
+    public Collection<IdAwareEntity> findAllBiDirParents(IdAwareEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         return findAllEntities(child, BiDirParentEntity.class, BiDirParentCollection.class, membersToCheck);
     }
 
 
     @Override
-    public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent, String... membersToCheck) throws AutoHandleEntityRelationShipException {
+    public void linkBiDirParent(IdAwareEntity child, IdAwareEntity parent, String... membersToCheck) throws AutoHandleEntityRelationShipException {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         linkEntity(child, parent, BiDirParentEntity.class, BiDirParentCollection.class, membersToCheck);
@@ -123,8 +123,8 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
 
 
     @Override
-    public void unlinkBiDirParentsFrom(IdentifiableEntity child, String... membersToCheck) throws AutoHandleEntityRelationShipException {
-        for (IdentifiableEntity parent : findAllBiDirParents(child, membersToCheck)) {
+    public void unlinkBiDirParentsFrom(IdAwareEntity child, String... membersToCheck) throws AutoHandleEntityRelationShipException {
+        for (IdAwareEntity parent : findAllBiDirParents(child, membersToCheck)) {
             if (parent != null) {
                 unlinkBiDirParent(child, parent, membersToCheck);
             } else {
@@ -135,7 +135,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
 
 
     @Override
-    public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent, String... membersToCheck) throws AutoHandleEntityRelationShipException {
+    public void unlinkBiDirParent(IdAwareEntity child, IdAwareEntity parent, String... membersToCheck) throws AutoHandleEntityRelationShipException {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         unlinkEntity(child, parent, BiDirParentEntity.class, BiDirParentCollection.class, membersToCheck);
@@ -143,8 +143,8 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
 
 
     @Override
-    public void unlinkBiDirParentsChild(IdentifiableEntity child, String... membersToCheck) throws UnknownEntityTypeException {
-        for (IdentifiableEntity parent : findAllBiDirParents(child, membersToCheck)) {
+    public void unlinkBiDirParentsChild(IdAwareEntity child, String... membersToCheck) throws UnknownEntityTypeException {
+        for (IdAwareEntity parent : findAllBiDirParents(child, membersToCheck)) {
             unlinkBiDirChild(parent, child, membersToCheck);
         }
     }
@@ -152,8 +152,8 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
 
     // BiDirParent Methods
     @Override
-    public void linkBiDirChildrensParent(IdentifiableEntity parent, String... membersToCheck) {
-        for (IdentifiableEntity child : findAllBiDirChildren(parent, membersToCheck)) {
+    public void linkBiDirChildrensParent(IdAwareEntity parent, String... membersToCheck) {
+        for (IdAwareEntity child : findAllBiDirChildren(parent, membersToCheck)) {
             linkBiDirParent(child, parent, membersToCheck);
         }
     }
@@ -165,7 +165,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      * @return
      */
     @Override
-    public Map<Class<IdentifiableEntity>, Collection<IdentifiableEntity>> findBiDirChildCollections(IdentifiableEntity parent, String... membersToCheck) {
+    public Map<Class<IdAwareEntity>, Collection<IdAwareEntity>> findBiDirChildCollections(IdAwareEntity parent, String... membersToCheck) {
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         return findEntityCollections(parent, BiDirChildCollection.class, membersToCheck);
     }
@@ -176,27 +176,27 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      * @return
      */
     @Override
-    public Set<IdentifiableEntity> findSingleBiDirChildren(IdentifiableEntity parent, String... membersToCheck) {
+    public Set<IdAwareEntity> findSingleBiDirChildren(IdAwareEntity parent, String... membersToCheck) {
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         return findSingleEntities(parent, BiDirChildEntity.class, membersToCheck);
     }
 
     @Override
-    public Collection<IdentifiableEntity> findAllBiDirChildren(IdentifiableEntity parent, String... membersToCheck) {
+    public Collection<IdAwareEntity> findAllBiDirChildren(IdAwareEntity parent, String... membersToCheck) {
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         return findAllEntities(parent, BiDirChildEntity.class, BiDirChildCollection.class, membersToCheck);
     }
 
 
     @Override
-    public void linkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToSet, String... membersToCheck) throws AutoHandleEntityRelationShipException {
+    public void linkBiDirChild(IdAwareEntity parent, IdAwareEntity childToSet, String... membersToCheck) throws AutoHandleEntityRelationShipException {
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         assertEntityRelationType(childToSet, RelationalEntityType.BiDirChild);
         linkEntity(parent, childToSet, BiDirChildEntity.class, BiDirChildCollection.class, membersToCheck);
     }
 
 
-    public void unlinkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToDelete, String... membersToCheck) throws AutoHandleEntityRelationShipException {
+    public void unlinkBiDirChild(IdAwareEntity parent, IdAwareEntity childToDelete, String... membersToCheck) throws AutoHandleEntityRelationShipException {
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         assertEntityRelationType(childToDelete, RelationalEntityType.BiDirChild);
         unlinkEntity(parent, childToDelete, BiDirChildEntity.class, BiDirChildCollection.class, membersToCheck);
@@ -208,8 +208,8 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      * @param parent and unlink it from them
      *               -> remove childrens backreference
      */
-    public void unlinkBiDirChildrensParent(IdentifiableEntity parent, String... membersToCheck) throws AutoHandleEntityRelationShipException {
-        for (IdentifiableEntity child : findAllBiDirChildren(parent, membersToCheck)) {
+    public void unlinkBiDirChildrensParent(IdAwareEntity parent, String... membersToCheck) throws AutoHandleEntityRelationShipException {
+        for (IdAwareEntity child : findAllBiDirChildren(parent, membersToCheck)) {
             unlinkBiDirParent(child, parent, membersToCheck);
         }
     }
@@ -224,7 +224,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      *
      * @return
      */
-    public Map<Class<IdentifiableEntity>, Collection<IdentifiableEntity>> findUniDirChildCollections(IdentifiableEntity parent, String... membersToCheck) {
+    public Map<Class<IdAwareEntity>, Collection<IdAwareEntity>> findUniDirChildCollections(IdAwareEntity parent, String... membersToCheck) {
         assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
         return findEntityCollections(parent, UniDirChildCollection.class, membersToCheck);
     }
@@ -234,12 +234,12 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      *
      * @return
      */
-    public Set<IdentifiableEntity> findSingleUniDirChildren(IdentifiableEntity parent, String... membersToCheck) {
+    public Set<IdAwareEntity> findSingleUniDirChildren(IdAwareEntity parent, String... membersToCheck) {
         assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
         return findSingleEntities(parent, UniDirChildEntity.class, membersToCheck);
     }
 
-    public Collection<IdentifiableEntity> findAllUniDirChildren(IdentifiableEntity child, String... membersToCheck) {
+    public Collection<IdAwareEntity> findAllUniDirChildren(IdAwareEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.UniDirParent);
         return findAllEntities(child, UniDirChildEntity.class, UniDirChildCollection.class, membersToCheck);
     }
@@ -253,7 +253,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      * @param newChild
      * @throws AutoHandleEntityRelationShipException
      */
-    public void linkUniDirChild(IdentifiableEntity parent, IdentifiableEntity newChild, String... membersToCheck) throws AutoHandleEntityRelationShipException {
+    public void linkUniDirChild(IdAwareEntity parent, IdAwareEntity newChild, String... membersToCheck) throws AutoHandleEntityRelationShipException {
         assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
         linkEntity(parent, newChild, UniDirChildEntity.class, UniDirChildCollection.class, membersToCheck);
     }
@@ -266,7 +266,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      *
      * @param toRemove
      */
-    public void unlinkUniDirChild(IdentifiableEntity parent, IdentifiableEntity toRemove, String... membersToCheck) throws AutoHandleEntityRelationShipException {
+    public void unlinkUniDirChild(IdAwareEntity parent, IdAwareEntity toRemove, String... membersToCheck) throws AutoHandleEntityRelationShipException {
         assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
         unlinkEntity(parent, toRemove, UniDirChildEntity.class, UniDirChildCollection.class, membersToCheck);
     }
@@ -274,7 +274,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
 
     // CORE GENERIC METHODS
 
-    protected <C> Set<C> findSingleEntities(IdentifiableEntity<?> entity, Class<? extends Annotation> annotationClass, String... membersToCheck) {
+    protected <C> Set<C> findSingleEntities(IdAwareEntity<?> entity, Class<? extends Annotation> annotationClass, String... membersToCheck) {
         Set<C> entities = new HashSet<>();
         EntityReflectionUtils.doWithAnnotatedNamedFields(annotationClass, getTargetClass(entity), Sets.newHashSet(membersToCheck), field -> {
             PropertyAccessor fieldAccessor = PropertyAccessorFactory.forBeanPropertyAccess(entity);
@@ -295,7 +295,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
      *
      * @return
      */
-    protected <C> Map<Class<C>, Collection<C>> findEntityCollections(IdentifiableEntity entity, Class<? extends Annotation> entityAnnotationClass, String... membersToCheck) {
+    protected <C> Map<Class<C>, Collection<C>> findEntityCollections(IdAwareEntity entity, Class<? extends Annotation> entityAnnotationClass, String... membersToCheck) {
         Map<Class<C>, Collection<C>> entityType_collectionMap = new HashMap<>();
 
         // iterate over unproxied entity fields
@@ -327,24 +327,24 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
     }
 
 
-    public Collection<IdentifiableEntity> findAllEntities(IdentifiableEntity entity, Class<? extends Annotation> singleEntityAnnotation, Class<? extends Annotation> collectionEntityAnnotation, String... membersToCheck) {
-        Set<IdentifiableEntity> relatedEntities = new HashSet<>();
+    public Collection<IdAwareEntity> findAllEntities(IdAwareEntity entity, Class<? extends Annotation> singleEntityAnnotation, Class<? extends Annotation> collectionEntityAnnotation, String... membersToCheck) {
+        Set<IdAwareEntity> relatedEntities = new HashSet<>();
         relatedEntities.addAll(findSingleEntities(entity, singleEntityAnnotation, membersToCheck));
-        Map<Class<IdentifiableEntity>, Collection<IdentifiableEntity>> biDirParentCollections = findEntityCollections(entity, collectionEntityAnnotation, membersToCheck);
-        for (Collection<IdentifiableEntity> relatedEntityCollections : biDirParentCollections.values()) {
+        Map<Class<IdAwareEntity>, Collection<IdAwareEntity>> biDirParentCollections = findEntityCollections(entity, collectionEntityAnnotation, membersToCheck);
+        for (Collection<IdAwareEntity> relatedEntityCollections : biDirParentCollections.values()) {
             relatedEntities.addAll(relatedEntityCollections);
         }
         return relatedEntities;
     }
 
 
-    protected void linkEntity(IdentifiableEntity<?> entity, IdentifiableEntity newEntity, Class<? extends Annotation> entityAnnotationClass, Class<? extends Annotation> entityCollectionAnnotationClass, String... membersToCheck) {
+    protected void linkEntity(IdAwareEntity<?> entity, IdAwareEntity newEntity, Class<? extends Annotation> entityAnnotationClass, Class<? extends Annotation> entityCollectionAnnotationClass, String... membersToCheck) {
         AtomicBoolean added = new AtomicBoolean(false);
         //add to matching entity collections
-        for (Map.Entry<Class<IdentifiableEntity>, Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity, entityCollectionAnnotationClass, membersToCheck).entrySet()) {
+        for (Map.Entry<Class<IdAwareEntity>, Collection<IdAwareEntity>> entry : this.<IdAwareEntity>findEntityCollections(entity, entityCollectionAnnotationClass, membersToCheck).entrySet()) {
             // entry always has unproxied correct class type (read from value of annotations)
-            Class<? extends IdentifiableEntity> targetClass = entry.getKey();
-            Collection<IdentifiableEntity> entityCollection = entry.getValue();
+            Class<? extends IdAwareEntity> targetClass = entry.getKey();
+            Collection<IdAwareEntity> entityCollection = entry.getValue();
             if (getTargetClass(newEntity).equals(targetClass)) {
                 // collection should be hibernate persistent set -> add method called on this type will result in hibernate magic
                 entityCollection.add(newEntity);
@@ -356,7 +356,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
         EntityReflectionUtils.doWithNamedAnnotatedFieldsOfType(getTargetClass(newEntity), entityAnnotationClass, entity.getClass(), Sets.newHashSet(membersToCheck), entityField -> {
             PropertyAccessor fieldAccessor = PropertyAccessorFactory.forBeanPropertyAccess(entity);
             // I want to call the getter here on the proxy to also trigger hibernate proxy methods for initialization
-            IdentifiableEntity oldEntity = (IdentifiableEntity) fieldAccessor.getPropertyValue(entityField.getName());
+            IdAwareEntity oldEntity = (IdAwareEntity) fieldAccessor.getPropertyValue(entityField.getName());
             if (oldEntity != null) {
                 log.warn("Overriding old entity: " + oldEntity + " with new entity " + newEntity + " of source sntity " + entity);
             }
@@ -379,21 +379,21 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
     }
 
     // proxies ok
-    protected void unlinkEntity(IdentifiableEntity entity, IdentifiableEntity entityToRemove, Class<? extends Annotation> entityEntityAnnotationClass, Class<? extends Annotation> entityEntityCollectionAnnotationClass, String... membersToCheck) throws UnknownEntityTypeException {
+    protected void unlinkEntity(IdAwareEntity entity, IdAwareEntity entityToRemove, Class<? extends Annotation> entityEntityAnnotationClass, Class<? extends Annotation> entityEntityCollectionAnnotationClass, String... membersToCheck) throws UnknownEntityTypeException {
         AtomicBoolean deleted = new AtomicBoolean(false);
-        for (Map.Entry<Class<IdentifiableEntity>, Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity, entityEntityCollectionAnnotationClass, membersToCheck).entrySet()) {
+        for (Map.Entry<Class<IdAwareEntity>, Collection<IdAwareEntity>> entry : this.<IdAwareEntity>findEntityCollections(entity, entityEntityCollectionAnnotationClass, membersToCheck).entrySet()) {
             // should be a hibernate managed collection
-            Collection<IdentifiableEntity> entityCollection = entry.getValue();
+            Collection<IdAwareEntity> entityCollection = entry.getValue();
             if (entityCollection != null) {
                 if (!entityCollection.isEmpty()) {
-                    IdentifiableEntity removeCandidate = entityCollection.stream().findFirst().get();
+                    IdAwareEntity removeCandidate = entityCollection.stream().findFirst().get();
                     if (getTargetClass(entityToRemove).equals(getTargetClass(removeCandidate))) {
                         // this set needs to remove the entity
                         // here is a hibernate bug in persistent set remove function, see https://stackoverflow.com/a/47968974
                         // therefor we use an odd workaround
-                        Iterator<IdentifiableEntity> iterator = entityCollection.iterator();
+                        Iterator<IdAwareEntity> iterator = entityCollection.iterator();
                         while (iterator.hasNext()) {
-                            IdentifiableEntity e = iterator.next();
+                            IdAwareEntity e = iterator.next();
                             // hibernate proxy should call my custom equals method, but that also compares class, so unproxy
                             if (HibernateProxyUtils.jpaEquals(e,entityToRemove)) {
                                 iterator.remove();
@@ -407,7 +407,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
         }
         EntityReflectionUtils.doWithAnnotatedNamedFields(entityEntityAnnotationClass, getTargetClass(entity), Sets.newHashSet(membersToCheck), entityField -> {
             PropertyAccessor fieldAccessor = PropertyAccessorFactory.forBeanPropertyAccess(entity);
-            IdentifiableEntity removeCandidate = (IdentifiableEntity) fieldAccessor.getPropertyValue(entityField.getName());
+            IdAwareEntity removeCandidate = (IdAwareEntity) fieldAccessor.getPropertyValue(entityField.getName());
 //            IdentifiableEntity removeCandidate = hibernateUnproxy((IdentifiableEntity) entityField.get(entity));
             if (removeCandidate != null) {
                 if (HibernateProxyUtils.unproxyEquals(removeCandidate, entityToRemove)) {
@@ -430,7 +430,7 @@ public class RelationalEntityManagerUtilImpl implements RelationalEntityManagerU
     // HELPER METHODS
 
 
-    void assertEntityRelationType(IdentifiableEntity entity, RelationalEntityType expectedType) {
+    void assertEntityRelationType(IdAwareEntity entity, RelationalEntityType expectedType) {
         if (!inferTypes(getTargetClass(entity)).contains(expectedType)) {
             throw new IllegalArgumentException("Entity: " + entity + " is not of expected entity relation type: " + expectedType.name());
         }

@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coretest.controller;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +66,7 @@ public abstract class AbstractMvcTest extends InitializingTest implements Initia
         return entity.get();
     }
 
-    public <E extends IdentifiableEntity<?>, E2 extends IdentifiableEntity<?>> E assertCanFindInCollection(Collection<E> collection, E2 entity){
+    public <E extends IdAwareEntity<?>, E2 extends IdAwareEntity<?>> E assertCanFindInCollection(Collection<E> collection, E2 entity){
         Optional<E> filtered = collection.stream().filter(e -> e.getId().equals(entity.getId())).findFirst();
         assertThat("entity needs to be present in collection", filtered.isPresent());
         return filtered.get();

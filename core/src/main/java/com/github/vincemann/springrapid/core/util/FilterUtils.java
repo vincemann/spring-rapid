@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.util;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
 import com.github.vincemann.springrapid.core.service.filter.jpa.SortingExtension;
 import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class FilterUtils {
 
-    public static <E extends IdentifiableEntity<?>> Set<E> applyMemoryFilters(Set<E> result, List<EntityFilter<? super E>> filters) {
+    public static <E extends IdAwareEntity<?>> Set<E> applyMemoryFilters(Set<E> result, List<EntityFilter<? super E>> filters) {
         Assert.notNull(filters,"filters cant be null");
         if (filters.isEmpty())
             return result;
@@ -36,7 +36,7 @@ public class FilterUtils {
         }
     }
 
-    public static <E extends IdentifiableEntity<?>> List<E> applyMemoryFilters(List<E> result, List<EntityFilter<? super E>> filters) {
+    public static <E extends IdAwareEntity<?>> List<E> applyMemoryFilters(List<E> result, List<EntityFilter<? super E>> filters) {
         Assert.notNull(filters,"filters cant be null");
         if (filters.isEmpty())
             return result;
@@ -50,7 +50,7 @@ public class FilterUtils {
      * @return true if entity is filtered out -> not part of result set
      *         false if entity matches all filters -> is part of result set
      */
-    private static <E extends IdentifiableEntity<?>> boolean isFilteredOut(List<EntityFilter<? super E>> filters, E entity){
+    private static <E extends IdAwareEntity<?>> boolean isFilteredOut(List<EntityFilter<? super E>> filters, E entity){
         Assert.notNull(filters,"filters cant be null");
         Assert.notNull(entity,"entity cant be null");
         return filters.stream().anyMatch(filter -> !filter.match(entity));

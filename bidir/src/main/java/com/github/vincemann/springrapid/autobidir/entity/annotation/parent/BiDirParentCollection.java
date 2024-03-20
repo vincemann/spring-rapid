@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.autobidir.entity.annotation.parent;
 
 
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -19,5 +19,5 @@ public @interface BiDirParentCollection {
      *
      * @return generic type of annotated collection
      */
-    Class<? extends IdentifiableEntity> value();
+    Class<? extends IdAwareEntity> value();
 }

@@ -1,11 +1,11 @@
 package com.github.vincemann.springrapid.autobidir.controller.map.bidir.testEntities;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 
 import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
 
 
-public class BiDirEntityChild extends IdentifiableEntityImpl<Long>   {
+public class BiDirEntityChild extends IdAwareEntityImpl<Long> {
 
     @BiDirParentEntity
     private BiDirEntityParent biDirEntityParent;

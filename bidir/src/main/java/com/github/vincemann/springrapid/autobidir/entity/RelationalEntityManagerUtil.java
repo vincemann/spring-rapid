@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.autobidir.entity;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityType;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 
 import java.util.Collection;
 import java.util.Map;
@@ -14,39 +13,39 @@ import java.util.Set;
  */
 public interface RelationalEntityManagerUtil {
 
-    Set<RelationalEntityType> inferTypes(Class<? extends IdentifiableEntity> entityClass);
+    Set<RelationalEntityType> inferTypes(Class<? extends IdAwareEntity> entityClass);
 
     /**
      parent of child is set.
      child.parent = parent;
      */
-    public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToSet, String... membersToCheck);
+    public void linkBiDirParent(IdAwareEntity child, IdAwareEntity parentToSet, String... membersToCheck);
 
     /**
      child of parent is set.
      parent.child = child;
      */
-    public void linkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToSet, String... membersToCheck);
+    public void linkBiDirChild(IdAwareEntity parent, IdAwareEntity childToSet, String... membersToCheck);
 
     /**
      unset parent of child
      child.parent = null;
      */
-    public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToDelete, String... membersToCheck);
+    public void unlinkBiDirParent(IdAwareEntity child, IdAwareEntity parentToDelete, String... membersToCheck);
 
 
     /**
      unset child of parent
      parent.child = null;
      */
-    public void unlinkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToDelete, String... membersToCheck);
+    public void unlinkBiDirChild(IdAwareEntity parent, IdAwareEntity childToDelete, String... membersToCheck);
 
 
 
 
-    public void linkUniDirChild(IdentifiableEntity parent,IdentifiableEntity newChild, String... membersToCheck);
+    public void linkUniDirChild(IdAwareEntity parent, IdAwareEntity newChild, String... membersToCheck);
 
-    public void unlinkUniDirChild(IdentifiableEntity parent, IdentifiableEntity toRemove, String... membersToCheck);
+    public void unlinkUniDirChild(IdAwareEntity parent, IdAwareEntity toRemove, String... membersToCheck);
 
     /**
      * find all bidir parents of given child and unlink *child from them*
@@ -55,7 +54,7 @@ public interface RelationalEntityManagerUtil {
      *      parent.child = null;
      * done
      */
-    public void unlinkBiDirParentsFrom(IdentifiableEntity child, String... membersToCheck);
+    public void unlinkBiDirParentsFrom(IdAwareEntity child, String... membersToCheck);
 
     /**
      * find all bidir children of given parent and unlink *parent from them*
@@ -64,38 +63,38 @@ public interface RelationalEntityManagerUtil {
      *      child.parent = null;
      * done
      */
-    public void unlinkBiDirChildrensParent(IdentifiableEntity parent, String... membersToCheck);
+    public void unlinkBiDirChildrensParent(IdAwareEntity parent, String... membersToCheck);
 
 
-    public void unlinkBiDirParentsChild(IdentifiableEntity child, String... membersToCheck);
+    public void unlinkBiDirParentsChild(IdAwareEntity child, String... membersToCheck);
 
-    public void linkBiDirChildrensParent(IdentifiableEntity parent, String... membersToCheck);
+    public void linkBiDirChildrensParent(IdAwareEntity parent, String... membersToCheck);
 
     /**
      * find all bidir parents of bidir
      * @param child and link it to them
      * -> set backreference of children
      */
-    public void linkBiDirParentsChild(IdentifiableEntity child, String... membersToCheck);
+    public void linkBiDirParentsChild(IdAwareEntity child, String... membersToCheck);
 
 
 
 
 
 
-    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirParentCollections(IdentifiableEntity child, String... membersToCheck);
-    public Collection<IdentifiableEntity> findSingleBiDirParents(IdentifiableEntity child, String... membersToCheck);
-    public Collection<IdentifiableEntity> findAllBiDirParents(IdentifiableEntity child, String... membersToCheck);
+    public Map<Class<IdAwareEntity>,Collection<IdAwareEntity>> findBiDirParentCollections(IdAwareEntity child, String... membersToCheck);
+    public Collection<IdAwareEntity> findSingleBiDirParents(IdAwareEntity child, String... membersToCheck);
+    public Collection<IdAwareEntity> findAllBiDirParents(IdAwareEntity child, String... membersToCheck);
 
 
-    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirChildCollections(IdentifiableEntity parent, String... membersToCheck);
-    public Set<IdentifiableEntity> findSingleBiDirChildren(IdentifiableEntity parent, String... membersToCheck);
-    public Collection<IdentifiableEntity> findAllBiDirChildren(IdentifiableEntity parent, String... membersToCheck);
+    public Map<Class<IdAwareEntity>,Collection<IdAwareEntity>> findBiDirChildCollections(IdAwareEntity parent, String... membersToCheck);
+    public Set<IdAwareEntity> findSingleBiDirChildren(IdAwareEntity parent, String... membersToCheck);
+    public Collection<IdAwareEntity> findAllBiDirChildren(IdAwareEntity parent, String... membersToCheck);
 
 
-    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findUniDirChildCollections(IdentifiableEntity parent, String... membersToCheck);
-    public Set<IdentifiableEntity> findSingleUniDirChildren(IdentifiableEntity parent, String... membersToCheck);
-    public Collection<IdentifiableEntity> findAllUniDirChildren(IdentifiableEntity child, String... membersToCheck);
+    public Map<Class<IdAwareEntity>,Collection<IdAwareEntity>> findUniDirChildCollections(IdAwareEntity parent, String... membersToCheck);
+    public Set<IdAwareEntity> findSingleUniDirChildren(IdAwareEntity parent, String... membersToCheck);
+    public Collection<IdAwareEntity> findAllUniDirChildren(IdAwareEntity child, String... membersToCheck);
 
 
 }

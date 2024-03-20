@@ -2,9 +2,9 @@ package com.github.vincemann.springrapid.autobidir.entity.bidir.parent;
 
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerUtilImpl;
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerUtil;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.util.Lists;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 
 import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
 
@@ -18,7 +18,7 @@ import java.util.*;
 
 class RapidRelationalEntityManagerUtilParentTest {
 
-    private class EntityChild extends IdentifiableEntityImpl<Long>  {
+    private class EntityChild extends IdAwareEntityImpl<Long> {
         @BiDirParentEntity
         private EntityParent entityParent;
         private String name;
@@ -60,7 +60,7 @@ class RapidRelationalEntityManagerUtilParentTest {
     }
 
 
-    private class SecondEntityChild extends IdentifiableEntityImpl<Long>  {
+    private class SecondEntityChild extends IdAwareEntityImpl<Long> {
         @BiDirParentEntity
         private EntityParent entityParent;
 
@@ -73,7 +73,7 @@ class RapidRelationalEntityManagerUtilParentTest {
         }
     }
 
-    private class SecondEntityParent extends IdentifiableEntityImpl<Long> {
+    private class SecondEntityParent extends IdAwareEntityImpl<Long> {
         @BiDirChildEntity
         private EntityChild entityChild;
 
@@ -86,7 +86,7 @@ class RapidRelationalEntityManagerUtilParentTest {
         }
     }
 
-    private class EntityParent extends IdentifiableEntityImpl<Long> {
+    private class EntityParent extends IdAwareEntityImpl<Long> {
         @BiDirChildEntity
         private EntityChild entityChild;
         @BiDirChildCollection(SecondEntityChild.class)
@@ -258,10 +258,10 @@ class RapidRelationalEntityManagerUtilParentTest {
         HashSet<SecondEntityChild> secondEntityChildSet = new HashSet<>();
         testEntityParent.setSecondEntityChildSet(secondEntityChildSet);
         //when
-        Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> childrenCollections = relationalEntityManagerUtil.findBiDirChildCollections(testEntityParent);
+        Map<Class<IdAwareEntity>,Collection<IdAwareEntity>> childrenCollections = relationalEntityManagerUtil.findBiDirChildCollections(testEntityParent);
         //then
         Assertions.assertEquals(1,childrenCollections.size());
-        Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry = childrenCollections.entrySet().stream().findFirst().get();
+        Map.Entry<Class<IdAwareEntity>,Collection<IdAwareEntity>> entry = childrenCollections.entrySet().stream().findFirst().get();
         Assertions.assertEquals(SecondEntityChild.class,entry.getKey());
         Assertions.assertSame(secondEntityChildSet,entry.getValue());
     }
@@ -270,8 +270,8 @@ class RapidRelationalEntityManagerUtilParentTest {
     void getNullChildrenCollection_shouldCreateEmptyCollection()  {
         //given
         testEntityParent.setSecondEntityChildSet(null);
-        Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> childrenCollections = relationalEntityManagerUtil.findBiDirChildCollections(testEntityParent);
-        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> collectionClassEntry : childrenCollections.entrySet()) {
+        Map<Class<IdAwareEntity>,Collection<IdAwareEntity>> childrenCollections = relationalEntityManagerUtil.findBiDirChildCollections(testEntityParent);
+        for (Map.Entry<Class<IdAwareEntity>,Collection<IdAwareEntity>> collectionClassEntry : childrenCollections.entrySet()) {
             Assertions.assertNotNull(collectionClassEntry.getValue());
             Assertions.assertTrue(collectionClassEntry.getValue().isEmpty());
             Assertions.assertTrue(collectionClassEntry.getValue() instanceof Set);
@@ -283,7 +283,7 @@ class RapidRelationalEntityManagerUtilParentTest {
         //given
         testEntityParent.setEntityChild(testEntityChild);
         //when
-        Set<? extends IdentifiableEntity> children = relationalEntityManagerUtil.findSingleBiDirChildren(testEntityParent);
+        Set<? extends IdAwareEntity> children = relationalEntityManagerUtil.findSingleBiDirChildren(testEntityParent);
         //then
         Assertions.assertEquals(1,children.size());
         Assertions.assertSame(testEntityChild,children.stream().findFirst().get());
@@ -294,7 +294,7 @@ class RapidRelationalEntityManagerUtilParentTest {
         //given
         testEntityParent.setEntityChild(null);
         //when
-        Set<? extends IdentifiableEntity> children = relationalEntityManagerUtil.findSingleBiDirChildren(testEntityParent);
+        Set<? extends IdAwareEntity> children = relationalEntityManagerUtil.findSingleBiDirChildren(testEntityParent);
         //then
         Assertions.assertTrue(children.isEmpty());
     }

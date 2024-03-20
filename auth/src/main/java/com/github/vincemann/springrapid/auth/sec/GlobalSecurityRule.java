@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.sec;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import org.springframework.lang.Nullable;
 
@@ -14,5 +14,5 @@ public interface GlobalSecurityRule {
      * you can also return true,false meaning access allowed, denied respectively. Otherwise return null
      */
     @Nullable
-    Boolean checkAccess(IdentifiableEntity<?> entity, Object permission);
+    Boolean checkAccess(IdAwareEntity<?> entity, Object permission);
 }

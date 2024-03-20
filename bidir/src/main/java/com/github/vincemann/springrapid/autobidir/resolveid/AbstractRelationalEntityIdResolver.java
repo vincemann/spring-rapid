@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.autobidir.resolveid;
 
 import com.github.vincemann.springrapid.autobidir.entity.RelationalEntityManagerUtil;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.RepositoryLocator;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -39,10 +39,10 @@ public abstract class AbstractRelationalEntityIdResolver implements EntityIdReso
     }
 
     // could be replaced by EntityLocator in the future
-    protected IdentifiableEntity findEntityFromService(Class<IdentifiableEntity> entityClass, Serializable id) throws EntityNotFoundException, BadEntityException {
+    protected IdAwareEntity findEntityFromService(Class<IdAwareEntity> entityClass, Serializable id) throws EntityNotFoundException, BadEntityException {
         CrudService service = crudServiceLocator.find(entityClass);
         Assert.notNull(service,"No Service found for entityClass: " + entityClass.getSimpleName());
-        Optional<IdentifiableEntity> entity;
+        Optional<IdAwareEntity> entity;
         try {
             entity = service.findById(id);
         } catch (ClassCastException e) {

@@ -1,10 +1,10 @@
 package com.github.vincemann.springrapid.autobidir.controller.map.bidir.testEntities;
 
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 import com.github.vincemann.springrapid.autobidir.resolveid.annotation.parent.BiDirParentId;
 
-public class BiDirEntityChildDto extends IdentifiableEntityImpl<Long>  {
+public class BiDirEntityChildDto extends IdAwareEntityImpl<Long> {
 
     @BiDirParentId(BiDirEntityParent.class)
     private Long entityPId;

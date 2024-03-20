@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.coredemo.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +18,7 @@ import javax.validation.constraints.Size;
 @Table(name = "illnesss",
         uniqueConstraints = @UniqueConstraint(name = "unique name", columnNames = "name"))
 @Entity
-public class Illness extends IdentifiableEntityImpl<Long> {
+public class Illness extends IdAwareEntityImpl<Long> {
 
 
     @NotBlank

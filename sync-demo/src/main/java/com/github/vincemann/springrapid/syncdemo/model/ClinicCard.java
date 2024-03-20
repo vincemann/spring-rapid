@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.syncdemo.model;
 
 import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +18,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity
 @Table(name = "clinic_cards")
-public class ClinicCard extends IdentifiableEntityImpl<Long> {
+public class ClinicCard extends IdAwareEntityImpl<Long> {
 
 
     @BiDirParentEntity

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.model;
 
 import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentCollection;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +18,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "specialties", uniqueConstraints = @UniqueConstraint(name = "unique description", columnNames = "description"))
 @Entity
-public class Specialty extends IdentifiableEntityImpl<Long>
+public class Specialty extends IdAwareEntityImpl<Long>
 {
 
     @NotEmpty
