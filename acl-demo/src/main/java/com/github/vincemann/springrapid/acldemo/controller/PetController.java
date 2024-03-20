@@ -2,10 +2,7 @@ package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acl.Secured;
 import com.github.vincemann.springrapid.acldemo.controller.map.PetMappingService;
-import com.github.vincemann.springrapid.acldemo.dto.pet.CreatePetDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerReadsOwnPetDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.UpdatePetsIllnessesDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.VetReadsPetDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.*;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -36,15 +33,16 @@ public class PetController {
         return mappingService.mapToReadPetDto(pet.get());
     }
 
-    @PutMapping("update-illnesses")
-    public VetReadsPetDto updatePetsIllnesses(@RequestBody UpdatePetsIllnessesDto dto) throws EntityNotFoundException {
-        Pet pet = petService.updateIllnesses(dto);
+    @PutMapping("vet-update")
+    public VetReadsPetDto vetUpdate(@RequestBody VetUpdatesPetDto dto) throws EntityNotFoundException {
+        Pet pet = petService.vetUpdatesPet(dto);
         return mappingService.mapToVetReadsPetDto(pet);
     }
 
-    @PutMapping("update-name")
-    public void updatePetsName(@RequestParam("old") String oldName, @RequestParam("new") String newName) throws EntityNotFoundException, BadEntityException {
-        petService.updateName(oldName,newName);
+    @PutMapping("owner-update")
+    public OwnerReadsOwnPetDto ownerUpdate(@RequestBody OwnerUpdatesPetDto dto) throws EntityNotFoundException, BadEntityException {
+        Pet pet = petService.ownerUpdatesPet(dto);
+        return mappingService.mapToOwnerReadsOwnPetDto(pet);
     }
 
     @Autowired

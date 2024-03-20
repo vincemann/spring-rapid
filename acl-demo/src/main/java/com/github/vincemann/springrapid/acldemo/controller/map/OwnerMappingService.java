@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.acldemo.controller.map;
 
 import com.github.vincemann.springrapid.acldemo.Roles;
 import com.github.vincemann.springrapid.acldemo.dto.owner.OwnerReadsForeignOwnerDto;
-import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
+import com.github.vincemann.springrapid.acldemo.dto.owner.OwnerReadsOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.VetReadsOwnerDto;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
@@ -35,8 +35,8 @@ public class OwnerMappingService {
 
 
     @Transactional
-    public ReadOwnOwnerDto mapToReadOwnOwner(Owner owner){
-        ReadOwnOwnerDto dto = new ModelMapper().map(owner, ReadOwnOwnerDto.class);
+    public OwnerReadsOwnOwnerDto mapToReadOwnOwner(Owner owner){
+        OwnerReadsOwnOwnerDto dto = new ModelMapper().map(owner, OwnerReadsOwnOwnerDto.class);
         dto.setPetIds(owner.getPets().stream().map(Pet::getId).collect(Collectors.toSet()));
         dto.setSecret(Owner.SECRET);
         return dto;

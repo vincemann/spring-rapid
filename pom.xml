@@ -32,7 +32,6 @@
         <module>core</module>
         <module>acl</module>
         <module>core-test</module>
-        <module>core-demo</module>
         <module>exceptions-api</module>
         <module>acl-demo</module>
         <module>acl-test</module>

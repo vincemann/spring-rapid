@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.acldemo.controller.suite.templates.Owner
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VisitControllerTestTemplate;
-import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
+import com.github.vincemann.springrapid.acldemo.dto.owner.OwnerReadsOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.ReadVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
@@ -146,7 +146,7 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
 
     public Owner signupOwner(Owner owner) throws Exception {
         SignupOwnerDto dto = new SignupOwnerDto(owner);
-        ReadOwnOwnerDto response = ownerController.signup(dto);
+        OwnerReadsOwnOwnerDto response = ownerController.signup(dto);
         return ownerService.findById(response.getId()).get();
     }
 

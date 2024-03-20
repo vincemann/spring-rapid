@@ -9,4 +9,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class OwnerReadsForeignOwnerDto extends AbstractReadOwnerDto {
+    @Override
+    public String toString() {
+        return "OwnerReadsForeignOwnerDto{" +
+                "id=" + getId() +
+                ", firstName='" + getFirstName() + '\'' +
+                ", lastName='" + getLastName() + '\'' +
+                ", address='" + getAddress() + '\'' +
+                ", city='" + getCity() + '\'' +
+                ", telephone='" + getTelephone() + '\'' +
+                ", hobbies=" + getHobbies() +
+                ", petIds=" + getPetIds() +
+                '}';
+    }
 }

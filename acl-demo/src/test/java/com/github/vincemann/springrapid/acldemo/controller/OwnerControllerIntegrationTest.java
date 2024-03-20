@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTest;
-import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
+import com.github.vincemann.springrapid.acldemo.dto.owner.OwnerReadsOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.CreatePetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerReadsForeignPetDto;
@@ -31,7 +31,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     public void signupOwner() throws Exception {
         // when
         SignupOwnerDto dto = new SignupOwnerDto(testData.getKahn());
-        ReadOwnOwnerDto response = ownerController.signup(dto);
+        OwnerReadsOwnOwnerDto response = ownerController.signup(dto);
 
         // then
         Assertions.assertEquals(Owner.SECRET, response.getSecret());

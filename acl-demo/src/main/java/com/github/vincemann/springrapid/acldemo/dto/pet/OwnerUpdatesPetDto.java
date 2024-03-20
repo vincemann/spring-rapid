@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 // cant update pets owner in contrast to vet
-public class OwnerUpdatesPetDto extends AbstractPetDto {
+public class OwnerUpdatesPetDto {
 
     @NotNull
     @Positive
@@ -25,23 +25,15 @@ public class OwnerUpdatesPetDto extends AbstractPetDto {
 
     @NotBlank
     @Size(min = 2, max = 20)
-    @Override
-    public  String getName() {
-        return super.getName();
-    }
+    private String name;
 
-    @NotNull
-    @Positive
-    @Override
-    public Long getPetTypeId() {
-        return super.getPetTypeId();
-    }
-
+    private LocalDate birthDate;
 
     @Builder
-    public OwnerUpdatesPetDto(String name, Long petTypeId, LocalDate birthDate, Long id) {
-        super(name, petTypeId, birthDate);
+    public OwnerUpdatesPetDto(Long id, String name, LocalDate birthDate) {
         this.id = id;
+        this.name = name;
+        this.birthDate = birthDate;
     }
 
     @Override
@@ -49,7 +41,6 @@ public class OwnerUpdatesPetDto extends AbstractPetDto {
         return "OwnerUpdatesPetDto{" +
                 "id=" + id +
                 ", name='" + getName() + '\'' +
-                ", petTypeId=" + getPetTypeId() +
                 ", birthDate=" + getBirthDate() +
                 '}';
     }

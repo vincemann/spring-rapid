@@ -45,7 +45,6 @@ public class Pet extends IdAwareEntityImpl<Long> {
     @JoinTable(name = "pet_illnesss",
             joinColumns = @JoinColumn(name = "pet_id"),
             inverseJoinColumns = @JoinColumn(name = "illness_id"))
-    @BiDirChildCollection(Illness.class)
     private Set<Illness> illnesss = new HashSet<>();
 
     @ManyToOne
@@ -57,6 +56,11 @@ public class Pet extends IdAwareEntityImpl<Long> {
     @Column(name = "birth_date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
+
+    public void addIllness(Illness illness) {
+        this.illnesss.add(illness);
+        illness.getPets().add(this);
+    }
 
 
     @Builder
@@ -80,4 +84,5 @@ public class Pet extends IdAwareEntityImpl<Long> {
                 ", birthDate=" + birthDate +
                 '}';
     }
+
 }

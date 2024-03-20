@@ -26,7 +26,6 @@ public class Illness extends IdAwareEntityImpl<Long> {
 
 
     @ManyToMany(mappedBy = "illnesss", fetch = FetchType.EAGER)
-    @BiDirParentCollection(Pet.class)
     private Set<Pet> pets = new HashSet<>();
 
     @Builder

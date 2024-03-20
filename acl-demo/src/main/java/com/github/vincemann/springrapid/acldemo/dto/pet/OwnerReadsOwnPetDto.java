@@ -1,8 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.dto.pet;
 
 import com.github.vincemann.springrapid.acldemo.dto.pet.abs.AbstractReadPetDto;
-import com.github.vincemann.springrapid.acldemo.model.Illness;
-import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.BiDirChildIdCollection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

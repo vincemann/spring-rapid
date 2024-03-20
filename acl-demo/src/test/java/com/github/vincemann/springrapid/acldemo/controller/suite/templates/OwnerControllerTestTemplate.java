@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.controller.suite.templates;
 
 import com.github.vincemann.springrapid.acldemo.controller.OwnerController;
-import com.github.vincemann.springrapid.acldemo.dto.owner.ReadOwnOwnerDto;
+import com.github.vincemann.springrapid.acldemo.dto.owner.OwnerReadsOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import org.springframework.http.MediaType;
@@ -15,13 +15,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Component
 public class OwnerControllerTestTemplate extends CrudControllerTestTemplate<OwnerController> {
 
-    public ReadOwnOwnerDto signup(SignupOwnerDto dto) throws Exception {
+    public OwnerReadsOwnOwnerDto signup(SignupOwnerDto dto) throws Exception {
         String json = getMvc().perform(post(getController().getSignupUrl())
                         .content(serialize(dto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
-        return getController().getObjectMapper().readValue(json,ReadOwnOwnerDto.class);
+        return getController().getObjectMapper().readValue(json, OwnerReadsOwnOwnerDto.class);
     }
 
 

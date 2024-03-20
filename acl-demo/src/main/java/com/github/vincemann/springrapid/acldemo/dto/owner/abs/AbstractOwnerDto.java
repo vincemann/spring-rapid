@@ -1,13 +1,10 @@
 package com.github.vincemann.springrapid.acldemo.dto.owner.abs;
 
-import com.github.vincemann.springrapid.acldemo.model.Pet;
-import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.BiDirChildIdCollection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
-import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
