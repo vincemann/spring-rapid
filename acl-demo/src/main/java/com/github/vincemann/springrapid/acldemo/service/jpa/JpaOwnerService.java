@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.RepositoryUtil;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +17,6 @@ import java.util.Optional;
 
 @Root
 @Service
-@EnableAutoBiDir
 public class JpaOwnerService
         extends AbstractUserService<Owner,Long, OwnerRepository>
                 implements OwnerService
@@ -31,8 +31,8 @@ public class JpaOwnerService
     @Transactional
     @Override
     public void addPetSpectator(long permittedOwnerId, long targetOwnerId) throws EntityNotFoundException {
-        Owner permittedOwner = findPresentById(permittedOwnerId);
-        Owner targetOwner = findPresentById(targetOwnerId);
+        Owner permittedOwner = RepositoryUtil.findPresentById(getRepository(),permittedOwnerId);
+        Owner targetOwner = RepositoryUtil.findPresentById(getRepository(),targetOwnerId);
 
         for (Pet pet : targetOwner.getPets()) {
             getAclService().grantUserPermissionForEntity(permittedOwner.getContactInformation(), pet, BasePermission.READ);

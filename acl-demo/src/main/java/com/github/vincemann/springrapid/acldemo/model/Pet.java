@@ -58,6 +58,7 @@ public class Pet extends IdAwareEntityImpl<Long> {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
+
     @Builder
     public Pet( String name, PetType petType, Set<Illness> illnesss, Owner owner, LocalDate birthDate) {
         this.name = name;

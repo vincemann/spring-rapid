@@ -7,13 +7,13 @@ import com.github.vincemann.springrapid.coredemo.service.PetTypeService;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import com.github.vincemann.springrapid.core.service.AbstractCrudService;
+import com.github.vincemann.springrapid.core.service.JpaCrudService;
 
 @Primary
 @Service
 @EnableAutoBiDir
 public class JpaPetTypeService
-        extends AbstractCrudService<PetType,Long, PetTypeRepository>
+        extends JpaCrudService<PetType,Long, PetTypeRepository>
                 implements PetTypeService {
 
 }

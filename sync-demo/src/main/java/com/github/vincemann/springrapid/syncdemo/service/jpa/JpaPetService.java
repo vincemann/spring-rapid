@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.syncdemo.service.jpa;
 
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
-import com.github.vincemann.springrapid.core.service.AbstractCrudService;
+import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.sync.EnableAuditCollection;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @EnableAutoBiDir
 public class JpaPetService
-        extends AbstractCrudService<Pet, Long, PetRepository>
+        extends JpaCrudService<Pet, Long, PetRepository>
                 implements PetService {
 
     @Transactional

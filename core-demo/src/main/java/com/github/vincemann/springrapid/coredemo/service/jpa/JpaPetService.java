@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.service.jpa;
 
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
-import com.github.vincemann.springrapid.core.service.AbstractCrudService;
+import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.coredemo.service.Root;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.repo.PetRepository;
@@ -15,7 +15,7 @@ import java.util.Optional;
 @Service
 @EnableAutoBiDir
 public class JpaPetService
-        extends AbstractCrudService<Pet, Long, PetRepository>
+        extends JpaCrudService<Pet, Long, PetRepository>
                 implements PetService {
 
     @Transactional

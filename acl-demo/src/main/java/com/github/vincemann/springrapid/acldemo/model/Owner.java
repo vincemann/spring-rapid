@@ -42,6 +42,11 @@ public class Owner extends User {
     @Column(name = "telephone", nullable = true)
     private String telephone;
 
+    public void addPet(Pet pet){
+        this.pets.add(pet);
+        pet.setOwner(this);
+    }
+
     @Builder
     public Owner(String contactInformation, String newContactInformation, String password, Set<String> roles, Long credentialsUpdatedMillis, String firstName, String lastName, Set<Pet> pets, Set<String> hobbies, String address, String city, @Nullable String telephone) {
         super(contactInformation, newContactInformation, password, roles, credentialsUpdatedMillis, firstName, lastName);

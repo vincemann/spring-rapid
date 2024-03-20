@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.syncdemo.service.jpa;
 
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
-import com.github.vincemann.springrapid.core.service.AbstractCrudService;
+import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.syncdemo.model.Visit;
 import com.github.vincemann.springrapid.syncdemo.repo.VisitRepository;
 import com.github.vincemann.springrapid.syncdemo.service.VisitService;
@@ -12,6 +12,6 @@ import org.springframework.stereotype.Service;
 @Service
 @EnableAutoBiDir
 public class JpaVisitService
-        extends AbstractCrudService<Visit,Long, VisitRepository>
+        extends JpaCrudService<Visit,Long, VisitRepository>
                 implements VisitService {
 }

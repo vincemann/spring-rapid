@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
-import com.github.vincemann.springrapid.acldemo.dto.SpecialtyDto;
+import com.github.vincemann.springrapid.acldemo.dto.ReadSpecialtyDto;
 import com.github.vincemann.springrapid.acldemo.model.Specialty;
 import com.github.vincemann.springrapid.acldemo.service.SpecialtyService;
 import com.github.vincemann.springrapid.core.controller.CrudController;
@@ -15,7 +15,7 @@ public class SpecialtyController extends CrudController<Specialty,Long, Specialt
     @Override
     protected void configureDtoMappings(DtoMappingsBuilder builder) {
         builder.when(any())
-                .thenReturn(SpecialtyDto.class);
+                .thenReturn(ReadSpecialtyDto.class);
     }
 
 }

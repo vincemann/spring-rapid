@@ -1,24 +1,31 @@
 package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.springrapid.core.model.IdAwareEntity;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.GenericTypeResolver;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public abstract class AbstractCrudService
+public abstract class JpaCrudService
         <
                 E extends IdAwareEntity<Id>,
                 Id extends Serializable,
-                Dto
+                Dto,
+                R extends JpaRepository<E,Id>
                 >
         implements CrudService<E, Id, Dto> {
 
-    private JpaRepository<E,Id> repository;
+    private R repository;
+    private Class<E> entityClass;
+
+    public JpaCrudService() {
+        this.entityClass = (Class<E>) GenericTypeResolver.resolveTypeArguments(this.getClass(), JpaCrudService.class)[0];
+    }
 
     @Override
     public Optional<E> findById(Id id) {
@@ -31,12 +38,18 @@ public abstract class AbstractCrudService
     }
 
     @Override
-    public void delete(Id id) {
+    public void delete(Id id) throws EntityNotFoundException {
+        if (!repository.existsById(id))
+            throw new EntityNotFoundException(id,entityClass);
         repository.deleteById(id);
     }
 
     @Autowired
-    public void setRepository(JpaRepository<E, Id> repository) {
+    public void setRepository(R repository) {
         this.repository = repository;
+    }
+
+    public R getRepository() {
+        return repository;
     }
 }

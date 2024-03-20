@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.syncdemo.service.jpa;
 
 import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
-import com.github.vincemann.springrapid.core.service.AbstractCrudService;
+import com.github.vincemann.springrapid.core.service.JpaCrudService;
 import com.github.vincemann.springrapid.sync.EnableAuditCollection;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
 import com.github.vincemann.springrapid.syncdemo.repo.OwnerRepository;
@@ -17,7 +17,7 @@ import java.util.Optional;
 @EnableAutoBiDir
 @EnableAuditCollection
 public class JpaOwnerService
-        extends AbstractCrudService<Owner,Long, OwnerRepository>
+        extends JpaCrudService<Owner,Long, OwnerRepository>
                 implements OwnerService  {
 
     public static final String OWNER_OF_THE_YEAR_NAME = "Chad";

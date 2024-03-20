@@ -25,7 +25,6 @@ public class CreatePetDto extends AbstractPetDto {
 
     @NotNull
     @Positive
-    @BiDirParentId(Owner.class)
     private Long ownerId;
 
     @NotBlank
