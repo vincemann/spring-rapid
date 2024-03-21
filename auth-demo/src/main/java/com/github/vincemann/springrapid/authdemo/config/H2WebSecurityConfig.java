@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 public class H2WebSecurityConfig extends RapidWebSecurityConfig {
 
 
+
     @Override
     public void configure(WebSecurity web) throws Exception {
         super.configure(web);

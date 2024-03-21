@@ -25,9 +25,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-      use-new-id-generator-mappings: false
-    properties:
-      hibernate.jdbc.lob.non_contextual_creation: true
 
   datasource:
     url: jdbc:h2:mem:testdb
@@ -38,21 +35,11 @@ spring:
   h2.console.enabled: true
   h2.console.path: /h2-console
 
-  # JSON serialization settings
-  jackson:
-    default-property-inclusion: NON_NULL
-
-    serialization:
-      write-null-map-values: false
-
-    deserialization:
-      accept-single-value-as-array: true
-
-
-  # https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.1-Release-Notes#bean-overriding
-  main.allow-bean-definition-overriding: true
-
-server.servlet.session.persistent: false
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 
 rapid-core:
   applicationUrl: http://127.0.0.1:8080
@@ -65,10 +52,6 @@ rapid-auth:
       password: AdminPassword123!
     - contactInformation: secondAdmin@example.com
       password: SecondAdminPassword123!
-
-  # Properties to be passed to client
-  shared:
-    fooBar: 123...
 
   jwt:
       # An aes-128-cbc key generated at https://asecuritysite.com/encryption/keygen (take the "key" field)

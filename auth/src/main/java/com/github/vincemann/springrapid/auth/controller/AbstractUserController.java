@@ -75,7 +75,7 @@ public abstract class AbstractUserController
         String code = readRequestParam(request, "code");
         log.debug(LogMessage.format("received verify user request with code: %s", code));
         AbstractUser updated = verificationService.verifyUser(code);
-        return okWithAuthToken(updated.getContactInformation());
+        return okWithToken(updated.getContactInformation());
     }
 
 
@@ -98,7 +98,7 @@ public abstract class AbstractUserController
         ResetPasswordDto dto = getObjectMapper().readValue(body, ResetPasswordDto.class);
         validateDto(dto);
         AbstractUser updated = passwordService.resetPassword(dto);
-        return okWithAuthToken(updated.getContactInformation());
+        return okWithToken(updated.getContactInformation());
     }
 
     public String showResetPassword(HttpServletRequest request, HttpServletResponse response, Model model) throws BadEntityException {
@@ -116,7 +116,7 @@ public abstract class AbstractUserController
         ChangePasswordDto dto = getObjectMapper().readValue(body, ChangePasswordDto.class);
         validateDto(dto);
         AbstractUser updated = passwordService.changePassword(dto);
-        return okWithAuthToken(updated.getContactInformation());
+        return okWithToken(updated.getContactInformation());
     }
 
 
@@ -140,7 +140,7 @@ public abstract class AbstractUserController
         String code = readRequestParam(request, "code");
         log.debug(LogMessage.format("received change contact information request with code: %s", code));
         AbstractUser updated = contactInformationService.changeContactInformation(code);
-        return okWithAuthToken(updated.getContactInformation());
+        return okWithToken(updated.getContactInformation());
     }
 
     /**
@@ -352,14 +352,14 @@ public abstract class AbstractUserController
     //				HELPERS
 
 
-    protected ResponseEntity<Void> okWithAuthToken(String contactInformation) throws EntityNotFoundException, BadEntityException {
+    protected ResponseEntity<Void> okWithToken(String contactInformation) throws EntityNotFoundException, BadEntityException {
         HttpHeaders headers = new HttpHeaders();
         String token = unsecuredAuthTokenService.createNewAuthToken(contactInformation);
         headers.add(HttpHeaders.AUTHORIZATION, token);
         return ResponseEntity.status(204).headers(headers).build();
     }
 
-    protected <T> ResponseEntity<T> okWithAuthToken(T body, String contactInformation) throws EntityNotFoundException, BadEntityException {
+    protected <T> ResponseEntity<T> okWithToken(T body, String contactInformation) throws EntityNotFoundException, BadEntityException {
         HttpHeaders headers = new HttpHeaders();
         String token = unsecuredAuthTokenService.createNewAuthToken(contactInformation);
         headers.add(HttpHeaders.AUTHORIZATION, token);

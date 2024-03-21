@@ -1,0 +1,47 @@
+package com.github.vincemann.springrapid.authdemo.dto;
+
+import com.github.vincemann.springrapid.auth.model.AuthRoles;
+import com.github.vincemann.springrapid.authdemo.dto.abs.AbstractUserDto;
+import com.github.vincemann.springrapid.core.sec.Roles;
+import lombok.*;
+
+import java.util.Set;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class ReadUserDto extends AbstractUserDto {
+    private Long id;
+    private boolean verified = false;
+    private boolean blocked = false;
+    private boolean admin = false;
+    private boolean goodUser = false;
+
+    public ReadUserDto(Set<String> roles, Float rating, Set<Long> schoolIds, String name, Long id) {
+        super(roles, rating, schoolIds, name);
+        this.id = id;
+        initFlags();
+    }
+
+    public void initFlags() {
+        verified = !getRoles().contains(AuthRoles.UNVERIFIED);
+        blocked = getRoles().contains(AuthRoles.BLOCKED);
+        admin = getRoles().contains(Roles.ADMIN);
+        goodUser = !(!verified || blocked);
+//        goodAdmin = goodUser && admin;
+    }
+
+    @Override
+    public String toString() {
+        return "MyReadOwnUserDto{" +
+                "name='" + getName() + '\'' +
+                ", id='" + getId() + '\'' +
+                ", verified=" + isVerified() +
+                ", blocked=" + isBlocked() +
+                ", admin=" + isAdmin() +
+                ", goodUser=" + isGoodUser() +
+                ", contactInformation='" + getContactInformation() + '\'' +
+                ", roles=" + getRoles() +
+                '}';
+    }
+}

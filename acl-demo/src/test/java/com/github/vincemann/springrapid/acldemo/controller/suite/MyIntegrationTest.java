@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.controller.suite;
 
-import com.github.vincemann.acltest.AclMvcTest;
+import com.github.vincemann.acltest.ClearAclCacheTestExecutionListener;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VetControllerTestTemplate;
@@ -9,11 +9,13 @@ import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.repo.*;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
+import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
@@ -22,7 +24,14 @@ import java.util.Optional;
 import java.util.Set;
 
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-public class MyIntegrationTest extends AclMvcTest
+@TestExecutionListeners(
+        value = {
+                ClearAclCacheTestExecutionListener.class,
+        },
+        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
+)
+@Sql(scripts = "classpath:/remove-acl-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+public class MyIntegrationTest extends AbstractMvcTest
 {
 
     @Autowired

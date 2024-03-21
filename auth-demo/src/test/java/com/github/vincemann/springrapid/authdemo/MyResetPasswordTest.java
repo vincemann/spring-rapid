@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.authdemo;
 
-import com.github.vincemann.springrapid.authtests.ResetPasswordTest;
+import com.github.vincemann.springrapid.authtests.tests.ResetPasswordTest;
 import org.junit.jupiter.api.Test;
 
 

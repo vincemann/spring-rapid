@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.VerificationService;
-import com.github.vincemann.springrapid.authdemo.dto.MySignupDto;
+import com.github.vincemann.springrapid.authdemo.dto.SignupDto;
 import com.github.vincemann.springrapid.authdemo.model.User;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -21,7 +21,7 @@ public class MySignupServiceImpl implements MySignupService {
     private VerificationService verificationService;
 
     @Override
-    public User signup(MySignupDto dto) throws BadEntityException, AlreadyRegisteredException {
+    public User signup(SignupDto dto) throws BadEntityException, AlreadyRegisteredException {
         //admins get created with createAdminMethod
         User user = userService.createUser();
         user.getRoles().add(AuthRoles.USER);
