@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.acl.service;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.Permission;
 

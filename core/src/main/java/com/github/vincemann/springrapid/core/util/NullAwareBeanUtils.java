@@ -5,6 +5,7 @@ import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.expression.Resolver;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.util.TriConsumer;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -12,7 +13,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class UpdateBeanUtils {
+public class NullAwareBeanUtils {
 
 
     /**
@@ -20,17 +21,17 @@ public class UpdateBeanUtils {
      * collections need to be explicitly listed in whiteList
      * properties that are null on update side, but should still be copied are listed in whiteList
      */
-    public static void copyProperties(Object destination, Object update, Set<String> whiteList) {
-        BeanUtilsBean dontCopyNullButWhitelisted = new WhitelistNullAwareBeanUtilsBean(whiteList);
+    public static void copyProperties(Object destination, Object src, Set<String> whiteList, TriConsumer<Object,String,Object> consumer) {
+        BeanUtilsBean dontCopyNullButWhitelisted = new WhitelistNullAwareBeanUtilsBean(whiteList, consumer);
         try {
-            dontCopyNullButWhitelisted.copyProperties(destination, update);
+            dontCopyNullButWhitelisted.copyProperties(destination, src);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static void copyProperties(Object destination, Object update){
-        copyProperties(destination,update,new HashSet<>());
+    public static void copyProperties(Object destination, Object src, TriConsumer<Object,String,Object> consumer){
+        copyProperties(destination,src,new HashSet<>(),consumer);
     }
 
     private static class WhitelistNullAwareBeanUtilsBean extends BeanUtilsBean {
@@ -38,9 +39,19 @@ public class UpdateBeanUtils {
         private final Log log = LogFactory.getLog(WhitelistNullAwareBeanUtilsBean.class);
 
         private Set<String> whiteList = new HashSet<>();
+        private final TriConsumer<Object, String, Object> consumer;
 
-        public WhitelistNullAwareBeanUtilsBean(Set<String> whiteList) {
+        private Object origin;
+
+        public WhitelistNullAwareBeanUtilsBean(Set<String> whiteList, TriConsumer<Object, String, Object> consumer) {
             this.whiteList = whiteList;
+            this.consumer = consumer;
+        }
+
+        @Override
+        public void copyProperties(Object dest, Object orig) throws IllegalAccessException, InvocationTargetException {
+            this.origin = orig;
+            super.copyProperties(dest, orig);
         }
 
         /**
@@ -88,6 +99,8 @@ public class UpdateBeanUtils {
             if (log.isTraceEnabled()) {
                 log.trace("  copyProperty(" + bean + ", " + name + ", " + value + ")");
             }
+
+            consumer.accept(origin,name,value);
 
             // Resolve any nested expression to get the actual target bean
             Object target = bean;

@@ -40,14 +40,14 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
 
 
     public MockHttpServletRequestBuilder fetchSyncStatus(Long entityId, Date lastClientUpdate) {
-        return MockMvcRequestBuilders.get(controller.getFetchEntitySyncStatusUrl())
+        return MockMvcRequestBuilders.get(controller.getSyncEntityUrl())
                 .param("id", entityId.toString())
                 .param("ts", String.valueOf(lastClientUpdate.getTime()));
     }
 
 
     public MockHttpServletRequestBuilder fetchSyncStatusesSinceTs(Date clientUpdate, UrlWebExtension... filters) {
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controller.getFetchEntitySyncStatusesSinceTsUrl())
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controller.getSyncUrl())
                 .param("ts", String.valueOf(clientUpdate.getTime()));
         if (filters.length != 0){
             for (UrlWebExtension filter : filters) {
@@ -61,13 +61,13 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
 
     public MockHttpServletRequestBuilder fetchSyncStatuses(Set<LastFetchInfo> updateInfos) throws Exception {
         String jsonUpdateInfos = getController().getObjectMapper().writeValueAsString(updateInfos);
-        return MockMvcRequestBuilders.post(controller.getFetchEntitySyncStatusesUrl())
+        return MockMvcRequestBuilders.post(controller.getSyncEntitiesUrl())
                 .content(jsonUpdateInfos).contentType(MediaType.APPLICATION_JSON);
     }
 
     public EntitySyncStatus fetchSyncStatus_assertUpdate(Long entityId, Date lastClientUpdate, SyncStatus expectedStatus) throws Exception {
 
-        String json = mvc.perform(MockMvcRequestBuilders.get(controller.getFetchEntitySyncStatusUrl())
+        String json = mvc.perform(MockMvcRequestBuilders.get(controller.getSyncEntityUrl())
                         .param("id", entityId.toString())
                         .param("ts", String.valueOf(lastClientUpdate.getTime())))
                 .andExpect(MockMvcResultMatchers.status().is(200))

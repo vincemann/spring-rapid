@@ -24,16 +24,13 @@ public class Visit extends IdAwareEntityImpl<Long> {
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "pet_id")
-    @UniDirChildCollection(Pet.class)
     private Set<Pet> pets = new HashSet<>();
 
     @OneToOne(fetch = FetchType.EAGER)
-    @UniDirChildEntity
     @JoinColumn(name = "owner_id")
     private Owner owner;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @UniDirChildEntity
     @JoinColumn(name = "vet_id")
     private Vet vet;
 
@@ -43,6 +40,10 @@ public class Visit extends IdAwareEntityImpl<Long> {
 
     @Column(name = "reason")
     private String reason;
+
+    public void addPet(Pet pet){
+        this.pets.add(pet);
+    }
 
     @Builder
     public Visit(Set<Pet> pets, Owner owner, Vet vet, LocalDate date, String reason) {

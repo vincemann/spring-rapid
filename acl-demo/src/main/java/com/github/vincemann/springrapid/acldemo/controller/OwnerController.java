@@ -41,7 +41,7 @@ public class OwnerController{
     }
 
     @PutMapping("update")
-    public OwnerReadsOwnOwnerDto update(@RequestBody UpdateOwnerDto dto){
+    public OwnerReadsOwnOwnerDto update(@RequestBody UpdateOwnerDto dto) throws EntityNotFoundException {
         Owner owner = service.update(dto);
         return mappingService.mapToReadOwnOwner(owner);
     }

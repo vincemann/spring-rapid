@@ -1,8 +1,6 @@
 package com.github.vincemann.springrapid.auth.model;
 
 import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
-import com.github.vincemann.springrapid.core.model.audit.AuditingEntity;
-
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;

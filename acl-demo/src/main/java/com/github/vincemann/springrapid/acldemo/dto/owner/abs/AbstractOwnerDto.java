@@ -20,9 +20,8 @@ public abstract class AbstractOwnerDto{
     private String telephone;
 
     private Set<String> hobbies = new HashSet<>();
-    private Set<Long> petIds = new HashSet<>();
 
-    public AbstractOwnerDto(String firstName, String lastName, String address, String city, String telephone, Set<String> hobbies, @Nullable Set<Long> petIds) {
+    public AbstractOwnerDto(String firstName, String lastName, String address, String city, String telephone, Set<String> hobbies) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
@@ -30,7 +29,5 @@ public abstract class AbstractOwnerDto{
         this.telephone = telephone;
         if (hobbies != null)
             this.hobbies = hobbies;
-        if (petIds != null)
-            this.petIds = petIds;
     }
 }

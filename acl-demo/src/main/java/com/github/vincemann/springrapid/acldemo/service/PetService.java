@@ -17,7 +17,7 @@ import java.util.Optional;
 public interface PetService {
 
     Optional<Pet> findByName(String name);
-    Pet create(@Valid CreatePetDto dto) throws EntityNotFoundException;
+    Pet create(@Valid CreatePetDto dto) throws EntityNotFoundException, BadEntityException;
     Pet vetUpdatesPet(VetUpdatesPetDto dto) throws EntityNotFoundException;
     Pet ownerUpdatesPet(OwnerUpdatesPetDto dto) throws EntityNotFoundException, BadEntityException;
 }

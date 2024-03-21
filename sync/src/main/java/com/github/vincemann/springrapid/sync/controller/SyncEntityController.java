@@ -40,19 +40,19 @@ import java.util.stream.Collectors;
  *
  * @see EntitySyncStatus
  */
-public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Serializable>
+public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Serializable,S extends SyncService<E,Id>>
         extends EntityController<E, Id>
         implements ApplicationContextAware {
 
     private final Log log = LogFactory.getLog(getClass());
 
-    private SyncService<E, Id> service;
+    private S service;
 
-    private String fetchEntitySyncStatusUrl;
+    private String syncEntityUrl;
 
-    private String fetchEntitySyncStatusesUrl;
+    private String syncEntitiesUrl;
 
-    private String fetchEntitySyncStatusesSinceTsUrl;
+    private String syncUrl;
 
     private IdConverter<Id> idConverter;
 
@@ -64,11 +64,11 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
 
     /**
      * used for single entity sync.
-     * GET /api/core/entity/fetch-entity-sync-status?id=42,ts=...
+     * GET /api/core/entity/sync-entity?id=42,ts=...
      * returns 200 if updated needed with json body of {@link EntitySyncStatus}.
      * or 204 if no update is needed
      */
-    public ResponseEntity<String> fetchEntitySyncStatus(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, JsonProcessingException {
+    public ResponseEntity<String> syncEntity(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, JsonProcessingException {
         try {
             Id id = idConverter.toId(readRequestParam(request,"id"));
             log.debug(LogMessage.format("fetching entities sync status for entity with id: %s",id.toString()));
@@ -99,11 +99,11 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
      * <p>
      * If no updated required at all, returns 204 without body.
      *
-     * POST /api/core/entity/fetch-entity-sync-statuses
+     * POST /api/core/entity/sync-entities
      *
      *
      */
-    public ResponseEntity<String> fetchEntitySyncStatuses(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
+    public ResponseEntity<String> syncEntities(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
         try {
             String json = readBody(request);
             CollectionType idSetType = getObjectMapper()
@@ -130,10 +130,10 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
      * <p>
      * Server returns Set of {@link EntitySyncStatus} of all entities, that have been removed, added or updated since then.
      * <p>
-     * GET /api/core/entity/fetch-entity-sync-statuses-since-ts?ts=...
+     * GET /api/core/entity/sync?ts=...
      *
      */
-    public ResponseEntity<String> fetchEntitySyncStatusesSinceTimestamp(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, JsonProcessingException {
+    public ResponseEntity<String> sync(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, JsonProcessingException {
         long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
 
         log.debug(LogMessage.format("find sync statuses since timestamp request received. Timestamp: %s",new Date(lastUpdateTimestamp).toString()));
@@ -150,11 +150,11 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
 
     @Override
     protected void registerEndpoints() throws NoSuchMethodException {
-        if (!getIgnoredEndPoints().contains(getFetchEntitySyncStatusUrl()))
+        if (!getIgnoredEndPoints().contains(getSyncEntityUrl()))
             registerEndpoint(createFetchEntitySyncStatusRequestMappingInfo(), "fetchEntitySyncStatus");
-        if (!getIgnoredEndPoints().contains(getFetchEntitySyncStatusesUrl()))
+        if (!getIgnoredEndPoints().contains(getSyncEntitiesUrl()))
             registerEndpoint(createFetchEntitySyncStatusesRequestMappingInfo(), "fetchEntitySyncStatuses");
-        if (!getIgnoredEndPoints().contains(getFetchEntitySyncStatusesSinceTsUrl()))
+        if (!getIgnoredEndPoints().contains(getSyncUrl()))
             registerEndpoint(createFetchEntitySyncStatusesSinceTsRequestMappingInfo(), "fetchEntitySyncStatusesSinceTimestamp");
     }
 
@@ -173,7 +173,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
 
     protected RequestMappingInfo createFetchEntitySyncStatusRequestMappingInfo() {
         return RequestMappingInfo
-                .paths(fetchEntitySyncStatusUrl)
+                .paths(syncEntityUrl)
                 .methods(RequestMethod.GET)
                 .produces(MediaType.APPLICATION_JSON_VALUE)
                 .build();
@@ -181,7 +181,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
 
     protected RequestMappingInfo createFetchEntitySyncStatusesSinceTsRequestMappingInfo() {
         return RequestMappingInfo
-                .paths(fetchEntitySyncStatusesSinceTsUrl)
+                .paths(syncUrl)
                 .methods(RequestMethod.GET)
                 .produces(MediaType.APPLICATION_JSON_VALUE)
                 .build();
@@ -189,7 +189,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
 
     protected RequestMappingInfo createFetchEntitySyncStatusesRequestMappingInfo() {
         return RequestMappingInfo
-                .paths(fetchEntitySyncStatusesUrl)
+                .paths(syncEntitiesUrl)
                 .methods(RequestMethod.POST)
                 .consumes(MediaType.APPLICATION_JSON_VALUE)
                 .produces(MediaType.APPLICATION_JSON_VALUE)
@@ -198,38 +198,38 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
 
     protected void initUrls() {
         super.initUrls();
-        this.fetchEntitySyncStatusUrl = entityBaseUrl + "fetch-entity-sync-status";
-        this.fetchEntitySyncStatusesUrl = entityBaseUrl + "fetch-entity-sync-statuses";
-        this.fetchEntitySyncStatusesSinceTsUrl = entityBaseUrl + "fetch-entity-sync-statuses-since-ts";
+        this.syncEntityUrl = entityBaseUrl + "sync-entity";
+        this.syncEntitiesUrl = entityBaseUrl + "sync-entities";
+        this.syncUrl = entityBaseUrl + "sync";
     }
 
 
-    public SyncService<E, Id> getService() {
+    public S getService() {
         return service;
     }
 
-    public String getFetchEntitySyncStatusUrl() {
-        return fetchEntitySyncStatusUrl;
+    public String getSyncEntityUrl() {
+        return syncEntityUrl;
     }
 
-    public String getFetchEntitySyncStatusesUrl() {
-        return fetchEntitySyncStatusesUrl;
+    public String getSyncEntitiesUrl() {
+        return syncEntitiesUrl;
     }
 
-    public String getFetchEntitySyncStatusesSinceTsUrl() {
-        return fetchEntitySyncStatusesSinceTsUrl;
+    public String getSyncUrl() {
+        return syncUrl;
     }
 
-    public void setFetchEntitySyncStatusUrl(String fetchEntitySyncStatusUrl) {
-        this.fetchEntitySyncStatusUrl = fetchEntitySyncStatusUrl;
+    public void setSyncEntityUrl(String syncEntityUrl) {
+        this.syncEntityUrl = syncEntityUrl;
     }
 
-    public void setFetchEntitySyncStatusesUrl(String fetchEntitySyncStatusesUrl) {
-        this.fetchEntitySyncStatusesUrl = fetchEntitySyncStatusesUrl;
+    public void setSyncEntitiesUrl(String syncEntitiesUrl) {
+        this.syncEntitiesUrl = syncEntitiesUrl;
     }
 
-    public void setFetchEntitySyncStatusesSinceTsUrl(String fetchEntitySyncStatusesSinceTsUrl) {
-        this.fetchEntitySyncStatusesSinceTsUrl = fetchEntitySyncStatusesSinceTsUrl;
+    public void setSyncUrl(String syncUrl) {
+        this.syncUrl = syncUrl;
     }
 
     @Autowired
@@ -238,7 +238,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
     }
 
     @Autowired
-    public void setService(SyncService<E,Id> service) {
+    public void setService(S service) {
         this.service = service;
     }
 }

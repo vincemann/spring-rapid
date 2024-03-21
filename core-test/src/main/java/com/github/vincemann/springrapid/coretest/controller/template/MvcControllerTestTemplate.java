@@ -107,16 +107,20 @@ public abstract class MvcControllerTestTemplate<C> implements MvcAware {
         return objectMapper.writeValueAsString(o);
     }
 
+    protected ObjectMapper getObjectMapper() {
+        return objectMapper;
+    }
+
     @Autowired
     public void setObjectMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
-    public C getController() {
+    protected C getController() {
         return controller;
     }
 
-    public MockMvc getMvc() {
+    protected MockMvc getMvc() {
         return mvc;
     }
 }

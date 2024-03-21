@@ -13,8 +13,8 @@ import java.util.Set;
 public abstract class AbstractReadOwnerDto extends AbstractOwnerDto{
     private Long id;
 
-    public AbstractReadOwnerDto(String firstName, String lastName, String address, String city, String telephone, Set<String> hobbies, @Nullable Set<Long> petIds, Long id) {
-        super(firstName, lastName, address, city, telephone, hobbies, petIds);
+    public AbstractReadOwnerDto(String firstName, String lastName, String address, String city, String telephone, Set<String> hobbies, Long id) {
+        super(firstName, lastName, address, city, telephone, hobbies);
         this.id = id;
     }
 }

@@ -17,7 +17,7 @@ import java.util.Optional;
 @Root
 @Service
 @EnableAutoBiDir
-public class JpaVetService
+public class VetServiceImpl
         extends AbstractUserService<Vet,Long, VetRepository>
                 implements VetService {
 

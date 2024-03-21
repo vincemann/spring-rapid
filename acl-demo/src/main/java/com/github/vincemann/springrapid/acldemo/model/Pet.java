@@ -38,7 +38,6 @@ public class Pet extends IdAwareEntityImpl<Long> {
     //uniDir ManyToOne -> PetType does not know about this mapping
     @ManyToOne
     @JoinColumn(name = "pet_type_id", nullable = false)
-    @UniDirChildEntity
     private PetType petType;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -50,7 +49,6 @@ public class Pet extends IdAwareEntityImpl<Long> {
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     @JsonBackReference
-    @BiDirParentEntity
     private Owner owner;
 
     @Column(name = "birth_date")

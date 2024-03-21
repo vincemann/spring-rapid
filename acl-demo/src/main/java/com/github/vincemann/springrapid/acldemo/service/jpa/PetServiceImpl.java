@@ -16,8 +16,6 @@ import com.github.vincemann.springrapid.acldemo.repo.PetTypeRepository;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.ValidationUtils;
-import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -26,9 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Validator;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 import static com.github.vincemann.springrapid.core.util.RepositoryUtil.findPresentById;
 import static com.github.vincemann.springrapid.core.util.ValidationUtils.validate;
@@ -36,7 +32,7 @@ import static com.github.vincemann.springrapid.core.util.ValidationUtils.validat
 
 @Primary
 @Service
-public class JpaPetService implements PetService {
+public class PetServiceImpl implements PetService {
 
     private RapidAclService aclService;
     private OwnerRepository ownerRepository;

@@ -26,7 +26,6 @@ public class Specialty extends IdAwareEntityImpl<Long>
 
 
     @ManyToMany(mappedBy = "specialtys", fetch = FetchType.EAGER)
-    @BiDirParentCollection(Vet.class)
     private Set<Vet> vets = new HashSet<>();
 
     @Builder

@@ -22,7 +22,6 @@ public class Vet extends User {
     @JoinTable(name = "vet_specialtys",
             joinColumns = @JoinColumn(name = "vet_id"),
             inverseJoinColumns = @JoinColumn(name = "speciality_id"))
-    @BiDirChildCollection(Specialty.class)
     private Set<Specialty> specialtys = new HashSet<>();
 
 
@@ -44,10 +43,6 @@ public class Vet extends User {
                 ", password='" + getPassword() + '\'' +
                 ", roles=" + getRoles() +
                 ", credentialsUpdatedMillis=" + getCredentialsUpdatedMillis() +
-                ", createdById=" + getCreatedById() +
-                ", createdDate=" + getCreatedDate() +
-                ", lastModifiedById=" + getLastModifiedById() +
-                ", lastModifiedDate=" + getLastModifiedDate() +
                 ", id=" + getId() +
                 '}';
     }

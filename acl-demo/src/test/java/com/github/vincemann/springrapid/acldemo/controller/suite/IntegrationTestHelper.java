@@ -10,17 +10,22 @@ import com.github.vincemann.springrapid.acldemo.dto.vet.ReadVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.visit.CreateVisitDto;
 import com.github.vincemann.springrapid.acldemo.dto.visit.ReadVisitDto;
-import com.github.vincemann.springrapid.acldemo.model.*;
-import com.github.vincemann.springrapid.acldemo.service.*;
+import com.github.vincemann.springrapid.acldemo.model.Owner;
+import com.github.vincemann.springrapid.acldemo.model.Pet;
+import com.github.vincemann.springrapid.acldemo.model.Vet;
+import com.github.vincemann.springrapid.acldemo.model.Visit;
+import com.github.vincemann.springrapid.acldemo.repo.*;
+import com.github.vincemann.springrapid.acldemo.service.OwnerService;
+import com.github.vincemann.springrapid.acldemo.service.PetService;
+import com.github.vincemann.springrapid.acldemo.service.VetService;
+import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.authtest.RapidAuthTestUtil;
 import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
 import com.github.vincemann.springrapid.core.Root;
-import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.coretest.controller.MvcAware;
-import com.github.vincemann.springrapid.coretest.TestMethodInitializable;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -28,7 +33,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 
 @Component
-public class IntegrationTestHelper implements TestMethodInitializable, MvcAware {
+public class IntegrationTestHelper implements MvcAware {
 
     @Autowired
     private TestData testData;
@@ -36,21 +41,26 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     // services
 
     @Autowired
-    protected SpecialtyService specialtyService;
+    protected SpecialtyRepository specialtyRepository;
     @Autowired
     @Root
     protected VetService vetService;
     @Autowired
-    protected IllnessService illnessService;
+    protected IllnessRepository illnessRepository;
     @Autowired
     protected PetService petService;
     @Autowired
-    protected PetTypeService petTypeService;
+    protected PetTypeRepository petTypeRepository;
     @Autowired
-    protected VisitService visitService;
+    private VetRepository vetRepository;
+    @Autowired
+    private VisitRepository visitRepository;
     @Autowired
     @Root
     protected OwnerService ownerService;
+
+    @Autowired
+    private OwnerRepository ownerRepository;
 
 
     // controllers
@@ -70,8 +80,8 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
 
     @Override
     public void beforeTestMethod() throws BadEntityException {
-        testData.savedDogPetType = petTypeService.create(testData.getDogPetType());
-        testData.savedCatPetType = petTypeService.create(testData.getCatPetType());
+        testData.savedDogPetType = petTypeRepository.save(testData.getDogPetType());
+        testData.savedCatPetType = petTypeRepository.save(testData.getCatPetType());
         testData.initTestData();
     }
 
@@ -109,21 +119,21 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
     public Vet signupVetDiCaprioWithHeart() throws Exception {
         // signup
         Vet diCaprio = testData.getVetDiCaprio();
-        diCaprio.getSpecialtys().add(specialtyService.create(testData.getHeart()));
+        diCaprio.getSpecialtys().add(specialtyRepository.save(testData.getHeart()));
         SignupVetDto dto = new SignupVetDto(diCaprio);
         ReadVetDto response = vetController.signup(dto);
         Assertions.assertTrue(response.getRoles().contains(AuthRoles.UNVERIFIED));
-        return vetService.findById(response.getId()).get();
+        return v.findById(response.getId()).get();
     }
 
     public Vet signupVetMaxWithDentism() throws Exception {
         // signup
         Vet max = testData.getVetMax();
-        max.getSpecialtys().add(specialtyService.create(testData.getDentism()));
+        max.getSpecialtys().add(specialtyRepository.save(testData.getDentism()));
         SignupVetDto dto = new SignupVetDto(max);
         ReadVetDto response = vetController.signup(dto);
         Assertions.assertTrue(response.getRoles().contains(AuthRoles.UNVERIFIED));
-        return vetService.findById(response.getId()).get();
+        return vetRepository.findById(response.getId()).get();
     }
 
     public Owner signupKahnWithBella() throws Exception {
@@ -132,7 +142,7 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
         testData.getBella().setOwner(owner);
         Pet bella = petService.create(testData.getBella());
         RapidSecurityContext.clear();
-        return ownerService.findPresentById(owner.getId());
+        return ownerRepository.findById(owner.getId()).get();
     }
 
     public Owner signupMeierWithBello() throws Exception {
@@ -141,13 +151,13 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
         testData.getBello().setOwner(owner);
         Pet bello = petService.create(testData.getBello());
         RapidSecurityContext.clear();
-        return ownerService.findPresentById(owner.getId());
+        return ownerRepository.findById(owner.getId()).get();
     }
 
     public Owner signupOwner(Owner owner) throws Exception {
         SignupOwnerDto dto = new SignupOwnerDto(owner);
         OwnerReadsOwnOwnerDto response = ownerController.signup(dto);
-        return ownerService.findById(response.getId()).get();
+        return ownerRepository.findById(response.getId()).get();
     }
 
     public Visit createVisit(String token, Visit visit, Owner owner, Vet vet, Pet... pets) throws Exception {
@@ -161,6 +171,6 @@ public class IntegrationTestHelper implements TestMethodInitializable, MvcAware 
         ReadVisitDto response = visitController.perform2xxAndDeserialize(visitController.create(dto)
                         .header(HttpHeaders.AUTHORIZATION,token)
                 , ReadVisitDto.class);
-        return visitService.findById(response.getId()).get();
+        return visitRepository.findById(response.getId()).get();
     }
 }

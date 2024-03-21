@@ -22,7 +22,7 @@ public class PetController {
     private PetMappingService mappingService;
 
     @PostMapping("create")
-    public OwnerReadsOwnPetDto create(@RequestBody CreatePetDto dto) throws EntityNotFoundException {
+    public OwnerReadsOwnPetDto create(@RequestBody CreatePetDto dto) throws EntityNotFoundException, BadEntityException {
         Pet pet = petService.create(dto);
         return mappingService.mapToOwnerReadsOwnPetDto(pet);
     }

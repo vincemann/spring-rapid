@@ -6,6 +6,9 @@ import com.github.vincemann.springrapid.acldemo.controller.suite.templates.PetCo
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VisitControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.model.*;
+import com.github.vincemann.springrapid.acldemo.repo.IllnessRepository;
+import com.github.vincemann.springrapid.acldemo.repo.PetRepository;
+import com.github.vincemann.springrapid.acldemo.repo.SpecialtyRepository;
 import com.github.vincemann.springrapid.acldemo.service.*;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
@@ -35,22 +38,25 @@ public class MyIntegrationTest extends AclMvcTest
 
 
     // services
-    @Autowired
-    protected SpecialtyService specialtyService;
+
     @Autowired
     @Root
     protected VetService vetService;
     @Autowired
-    protected IllnessService illnessService;
-    @Autowired
     protected PetService petService;
-    @Autowired
-    protected PetTypeService petTypeService;
     @Autowired
     protected VisitService visitService;
     @Autowired
     @Root
     protected OwnerService ownerService;
+
+    @Autowired
+    protected PetRepository petRepository;
+    @Autowired
+    protected IllnessRepository illnessRepository;
+
+    @Autowired
+    protected SpecialtyRepository specialtyRepository;
 
 
     // controller
@@ -80,7 +86,7 @@ public class MyIntegrationTest extends AclMvcTest
 
         Set<Specialty> specialtys = new HashSet<>();
         for (String description : descriptions) {
-            Optional<Specialty> optionalSpecialty = specialtyService.findByDescription(description);
+            Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
             Assertions.assertTrue(optionalSpecialty.isPresent());
             specialtys.add(optionalSpecialty.get());
         }
@@ -89,7 +95,7 @@ public class MyIntegrationTest extends AclMvcTest
     }
 
     protected void assertSpecialtyHasVets(String description, String... vetNames) {
-        Optional<Specialty> optionalSpecialty = specialtyService.findByDescription(description);
+        Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
         Assertions.assertTrue(optionalSpecialty.isPresent());
         Specialty specialty = optionalSpecialty.get();
 
@@ -110,7 +116,7 @@ public class MyIntegrationTest extends AclMvcTest
 
         Set<Illness> illnesses = new HashSet<>();
         for (String illness : illnessNames) {
-            Optional<Illness> optionalIllness = illnessService.findByName(illness);
+            Optional<Illness> optionalIllness = illnessRepository.findByName(illness);
             Assertions.assertTrue(optionalIllness.isPresent());
             illnesses.add(optionalIllness.get());
         }
