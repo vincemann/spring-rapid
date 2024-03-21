@@ -37,7 +37,7 @@ public class PetMappingService {
         VetReadsPetDto dto = new ModelMapper().map(pet, VetReadsPetDto.class);
         dto.setOwnerId(pet.getOwner() == null ? null : pet.getOwner().getId());
         dto.setPetTypeId(pet.getPetType() == null ? null : pet.getPetType().getId());
-        dto.setIllnessIds(pet.getIllnesss().stream().map(Illness::getId).collect(Collectors.toSet()));
+        dto.setIllnessIds(pet.getIllnesses().stream().map(Illness::getId).collect(Collectors.toSet()));
         return dto;
     }
 
@@ -55,7 +55,7 @@ public class PetMappingService {
         OwnerReadsOwnPetDto dto = new ModelMapper().map(pet, OwnerReadsOwnPetDto.class);
         dto.setOwnerId(pet.getOwner() == null ? null : pet.getOwner().getId());
         dto.setPetTypeId(pet.getPetType() == null ? null : pet.getPetType().getId());
-        dto.setIllnessIds(pet.getIllnesss().stream().map(Illness::getId).collect(Collectors.toSet()));
+        dto.setIllnessIds(pet.getIllnesses().stream().map(Illness::getId).collect(Collectors.toSet()));
         return dto;
     }
 }

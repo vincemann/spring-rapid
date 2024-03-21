@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 public class SignupVetDto extends AbstractSignupDto {
 
     @NotEmpty
-    @BiDirChildIdCollection(Specialty.class)
     private Set<Long> specialtyIds = new HashSet<>();
 
     @Builder

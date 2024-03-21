@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.acldemo.Roles;
 import com.github.vincemann.springrapid.acldemo.dto.pet.CreatePetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerUpdatesPetDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.VetUpdatesPetDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.UpdateIllnessDto;
 import com.github.vincemann.springrapid.acldemo.model.Illness;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
@@ -16,6 +16,7 @@ import com.github.vincemann.springrapid.acldemo.repo.PetTypeRepository;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -65,13 +66,24 @@ public class PetServiceImpl implements PetService {
 
     @Transactional
     @Override
-    public Pet vetUpdatesPet(VetUpdatesPetDto dto) throws EntityNotFoundException {
+    public Pet addIllnesses(UpdateIllnessDto dto) throws EntityNotFoundException, BadEntityException {
         Pet pet = findPresentById(repository, dto.getId());
-        validate(validator,dto,dto::getIllnessIds);
-        for (Long id : dto.getIllnessIds()) {
-            Illness illness = findPresentById(illnessRepository,id);
-            pet.addIllness(illness);
-        }
+        Optional<Illness> illness = illnessRepository.findByName(dto.getIllnessName());
+        VerifyEntity.isPresent(illness,dto.getIllnessName(), Illness.class);
+        boolean hasIllness = pet.getIllnesses().stream().anyMatch(i -> i.getName().equals(dto.getIllnessName()));
+        VerifyEntity.isTrue(!hasIllness,"pet already has illness to add");
+        pet.addIllness(illness.get());
+        return pet;
+    }
+
+    @Transactional
+    @Override
+    public Pet removeIllness(UpdateIllnessDto dto) throws EntityNotFoundException, BadEntityException {
+        Pet pet = findPresentById(repository, dto.getId());
+        Optional<Illness> illness = illnessRepository.findByName(dto.getIllnessName());
+        boolean hasIllness = pet.getIllnesses().stream().anyMatch(i -> i.getName().equals(dto.getIllnessName()));
+        VerifyEntity.isTrue(hasIllness,"pet does not have illness to remove");
+        pet.removeIllness(illness.get());
         return pet;
     }
 

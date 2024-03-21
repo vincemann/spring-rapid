@@ -33,9 +33,15 @@ public class PetController {
         return mappingService.mapToReadPetDto(pet.get());
     }
 
-    @PutMapping("vet-update")
-    public VetReadsPetDto vetUpdate(@RequestBody VetUpdatesPetDto dto) throws EntityNotFoundException {
-        Pet pet = petService.vetUpdatesPet(dto);
+    @PutMapping("add-illness")
+    public VetReadsPetDto addIllness(@RequestBody UpdateIllnessDto dto) throws EntityNotFoundException, BadEntityException {
+        Pet pet = petService.addIllnesses(dto);
+        return mappingService.mapToVetReadsPetDto(pet);
+    }
+
+    @PutMapping("remove-illness")
+    public VetReadsPetDto removeIllness(@RequestBody UpdateIllnessDto dto) throws EntityNotFoundException, BadEntityException {
+        Pet pet = petService.removeIllness(dto);
         return mappingService.mapToVetReadsPetDto(pet);
     }
 

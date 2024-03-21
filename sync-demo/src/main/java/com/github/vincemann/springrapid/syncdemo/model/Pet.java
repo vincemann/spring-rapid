@@ -2,17 +2,14 @@ package com.github.vincemann.springrapid.syncdemo.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.UniDirChildEntity;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
-import com.github.vincemann.springrapid.sync.model.audit.AuditingEntity;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
-import com.github.vincemann.springrapid.sync.AuditCollection;
+import com.github.vincemann.springrapid.sync.model.audit.AuditingEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -41,14 +38,11 @@ public class Pet extends AuditingEntity<Long> {
 
     @JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pet")
-    @BiDirChildCollection(Toy.class)
-    @AuditCollection
     private Set<Toy> toys = new HashSet<>();
 
     @JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pet")
-    @BiDirChildCollection(Illness.class)
-    private Set<Illness> illnesss = new HashSet<>();
+    private Set<Illness> illnesses = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "owner_id")

@@ -1,25 +1,20 @@
 package com.github.vincemann.springrapid.syncdemo.controller;
 
-import com.github.vincemann.springrapid.core.util.Entity;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.coretest.util.TestPrincipal;
-import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.LastFetchInfo;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
 import com.github.vincemann.springrapid.syncdemo.controller.suite.MyIntegrationTest;
-import com.github.vincemann.springrapid.syncdemo.controller.suite.template.ClinicCardControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.controller.suite.template.OwnerSyncControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.controller.suite.template.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.controller.suite.template.PetSyncControllerTestTemplate;
-import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnOwnerDto;
+import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.pet.ReadPetDto;
 import com.github.vincemann.springrapid.syncdemo.model.ClinicCard;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
 import com.github.vincemann.springrapid.syncdemo.model.Toy;
-import com.github.vincemann.springrapid.syncdemo.service.filter.OwnerTelNumberFilter;
-import com.github.vincemann.springrapid.syncdemo.service.filter.PetParentFilter;
 import com.google.common.collect.Sets;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
@@ -28,10 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Tag(value = "demo-projects")
 public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
@@ -49,9 +41,6 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
     @Autowired
     ApplicationContext applicationContext;
-
-    @Autowired
-    ClinicCardControllerTestTemplate clinicCardController;
 
 
     @Test
@@ -114,9 +103,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(),now);
 
-        ownerService.deleteById(owner.getId());
+        ownerRepository.deleteById(owner.getId());
 
-        Assertions.assertFalse(ownerService.findById(owner.getId()).isPresent());
+        Assertions.assertFalse(ownerRepository.findById(owner.getId()).isPresent());
 
         ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(),now,SyncStatus.REMOVED);
     }
@@ -141,12 +130,15 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
 
-
+        // update first name
         String updatedFirstName = owner.getFirstName()+"-updated";
-        Owner updateOwner = Entity.createUpdate(owner);
-        updateOwner.setFirstName(updatedFirstName);
+        Owner updated = transactionTemplate.execute(transactionStatus -> {
+            Owner update = ownerRepository.findById(owner.getId()).get();
+            update.setFirstName(updatedFirstName);
+            return update;
+        });
 
-        Owner updated = ownerService.partialUpdate(updateOwner);
+
         Assertions.assertEquals(updatedFirstName,updated.getFirstName());
         Assertions.assertTrue(updated.getLastModifiedDate().after(lastServerUpdate));
         Assertions.assertTrue(clientUpdate.before(updated.getLastModifiedDate()));
@@ -155,8 +147,8 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
         RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
-        ReadOwnOwnerDto updatedEG = ownerController.find2xx(status.getId()
-                , ReadOwnOwnerDto.class);
+        ReadOwnerDto updatedEG = ownerController.find2xx(status.getId()
+                , ReadOwnerDto.class);
         RapidSecurityContext.clear();
 
         Assertions.assertEquals(updatedFirstName,updatedEG.getFirstName());
@@ -191,8 +183,8 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Owner updateOwner3 = Entity.createUpdate(owner3);
         updateOwner3.setCity(owner3.getCity() + "updated");
 
-        Owner updatedOwner2 = ownerService.partialUpdate(updateOwner2);
-        Owner updatedOwner3 = ownerService.partialUpdate(updateOwner3);
+        Owner updatedOwner2 = ownerRepository.partialUpdate(updateOwner2);
+        Owner updatedOwner3 = ownerRepository.partialUpdate(updateOwner3);
 
         Assertions.assertTrue(updatedOwner2.getLastModifiedDate().after(lastServerUpdate));
         Assertions.assertTrue(updatedOwner3.getLastModifiedDate().after(lastServerUpdate));
@@ -210,14 +202,14 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Set<String> idsToSync = Sets.newHashSet(owner2SyncStatus.getId(),owner3SyncStatus.getId());
 
         RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
-        Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
+        Set<ReadOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync, ReadOwnerDto.class);
         RapidSecurityContext.clear();
 
 
         Assertions.assertEquals(2,updatedOwners.size());
 
-        ReadOwnOwnerDto owner2Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner2.getId())).findFirst().get();
-        ReadOwnOwnerDto owner3Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner3.getId())).findFirst().get();
+        ReadOwnerDto owner2Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner2.getId())).findFirst().get();
+        ReadOwnerDto owner3Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner3.getId())).findFirst().get();
 
         Assertions.assertEquals(owner2Dto.getCity(),updateOwner2.getCity());
         Assertions.assertEquals(owner3Dto.getCity(),updateOwner3.getCity());
@@ -249,14 +241,14 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         // update kahn and remove gil
         Owner updateKahn = Entity.createUpdate(savedKahn);
         updateKahn.setCity(savedKahn.getCity() + "updated");
-        Owner updatedKahn = ownerService.partialUpdate(updateKahn);
+        Owner updatedKahn = ownerRepository.partialUpdate(updateKahn);
 
 
-        ownerService.deleteById(savedGil.getId());
+        ownerRepository.deleteById(savedGil.getId());
 
         Assertions.assertTrue(updatedKahn.getLastModifiedDate().after(kahnServerUpdate));
         Assertions.assertFalse(savedMeier.getLastModifiedDate().after(meierServerUpdate));
-        Assertions.assertFalse(ownerService.findById(savedGil.getId()).isPresent());
+        Assertions.assertFalse(ownerRepository.findById(savedGil.getId()).isPresent());
 
         // now should need update for owner2 and owner3
         Set<EntitySyncStatus> statuses = ownerSyncController.fetchSyncStatusesSinceTs_assertUpdates(clientUpdate);
@@ -268,12 +260,12 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Set<String> idsToSync = Sets.newHashSet(kahnSyncStatus.getId());
 
         RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
-        Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
+        Set<ReadOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync, ReadOwnerDto.class);
         RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedOwners.size());
 
-        ReadOwnOwnerDto kahnDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedKahn.getId())).findFirst().get();
+        ReadOwnerDto kahnDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedKahn.getId())).findFirst().get();
 
         Assertions.assertEquals(kahnDto.getCity(),updateKahn.getCity());
     }
@@ -309,8 +301,8 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Owner updateOwner3 = Entity.createUpdate(owner3);
         updateOwner3.setCity(owner3.getCity() + "updated");
 
-        Owner updatedOwner2 = ownerService.partialUpdate(updateOwner2);
-        Owner updatedOwner3 = ownerService.partialUpdate(updateOwner3);
+        Owner updatedOwner2 = ownerRepository.partialUpdate(updateOwner2);
+        Owner updatedOwner3 = ownerRepository.partialUpdate(updateOwner3);
 
         Assertions.assertTrue(updatedOwner2.getLastModifiedDate().after(lastServerUpdate));
         Assertions.assertTrue(updatedOwner3.getLastModifiedDate().after(lastServerUpdate));
@@ -328,12 +320,12 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Set<String> idsToSync = Sets.newHashSet(owner2SyncStatus.getId());
 
         RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
-        Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
+        Set<ReadOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync, ReadOwnerDto.class);
         RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedOwners.size());
 
-        ReadOwnOwnerDto owner2Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner2.getId())).findFirst().get();
+        ReadOwnerDto owner2Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner2.getId())).findFirst().get();
 
         Assertions.assertEquals(owner2Dto.getCity(),updateOwner2.getCity());
     }
@@ -359,12 +351,12 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Owner updateKahn = Entity.createUpdate(kahn);
         updateKahn.setCity(kahn.getCity() + "updated");
 
-        Owner updatedKahn = ownerService.partialUpdate(updateKahn);
+        Owner updatedKahn = ownerRepository.partialUpdate(updateKahn);
 
-        ownerService.deleteById(gil.getId());
+        ownerRepository.deleteById(gil.getId());
 
         Assertions.assertTrue(updatedKahn.getLastModifiedDate().after(clientUpdate));
-        Assertions.assertTrue(ownerService.findById(gil.getId()).isEmpty());
+        Assertions.assertTrue(ownerRepository.findById(gil.getId()).isEmpty());
 
 
         // now should ask for update info for all owners
@@ -411,8 +403,8 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Owner updateOwner3 = Entity.createUpdate(owner3);
         updateOwner3.setCity(owner3.getCity() + "updated");
 
-        Owner updatedOwner2 = ownerService.partialUpdate(updateOwner2);
-        Owner updatedOwner3 = ownerService.partialUpdate(updateOwner3);
+        Owner updatedOwner2 = ownerRepository.partialUpdate(updateOwner2);
+        Owner updatedOwner3 = ownerRepository.partialUpdate(updateOwner3);
 
         Timestamp clientUpdate2 = new Timestamp(new Date().getTime());
 
@@ -434,12 +426,12 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Set<String> idsToSync = Sets.newHashSet(owner2SyncStatus.getId());
 
         RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
-        Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
+        Set<ReadOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync, ReadOwnerDto.class);
         RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedOwners.size());
 
-        ReadOwnOwnerDto owner2Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner2.getId())).findFirst().get();
+        ReadOwnerDto owner2Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner2.getId())).findFirst().get();
 
         Assertions.assertEquals(owner2Dto.getCity(),updateOwner2.getCity());
     }
@@ -472,8 +464,8 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Owner updateOwner3 = Entity.createUpdate(owner3);
         updateOwner3.setCity(owner3.getCity() + "updated");
 
-        Owner updatedOwner2 = ownerService.partialUpdate(updateOwner2);
-        Owner updatedOwner3 = ownerService.partialUpdate(updateOwner3);
+        Owner updatedOwner2 = ownerRepository.partialUpdate(updateOwner2);
+        Owner updatedOwner3 = ownerRepository.partialUpdate(updateOwner3);
 
         Assertions.assertTrue(updatedOwner2.getLastModifiedDate().after(lastServerUpdate));
         Assertions.assertTrue(updatedOwner3.getLastModifiedDate().after(lastServerUpdate));
@@ -489,12 +481,12 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Set<String> idsToSync = Sets.newHashSet(owner3SyncStatus.getId());
 
         RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
-        Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
+        Set<ReadOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync, ReadOwnerDto.class);
         RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedOwners.size());
 
-        ReadOwnOwnerDto owner3Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner3.getId())).findFirst().get();
+        ReadOwnerDto owner3Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner3.getId())).findFirst().get();
         Assertions.assertEquals(owner3Dto.getCity(),updateOwner3.getCity());
     }
 
@@ -524,9 +516,9 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Owner updateKahn = Entity.createUpdate(kahn);
         updateKahn.setCity(kahn.getCity() + "updated");
 
-        Owner updatedMeier = ownerService.partialUpdate(updateMeier);
-        Owner updatedKahn = ownerService.partialUpdate(updateKahn);
-        ownerService.deleteById(gil.getId());
+        Owner updatedMeier = ownerRepository.partialUpdate(updateMeier);
+        Owner updatedKahn = ownerRepository.partialUpdate(updateKahn);
+        ownerRepository.deleteById(gil.getId());
 
         Assertions.assertTrue(updatedMeier.getLastModifiedDate().after(clientUpdate));
         Assertions.assertTrue(updatedKahn.getLastModifiedDate().after(clientUpdate));
@@ -543,12 +535,12 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Set<String> idsToSync = Sets.newHashSet(kahnSyncStatus.getId());
 
         RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
-        Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
+        Set<ReadOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync, ReadOwnerDto.class);
         RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedOwners.size());
 
-        ReadOwnOwnerDto kahnDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedKahn.getId())).findFirst().get();
+        ReadOwnerDto kahnDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedKahn.getId())).findFirst().get();
         Assertions.assertEquals(kahnDto.getCity(),updateKahn.getCity());
     }
 
@@ -625,6 +617,8 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         ReadPetDto belloDto = createPetLinkedToOwnerAndToys(bello, null, rubberDuck, ball);
 
         assertPetHasToys(BELLO,RUBBER_DUCK,BALL);
+        assertToyHasPet(RUBBER_DUCK,BELLO);
+        assertToyHasPet(BALL,BELLO);
 
         // now
         Timestamp clientUpdate = new Timestamp(new Date().getTime());
@@ -670,6 +664,8 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         ReadPetDto belloDto = createPetLinkedToOwnerAndToys(bello, null, rubberDuck, ball);
 
         assertPetHasToys(BELLO,RUBBER_DUCK,BALL);
+        assertToyHasPet(RUBBER_DUCK,BELLO);
+        assertToyHasPet(BALL,BELLO);
 
         // now
         Timestamp clientUpdate = new Timestamp(new Date().getTime());
@@ -678,6 +674,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
 
         toyService.deleteById(ball.getId());
         assertPetHasToys(BELLO,RUBBER_DUCK);
+        assertToyHasPet(RUBBER_DUCK,BELLO);
 
 
         petSyncController.fetchSyncStatus_assertNoUpdate(belloDto.getId(), clientUpdate);
@@ -717,7 +714,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Assertions.assertEquals(1,updatedPets.size());
         unlinkBello.setPets(updatedPets);
 
-        Owner updatedOwner = ownerService.partialUpdate(unlinkBello,"pets");
+        Owner updatedOwner = ownerRepository.partialUpdate(unlinkBello,"pets");
 
         assertOwnerHasPets(KAHN,KITTY);
         assertPetHasOwner(BELLO,null);
@@ -733,12 +730,12 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Set<String> idsToSync = Sets.newHashSet(owner.getId().toString());
 
         RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
-        Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
+        Set<ReadOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync, ReadOwnerDto.class);
         RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedOwners.size());
 
-        ReadOwnOwnerDto ownerDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner.getId())).findFirst().get();
+        ReadOwnerDto ownerDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner.getId())).findFirst().get();
         Assertions.assertEquals(1,ownerDto.getPetIds().size());
         Assertions.assertEquals(ownerDto.getPetIds().stream().findFirst().get(),savedKitty.getId());
     }
@@ -772,7 +769,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Owner unlinkPets = Entity.createUpdate(owner);
         unlinkPets.setPets(new HashSet<>());
 
-        Owner updatedOwner = ownerService.partialUpdate(unlinkPets,"pets");
+        Owner updatedOwner = ownerRepository.partialUpdate(unlinkPets,"pets");
 
         assertOwnerHasPets(KAHN);
         assertPetHasOwner(BELLO,null);
@@ -818,7 +815,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         updatedHobbies.remove(bodybuilding);
         removeHobby.setHobbies(updatedHobbies);
 
-        Owner updatedOwner = ownerService.partialUpdate(removeHobby,"hobbies");
+        Owner updatedOwner = ownerRepository.partialUpdate(removeHobby,"hobbies");
 
 
         // has changed
@@ -828,10 +825,10 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         EntitySyncStatus status = ownerSyncController.fetchSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
         RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
-        ReadOwnOwnerDto readOwnOwnerDto = ownerController.find2xx(status.getId(), ReadOwnOwnerDto.class);
+        ReadOwnerDto readOwnerDto = ownerController.find2xx(status.getId(), ReadOwnerDto.class);
         RapidSecurityContext.clear();
 
-        Assertions.assertEquals(updatedHobbies,readOwnOwnerDto.getHobbies());
+        Assertions.assertEquals(updatedHobbies, readOwnerDto.getHobbies());
     }
 
 
@@ -859,7 +856,7 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         // update owner by unlinking pet bello
         Owner unlinkClinicCard = Entity.createUpdate(owner);
 
-        Owner updatedOwner = ownerService.partialUpdate(unlinkClinicCard,"clinicCard");
+        Owner updatedOwner = ownerRepository.partialUpdate(unlinkClinicCard,"clinicCard");
 
         assertOwnerHasClinicCard(KAHN, null);
         assertClinicCardHasOwner(card.getId(), null);
@@ -874,12 +871,12 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Set<String> idsToSync = Sets.newHashSet(status.getId());
 
         RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
-        Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
+        Set<ReadOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync, ReadOwnerDto.class);
         RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedOwners.size());
 
-        ReadOwnOwnerDto ownerDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner.getId())).findFirst().get();
+        ReadOwnerDto ownerDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner.getId())).findFirst().get();
         Assertions.assertNull(ownerDto.getClinicCardId());
     }
 
@@ -924,12 +921,12 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         Set<String> idsToSync = Sets.newHashSet(status.getId());
 
         RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
-        Set<ReadOwnOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync,ReadOwnOwnerDto.class);
+        Set<ReadOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync, ReadOwnerDto.class);
         RapidSecurityContext.clear();
 
         Assertions.assertEquals(1,updatedOwners.size());
 
-        ReadOwnOwnerDto ownerDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner.getId())).findFirst().get();
+        ReadOwnerDto ownerDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner.getId())).findFirst().get();
         Assertions.assertNull(ownerDto.getClinicCardId());
     }
 

@@ -7,31 +7,30 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import java.util.Set;
 
 @Setter
 @Getter
 @NoArgsConstructor
-public class VetUpdatesPetDto {
+public class UpdateIllnessDto {
 
     @NotNull
     @Positive
     private Long id;
 
     @NotNull
-    private Set<Long> illnessIds;
+    private String illnessName;
 
     @Builder
-    public VetUpdatesPetDto(Long id, Set<Long> illnessIds) {
+    public UpdateIllnessDto(Long id, String illnessName) {
         this.id = id;
-        this.illnessIds = illnessIds;
+        this.illnessName = illnessName;
     }
 
     @Override
     public String toString() {
         return "VetUpdatesPetDto{" +
                 "id=" + id +
-                ", illnessIds=" + illnessIds +
+                ", illnessName=" + illnessName +
                 '}';
     }
 }

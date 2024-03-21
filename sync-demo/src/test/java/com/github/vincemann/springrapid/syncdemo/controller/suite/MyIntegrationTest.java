@@ -4,12 +4,11 @@ import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
 import com.github.vincemann.springrapid.syncdemo.controller.suite.template.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.controller.suite.template.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.CreateOwnerDto;
-import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnOwnerDto;
+import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.pet.CreatePetDto;
 import com.github.vincemann.springrapid.syncdemo.dto.pet.ReadPetDto;
 import com.github.vincemann.springrapid.syncdemo.model.*;
 import com.github.vincemann.springrapid.syncdemo.repo.*;
-import com.github.vincemann.springrapid.syncdemo.service.*;
 import com.google.common.collect.Lists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,23 +23,6 @@ import java.util.stream.Collectors;
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class MyIntegrationTest extends AbstractMvcTest {
 
-    //Types
-    protected final Vet VetType = new Vet();
-    protected final Specialty SpecialtyType = new Specialty();
-    protected final Owner OwnerType = new Owner();
-    protected final Pet PetType = new Pet();
-    protected final Toy ToyType = new Toy();
-    protected final ClinicCard ClinicCardType = new ClinicCard();
-
-    protected static final String VET_MAX = "Max";
-    protected static final String VET_POLDI = "Poldi";
-    protected static final String VET_DICAPRIO = "Dicaprio";
-
-    protected static final String MUSCLE = "Muscle";
-    protected static final String DENTISM = "Dentism";
-    protected static final String GASTRO = "Gastro";
-    protected static final String HEART = "Heart";
-
     protected static final String MEIER = "Meier";
     protected static final String KAHN = "Kahn";
     protected static final String GIL = "Gil";
@@ -52,16 +34,6 @@ public class MyIntegrationTest extends AbstractMvcTest {
     protected static final String BALL = "ball";
     protected static final String BONE = "bone";
     protected static final String RUBBER_DUCK = "rubberDuck";
-
-
-    protected Vet vetMax;
-    protected Vet vetPoldi;
-    protected Vet vetDiCaprio;
-
-    protected Specialty dentism;
-    protected Specialty gastro;
-    protected Specialty heart;
-    protected Specialty muscle;
 
     protected Owner meier;
     protected Owner kahn;
@@ -79,55 +51,20 @@ public class MyIntegrationTest extends AbstractMvcTest {
     protected Toy bone;
     protected Toy ball;
 
-    protected Visit checkTeethVisit;
-    protected Visit checkHeartVisit;
-
-    @Autowired
-    protected SpecialtyService specialtyService;
-    @Autowired
-    protected SpecialtyRepository specialtyRepository;
+    protected ClinicCard clinicCard;
+    protected ClinicCard secondClinicCard;
 
 
-    @Autowired
-    protected VetRepository vetRepository;
-    @Autowired
-    protected VetService vetService;
-
-
-    @Autowired
-    protected ToyService toyService;
-    @Autowired
-    protected ToyRepository toyRepository;
-
-    @Autowired
-    protected PetService petService;
     @Autowired
     protected PetRepository petRepository;
-
-
-    @Autowired
-    protected ClinicCardService clinicCardService;
     @Autowired
     protected ClinicCardRepository clinicCardRepository;
-
-    @Autowired
-    protected PetTypeService petTypeService;
     @Autowired
     protected PetTypeRepository petTypeRepository;
-
-    @Autowired
-    protected VisitRepository visitRepository;
-    @Autowired
-    protected VisitService visitService;
-
     @Autowired
     protected OwnerRepository ownerRepository;
     @Autowired
-    protected OwnerService ownerService;
-
-
-    protected ClinicCard clinicCard;
-    protected ClinicCard secondClinicCard;
+    protected ToyRepository toyRepository;
 
 
     @Autowired
@@ -142,8 +79,8 @@ public class MyIntegrationTest extends AbstractMvcTest {
     @BeforeEach
     public void setupTestData() throws Exception {
 
-        savedDogPetType = petTypeService.create(new PetType("Dog"));
-        savedCatPetType = petTypeService.create(new PetType("Cat"));
+        savedDogPetType = petTypeRepository.save(new PetType("Dog"));
+        savedCatPetType = petTypeRepository.save(new PetType("Cat"));
 
 
         rubberDuck = Toy.builder()
@@ -200,52 +137,6 @@ public class MyIntegrationTest extends AbstractMvcTest {
                 .telephone("0176567110")
                 .build();
 
-        dentism = Specialty.builder()
-                .description(DENTISM)
-                .build();
-
-        heart = Specialty.builder()
-                .description(HEART)
-                .build();
-
-        muscle = Specialty.builder()
-                .description(MUSCLE)
-                .build();
-
-        gastro = Specialty.builder()
-                .description(GASTRO)
-                .build();
-
-        vetMax = Vet.builder()
-                .firstName("Max")
-                .lastName(VET_MAX)
-                .specialtys(new HashSet<>())
-                .build();
-
-        vetDiCaprio = Vet.builder()
-                .firstName("michael")
-                .lastName(VET_DICAPRIO)
-                .specialtys(new HashSet<>())
-                .build();
-
-        vetPoldi = Vet.builder()
-                .firstName("Olli")
-                .lastName(VET_POLDI)
-                .specialtys(new HashSet<>())
-                .build();
-
-        checkHeartVisit = Visit.builder()
-                .date(LocalDate.now())
-                .pets(new HashSet<>())
-                .reason("heart problems")
-                .build();
-
-        checkTeethVisit = Visit.builder()
-                .date(LocalDate.now())
-                .pets(new HashSet<>())
-                .reason("teeth hurt")
-                .build();
-
         clinicCard = ClinicCard.builder()
                 .registrationDate(new Date())
                 .registrationReason("stationary pet treatment")
@@ -257,42 +148,6 @@ public class MyIntegrationTest extends AbstractMvcTest {
                 .build();
     }
 
-
-    protected void assertVetHasSpecialties(String vetName, String... descriptions) {
-        transactionTemplate.executeWithoutResult(transactionStatus -> {
-            Optional<Vet> vetOptional = vetRepository.findByLastName(vetName);
-            Assertions.assertTrue(vetOptional.isPresent());
-            Vet vet = vetOptional.get();
-
-            Set<Specialty> specialtys = new HashSet<>();
-            for (String description : descriptions) {
-                Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
-                Assertions.assertTrue(optionalSpecialty.isPresent());
-                specialtys.add(optionalSpecialty.get());
-            }
-            System.err.println("Checking vet: " + vetName);
-            Assertions.assertEquals(specialtys, vet.getSpecialtys());
-        });
-
-    }
-
-    protected void assertSpecialtyHasVets(String description, String... vetNames) {
-        transactionTemplate.executeWithoutResult(transactionStatus -> {
-            Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
-            Assertions.assertTrue(optionalSpecialty.isPresent());
-            Specialty specialty = optionalSpecialty.get();
-
-            Set<Vet> vets = new HashSet<>();
-            for (String vetName : vetNames) {
-                Optional<Vet> optionalVet = vetRepository.findByLastName(vetName);
-                Assertions.assertTrue(optionalVet.isPresent());
-                vets.add(optionalVet.get());
-            }
-            System.err.println("Checking Specialty: " + description);
-            Assertions.assertEquals(vets, specialty.getVets());
-        });
-
-    }
 
     //    @Transactional
     public void assertPetHasToys(String petName, String... toyNames) {
@@ -404,9 +259,9 @@ public class MyIntegrationTest extends AbstractMvcTest {
         createOwnerDto.getPetIds().addAll(Lists.newArrayList(petIds));
 
 
-        ReadOwnOwnerDto readOwnOwnerDto = ownerController.create2xx(createOwnerDto, ReadOwnOwnerDto.class);
-        Assertions.assertNotNull(readOwnOwnerDto.getId());
-        Owner saved = fetchOwner(readOwnOwnerDto.getId());
+        ReadOwnerDto readOwnerDto = ownerController.create2xx(createOwnerDto);
+        Assertions.assertNotNull(readOwnerDto.getId());
+        Owner saved = fetchOwner(readOwnerDto.getId());
         Assertions.assertNotNull(saved.getCreatedDate());
 //        Assertions.assertNotNull(saved.getCreatedById());
         Assertions.assertNotNull(saved.getLastModifiedDate());
@@ -418,9 +273,9 @@ public class MyIntegrationTest extends AbstractMvcTest {
     protected Owner createOwnerLinkedToClinicCard(Owner owner, ClinicCard clinicCard) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
         createOwnerDto.setClinicCardId(clinicCard.getId());
-        ReadOwnOwnerDto readOwnOwnerDto = ownerController.create2xx(createOwnerDto, ReadOwnOwnerDto.class);
-        Assertions.assertNotNull(readOwnOwnerDto.getId());
-        Owner saved = fetchOwner(readOwnOwnerDto.getId());
+        ReadOwnerDto readOwnerDto = ownerController.create2xx(createOwnerDto);
+        Assertions.assertNotNull(readOwnerDto.getId());
+        Owner saved = fetchOwner(readOwnerDto.getId());
         Assertions.assertNotNull(saved.getCreatedDate());
 //        Assertions.assertNotNull(saved.getCreatedById());
         Assertions.assertNotNull(saved.getLastModifiedDate());
@@ -429,9 +284,9 @@ public class MyIntegrationTest extends AbstractMvcTest {
     }
 
 
-    protected ReadOwnOwnerDto createOwner(Owner owner) throws Exception {
+    protected ReadOwnerDto createOwner(Owner owner) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
-        return ownerController.create2xx(createOwnerDto, ReadOwnOwnerDto.class);
+        return ownerController.create2xx(createOwnerDto);
     }
 
     protected ReadPetDto createPetLinkedToOwnerAndToys(Pet pet, Long ownerId, Toy... toys) throws Exception {
@@ -443,6 +298,6 @@ public class MyIntegrationTest extends AbstractMvcTest {
                     .map(Toy::getId)
                     .collect(Collectors.toSet()));
 
-        return petController.create2xx(createPetDto, ReadPetDto.class);
+        return petController.create2xx(createPetDto);
     }
 }

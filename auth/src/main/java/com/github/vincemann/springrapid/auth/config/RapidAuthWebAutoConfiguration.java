@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.auth.config;
 
 
-import com.github.vincemann.springrapid.auth.controller.UserDtoPostProcessor;
 import com.github.vincemann.springrapid.auth.handler.*;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -14,12 +13,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 @Configuration
 public class RapidAuthWebAutoConfiguration {
 
-
-    @Bean
-    @ConditionalOnMissingBean(UserDtoPostProcessor.class)
-    public UserDtoPostProcessor userDtoPostProcessor(){
-        return new UserDtoPostProcessor();
-    }
 
     /**
      * Configures AuthenticationSuccessHandler if missing

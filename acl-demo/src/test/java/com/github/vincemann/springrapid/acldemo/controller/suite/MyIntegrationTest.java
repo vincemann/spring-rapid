@@ -6,13 +6,9 @@ import com.github.vincemann.springrapid.acldemo.controller.suite.templates.PetCo
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VisitControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.model.*;
-import com.github.vincemann.springrapid.acldemo.repo.IllnessRepository;
-import com.github.vincemann.springrapid.acldemo.repo.PetRepository;
-import com.github.vincemann.springrapid.acldemo.repo.SpecialtyRepository;
-import com.github.vincemann.springrapid.acldemo.service.*;
+import com.github.vincemann.springrapid.acldemo.repo.*;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
-import com.github.vincemann.springrapid.core.Root;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -32,34 +28,27 @@ public class MyIntegrationTest extends AclMvcTest
     protected TestData testData;
     @Autowired
     protected IntegrationTestHelper helper;
-
     @MockBean
     protected MessageSender messageSender;
 
 
-    // services
+    // repos
 
     @Autowired
-    @Root
-    protected VetService vetService;
-    @Autowired
-    protected PetService petService;
-    @Autowired
-    protected VisitService visitService;
-    @Autowired
-    @Root
-    protected OwnerService ownerService;
-
+    protected VetRepository vetRepository;
     @Autowired
     protected PetRepository petRepository;
     @Autowired
+    protected VisitRepository visitRepository;
+    @Autowired
+    protected OwnerRepository ownerRepository;
+    @Autowired
     protected IllnessRepository illnessRepository;
-
     @Autowired
     protected SpecialtyRepository specialtyRepository;
 
-
     // controller
+
     @Autowired
     protected OwnerControllerTestTemplate ownerController;
     @Autowired
@@ -80,7 +69,7 @@ public class MyIntegrationTest extends AclMvcTest
     }
 
     protected void assertVetHasSpecialties(String vetName, String... descriptions) {
-        Optional<Vet> vetOptional = vetService.findByLastName(vetName);
+        Optional<Vet> vetOptional = vetRepository.findByLastName(vetName);
         Assertions.assertTrue(vetOptional.isPresent());
         Vet vet = vetOptional.get();
 
@@ -101,7 +90,7 @@ public class MyIntegrationTest extends AclMvcTest
 
         Set<Vet> vets = new HashSet<>();
         for (String vetName : vetNames) {
-            Optional<Vet> optionalVet = vetService.findByLastName(vetName);
+            Optional<Vet> optionalVet = vetRepository.findByLastName(vetName);
             Assertions.assertTrue(optionalVet.isPresent());
             vets.add(optionalVet.get());
         }
@@ -110,7 +99,7 @@ public class MyIntegrationTest extends AclMvcTest
     }
 
     protected void assertPetHasIllnesses(String petName, String... illnessNames) {
-        Optional<Pet> petOptional = petService.findByName(petName);
+        Optional<Pet> petOptional = petRepository.findByName(petName);
         Assertions.assertTrue(petOptional.isPresent());
         Pet pet = petOptional.get();
 
@@ -121,17 +110,17 @@ public class MyIntegrationTest extends AclMvcTest
             illnesses.add(optionalIllness.get());
         }
         System.err.println("Checking pet: " + petName);
-        Assertions.assertEquals(illnesses, pet.getIllnesss());
+        Assertions.assertEquals(illnesses, pet.getIllnesses());
     }
 
     protected void assertOwnerHasPets(String ownerName, String... petNames) {
-        Optional<Owner> ownerOptional = ownerService.findByLastName(ownerName);
+        Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
         Assertions.assertTrue(ownerOptional.isPresent());
         Owner owner = ownerOptional.get();
 
         Set<Pet> pets = new HashSet<>();
         for (String petName : petNames) {
-            Optional<Pet> optionalPet = petService.findByName(petName);
+            Optional<Pet> optionalPet = petRepository.findByName(petName);
             Assertions.assertTrue(optionalPet.isPresent());
             pets.add(optionalPet.get());
         }
@@ -143,11 +132,11 @@ public class MyIntegrationTest extends AclMvcTest
     protected void assertPetHasOwner(String petName, String ownerName) {
         Owner owner = null;
         if (ownerName!=null){
-            Optional<Owner> ownerOptional = ownerService.findByLastName(ownerName);
+            Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
             Assertions.assertTrue(ownerOptional.isPresent());
             owner = ownerOptional.get();
         }
-        Optional<Pet> optionalPet = petService.findByName(petName);
+        Optional<Pet> optionalPet = petRepository.findByName(petName);
         Assertions.assertTrue(optionalPet.isPresent());
         Pet pet = optionalPet.get();
         System.err.println("Checking pet: " + petName);

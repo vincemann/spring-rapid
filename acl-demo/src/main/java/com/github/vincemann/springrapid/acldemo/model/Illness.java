@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.acldemo.model;
 
 import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 
-import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentCollection;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import lombok.*;
 
@@ -25,7 +24,7 @@ public class Illness extends IdAwareEntityImpl<Long> {
     private String name;
 
 
-    @ManyToMany(mappedBy = "illnesss", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "illnesses", fetch = FetchType.EAGER)
     private Set<Pet> pets = new HashSet<>();
 
     @Builder

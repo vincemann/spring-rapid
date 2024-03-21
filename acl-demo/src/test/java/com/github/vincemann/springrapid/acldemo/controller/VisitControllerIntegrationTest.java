@@ -24,7 +24,7 @@ public class VisitControllerIntegrationTest extends MyIntegrationTest {
         Owner kahn = helper.signupKahnWithBella();
         Vet dicaprio = helper.signupVetDiCaprioWithHeartAndVerify();
         Vet max = helper.signupVetMaxWithDentismAndVerify();
-        Pet bella = petService.findByName(BELLA).get();
+        Pet bella = petRepository.findByName(BELLA).get();
 
         // when
         String dicaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
@@ -37,7 +37,7 @@ public class VisitControllerIntegrationTest extends MyIntegrationTest {
         // then
                 .andExpect(status().isForbidden());
 
-        Assertions.assertTrue(visitService.findAll().isEmpty());
+        Assertions.assertTrue(visitRepository.findAll().isEmpty());
     }
 
     @Test
@@ -45,7 +45,7 @@ public class VisitControllerIntegrationTest extends MyIntegrationTest {
         // given
         Owner kahn = helper.signupKahnWithBella();
         Vet dicaprio = helper.signupVetDiCaprioWithHeartAndVerify();
-        Pet bella = petService.findByName(BELLA).get();
+        Pet bella = petRepository.findByName(BELLA).get();
 
         // when
         String ownerKahnToken = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
@@ -58,7 +58,7 @@ public class VisitControllerIntegrationTest extends MyIntegrationTest {
         // then
                         .andExpect(status().isForbidden());
 
-        Assertions.assertTrue(visitService.findAll().isEmpty());
+        Assertions.assertTrue(visitRepository.findAll().isEmpty());
     }
 
     @Test
@@ -67,13 +67,13 @@ public class VisitControllerIntegrationTest extends MyIntegrationTest {
         Owner kahn = helper.signupKahnWithBella();
         Vet dicaprio = helper.signupVetDiCaprioWithHeartAndVerify();
         Vet max = helper.signupVetMaxWithDentismAndVerify();
-        Pet bella = petService.findByName(BELLA).get();
+        Pet bella = petRepository.findByName(BELLA).get();
         String dicaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         Visit visit = helper.createVisit(dicaprioToken, testData.getCheckTeethVisit(), kahn, dicaprio, bella);
 
         // when
         String maxToken = userController.login2xx(VET_MAX_EMAIL, VET_MAX_PASSWORD);
-        mvc.perform(visitController.find(visit.getId().toString())
+        mvc.perform(visitController.find(visit.getId())
                 .header(HttpHeaders.AUTHORIZATION,maxToken))
         // then
                 .andExpect(status().is2xxSuccessful());
@@ -84,13 +84,13 @@ public class VisitControllerIntegrationTest extends MyIntegrationTest {
         // given
         Owner kahn = helper.signupKahnWithBella();
         Vet dicaprio = helper.signupVetDiCaprioWithHeartAndVerify();
-        Pet bella = petService.findByName(BELLA).get();
+        Pet bella = petRepository.findByName(BELLA).get();
         String dicaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         Visit visit = helper.createVisit(dicaprioToken, testData.getCheckTeethVisit(), kahn, dicaprio, bella);
 
         // when
         String kahnToken = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
-        visitController.perform(visitController.find(visit.getId().toString())
+        visitController.perform(visitController.find(visit.getId())
                         .header(HttpHeaders.AUTHORIZATION, kahnToken))
         // then
                 .andExpect(status().is2xxSuccessful());
@@ -102,13 +102,13 @@ public class VisitControllerIntegrationTest extends MyIntegrationTest {
         Owner kahn = helper.signupKahnWithBella();
         Owner meier = helper.signupMeierWithBello();
         Vet dicaprio = helper.signupVetDiCaprioWithHeartAndVerify();
-        Pet bella = petService.findByName(BELLA).get();
+        Pet bella = petRepository.findByName(BELLA).get();
         String dicaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         Visit visit = helper.createVisit(dicaprioToken, testData.getCheckTeethVisit(), kahn, dicaprio, bella);
 
         // when
         String meierToken = userController.login2xx(OWNER_MEIER_EMAIL, OWNER_MEIER_PASSWORD);
-        mvc.perform(visitController.find(visit.getId().toString())
+        mvc.perform(visitController.find(visit.getId())
                 .header(HttpHeaders.AUTHORIZATION,meierToken))
         // then
                 .andExpect(status().isForbidden());
@@ -120,7 +120,7 @@ public class VisitControllerIntegrationTest extends MyIntegrationTest {
         Owner kahn = helper.signupKahnWithBella();
         Owner meier = helper.signupMeierWithBello();
         Vet dicaprio = helper.signupVetDiCaprioWithHeartAndVerify();
-        Pet bella = petService.findByName(BELLA).get();
+        Pet bella = petRepository.findByName(BELLA).get();
         String dicaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         Visit visit = helper.createVisit(dicaprioToken, testData.getCheckTeethVisit(), kahn, dicaprio, bella);
         String meierToken = userController.login2xx(meier.getContactInformation(), OWNER_MEIER_PASSWORD);
@@ -150,7 +150,7 @@ public class VisitControllerIntegrationTest extends MyIntegrationTest {
         Owner kahn = helper.signupKahnWithBella();
         Vet dicaprio = helper.signupVetDiCaprioWithHeartAndVerify();
         Vet max = helper.signupVetMaxWithDentismAndVerify();
-        Pet bella = petService.findByName(BELLA).get();
+        Pet bella = petRepository.findByName(BELLA).get();
         Owner meier = helper.signupMeierWithBello();
         String dicaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         Visit visit = helper.createVisit(dicaprioToken, testData.getCheckTeethVisit(), kahn, dicaprio, bella);
@@ -180,7 +180,7 @@ public class VisitControllerIntegrationTest extends MyIntegrationTest {
         Owner kahn = helper.signupKahnWithBella();
         Owner meier = helper.signupMeierWithBello();
         Vet dicaprio = helper.signupVetDiCaprioWithHeartAndVerify();
-        Pet bella = petService.findByName(BELLA).get();
+        Pet bella = petRepository.findByName(BELLA).get();
         String dicaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         Visit visit = helper.createVisit(dicaprioToken, testData.getCheckTeethVisit(), kahn, dicaprio, bella);
         String meierToken = userController.login2xx(meier.getContactInformation(), OWNER_MEIER_PASSWORD);

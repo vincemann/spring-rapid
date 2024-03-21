@@ -3,10 +3,8 @@ package com.github.vincemann.springrapid.auth.config;
 import com.github.vincemann.springrapid.acl.config.RapidAclAutoConfiguration;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.sec.*;
-import com.github.vincemann.springrapid.auth.service.context.AuthContextService;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.config.RapidCoreAutoConfiguration;
-import com.github.vincemann.springrapid.core.service.ctx.ContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -32,12 +30,6 @@ public class RapidAuthAutoConfiguration {
         return new AuthProperties(coreProperties);
     }
 
-
-    @Bean
-    @ConditionalOnMissingBean(ContextService.class)
-    public ContextService contextService(){
-        return new AuthContextService();
-    }
 
 
     @ConditionalOnMissingBean(PermissionEvaluator.class)

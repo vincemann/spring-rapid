@@ -32,12 +32,10 @@ public class CreateOwnerDto extends AbstractOwnerDto {
     private String lastName;
 
     @Nullable
-    @BiDirChildIdCollection(Pet.class)
     private Set<Long> petIds = new HashSet<>();
 
     @Nullable
     @Positive
-    @BiDirChildId(ClinicCard.class)
     private Long clinicCardId;
 
     @NotBlank

@@ -1,10 +1,9 @@
 package com.github.vincemann.springrapid.syncdemo.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildEntity;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
-import com.github.vincemann.springrapid.syncdemo.model.abs.Person;
+import com.github.vincemann.springrapid.sync.model.audit.AuditingEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +11,7 @@ import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +21,7 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @Table(name = "owners", uniqueConstraints = @UniqueConstraint(name = "unique last name", columnNames = "last_name"))
-public class Owner extends Person {
+public class Owner extends AuditingEntity<Long> {
 
     public static final String SECRET = "mySecret";
 
@@ -38,6 +38,14 @@ public class Owner extends Person {
     @ElementCollection(targetClass = String.class,fetch = FetchType.EAGER)
     private Set<String> hobbies = new HashSet<>();
 
+    @Column(name = "first_name", nullable = false)
+    @NotBlank
+    private String firstName;
+
+    @NotBlank
+    @Column(name = "last_name", nullable = false, unique = true)
+    private String lastName;
+
 
     @NotEmpty
     @Column(name = "adress", nullable = false)
@@ -51,9 +59,15 @@ public class Owner extends Person {
     @Column(name = "telephone", nullable = true)
     private String telephone;
 
+    public void addPet(Pet pet){
+        this.pets.add(pet);
+        pet.setOwner(this);
+    }
+
     @Builder
     public Owner(String firstName, String lastName, Set<Pet> pets, String address, String city, String telephone, Set<String> hobbies) {
-        super(firstName, lastName);
+        this.firstName = firstName;
+        this.lastName = lastName;
         if(pets!=null) {
             this.pets = pets;
         }else {

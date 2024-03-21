@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VetCo
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VisitControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.dto.owner.OwnerReadsOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.CreatePetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.ReadVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.visit.CreateVisitDto;
@@ -41,24 +42,21 @@ public class IntegrationTestHelper implements MvcAware {
     // services
 
     @Autowired
+    protected PetService petService;
+
+    // repos
+
+    @Autowired
     protected SpecialtyRepository specialtyRepository;
     @Autowired
-    @Root
-    protected VetService vetService;
-    @Autowired
     protected IllnessRepository illnessRepository;
-    @Autowired
-    protected PetService petService;
+
     @Autowired
     protected PetTypeRepository petTypeRepository;
     @Autowired
     private VetRepository vetRepository;
     @Autowired
     private VisitRepository visitRepository;
-    @Autowired
-    @Root
-    protected OwnerService ownerService;
-
     @Autowired
     private OwnerRepository ownerRepository;
 
@@ -77,9 +75,7 @@ public class IntegrationTestHelper implements MvcAware {
     protected UserControllerTestTemplate userController;
 
 
-
-    @Override
-    public void beforeTestMethod() throws BadEntityException {
+    public void setup(){
         testData.savedDogPetType = petTypeRepository.save(testData.getDogPetType());
         testData.savedCatPetType = petTypeRepository.save(testData.getCatPetType());
         testData.initTestData();
@@ -100,7 +96,7 @@ public class IntegrationTestHelper implements MvcAware {
         AuthMessage msg = userController.verifyMsgWasSent(dicaprio.getContactInformation());
         userController.perform2xx(userController.verifyUserWithLink(msg.getLink()));
 
-        Vet saved = vetService.findByLastName(dicaprio.getLastName()).get();
+        Vet saved = vetRepository.findByLastName(dicaprio.getLastName()).get();
         Assertions.assertFalse(saved.getRoles().contains(AuthRoles.UNVERIFIED));
         return saved;
     }
@@ -111,7 +107,7 @@ public class IntegrationTestHelper implements MvcAware {
         AuthMessage msg = userController.verifyMsgWasSent(max.getContactInformation());
         userController.perform2xx(userController.verifyUserWithLink(msg.getLink()));
 
-        Vet saved = vetService.findByLastName(max.getLastName()).get();
+        Vet saved = vetRepository.findByLastName(max.getLastName()).get();
         Assertions.assertFalse(saved.getRoles().contains(AuthRoles.UNVERIFIED));
         return saved;
     }
@@ -123,7 +119,7 @@ public class IntegrationTestHelper implements MvcAware {
         SignupVetDto dto = new SignupVetDto(diCaprio);
         ReadVetDto response = vetController.signup(dto);
         Assertions.assertTrue(response.getRoles().contains(AuthRoles.UNVERIFIED));
-        return v.findById(response.getId()).get();
+        return vetRepository.findById(response.getId()).get();
     }
 
     public Vet signupVetMaxWithDentism() throws Exception {
@@ -140,7 +136,7 @@ public class IntegrationTestHelper implements MvcAware {
         Owner owner = signupOwner(testData.getKahn());
         RapidAuthTestUtil.authenticate(owner);
         testData.getBella().setOwner(owner);
-        Pet bella = petService.create(testData.getBella());
+        Pet bella = petService.create(new CreatePetDto(testData.getBella()));
         RapidSecurityContext.clear();
         return ownerRepository.findById(owner.getId()).get();
     }
@@ -149,7 +145,7 @@ public class IntegrationTestHelper implements MvcAware {
         Owner owner = signupOwner(testData.getMeier());
         RapidAuthTestUtil.authenticate(owner);
         testData.getBello().setOwner(owner);
-        Pet bello = petService.create(testData.getBello());
+        Pet bello = petService.create(new CreatePetDto(testData.getBello()));
         RapidSecurityContext.clear();
         return ownerRepository.findById(owner.getId()).get();
     }
@@ -168,9 +164,7 @@ public class IntegrationTestHelper implements MvcAware {
             dto.getPetIds().add(pet.getId());
         }
 
-        ReadVisitDto response = visitController.perform2xxAndDeserialize(visitController.create(dto)
-                        .header(HttpHeaders.AUTHORIZATION,token)
-                , ReadVisitDto.class);
+        ReadVisitDto response = visitController.create2xx(dto, token);
         return visitRepository.findById(response.getId()).get();
     }
 }

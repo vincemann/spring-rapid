@@ -15,8 +15,6 @@ import java.util.Set;
 public class AbstractVetDto {
     private String firstName;
     private String lastName;
-
-    @BiDirChildIdCollection(Specialty.class)
     private Set<Long> specialtyIds = new HashSet<>();
 
     public AbstractVetDto(String firstName, String lastName, Set<Long> specialtyIds) {

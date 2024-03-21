@@ -5,9 +5,8 @@ import com.github.vincemann.springrapid.acldemo.controller.PetController;
 import com.github.vincemann.springrapid.acldemo.dto.pet.CreatePetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerReadsOwnPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerUpdatesPetDto;
-import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
+import com.github.vincemann.springrapid.acldemo.dto.pet.UpdateIllnessDto;
 import com.github.vincemann.springrapid.coretest.controller.template.MvcControllerTestTemplate;
-import org.springframework.boot.test.context.TestComponent;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -31,8 +30,21 @@ public class PetControllerTestTemplate extends MvcControllerTestTemplate<PetCont
     }
 
 
+
     public MockHttpServletRequestBuilder ownerUpdatesPet(OwnerUpdatesPetDto dto) throws JsonProcessingException {
-        return put("/api/core/pet/update")
+        return put("/api/core/pet/owner-update")
+                .content(serialize(dto))
+                .contentType(MediaType.APPLICATION_JSON);
+    }
+
+    public MockHttpServletRequestBuilder addIllness(UpdateIllnessDto dto) throws JsonProcessingException {
+        return put("/api/core/pet/add-illness")
+                .content(serialize(dto))
+                .contentType(MediaType.APPLICATION_JSON);
+    }
+
+    public MockHttpServletRequestBuilder removeIllness(UpdateIllnessDto dto) throws JsonProcessingException {
+        return put("/api/core/pet/remove-illness")
                 .content(serialize(dto))
                 .contentType(MediaType.APPLICATION_JSON);
     }

@@ -3,11 +3,7 @@ package com.github.vincemann.springrapid.acldemo.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 
-import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildCollection;
-import com.github.vincemann.springrapid.autobidir.entity.annotation.child.UniDirChildEntity;
 
-
-import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,7 +40,7 @@ public class Pet extends IdAwareEntityImpl<Long> {
     @JoinTable(name = "pet_illnesss",
             joinColumns = @JoinColumn(name = "pet_id"),
             inverseJoinColumns = @JoinColumn(name = "illness_id"))
-    private Set<Illness> illnesss = new HashSet<>();
+    private Set<Illness> illnesses = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
@@ -56,17 +52,21 @@ public class Pet extends IdAwareEntityImpl<Long> {
     private LocalDate birthDate;
 
     public void addIllness(Illness illness) {
-        this.illnesss.add(illness);
+        this.illnesses.add(illness);
         illness.getPets().add(this);
     }
 
+    public void removeIllness(Illness illness){
+        this.illnesses.remove(illness);
+        illness.getPets().remove(this);
+    }
 
     @Builder
-    public Pet( String name, PetType petType, Set<Illness> illnesss, Owner owner, LocalDate birthDate) {
+    public Pet(String name, PetType petType, Set<Illness> illnesses, Owner owner, LocalDate birthDate) {
         this.name = name;
         this.petType = petType;
-        if (illnesss !=null)
-            this.illnesss = illnesss;
+        if (illnesses !=null)
+            this.illnesses = illnesses;
         this.owner = owner;
         this.birthDate = birthDate;
     }
@@ -77,7 +77,7 @@ public class Pet extends IdAwareEntityImpl<Long> {
         return "Pet{" +
                 "name='" + name + '\'' +
                 ", petType=" + petType +
-                ", illnesses=" +  (illnesss == null ? "null" : Arrays.toString(illnesss.stream().map(Illness::getName).toArray())) +
+                ", illnesses=" +  (illnesses == null ? "null" : Arrays.toString(illnesses.stream().map(Illness::getName).toArray())) +
                 ", owner=" + (owner==null? "null": owner.getLastName()) +
                 ", birthDate=" + birthDate +
                 '}';

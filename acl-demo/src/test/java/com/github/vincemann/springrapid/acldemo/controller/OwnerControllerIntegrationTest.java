@@ -33,8 +33,8 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
         // then
         Assertions.assertEquals(Owner.SECRET, response.getSecret());
-        Assertions.assertTrue(ownerService.findByLastName(OWNER_KAHN).isPresent());
-        Assertions.assertTrue(ownerService.findByContactInformation(OWNER_KAHN_EMAIL).isPresent());
+        Assertions.assertTrue(ownerRepository.findByLastName(OWNER_KAHN).isPresent());
+        Assertions.assertTrue(ownerRepository.findByContactInformation(OWNER_KAHN_EMAIL).isPresent());
     }
 
     @Test
@@ -139,7 +139,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     public void ownerCanReadOwnPet() throws Exception {
         // given
         // bella saved with illness teeth pain
-        testData.getBella().getIllnesss().add(illnessRepository.save(testData.getTeethPain()));
+        testData.getBella().getIllnesses().add(illnessRepository.save(testData.getTeethPain()));
         Owner kahn = helper.signupKahnWithBella();
         Pet bella = petRepository.findByName(BELLA).get();
 
@@ -178,12 +178,12 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         // kahn -> bella
         // meier -> bello
         // bella saved with illness teeth pain
-        testData.getBella().getIllnesss().add(illnessRepository.save(testData.getTeethPain()));
+        testData.getBella().getIllnesses().add(illnessRepository.save(testData.getTeethPain()));
         Owner kahn = helper.signupKahnWithBella();
         Pet bella = petRepository.findByName(BELLA).get();
 
         // bello saved with teeth pain as well for owner meier
-        testData.getBello().getIllnesss().add(illnessRepository.findByName(TEETH_PAIN).get());
+        testData.getBello().getIllnesses().add(illnessRepository.findByName(TEETH_PAIN).get());
         Owner meier = helper.signupMeierWithBello();
         Pet bello = petRepository.findByName(BELLO).get();
 

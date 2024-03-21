@@ -7,7 +7,6 @@ import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.dto.*;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.core.util.AopProxyUtils;
-import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.controller.template.MvcControllerTestTemplate;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
