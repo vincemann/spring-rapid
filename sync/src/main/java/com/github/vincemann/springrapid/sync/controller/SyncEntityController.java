@@ -82,7 +82,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
             if (updated){
                 log.debug(LogMessage.format("sync status of entity: %s",syncStatus.toString()));
                 return ResponseEntity.ok()
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .body(objectMapper.writeValueAsString(syncStatus));
             } else{
                 log.debug("sync status is: no update");
@@ -117,7 +117,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
                 return ResponseEntity.noContent().build();
             else
                 return ResponseEntity.ok()
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .body(objectMapper.writeValueAsString(syncStatuses));
         } catch (IOException e) {
             throw new BadEntityException("invalid format for EntityLastUpdateInfo. Use json list.");
@@ -143,7 +143,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
             return ResponseEntity.noContent().build();
         else
             return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .body(objectMapper.writeValueAsString(syncStatuses));
     }
 
@@ -175,7 +175,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
         return RequestMappingInfo
                 .paths(fetchSyncStatusUrl)
                 .methods(RequestMethod.GET)
-                .produces(MediaType.APPLICATION_JSON_VALUE)
+                .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .build();
     }
 
@@ -183,7 +183,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
         return RequestMappingInfo
                 .paths(fetchSyncStatusesSinceTsUrl)
                 .methods(RequestMethod.GET)
-                .produces(MediaType.APPLICATION_JSON_VALUE)
+                .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .build();
     }
 
@@ -191,8 +191,8 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
         return RequestMappingInfo
                 .paths(fetchSyncStatusesUrl)
                 .methods(RequestMethod.POST)
-                .consumes(MediaType.APPLICATION_JSON_VALUE)
-                .produces(MediaType.APPLICATION_JSON_VALUE)
+                .consumes(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .build();
     }
 

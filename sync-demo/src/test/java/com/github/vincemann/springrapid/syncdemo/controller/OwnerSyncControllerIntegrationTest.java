@@ -227,12 +227,12 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         // ask server for updateInfos of all owner's
         // server should tell client about update of kahn - cant tell about removal of gil
         // query server for those updates and validate
-        Owner savedKahn = createOwnerLinkedToPets(kahn);
-        Owner savedMeier = createOwnerLinkedToPets(meier);
-        Owner savedGil = createOwnerLinkedToPets(gil);
+        Owner kahn = createOwnerLinkedToPets(this.kahn);
+        Owner meier = createOwnerLinkedToPets(this.meier);
+        Owner gil = createOwnerLinkedToPets(this.gil);
 
-        Timestamp kahnServerUpdate = new Timestamp(savedKahn.getLastModifiedDate().getTime());
-        Timestamp meierServerUpdate = new Timestamp(savedMeier.getLastModifiedDate().getTime());
+        Timestamp kahnServerUpdate = new Timestamp(kahn.getLastModifiedDate().getTime());
+        Timestamp meierServerUpdate = new Timestamp(meier.getLastModifiedDate().getTime());
 
         // now
         Timestamp clientUpdate = new Timestamp(new Date().getTime());
@@ -242,17 +242,17 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         ownerSyncController.fetchSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
 
         // update kahn and remove gil
-        String updatedCity = kahn.getCity() + "updated";
+        String updatedCity = this.kahn.getCity() + "updated";
         Owner updatedKahn = transactionTemplate.execute(status -> {
             Owner update = ownerRepository.findById(kahn.getId()).get();
             update.setCity(updatedCity);
-            ownerRepository.deleteById(savedGil.getId());
+            ownerRepository.deleteById(gil.getId());
             return update;
         });
 
         Assertions.assertTrue(updatedKahn.getLastModifiedDate().after(kahnServerUpdate));
-        Assertions.assertFalse(savedMeier.getLastModifiedDate().after(meierServerUpdate));
-        Assertions.assertFalse(ownerRepository.findById(savedGil.getId()).isPresent());
+        Assertions.assertFalse(meier.getLastModifiedDate().after(meierServerUpdate));
+        Assertions.assertFalse(ownerRepository.findById(gil.getId()).isPresent());
 
         // now should need update for owner2 and owner3
         List<EntitySyncStatus> statuses = ownerSyncController.fetchSyncStatusesSinceTs_assertUpdates(clientUpdate);

@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.acldemo.service.PetService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,33 +23,34 @@ public class PetController {
     private PetMappingService mappingService;
 
     @PostMapping("create")
-    public OwnerReadsOwnPetDto create(@RequestBody CreatePetDto dto) throws EntityNotFoundException, BadEntityException {
+    public ResponseEntity<OwnerReadsOwnPetDto> create(@RequestBody CreatePetDto dto) throws EntityNotFoundException, BadEntityException {
         Pet pet = petService.create(dto);
-        return mappingService.mapToOwnerReadsOwnPetDto(pet);
+        ResponseEntity.ok(mappingService.mapToOwnerReadsOwnPetDto(pet));
     }
 
     @GetMapping("find")
-    public Object find(@RequestParam("name") String name){
+    public ResponseEntity<Object> find(@RequestParam("name") String name){
         Optional<Pet> pet = petService.findByName(name);
-        return mappingService.mapToReadPetDto(pet.get());
+        Object dto = mappingService.mapToReadPetDto(pet.get());
+        return ResponseEntity.ok(dto);
     }
 
     @PutMapping("add-illness")
-    public VetReadsPetDto addIllness(@RequestBody UpdateIllnessDto dto) throws EntityNotFoundException, BadEntityException {
+    public ResponseEntity<VetReadsPetDto> addIllness(@RequestBody UpdateIllnessDto dto) throws EntityNotFoundException, BadEntityException {
         Pet pet = petService.addIllnesses(dto);
-        return mappingService.mapToVetReadsPetDto(pet);
+        return ResponseEntity.ok(mappingService.mapToVetReadsPetDto(pet));
     }
 
     @PutMapping("remove-illness")
-    public VetReadsPetDto removeIllness(@RequestBody UpdateIllnessDto dto) throws EntityNotFoundException, BadEntityException {
+    public ResponseEntity<VetReadsPetDto> removeIllness(@RequestBody UpdateIllnessDto dto) throws EntityNotFoundException, BadEntityException {
         Pet pet = petService.removeIllness(dto);
-        return mappingService.mapToVetReadsPetDto(pet);
+        return ResponseEntity.ok(mappingService.mapToVetReadsPetDto(pet));
     }
 
     @PutMapping("owner-update")
-    public OwnerReadsOwnPetDto ownerUpdate(@RequestBody OwnerUpdatesPetDto dto) throws EntityNotFoundException, BadEntityException {
+    public ResponseEntity<OwnerReadsOwnPetDto> ownerUpdate(@RequestBody OwnerUpdatesPetDto dto) throws EntityNotFoundException, BadEntityException {
         Pet pet = petService.ownerUpdatesPet(dto);
-        return mappingService.mapToOwnerReadsOwnPetDto(pet);
+        return ResponseEntity.ok(mappingService.mapToOwnerReadsOwnPetDto(pet));
     }
 
     @Autowired

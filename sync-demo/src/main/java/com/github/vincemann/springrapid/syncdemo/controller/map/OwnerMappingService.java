@@ -7,6 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,5 +20,10 @@ public class OwnerMappingService {
         dto.setDirtySecret(Owner.SECRET);
         dto.setPetIds(owner.getPets().stream().map(Pet::getId).collect(Collectors.toSet()));
         return dto;
+    }
+
+    @Transactional
+    public List<ReadOwnerDto> map(List<Owner> owners) {
+        return owners.stream().map(this::map).collect(Collectors.toList());
     }
 }

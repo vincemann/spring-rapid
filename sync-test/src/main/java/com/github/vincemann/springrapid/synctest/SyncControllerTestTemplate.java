@@ -47,7 +47,7 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
     public MockHttpServletRequestBuilder fetchSyncStatuses(List<LastFetchInfo> updateInfos) throws Exception {
         String jsonUpdateInfos = getController().getObjectMapper().writeValueAsString(updateInfos);
         return MockMvcRequestBuilders.post(controller.getFetchSyncStatusesUrl())
-                .content(jsonUpdateInfos).contentType(MediaType.APPLICATION_JSON);
+                .content(jsonUpdateInfos).contentType(MediaType.APPLICATION_JSON_UTF8);
     }
 
     public EntitySyncStatus fetchSyncStatus_assertUpdate(Long entityId, Date lastClientUpdate, SyncStatus expectedStatus) throws Exception {

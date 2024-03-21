@@ -275,7 +275,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return RequestMappingInfo
 				.paths(getVerifyUserUrl())
 				.methods(RequestMethod.GET)
-				.produces(MediaType.APPLICATION_JSON_VALUE)
+				.produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
 				.build();
 	}
 
@@ -297,8 +297,8 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return RequestMappingInfo
 				.paths(getResetPasswordUrl())
 				.methods(RequestMethod.POST)
-				.produces(MediaType.APPLICATION_JSON_VALUE)
-				.consumes(MediaType.APPLICATION_JSON_VALUE)
+				.produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
+				.consumes(MediaType.APPLICATION_JSON_UTF8_VALUE)
 				.build();
 	}
 
@@ -307,7 +307,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return RequestMappingInfo
 				.paths(getFindByContactInformationUrl())
 				.methods(RequestMethod.GET)
-				.produces(MediaType.APPLICATION_JSON_VALUE)
+				.produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
 				.build();
 	}
 
@@ -326,7 +326,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return RequestMappingInfo
 				.paths(getRequestContactInformationChangeUrl())
 				.methods(RequestMethod.POST)
-				.consumes(MediaType.APPLICATION_JSON_VALUE)
+				.consumes(MediaType.APPLICATION_JSON_UTF8_VALUE)
 				.build();
 	}
 
@@ -334,7 +334,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return RequestMappingInfo
 				.paths(getChangeContactInformationUrl())
 				.methods(RequestMethod.POST)
-				.produces(MediaType.APPLICATION_JSON_VALUE)
+				.produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
 				.build();
 	}
 
@@ -350,7 +350,7 @@ public abstract class AbstractUserController<U extends AbstractUser<Id>, Id exte
 		return RequestMappingInfo
 				.paths(getFetchNewAuthTokenUrl())
 				.methods(RequestMethod.POST)
-				.produces(MediaType.APPLICATION_JSON_VALUE)
+				.produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
 				.build();
 	}
 

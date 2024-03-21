@@ -78,14 +78,14 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
     public MockHttpServletRequestBuilder requestContactInformationChange(String token, RequestContactInformationChangeDto dto) throws Exception {
         return post(getController().getRequestContactInformationChangeUrl())
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .content(serialize(dto));
     }
 
     public AuthMessage requestContactInformationChange2xx(String token, RequestContactInformationChangeDto dto) throws Exception {
         mvc.perform(post(getController().getRequestContactInformationChangeUrl())
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .content(serialize(dto)))
                 .andExpect(status().is2xxSuccessful());
@@ -95,7 +95,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     public MockHttpServletRequestBuilder changePassword(String token, ChangePasswordDto dto) throws Exception {
         return post(getController().getChangePasswordUrl())
                 .header(HttpHeaders.AUTHORIZATION, token)
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(serialize(dto));
     }
 
@@ -115,7 +115,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
     public MockHttpServletRequestBuilder resetPassword(ResetPasswordDto dto) throws Exception {
         return post(getController().getResetPasswordUrl())
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(serialize(dto));
     }
 
@@ -125,7 +125,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
     public MockHttpServletRequestBuilder resetPassword(String url, ResetPasswordDto dto) throws Exception {
         return post(url)
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(serialize(dto));
     }
 
@@ -159,13 +159,13 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         LoginDto dto = new LoginDto(contactInformation,password);
         return post(getController().getLoginUrl())
                 .content(serialize(dto))
-                .header("contentType", MediaType.APPLICATION_JSON);
+                .contentType(MediaType.APPLICATION_JSON_UTF8);
     }
 
     public MockHttpServletRequestBuilder findByContactInformation(String contactInformation) throws Exception {
         return get(getController().getFindByContactInformationUrl())
                 .param("ci", contactInformation)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED);
     }
 
     public <D> D findByContactInformation2xx(String contactInformation, String token, Class<D> dtoClass) throws Exception {
@@ -183,12 +183,12 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     public MockHttpServletRequestBuilder verifyUser(String code) throws Exception {
         return get(getController().getVerifyUserUrl())
                 .param("code", code)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED);
     }
 
     public RequestBuilder verifyUserWithLink(String link) throws Exception {
         return get(link)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED);
     }
 
     public AuthMessage verifyMsgWasSent(String recipient) {

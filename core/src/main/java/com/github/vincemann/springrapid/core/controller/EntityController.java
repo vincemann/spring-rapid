@@ -140,7 +140,7 @@ public abstract class EntityController
 
     protected ResponseEntity<String> ok(String jsonDto) {
         return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .body(jsonDto);
     }
 

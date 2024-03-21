@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.github.vincemann.springrapid.core.util.RepositoryUtil.findPresentById;
@@ -49,6 +50,12 @@ public class OwnerServiceImpl implements OwnerService {
             }
         }
         return owner;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Owner> findAllById(List<Long> ids) {
+        return repository.findAllById(ids);
     }
 
     @Transactional(readOnly = true)

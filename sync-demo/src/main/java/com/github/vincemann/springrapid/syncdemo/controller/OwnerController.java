@@ -5,15 +5,16 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.github.vincemann.springrapid.syncdemo.controller.map.OwnerMappingService;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnerDto;
+import com.github.vincemann.springrapid.syncdemo.dto.pet.ReadPetDto;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
+import com.github.vincemann.springrapid.syncdemo.model.Pet;
 import com.github.vincemann.springrapid.syncdemo.service.OwnerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -27,15 +28,21 @@ public class OwnerController {
     private OwnerMappingService mappingService;
 
     @PostMapping("create")
-    public ReadOwnerDto create(CreateOwnerDto dto) throws EntityNotFoundException {
+    public ResponseEntity<ReadOwnerDto> create(@RequestBody CreateOwnerDto dto) throws EntityNotFoundException {
         Owner owner = service.create(dto);
-        return mappingService.map(owner);
+        return ResponseEntity.ok(mappingService.map(owner));
     }
     @GetMapping("find")
-    public ReadOwnerDto find(@RequestParam("id") long id) throws EntityNotFoundException {
+    public ResponseEntity<ReadOwnerDto> find(@RequestParam("id") long id) throws EntityNotFoundException {
         Optional<Owner> byId = service.find(id);
         VerifyEntity.isPresent(byId.get(),id,Owner.class);
-        return mappingService.map(byId.get());
+        return ResponseEntity.ok(mappingService.map(byId.get()));
+    }
+
+    @GetMapping("find-some")
+    public ResponseEntity<List<ReadOwnerDto>> findSome(@RequestBody List<Long> ids){
+        List<Owner> owners = service.findAllById(ids);
+        return ResponseEntity.ok(mappingService.map(owners));
     }
 
 

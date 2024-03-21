@@ -49,7 +49,7 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
         super.configureDtoMappings(builder);
     }
 
-    @PostMapping(path = "/api/core/user/signup",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/api/core/user/signup",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<MyReadUserDto> signup(@Valid @RequestBody MySignupDto signupDto) throws BadEntityException, EntityNotFoundException, AlreadyRegisteredException {
         User saved = signupService.signup(signupDto);
         MyReadUserDto dto = getDtoMapper().mapToDto(saved, MyReadUserDto.class);
