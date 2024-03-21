@@ -13,7 +13,9 @@ import org.springframework.lang.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Setter
@@ -36,7 +38,7 @@ public class Owner extends AuditingEntity<Long> {
 
 
     @ElementCollection(targetClass = String.class,fetch = FetchType.EAGER)
-    private Set<String> hobbies = new HashSet<>();
+    private List<String> hobbies = new ArrayList<>();
 
     @Column(name = "first_name", nullable = false)
     @NotBlank
@@ -64,8 +66,13 @@ public class Owner extends AuditingEntity<Long> {
         pet.setOwner(this);
     }
 
+    public void removePet(Pet pet) {
+        this.pets.remove(pet);
+        pet.setOwner(null);
+    }
+
     @Builder
-    public Owner(String firstName, String lastName, Set<Pet> pets, String address, String city, String telephone, Set<String> hobbies) {
+    public Owner(String firstName, String lastName, Set<Pet> pets, String address, String city, String telephone, List<String> hobbies) {
         this.firstName = firstName;
         this.lastName = lastName;
         if(pets!=null) {
@@ -76,7 +83,7 @@ public class Owner extends AuditingEntity<Long> {
         if(hobbies!=null) {
             this.hobbies = hobbies;
         }else{
-            this.hobbies = new HashSet<>();
+            this.hobbies = new ArrayList<>();
         }
         this.address = address;
         this.city = city;
@@ -98,4 +105,5 @@ public class Owner extends AuditingEntity<Long> {
                 ", telephone='" + telephone + '\'' +
                 '}';
     }
+
 }

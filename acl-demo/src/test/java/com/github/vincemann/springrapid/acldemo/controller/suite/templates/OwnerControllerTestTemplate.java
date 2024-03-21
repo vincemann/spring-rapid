@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import java.util.List;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,6 +27,7 @@ public class OwnerControllerTestTemplate extends MvcControllerTestTemplate<Owner
                 .andReturn().getResponse().getContentAsString();
         return getObjectMapper().readValue(json, OwnerReadsOwnOwnerDto.class);
     }
+
 
     public MockHttpServletRequestBuilder update(UpdateOwnerDto dto) throws JsonProcessingException {
         return put("/api/core/owner/update")

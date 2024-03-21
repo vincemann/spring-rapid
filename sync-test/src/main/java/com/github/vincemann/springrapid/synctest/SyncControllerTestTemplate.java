@@ -1,12 +1,6 @@
 package com.github.vincemann.springrapid.synctest;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.github.vincemann.springrapid.core.service.filter.EntityFilter;
-import com.github.vincemann.springrapid.core.service.filter.jpa.QueryFilter;
-import com.github.vincemann.springrapid.coretest.controller.UrlWebExtension;
 import com.github.vincemann.springrapid.coretest.controller.template.MvcControllerTestTemplate;
-import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import com.github.vincemann.springrapid.sync.controller.SyncEntityController;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.LastFetchInfo;
@@ -18,11 +12,9 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -40,34 +32,27 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
 
 
     public MockHttpServletRequestBuilder fetchSyncStatus(Long entityId, Date lastClientUpdate) {
-        return MockMvcRequestBuilders.get(controller.getSyncEntityUrl())
+        return MockMvcRequestBuilders.get(controller.getFetchSyncStatusUrl())
                 .param("id", entityId.toString())
                 .param("ts", String.valueOf(lastClientUpdate.getTime()));
     }
 
 
-    public MockHttpServletRequestBuilder fetchSyncStatusesSinceTs(Date clientUpdate, UrlWebExtension... filters) {
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controller.getSyncUrl())
-                .param("ts", String.valueOf(clientUpdate.getTime()));
-        if (filters.length != 0){
-            for (UrlWebExtension filter : filters) {
-                assert QueryFilter.class.isAssignableFrom(filter.getExtensionType()) || EntityFilter.class.isAssignableFrom(filter.getExtensionType());
-            }
-            RapidTestUtil.addUrlExtensionsToRequest(applicationContext,requestBuilder,filters);
-        }
-        return requestBuilder;
+    public MockHttpServletRequestBuilder fetchSyncStatusesSinceTs(Date clientUpdate) {
+        return MockMvcRequestBuilders.get(controller.getFetchSyncStatusesSinceTsUrl())
+                .param("ts",String.valueOf(clientUpdate.getTime()));
     }
 
 
-    public MockHttpServletRequestBuilder fetchSyncStatuses(Set<LastFetchInfo> updateInfos) throws Exception {
+    public MockHttpServletRequestBuilder fetchSyncStatuses(List<LastFetchInfo> updateInfos) throws Exception {
         String jsonUpdateInfos = getController().getObjectMapper().writeValueAsString(updateInfos);
-        return MockMvcRequestBuilders.post(controller.getSyncEntitiesUrl())
+        return MockMvcRequestBuilders.post(controller.getFetchSyncStatusesUrl())
                 .content(jsonUpdateInfos).contentType(MediaType.APPLICATION_JSON);
     }
 
     public EntitySyncStatus fetchSyncStatus_assertUpdate(Long entityId, Date lastClientUpdate, SyncStatus expectedStatus) throws Exception {
 
-        String json = mvc.perform(MockMvcRequestBuilders.get(controller.getSyncEntityUrl())
+        String json = mvc.perform(MockMvcRequestBuilders.get(controller.getFetchSyncStatusUrl())
                         .param("id", entityId.toString())
                         .param("ts", String.valueOf(lastClientUpdate.getTime())))
                 .andExpect(MockMvcResultMatchers.status().is(200))
@@ -87,53 +72,36 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
                 .andExpect(MockMvcResultMatchers.content().string(""));
     }
 
-    public void fetchSyncStatusesSinceTs_assertNoUpdates(Date clientUpdate, UrlWebExtension... jpqlFilters) throws Exception {
-        mvc.perform(fetchSyncStatusesSinceTs(clientUpdate,jpqlFilters))
+    public void fetchSyncStatusesSinceTs_assertNoUpdates(Date clientUpdate) throws Exception {
+        mvc.perform(fetchSyncStatusesSinceTs(clientUpdate))
                 .andExpect(MockMvcResultMatchers.status().is(204))
                 .andExpect(MockMvcResultMatchers.content().string(""));
     }
     
 
 
-    public Set<EntitySyncStatus> fetchSyncStatusesSinceTs_assertUpdates(Timestamp clientUpdate, UrlWebExtension... jpqlFilters) throws Exception {
-        String json = mvc.perform(fetchSyncStatusesSinceTs(clientUpdate,jpqlFilters))
+    public List<EntitySyncStatus> fetchSyncStatusesSinceTs_assertUpdates(Timestamp clientUpdate) throws Exception {
+        String json = mvc.perform(fetchSyncStatusesSinceTs(clientUpdate))
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andReturn().getResponse().getContentAsString();
 
 
-        return deserializeToSet(json,EntitySyncStatus.class);
+        return deserializeToList(json,EntitySyncStatus.class);
     }
 
-    public Set<EntitySyncStatus> fetchSyncStatuses_assertUpdates(Set<LastFetchInfo> updateInfos) throws Exception {
+    public List<EntitySyncStatus> fetchSyncStatuses_assertUpdates(List<LastFetchInfo> updateInfos) throws Exception {
         String json = mvc.perform(fetchSyncStatuses(updateInfos))
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andReturn().getResponse().getContentAsString();
 
-        return deserializeToSet(json,EntitySyncStatus.class);
+        return deserializeToList(json,EntitySyncStatus.class);
     }
 
-    public void fetchSyncStatuses_assertNoUpdates(Set<LastFetchInfo> updateInfos) throws Exception {
+    public void fetchSyncStatusesSinceTs_assertNoUpdates(List<LastFetchInfo> updateInfos) throws Exception {
         mvc.perform(fetchSyncStatuses(updateInfos))
                 .andExpect(MockMvcResultMatchers.status().is(204))
                 .andExpect(MockMvcResultMatchers.content().string(""));
     }
 
-    // helper
-
-    private <Dto> List<Dto> deserializeToList(String s, Class<Dto> dtoClass) throws IOException {
-        CollectionType setType = getController().getObjectMapper()
-                .getTypeFactory().constructCollectionType(List.class, dtoClass);
-        return deserialize(s, setType);
-    }
-
-    public  <Dto> Set<Dto> deserializeToSet(String s, Class<Dto> dtoClass) throws IOException {
-        CollectionType setType = getController().getObjectMapper()
-                .getTypeFactory().constructCollectionType(Set.class, dtoClass);
-        return deserialize(s, setType);
-    }
-
-    public  <Dto> Dto deserialize(String s, JavaType dtoClass) throws IOException {
-        return getController().getObjectMapper().readValue(s,dtoClass);
-    }
 
 }

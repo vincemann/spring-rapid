@@ -40,10 +40,6 @@ public class Pet extends AuditingEntity<Long> {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pet")
     private Set<Toy> toys = new HashSet<>();
 
-    @JsonManagedReference
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pet")
-    private Set<Illness> illnesses = new HashSet<>();
-
     @ManyToOne
     @JoinColumn(name = "owner_id")
     @JsonBackReference
@@ -54,6 +50,11 @@ public class Pet extends AuditingEntity<Long> {
     @Column(name = "birth_date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
+
+    public void removeToy(Toy toy){
+        this.toys.remove(toy);
+        toy.setPet(null);
+    }
 
 
 
