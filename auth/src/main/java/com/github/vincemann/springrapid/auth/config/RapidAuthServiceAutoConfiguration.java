@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.auth.config;
 
 
 import com.github.vincemann.springrapid.acl.Secured;
-import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.service.*;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.JwtAuthorizationTokenService;
@@ -10,6 +9,7 @@ import com.github.vincemann.springrapid.auth.service.val.ContactInformationValid
 import com.github.vincemann.springrapid.auth.service.val.EmailContactInformationValidator;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidatorImpl;
+import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.core.service.pass.BcryptRapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.service.pass.RapidPasswordEncoder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -57,12 +57,6 @@ public class RapidAuthServiceAutoConfiguration {
     @ConditionalOnMissingBean(name = "verificationService")
     public VerificationService verificationService(){
         return new VerificationServiceImpl();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "signupService")
-    public SignupService signupService(){
-        return new SignupServiceImpl();
     }
 
     @Root

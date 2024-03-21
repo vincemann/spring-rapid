@@ -34,7 +34,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 
 		verify(AopProxyUtils.getUltimateTargetObject(msgSender)).send(any());
 
-		AbstractUser<Serializable> updatedUser = userRepository.findById(getUnverifiedUser().getId()).get();
+		AbstractUser updatedUser = (AbstractUser) userRepository.findById(getUnverifiedUser().getId()).get();
 		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getNewContactInformation());
 		Assertions.assertEquals(UNVERIFIED_USER_CONTACT_INFORMATION, updatedUser.getContactInformation());
 	}
@@ -47,7 +47,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 
 		verify(AopProxyUtils.getUltimateTargetObject(msgSender)).send(any());
 
-		AbstractUser<Serializable> updatedUser = userRepository.findById(getUser().getId()).get();
+		AbstractUser updatedUser = (AbstractUser) userRepository.findById(getUser().getId()).get();
 		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getNewContactInformation());
 		Assertions.assertEquals(USER_CONTACT_INFORMATION, updatedUser.getContactInformation());
 	}
@@ -61,7 +61,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 		mvc.perform(userController.requestContactInformationChange(token,contactInformationChangeDto(USER_CONTACT_INFORMATION)))
 				.andExpect(status().is(204));
 
-		AbstractUser<Serializable> updatedUser = userRepository.findById(getUser().getId()).get();
+		AbstractUser updatedUser = (AbstractUser) userRepository.findById(getUser().getId()).get();
 		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getNewContactInformation());
 	}	
 	
@@ -85,7 +85,7 @@ public class RequestContactInformationChangeTest extends RapidAuthIntegrationTes
 		
 		verifyNoMsgSent();
 
-		AbstractUser<Serializable> updatedUser = userRepository.findById(getSecondUser().getId()).get();
+		AbstractUser updatedUser = (AbstractUser) userRepository.findById(getSecondUser().getId()).get();
 		Assertions.assertNull(updatedUser.getNewContactInformation());
 	}
 

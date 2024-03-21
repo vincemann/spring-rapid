@@ -38,7 +38,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
                 .andExpect(content().string(""));
 
 
-        AbstractUser<Serializable> updatedUser = userRepository.findById(getUser().getId()).get();
+        AbstractUser updatedUser = (AbstractUser) userRepository.findById(getUser().getId()).get();
         Assertions.assertNull(updatedUser.getNewContactInformation());
         Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getContactInformation());
     }
@@ -56,7 +56,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
                 .andExpect(content().string(""));
 
 
-        AbstractUser<Serializable> updatedUser = userRepository.findById(getUnverifiedUser().getId()).get();
+        AbstractUser updatedUser = (AbstractUser) userRepository.findById(getUnverifiedUser().getId()).get();
         Assertions.assertNull(updatedUser.getNewContactInformation());
         Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getContactInformation());
     }
@@ -141,7 +141,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
         // credentials updated after the request for contactInformation change was made
 
         transactionTemplate.executeWithoutResult(transactionStatus -> {
-            AbstractUser<Serializable> user = userRepository.findById(getUser().getId()).get();
+            AbstractUser user = (AbstractUser) userRepository.findById(getUser().getId()).get();
             user.setCredentialsUpdatedMillis(System.currentTimeMillis());
         });
 
@@ -186,7 +186,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
         // Some other user changed to the same contactInformation, before i could issue my request
 
         transactionTemplate.executeWithoutResult(transactionStatus -> {
-            AbstractUser<Serializable> user = userRepository.findById(getSecondUser().getId()).get();
+            AbstractUser user = (AbstractUser) userRepository.findById(getSecondUser().getId()).get();
             user.setContactInformation(NEW_CONTACT_INFORMATION);
         });
 

@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.authtests.tests;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
@@ -10,7 +9,7 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.JwtUtils;
-import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
+import com.github.vincemann.springrapid.authtest.AbstractUserControllerTestTemplate;
 import com.github.vincemann.springrapid.authtests.ClearAclCacheTestExecutionListener;
 import com.github.vincemann.springrapid.authtests.AuthTestAdapter;
 import com.github.vincemann.springrapid.core.CoreProperties;
@@ -87,13 +86,13 @@ public abstract class RapidAuthIntegrationTest extends AbstractMvcTest {
     protected AuthTestAdapter testAdapter;
 
     @Autowired
-    protected UserControllerTestTemplate userController;
+    protected AbstractUserControllerTestTemplate<?> userController;
 
     @Autowired
     protected TransactionTemplate transactionTemplate;
 
     @Autowired
-    protected AbstractUserRepository<AbstractUser<Serializable>,Serializable> userRepository;
+    protected AbstractUserRepository userRepository;
 
     @BeforeEach
     protected void setup() throws Exception {
@@ -234,7 +233,7 @@ public abstract class RapidAuthIntegrationTest extends AbstractMvcTest {
         return testAdapter;
     }
 
-    protected UserControllerTestTemplate getUserController() {
+    protected AbstractUserControllerTestTemplate<?> getUserController() {
         return userController;
     }
 

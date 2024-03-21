@@ -14,5 +14,10 @@ public class MyTestConfig {
         return new MyAuthTestAdapter();
     }
 
+    @Bean
+    public MyUserControllerTestTemplate userControllerTestTemplate(){
+        return new MyUserControllerTestTemplate();
+    }
+
 
 }

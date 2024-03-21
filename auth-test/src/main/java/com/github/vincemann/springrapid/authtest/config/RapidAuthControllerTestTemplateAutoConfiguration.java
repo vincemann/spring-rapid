@@ -4,8 +4,9 @@ import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@TestConfiguration
+@Configuration
 public class RapidAuthControllerTestTemplateAutoConfiguration {
 
    @ConditionalOnMissingBean(name = "userControllerTestTemplate")

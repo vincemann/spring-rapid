@@ -1,10 +1,6 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.dto.SignupDto;
-import com.github.vincemann.springrapid.auth.msg.AuthMessage;
-import com.github.vincemann.springrapid.core.sec.Roles;
-import com.google.common.collect.Sets;
 
 public abstract class AuthTestAdapter {
 
@@ -24,7 +20,7 @@ public abstract class AuthTestAdapter {
     public static  String BLOCKED_ADMIN_PASSWORD = "blockedAdminSanjaySanjay99!";
 
     public static  String USER_CONTACT_INFORMATION = "user@example.com";
-    public static  String USER_PASSWORD = "userSanjaySanjay99!";
+    public static  String USER_PASSWORD = "1Best??pw==";
 
     public static  String SECOND_USER_CONTACT_INFORMATION = "secondUser@example.com";
     public static  String SECOND_USER_PASSWORD = "secondUserSanjaySanjay99!";
@@ -44,10 +40,6 @@ public abstract class AuthTestAdapter {
 
     public abstract AbstractUser createTestUser(String contactInformation, String password, String... roles);
 
-
-    public abstract AuthMessage signup(String contactInformation);
-
-
-
+    public abstract void signup(String contactInformation) throws Exception;
 
 }

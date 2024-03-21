@@ -49,7 +49,7 @@ public class LoginTest extends RapidAuthIntegrationTest {
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
 		transactionTemplate.executeWithoutResult(transactionStatus -> {
-			AbstractUser<Serializable> user = userRepository.findById(getUser().getId()).get();
+			AbstractUser user = (AbstractUser) userRepository.findById(getUser().getId()).get();
 			user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		});
 

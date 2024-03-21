@@ -46,8 +46,9 @@ public abstract class AbstractMvcTest implements InitializingBean
             Class<?> fieldType = field.getType();
             if (MvcAware.class.isAssignableFrom(fieldType)){
                 field.setAccessible(true);
-                MvcAware testTemplate = (MvcAware) field.get(this);
-                testTemplate.setMvc(mvc);
+                MvcAware mvcAware = (MvcAware) field.get(this);
+                if (mvcAware != null)
+                    mvcAware.setMvc(mvc);
             }
         });
     }

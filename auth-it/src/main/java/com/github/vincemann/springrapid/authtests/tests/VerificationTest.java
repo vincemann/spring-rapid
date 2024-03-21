@@ -57,7 +57,7 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 
 		mockJwtExpirationTime(50L);
 		AuthMessage msg = signupUser();
-		AbstractUser<Serializable> user = userRepository.findByContactInformation(USER_CONTACT_INFORMATION).get();
+		AbstractUser user = (AbstractUser) userRepository.findByContactInformation(USER_CONTACT_INFORMATION).get();
 		// expired token
 		Thread.sleep(51L);
 		mvc.perform(userController.verifyUserWithLink(msg.getLink()))
@@ -69,7 +69,7 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 		AuthMessage msg = signupUser();
 
 		transactionTemplate.executeWithoutResult(transactionStatus -> {
-			AbstractUser<Serializable> savedUser = userRepository.findByContactInformation(USER_CONTACT_INFORMATION).get();
+			AbstractUser savedUser = (AbstractUser) userRepository.findByContactInformation(USER_CONTACT_INFORMATION).get();
 			// Credentials updated after the verification token is issued
 			savedUser.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		});
@@ -78,7 +78,7 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 				.andExpect(status().isForbidden());
 	}
 
-	protected AuthMessage signupUser(){
+	protected AuthMessage signupUser() throws Exception {
 		getTestAdapter().signup(USER_CONTACT_INFORMATION);
 		return userController.verifyMsgWasSent(USER_CONTACT_INFORMATION);
 	}
