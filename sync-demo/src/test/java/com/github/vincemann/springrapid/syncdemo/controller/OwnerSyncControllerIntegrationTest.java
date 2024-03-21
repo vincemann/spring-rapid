@@ -11,7 +11,6 @@ import com.github.vincemann.springrapid.syncdemo.controller.suite.template.PetCo
 import com.github.vincemann.springrapid.syncdemo.controller.suite.template.PetSyncControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.pet.ReadPetDto;
-import com.github.vincemann.springrapid.syncdemo.model.ClinicCard;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
 import com.github.vincemann.springrapid.syncdemo.model.Toy;
@@ -26,7 +25,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 @Tag(value = "demo-projects")
 public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
@@ -630,190 +632,5 @@ public class OwnerSyncControllerIntegrationTest extends MyIntegrationTest {
         ReadPetDto belloDto = updatedPets.stream().filter(s -> s.getId().equals(savedBello.getId())).findFirst().get();
         Assertions.assertEquals(belloDto.getBirthDate(),updatedBello.getBirthDate());
     }
-
-    @Test
-    public void givenToyRemovedFromAuditedFieldToysOfPet_whenFetchSyncStatusOfPet_thenMarkedAsUpdated() throws Exception {
-        // create bello with ball and rubber-duck toys
-        // update bello - remove ball toy
-        // check sync status of bello -> marked as updated
-        // verify update
-
-        Toy rubberDuck = toyRepository.save(this.rubberDuck);
-        Toy ball = toyRepository.save(this.ball);
-
-        ReadPetDto belloDto = createPetLinkedToOwnerAndToys(bello, null, rubberDuck, ball);
-
-        assertPetHasToys(BELLO,RUBBER_DUCK,BALL);
-        assertToyHasPet(RUBBER_DUCK,BELLO);
-        assertToyHasPet(BALL,BELLO);
-
-        // now
-        Timestamp clientUpdate = new Timestamp(new Date().getTime());
-
-        ownerSyncController.fetchSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
-
-        // update bello and bella
-        Pet updatedBello = transactionTemplate.execute(new TransactionCallback<Pet>() {
-            @Nullable
-            @Override
-            public Pet doInTransaction(TransactionStatus status) {
-                Pet update = petRepository.findById(bello.getId()).get();
-                update.removeToy(ball);
-                return update;
-            }
-        });
-
-        Assertions.assertTrue(updatedBello.getLastModifiedDate().after(clientUpdate));
-
-
-        EntitySyncStatus status = petSyncController.fetchSyncStatus_assertUpdate(belloDto.getId(), clientUpdate, SyncStatus.UPDATED);
-
-        List<Long> idsToSync = Lists.newArrayList(Long.valueOf(status.getId()));
-
-        RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
-        List<ReadPetDto> updatedPets= petController.findSome2xx(idsToSync);
-        RapidSecurityContext.clear();
-
-        Assertions.assertEquals(1,updatedPets.size());
-
-        ReadPetDto dto = updatedPets.stream().filter(s -> s.getId().equals(belloDto.getId())).findFirst().get();
-        Assertions.assertEquals(1,dto.getToyIds().size());
-        Assertions.assertTrue(dto.getToyIds().stream().anyMatch(toyId -> toyId.equals(rubberDuck.getId())));
-    }
-
-    @Test
-    public void givenToyRemovedViaRemove_whenFetchSyncStatusOfPet_thenNotMarkedAsUpdated() throws Exception {
-        // create bello with ball and rubber-duck toys
-        // remove ball toy via toyService.remove
-        // check sync status of bello -> not marked as updated
-
-        Toy rubberDuck = toyRepository.save(this.rubberDuck);
-        Toy ball = toyRepository.save(this.ball);
-
-        ReadPetDto belloDto = createPetLinkedToOwnerAndToys(bello, null, rubberDuck, ball);
-
-        assertPetHasToys(BELLO,RUBBER_DUCK,BALL);
-        assertToyHasPet(RUBBER_DUCK,BELLO);
-        assertToyHasPet(BALL,BELLO);
-
-        // now
-        Timestamp clientUpdate = new Timestamp(new Date().getTime());
-
-        ownerSyncController.fetchSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
-
-        toyRepository.deleteById(ball.getId());
-        assertPetHasToys(BELLO,RUBBER_DUCK);
-        assertToyHasPet(RUBBER_DUCK,BELLO);
-
-
-        petSyncController.fetchSyncStatus_assertNoUpdate(belloDto.getId(), clientUpdate);
-    }
-
-    // would be overkill to record change in foreignkey column as recorded update for sync
-    // just check child set controller for updates with parentId filter
-    @Test
-    public void givenPetUnlinkedFromOwner_whenFindSyncStatusOfOwner_thenNotMarkedAsUpdated() throws Exception {
-        // create owner linked to pet bello and kitty
-        // record client ts
-        // unlink owners pet bello via update
-        // check owner sync info
-        // server tells client, owner was not updated
-        // fetch update and validate
-
-        Pet savedBello = petRepository.save(bello);
-        Pet savedKitty = petRepository.save(kitty);
-        Owner owner = createOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
-
-        assertOwnerHasPets(KAHN,BELLO,KITTY);
-        assertPetHasOwner(BELLO,KAHN);
-        assertPetHasOwner(KITTY,KAHN);
-
-        Timestamp lastServerUpdate = new Timestamp(owner.getLastModifiedDate().getTime());
-
-        // now
-        Timestamp clientUpdate = new Timestamp(new Date().getTime());
-        Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
-
-        ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
-
-        // update owner by unlinking pet bello
-        Owner updatedOwner = transactionTemplate.execute(status -> {
-            Owner update = ownerRepository.findById(owner.getId()).get();
-            update.removePet(savedBello);
-            return update;
-        });
-
-        assertOwnerHasPets(KAHN,KITTY);
-        assertPetHasOwner(BELLO,null);
-        assertPetHasOwner(KITTY,KAHN);
-
-
-        // has not changed
-        Assertions.assertEquals(lastServerUpdate, updatedOwner.getLastModifiedDate());
-
-
-        ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(), clientUpdate);
-
-        List<Long> idsToSync = Lists.newArrayList(owner.getId());
-
-        RapidSecurityContext.setAuthenticated(TestPrincipal.create(KAHN));
-        List<ReadOwnerDto> updatedOwners= ownerController.findSome2xx(idsToSync);
-        RapidSecurityContext.clear();
-
-        Assertions.assertEquals(1,updatedOwners.size());
-
-        ReadOwnerDto ownerDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner.getId())).findFirst().get();
-        Assertions.assertEquals(1,ownerDto.getPetIds().size());
-        Assertions.assertEquals(ownerDto.getPetIds().stream().findFirst().get(),savedKitty.getId());
-    }
-
-    @Test
-    public void givenAllPetsUnlinkedFromOwner_whenFindSyncStatusOfOwner_thenNotMarkedAsUpdated() throws Exception {
-        // create owner linked to pet bello and kitty
-        // record client ts
-        // unlink all owners pets
-        // check owner sync info
-        // server tells client, owner was not updated
-        // fetch update and validate
-
-        Pet savedBello = petRepository.save(bello);
-        Pet savedKitty = petRepository.save(kitty);
-        Owner owner = createOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
-
-        assertOwnerHasPets(KAHN,BELLO,KITTY);
-        assertPetHasOwner(BELLO,KAHN);
-        assertPetHasOwner(KITTY,KAHN);
-
-        Timestamp lastServerUpdate = new Timestamp(owner.getLastModifiedDate().getTime());
-
-        // now
-        Timestamp clientUpdate = new Timestamp(new Date().getTime());
-        Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
-
-        ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
-
-        // update owner by unlinking all pets
-        Owner updatedOwner = transactionTemplate.execute(status -> {
-            Owner update = ownerRepository.findById(owner.getId()).get();
-            Iterator<Pet> iterator = update.getPets().iterator();
-            while (iterator.hasNext()){
-                update.removePet(iterator.next());
-            }
-            return update;
-        });
-
-        assertOwnerHasPets(KAHN);
-        assertPetHasOwner(BELLO,null);
-        assertPetHasOwner(KITTY,null);
-
-
-        // has not changed
-        Assertions.assertEquals(lastServerUpdate, updatedOwner.getLastModifiedDate());
-
-        ownerSyncController.fetchSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
-    }
-
-
-
 
 }

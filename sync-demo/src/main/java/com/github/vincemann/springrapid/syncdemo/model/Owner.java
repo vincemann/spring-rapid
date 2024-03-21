@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.syncdemo.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildEntity;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
-import com.github.vincemann.springrapid.sync.model.audit.AuditingEntity;
+import com.github.vincemann.springrapid.sync.model.entity.AuditingEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

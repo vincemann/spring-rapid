@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.sync.model.audit;
+package com.github.vincemann.springrapid.sync.model.entity;
 
 import org.springframework.data.domain.AuditorAware;
 

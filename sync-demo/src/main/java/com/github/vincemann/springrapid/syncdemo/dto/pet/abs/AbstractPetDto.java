@@ -1,11 +1,5 @@
 package com.github.vincemann.springrapid.syncdemo.dto.pet.abs;
 
-import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.BiDirChildIdCollection;
-import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.UniDirChildId;
-import com.github.vincemann.springrapid.autobidir.resolveid.annotation.parent.BiDirParentId;
-import com.github.vincemann.springrapid.syncdemo.model.Owner;
-import com.github.vincemann.springrapid.syncdemo.model.PetType;
-import com.github.vincemann.springrapid.syncdemo.model.Toy;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,16 +15,9 @@ public abstract class AbstractPetDto
 {
 
     private String name;
-
-    @UniDirChildId(PetType.class)
     private Long petTypeId;
-
-    @BiDirChildIdCollection(Toy.class)
     private Set<Long> toyIds = new HashSet<>();
-
-    @BiDirParentId(Owner.class)
     private Long ownerId;
-
     private LocalDate birthDate;
 
     public AbstractPetDto(String name, Long petTypeId, Set<Long> toyIds, Long ownerId, LocalDate birthDate) {

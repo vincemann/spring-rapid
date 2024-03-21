@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.sync.model.audit;
+package com.github.vincemann.springrapid.sync.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;

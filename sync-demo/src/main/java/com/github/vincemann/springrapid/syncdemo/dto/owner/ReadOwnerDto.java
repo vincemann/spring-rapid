@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -22,7 +23,7 @@ public class ReadOwnerDto extends AbstractOwnerDto {
     private Long id;
 
     @Builder
-    public ReadOwnerDto(String address, String city, String telephone, Set<String> hobbies, Set<Long> petIds, Long id, String dirtySecret, String firstName, String lastName, Long clinicCardId) {
+    public ReadOwnerDto(String address, String city, String telephone, List<String> hobbies, Set<Long> petIds, Long id, String dirtySecret, String firstName, String lastName, Long clinicCardId) {
         super(address, city, telephone, hobbies);
         if (petIds != null)
             this.petIds = petIds;

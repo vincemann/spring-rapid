@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.sync.repo;
 
-import com.github.vincemann.springrapid.sync.model.audit.IAuditingEntity;
+import com.github.vincemann.springrapid.sync.model.entity.IAuditingEntity;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;

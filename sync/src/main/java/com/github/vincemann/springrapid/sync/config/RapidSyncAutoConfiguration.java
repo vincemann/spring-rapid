@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.github.vincemann.springrapid.sync.controller.SyncStatusDeserializer;
 import com.github.vincemann.springrapid.sync.controller.SyncStatusSerializer;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
-import com.github.vincemann.springrapid.sync.model.audit.AuditorAwareImpl;
+import com.github.vincemann.springrapid.sync.model.entity.AuditorAwareImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;

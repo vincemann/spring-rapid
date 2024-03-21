@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.sync.softdelete;
 
-import com.github.vincemann.springrapid.sync.model.audit.AuditingEntity;
+import com.github.vincemann.springrapid.sync.model.entity.AuditingEntity;
 import com.github.vincemann.springrapid.core.util.Specs;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;

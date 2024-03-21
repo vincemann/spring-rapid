@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.sync.model.audit;
+package com.github.vincemann.springrapid.sync.model.entity;
 
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;

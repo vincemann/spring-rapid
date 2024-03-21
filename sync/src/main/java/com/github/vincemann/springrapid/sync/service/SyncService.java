@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.sync.service;
 
 
-import com.github.vincemann.springrapid.sync.model.audit.IAuditingEntity;
+import com.github.vincemann.springrapid.sync.model.entity.IAuditingEntity;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.LastFetchInfo;
