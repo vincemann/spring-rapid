@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.acldemo.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.vincemann.springrapid.acldemo.model.abs.User;
-import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildCollection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

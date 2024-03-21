@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.service.user.VetSignupService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,9 +25,9 @@ public class VetController {
 
 
     @PostMapping("signup")
-    public ReadVetDto signup(@Valid @RequestBody SignupVetDto dto) throws BadEntityException {
+    public ResponseEntity<ReadVetDto> signup(@Valid @RequestBody SignupVetDto dto) throws BadEntityException {
         Vet vet = signupService.signup(dto);
-        return mappingService.map(vet);
+        return ResponseEntity.ok(mappingService.map(vet));
     }
 
 

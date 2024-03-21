@@ -1,9 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.dto.pet;
 
 import com.github.vincemann.springrapid.acldemo.dto.pet.abs.AbstractPetDto;
-import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
-import com.github.vincemann.springrapid.autobidir.resolveid.annotation.parent.BiDirParentId;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,8 +12,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter

@@ -51,8 +51,6 @@ public class OwnerMappingService {
 
     @Transactional
     public Object mapToOwnerReadsForeignOwnerDto(Owner owner) {
-        OwnerReadsForeignOwnerDto dto = new ModelMapper().map(owner, OwnerReadsForeignOwnerDto.class);
-        dto.setPetIds(owner.getPets().stream().map(Pet::getId).collect(Collectors.toSet()));
-        return dto;
+        return new ModelMapper().map(owner, OwnerReadsForeignOwnerDto.class);
     }
 }

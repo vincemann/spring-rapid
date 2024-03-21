@@ -25,7 +25,7 @@ public class PetController {
     @PostMapping("create")
     public ResponseEntity<OwnerReadsOwnPetDto> create(@RequestBody CreatePetDto dto) throws EntityNotFoundException, BadEntityException {
         Pet pet = petService.create(dto);
-        ResponseEntity.ok(mappingService.mapToOwnerReadsOwnPetDto(pet));
+        return ResponseEntity.ok(mappingService.mapToOwnerReadsOwnPetDto(pet));
     }
 
     @GetMapping("find")

@@ -19,7 +19,6 @@ public class OwnerReadsForeignOwnerDto extends AbstractReadOwnerDto {
                 ", city='" + getCity() + '\'' +
                 ", telephone='" + getTelephone() + '\'' +
                 ", hobbies=" + getHobbies() +
-                ", petIds=" + getPetIds() +
                 '}';
     }
 }

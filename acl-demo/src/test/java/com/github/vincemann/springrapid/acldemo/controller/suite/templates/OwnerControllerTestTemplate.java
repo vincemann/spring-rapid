@@ -37,7 +37,7 @@ public class OwnerControllerTestTemplate extends MvcControllerTestTemplate<Owner
 
 
     public void addPetsSpectator(long permittedOwner, long targetOwner, String token) throws Exception {
-        getMvc().perform(withToken(get("/api/core/owner/add-pet-spectator")
+        getMvc().perform(withToken(put("/api/core/owner/add-pet-spectator")
                 .param("permitted",String.valueOf(permittedOwner))
                 .param("target",String.valueOf(targetOwner)),
                         token))

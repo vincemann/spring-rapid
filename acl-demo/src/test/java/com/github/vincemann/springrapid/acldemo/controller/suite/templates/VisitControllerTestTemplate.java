@@ -10,8 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @Component
 public class VisitControllerTestTemplate extends MvcControllerTestTemplate<VisitController> {
@@ -36,13 +35,13 @@ public class VisitControllerTestTemplate extends MvcControllerTestTemplate<Visit
     }
 
     public MockHttpServletRequestBuilder addSpectator(long visitId, long spectatorId){
-        return get("/api/core/visit/add-spectator")
+        return put("/api/core/visit/add-spectator")
                 .param("visit",String.valueOf(visitId))
                 .param("spectator",String.valueOf(spectatorId));
     }
 
     public MockHttpServletRequestBuilder removeSpectator(long visitId, long spectatorId){
-        return get("/api/core/visit/remove-spectator")
+        return put("/api/core/visit/remove-spectator")
                 .param("visit",String.valueOf(visitId))
                 .param("spectator",String.valueOf(spectatorId));
     }

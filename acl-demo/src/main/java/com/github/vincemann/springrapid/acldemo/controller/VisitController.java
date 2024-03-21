@@ -22,18 +22,18 @@ public class VisitController
     private VisitMappingService mappingService;
 
     @PostMapping("create")
-    public ReadVisitDto create(@RequestBody CreateVisitDto dto) throws EntityNotFoundException, BadEntityException {
+    public ResponseEntity<ReadVisitDto> create(@RequestBody CreateVisitDto dto) throws EntityNotFoundException, BadEntityException {
         Visit visit = service.create(dto);
-        return mappingService.map(visit);
+        return ResponseEntity.ok(mappingService.map(visit));
     }
 
-    @RequestMapping(value = "/api/core/visit/add-spectator", method = RequestMethod.GET)
+    @PutMapping(value = "/api/core/visit/add-spectator")
     public ResponseEntity<?> addSpectator(@RequestParam("spectator") long spectatorId, @RequestParam("visit") long visitId) throws EntityNotFoundException {
         service.addSpectator(spectatorId,visitId);
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = "/api/core/visit/remove-spectator", method = RequestMethod.GET)
+    @PutMapping(value = "/api/core/visit/remove-spectator")
     public ResponseEntity<?> removeSpectator(@RequestParam("spectator") long spectatorId, @RequestParam("visit") long visitId) throws EntityNotFoundException {
         service.removeSpectator(spectatorId,visitId);
         return ResponseEntity.ok().build();

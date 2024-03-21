@@ -13,6 +13,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,27 +31,28 @@ public class OwnerController{
 
 
     @PostMapping("signup")
-    public OwnerReadsOwnOwnerDto signup(@Valid @RequestBody SignupOwnerDto dto) throws BadEntityException {
+    public ResponseEntity<OwnerReadsOwnOwnerDto> signup(@Valid @RequestBody SignupOwnerDto dto) throws BadEntityException {
         Owner owner = signupService.signup(dto);
-        return mappingService.mapToReadOwnOwner(owner);
+        return ResponseEntity.ok(mappingService.mapToReadOwnOwner(owner));
     }
 
-    @GetMapping(value = "add-pet-spectator")
-    public void addPetSpectator(@RequestParam("permitted") long permittedOwnerId, @RequestParam("target") long targetOwnerId) throws EntityNotFoundException {
+    @PutMapping(value = "add-pet-spectator")
+    public ResponseEntity<?> addPetSpectator(@RequestParam("permitted") long permittedOwnerId, @RequestParam("target") long targetOwnerId) throws EntityNotFoundException {
         service.addPetSpectator(permittedOwnerId, targetOwnerId);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("update")
-    public OwnerReadsOwnOwnerDto update(@RequestBody UpdateOwnerDto dto) throws EntityNotFoundException {
+    public ResponseEntity<OwnerReadsOwnOwnerDto> update(@RequestBody UpdateOwnerDto dto) throws EntityNotFoundException {
         Owner owner = service.update(dto);
-        return mappingService.mapToReadOwnOwner(owner);
+        return ResponseEntity.ok(mappingService.mapToReadOwnOwner(owner));
     }
 
     @GetMapping(value = "find-by-name")
-    public Object findByName(@RequestParam("name") String name, HttpServletRequest request) throws EntityNotFoundException, BadEntityException, JsonProcessingException {
+    public ResponseEntity<Object> findByName(@RequestParam("name") String name, HttpServletRequest request) throws EntityNotFoundException, BadEntityException, JsonProcessingException {
         Optional<Owner> owner = service.findByLastName(name);
         VerifyEntity.isPresent(owner,name,Owner.class);
-        return mappingService.mapToReadOwnerDto(owner.get());
+        return ResponseEntity.ok(mappingService.mapToReadOwnerDto(owner.get()));
     }
 
 

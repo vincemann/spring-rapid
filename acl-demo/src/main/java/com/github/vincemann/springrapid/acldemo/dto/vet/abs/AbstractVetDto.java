@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.dto.vet.abs;
 
-import com.github.vincemann.springrapid.acldemo.model.Specialty;
-import com.github.vincemann.springrapid.autobidir.resolveid.annotation.child.BiDirChildIdCollection;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

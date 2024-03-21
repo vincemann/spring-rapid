@@ -10,7 +10,6 @@ import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.model.abs.User;
 import com.github.vincemann.springrapid.acldemo.repo.*;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
-import com.github.vincemann.springrapid.autobidir.EnableAutoBiDir;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
@@ -25,7 +24,6 @@ import static com.github.vincemann.springrapid.core.util.RepositoryUtil.findPres
 
 @Primary
 @Service
-@EnableAutoBiDir
 public class VisitServiceImpl implements VisitService {
 
 

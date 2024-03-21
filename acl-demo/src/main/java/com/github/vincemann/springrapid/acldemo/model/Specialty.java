@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.acldemo.model;
 
 import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 
-import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentCollection;
+
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import lombok.*;
 

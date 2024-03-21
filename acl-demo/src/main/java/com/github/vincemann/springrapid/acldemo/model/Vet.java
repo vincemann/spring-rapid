@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
 import com.github.vincemann.springrapid.acldemo.model.abs.User;
-import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildCollection;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
