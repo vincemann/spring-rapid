@@ -2,8 +2,6 @@ package com.github.vincemann.springrapid.syncdemo.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.github.vincemann.springrapid.autobidir.entity.annotation.child.UniDirChildEntity;
-import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import com.github.vincemann.springrapid.sync.model.entity.AuditingEntity;
 import lombok.Builder;
@@ -33,7 +31,6 @@ public class Pet extends AuditingEntity<Long> {
     //uniDir ManyToOne -> PetType does not know about this mapping
     @ManyToOne
     @JoinColumn(name = "pet_type_id")
-    @UniDirChildEntity
     private PetType petType;
 
     @JsonManagedReference
@@ -43,7 +40,6 @@ public class Pet extends AuditingEntity<Long> {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     @JsonBackReference
-    @BiDirParentEntity
     private Owner owner;
 
 

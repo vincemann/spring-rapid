@@ -22,6 +22,7 @@ public class PetMappingService {
         return dto;
     }
 
+    @Transactional
     public List<ReadPetDto> map(List<Pet> pets){
         return pets.stream().map(this::map)
                 .collect(Collectors.toList());

@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.syncdemo.model;
 
-import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
 import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +20,6 @@ import java.util.Date;
 public class ClinicCard extends IdAwareEntityImpl<Long> {
 
 
-    @BiDirParentEntity
     @OneToOne(mappedBy = "clinicCard")
     private Owner owner;
     @NotNull

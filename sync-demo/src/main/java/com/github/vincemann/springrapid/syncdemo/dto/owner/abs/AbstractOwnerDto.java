@@ -9,8 +9,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Getter
+@Setter
 @NoArgsConstructor
-@Getter @Setter
 public abstract class AbstractOwnerDto {
 
     private String address;

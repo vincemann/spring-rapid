@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.syncdemo.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.github.vincemann.springrapid.autobidir.entity.annotation.child.BiDirChildEntity;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import com.github.vincemann.springrapid.sync.model.entity.AuditingEntity;
 import lombok.Builder;
@@ -31,7 +30,6 @@ public class Owner extends AuditingEntity<Long> {
     @JsonManagedReference
     private Set<Pet> pets = new HashSet<>();
 
-    @BiDirChildEntity
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "clinic_card_id",referencedColumnName = "id")
     private ClinicCard clinicCard;
@@ -61,6 +59,10 @@ public class Owner extends AuditingEntity<Long> {
     @Column(name = "telephone", nullable = true)
     private String telephone;
 
+    public void addClinicCard(ClinicCard card){
+        this.setClinicCard(card);
+        card.setOwner(this);
+    }
     public void addPet(Pet pet){
         this.pets.add(pet);
         pet.setOwner(this);

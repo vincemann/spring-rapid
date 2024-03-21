@@ -103,7 +103,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
      *
      *
      */
-    public ResponseEntity<String> syncEntities(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
+    public ResponseEntity<String> fetchSyncStatuses(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
         try {
             String json = readBody(request);
             CollectionType idSetType = getObjectMapper()
@@ -133,7 +133,7 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
      * GET /api/core/entity/sync-statuses-since?ts=...
      *
      */
-    public ResponseEntity<String> sync(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, JsonProcessingException {
+    public ResponseEntity<String> fetchSyncStatusesSince(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, JsonProcessingException {
         long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
 
         log.debug(LogMessage.format("find sync statuses since timestamp request received. Timestamp: %s",new Date(lastUpdateTimestamp).toString()));
@@ -151,11 +151,11 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
     @Override
     protected void registerEndpoints() throws NoSuchMethodException {
         if (!getIgnoredEndPoints().contains(getFetchSyncStatusUrl()))
-            registerEndpoint(createFetchEntitySyncStatusRequestMappingInfo(), "fetchEntitySyncStatus");
+            registerEndpoint(createFetchEntitySyncStatusRequestMappingInfo(), "fetchSyncStatus");
         if (!getIgnoredEndPoints().contains(getFetchSyncStatusesUrl()))
-            registerEndpoint(createFetchEntitySyncStatusesRequestMappingInfo(), "fetchEntitySyncStatuses");
+            registerEndpoint(createFetchEntitySyncStatusesRequestMappingInfo(), "fetchSyncStatuses");
         if (!getIgnoredEndPoints().contains(getFetchSyncStatusesSinceTsUrl()))
-            registerEndpoint(createFetchEntitySyncStatusesSinceTsRequestMappingInfo(), "fetchEntitySyncStatusesSinceTimestamp");
+            registerEndpoint(createFetchEntitySyncStatusesSinceTsRequestMappingInfo(), "fetchSyncStatusesSince");
     }
 
 

@@ -13,21 +13,16 @@ import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.pet.ReadPetDto;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
-import com.github.vincemann.springrapid.syncdemo.model.Toy;
 import com.google.common.collect.Lists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.lang.Nullable;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 @Tag(value = "demo-projects")

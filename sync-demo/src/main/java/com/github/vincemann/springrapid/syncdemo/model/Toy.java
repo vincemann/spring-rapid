@@ -1,11 +1,9 @@
 package com.github.vincemann.springrapid.syncdemo.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.github.vincemann.springrapid.autobidir.entity.annotation.parent.BiDirParentEntity;
 import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import lombok.*;
-
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -25,7 +23,6 @@ public class Toy extends IdAwareEntityImpl<Long> {
     private String name;
 
     @ManyToOne
-    @BiDirParentEntity
     @JsonBackReference
     @JoinColumn(name = "pet_id")
     private Pet pet;
