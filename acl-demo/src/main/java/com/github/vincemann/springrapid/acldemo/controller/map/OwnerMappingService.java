@@ -15,23 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class OwnerMappingService {
-
-
-    @Transactional
-    public Object mapToReadOwnerDto(Owner owner){
-        if (RapidSecurityContext.getRoles().contains(Roles.VET)){
-            return mapToVetReadsOwnerDto(owner);
-        }
-        else if (RapidSecurityContext.getRoles().contains(Roles.OWNER)){
-            if (owner.getLastName().equals(RapidSecurityContext.getName())){
-                return mapToReadOwnOwner(owner);
-            }
-            else{
-                return mapToOwnerReadsForeignOwnerDto(owner);
-            }
-        }
-        throw new IllegalArgumentException("cant find target dto class for reading owner");
-    }
+    
 
 
     @Transactional

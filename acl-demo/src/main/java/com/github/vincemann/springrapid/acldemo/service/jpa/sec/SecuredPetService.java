@@ -15,6 +15,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.RepositoryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.acldemo.service.jpa;
 
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.acldemo.Roles;
+import com.github.vincemann.springrapid.acldemo.controller.map.PetMappingService;
 import com.github.vincemann.springrapid.acldemo.dto.pet.CreatePetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerUpdatesPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.UpdateIllnessDto;
@@ -38,8 +39,6 @@ import static com.github.vincemann.springrapid.core.util.ValidationUtils.validat
 public class PetServiceImpl implements PetService {
 
     private RapidAclService aclService;
-    private OwnerRepository ownerRepository;
-    private PetTypeRepository petTypeRepository;
 
     private PetRepository repository;
 
@@ -47,28 +46,20 @@ public class PetServiceImpl implements PetService {
 
     private Validator validator;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Autowired
+    private PetMappingService mappingService;
+
 
 
     @Transactional
     @Override
     public Pet create(CreatePetDto dto) throws EntityNotFoundException {
-        Pet pet = map(dto);
+        Pet pet = mappingService.map(dto);
         Pet saved = repository.save(pet);
         saveAclInfo(saved);
         return pet;
     }
 
-    Pet map(CreatePetDto dto) throws EntityNotFoundException {
-        Pet pet = new ModelMapper().map(dto, Pet.class);
-        pet = entityManager.merge(pet);
-        Owner owner = findPresentById(ownerRepository, dto.getOwnerId());
-        PetType petType = findPresentById(petTypeRepository, dto.getPetTypeId());
-        owner.addPet(pet);
-        pet.setPetType(petType);
-        return pet;
-    }
 
     @Transactional
     @Override
@@ -142,15 +133,6 @@ public class PetServiceImpl implements PetService {
         this.illnessRepository = illnessRepository;
     }
 
-    @Autowired
-    public void setOwnerRepository(OwnerRepository ownerRepository) {
-        this.ownerRepository = ownerRepository;
-    }
-
-    @Autowired
-    public void setPetTypeRepository(PetTypeRepository petTypeRepository) {
-        this.petTypeRepository = petTypeRepository;
-    }
 
     @Autowired
     public void setAclService(RapidAclService aclService) {

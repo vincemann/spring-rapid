@@ -22,6 +22,8 @@ import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static com.github.vincemann.springrapid.core.util.RepositoryUtil.findPresentById;
 
 @Secured
@@ -45,6 +47,13 @@ public class SecuredVisitService
     @Override
     public void addSpectator(Long spectatorId, Long visitId) throws EntityNotFoundException {
         getDecorated().addSpectator(spectatorId,visitId);
+    }
+
+    @Transactional
+    @PreAuthorize("hasPermission(#id, 'com.github.vincemann.springrapid.acldemo.model.Visit', 'read')")
+    @Override
+    public Optional<Visit> find(long id) {
+        return getDecorated().find(id);
     }
 
     @Transactional

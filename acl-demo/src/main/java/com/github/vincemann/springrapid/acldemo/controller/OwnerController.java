@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.acl.Secured;
+import com.github.vincemann.springrapid.acldemo.controller.map.DynamicOwnerMappingService;
 import com.github.vincemann.springrapid.acldemo.controller.map.OwnerMappingService;
 import com.github.vincemann.springrapid.acldemo.dto.owner.OwnerReadsOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
@@ -29,6 +30,8 @@ public class OwnerController{
     private OwnerService service;
     private OwnerMappingService mappingService;
 
+    private DynamicOwnerMappingService dynamicMappingService;
+
 
     @PostMapping("signup")
     public ResponseEntity<OwnerReadsOwnOwnerDto> signup(@Valid @RequestBody SignupOwnerDto dto) throws BadEntityException {
@@ -52,9 +55,13 @@ public class OwnerController{
     public ResponseEntity<Object> findByName(@RequestParam("name") String name, HttpServletRequest request) throws EntityNotFoundException, BadEntityException, JsonProcessingException {
         Optional<Owner> owner = service.findByLastName(name);
         VerifyEntity.isPresent(owner,name,Owner.class);
-        return ResponseEntity.ok(mappingService.mapToReadOwnerDto(owner.get()));
+        return ResponseEntity.ok(dynamicMappingService.mapOwnerBasedOnRole(owner.get()));
     }
 
+    @Autowired
+    public void setDynamicMappingService(DynamicOwnerMappingService dynamicMappingService) {
+        this.dynamicMappingService = dynamicMappingService;
+    }
 
     @Autowired
     public void setSignupService(OwnerSignupService signupService) {

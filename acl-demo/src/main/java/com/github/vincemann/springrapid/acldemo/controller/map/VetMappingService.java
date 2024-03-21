@@ -18,4 +18,5 @@ public class VetMappingService {
         dto.setSpecialtyIds(vet.getSpecialtys().stream().map(Specialty::getId).collect(Collectors.toSet()));
         return dto;
     }
+
 }

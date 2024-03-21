@@ -89,9 +89,8 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         visit.getPets().add(bella);
         CreateVisitDto dto = new CreateVisitDto(visit);
         String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
-        ReadVisitDto response = visitController.perform2xxAndDeserialize(visitController.create(dto)
-                        .header(HttpHeaders.AUTHORIZATION,token)
-                , ReadVisitDto.class);
+        ReadVisitDto response = visitController.create2xx(dto, token);
+
         // then
         Assertions.assertNotNull(response.getId());
         Assertions.assertEquals(visit.getReason(),response.getReason());
