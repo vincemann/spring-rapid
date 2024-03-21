@@ -68,7 +68,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         // when
         String token = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
 
-        mvc.perform(petController.find(bella.getId().toString())
+        mvc.perform(petController.find(BELLA)
                 .header(HttpHeaders.AUTHORIZATION, token))
         // then
                 .andExpect(status().is2xxSuccessful());

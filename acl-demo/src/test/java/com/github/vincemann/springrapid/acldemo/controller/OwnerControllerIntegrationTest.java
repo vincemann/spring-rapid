@@ -3,15 +3,15 @@ package com.github.vincemann.springrapid.acldemo.controller;
 import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTest;
 import com.github.vincemann.springrapid.acldemo.dto.owner.OwnerReadsOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.CreatePetDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerReadsForeignPetDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerReadsOwnPetDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerUpdatesPetDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.*;
+import com.github.vincemann.springrapid.acldemo.model.Illness;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
+import com.github.vincemann.springrapid.acldemo.service.PetService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 
 import static com.github.vincemann.springrapid.acldemo.controller.suite.TestData.*;
@@ -24,6 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
 
+    @Autowired
+    private PetService petService;
 
     @Test
     public void signupOwner() throws Exception {
@@ -139,9 +141,10 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
     public void ownerCanReadOwnPet() throws Exception {
         // given
         // bella saved with illness teeth pain
-        testData.getBella().getIllnesses().add(illnessRepository.save(testData.getTeethPain()));
+        illnessRepository.save(testData.getTeethPain());
         Owner kahn = helper.signupKahnWithBella();
         Pet bella = petRepository.findByName(BELLA).get();
+        petService.addIllnesses(new UpdateIllnessDto(bella.getId(),TEETH_PAIN));
 
 
         // when
@@ -167,7 +170,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
 
         // when
         String ownerToken = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
-        mvc.perform(petController.find(bello.getId().toString())
+        mvc.perform(petController.find(BELLO)
                         .header(HttpHeaders.AUTHORIZATION, ownerToken))
         // then
                 .andExpect(status().isForbidden());
@@ -181,11 +184,13 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
         testData.getBella().getIllnesses().add(illnessRepository.save(testData.getTeethPain()));
         Owner kahn = helper.signupKahnWithBella();
         Pet bella = petRepository.findByName(BELLA).get();
+        petService.addIllnesses(new UpdateIllnessDto(bella.getId(),TEETH_PAIN));
 
         // bello saved with teeth pain as well for owner meier
         testData.getBello().getIllnesses().add(illnessRepository.findByName(TEETH_PAIN).get());
         Owner meier = helper.signupMeierWithBello();
         Pet bello = petRepository.findByName(BELLO).get();
+        petService.addIllnesses(new UpdateIllnessDto(bello.getId(),TEETH_PAIN));
 
         // kahn gives meier permission to watch its pets bella
         String kahnToken = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);

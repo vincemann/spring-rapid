@@ -162,17 +162,6 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .contentType(MediaType.APPLICATION_JSON_UTF8);
     }
 
-    public MockHttpServletRequestBuilder findByContactInformation(String contactInformation) throws Exception {
-        return get(getController().getFindByContactInformationUrl())
-                .param("ci", contactInformation)
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED);
-    }
-
-    public <D> D findByContactInformation2xx(String contactInformation, String token, Class<D> dtoClass) throws Exception {
-        return deserialize(mvc.perform(withToken(findByContactInformation(contactInformation),token))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString(),dtoClass);
-    }
 
     public String login2xx(String contactInformation, String password) throws Exception {
         return getMvc().perform(login(contactInformation, password))

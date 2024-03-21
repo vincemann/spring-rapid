@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,8 +30,9 @@ public class PetController {
     }
 
     @GetMapping("find")
-    public ResponseEntity<Object> find(@RequestParam("name") String name){
+    public ResponseEntity<Object> find(@RequestParam("name") String name) throws EntityNotFoundException {
         Optional<Pet> pet = petService.findByName(name);
+        VerifyEntity.isPresent(pet,name,Pet.class);
         Object dto = mappingService.mapToReadPetDto(pet.get());
         return ResponseEntity.ok(dto);
     }

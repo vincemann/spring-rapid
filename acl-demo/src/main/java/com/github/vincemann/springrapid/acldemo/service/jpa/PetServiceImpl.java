@@ -24,6 +24,8 @@ import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.validation.Validator;
 import java.util.Optional;
 
@@ -45,6 +47,9 @@ public class PetServiceImpl implements PetService {
 
     private Validator validator;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
 
     @Transactional
     @Override
@@ -56,9 +61,10 @@ public class PetServiceImpl implements PetService {
     }
 
     Pet map(CreatePetDto dto) throws EntityNotFoundException {
+        Pet pet = new ModelMapper().map(dto, Pet.class);
+        pet = entityManager.merge(pet);
         Owner owner = findPresentById(ownerRepository, dto.getOwnerId());
         PetType petType = findPresentById(petTypeRepository, dto.getPetTypeId());
-        Pet pet = new ModelMapper().map(dto, Pet.class);
         owner.addPet(pet);
         pet.setPetType(petType);
         return pet;

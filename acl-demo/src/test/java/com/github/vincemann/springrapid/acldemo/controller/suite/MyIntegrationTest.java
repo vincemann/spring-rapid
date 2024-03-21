@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.acldemo.repo.*;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
@@ -60,6 +61,11 @@ public class MyIntegrationTest extends AclMvcTest
     @Autowired
     protected UserControllerTestTemplate userController;
 
+
+    @BeforeEach
+    void setUp() {
+        helper.setup();
+    }
 
     @Override
     protected DefaultMockMvcBuilder createMvcBuilder() {

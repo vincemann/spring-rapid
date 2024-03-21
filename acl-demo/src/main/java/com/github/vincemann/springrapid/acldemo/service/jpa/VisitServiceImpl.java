@@ -19,6 +19,9 @@ import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import static com.github.vincemann.springrapid.core.util.RepositoryUtil.findPresentById;
 
 
@@ -35,11 +38,11 @@ public class VisitServiceImpl implements VisitService {
     private OwnerRepository ownerRepository;
 
     private VetRepository vetRepository;
-    private final PetRepository petRepository;
+    private PetRepository petRepository;
 
-    public VisitServiceImpl(PetRepository petRepository) {
-        this.petRepository = petRepository;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
+
 
     @Transactional
     @Override
@@ -68,6 +71,7 @@ public class VisitServiceImpl implements VisitService {
 
     Visit map(CreateVisitDto dto) throws EntityNotFoundException {
         Visit visit = new ModelMapper().map(dto, Visit.class);
+        visit = entityManager.merge(visit);
         Owner owner = findPresentById(ownerRepository, dto.getOwnerId());
         Vet vet = findPresentById(vetRepository, dto.getVetId());
         for (Long petId : dto.getPetIds()) {
@@ -86,6 +90,11 @@ public class VisitServiceImpl implements VisitService {
         aclService.grantUserPermissionForEntity(visit.getOwner().getContactInformation(), visit, BasePermission.READ);
         // all vets can read all visits to plan properly
         aclService.grantRolePermissionForEntity(Roles.VET,visit,BasePermission.READ);
+    }
+
+    @Autowired
+    public void setPetRepository(PetRepository petRepository) {
+        this.petRepository = petRepository;
     }
 
     @Autowired
