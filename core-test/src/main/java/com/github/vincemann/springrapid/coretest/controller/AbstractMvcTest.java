@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.coretest.controller;
 
-import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,11 +11,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.function.Predicate;
-
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 
@@ -57,19 +51,6 @@ public abstract class AbstractMvcTest implements InitializingBean
     protected DefaultMockMvcBuilder createMvcBuilder() {
         return MockMvcBuilders.webAppContextSetup(wac)
                 .alwaysDo(print());
-    }
-
-
-    public <E> E assertCanFindInCollection(Collection<E> collection, Predicate<E> predicate){
-        Optional<E> entity = collection.stream().filter(predicate::test).findFirst();
-        assertThat("entity needs to be present in collection", entity.isPresent());
-        return entity.get();
-    }
-
-    public <E extends IdAwareEntity<?>, E2 extends IdAwareEntity<?>> E assertCanFindInCollection(Collection<E> collection, E2 entity){
-        Optional<E> filtered = collection.stream().filter(e -> e.getId().equals(entity.getId())).findFirst();
-        assertThat("entity needs to be present in collection", filtered.isPresent());
-        return filtered.get();
     }
 
     public MockMvc getMvc() {

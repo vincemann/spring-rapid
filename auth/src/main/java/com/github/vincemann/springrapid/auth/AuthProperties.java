@@ -1,37 +1,47 @@
 package com.github.vincemann.springrapid.auth;
 
-import com.github.vincemann.springrapid.core.CoreProperties;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Validated
 public class AuthProperties {
 
-
-	private CoreProperties coreProperties;
 	public Controller controller;
+	public Map<String, Object> shared;
 
-	public AuthProperties(CoreProperties coreProperties) {
-		this.coreProperties = coreProperties;
-		this.controller = new Controller(coreProperties);
+	@NotEmpty
+	public String applicationUrl;
+
+	public AuthProperties() {
+		controller = new Controller();
 	}
+
+	public Map<String, Object> getShared() {
+		return shared;
+	}
+
+	public void setShared(Map<String, Object> shared) {
+		this.shared = shared;
+	}
+
+
 
 	public static class Controller {
 
-		private CoreProperties coreProperties;
 
-		public Controller(CoreProperties coreProperties) {
-			this.coreProperties = coreProperties;
+		public Controller() {
 			initUrls();
 		}
 
 		// init with default values
 		public void initUrls(){
-			userBaseUrl = coreProperties.getBaseUrl()+"/user";
-			loginUrl = coreProperties.getBaseUrl()+"/login";
+			userBaseUrl = "/api/core/user";
+			loginUrl = userBaseUrl+"/login";
 
 			signupUrl = getUserBaseUrl() +"/signup";
 			resetPasswordUrl = getUserBaseUrl() +"/reset-password";
@@ -67,12 +77,12 @@ public class AuthProperties {
 		public String testTokenUrl;
 		public String blockUserUrl;
 
-		public String getUserBaseUrl() {
-			return userBaseUrl;
-		}
-
 		public String getLoginUrl() {
 			return loginUrl;
+		}
+
+		public String getUserBaseUrl() {
+			return userBaseUrl;
 		}
 
 		public String getResetPasswordUrl() {
@@ -125,10 +135,6 @@ public class AuthProperties {
 
 		public String getBlockUserUrl() {
 			return blockUserUrl;
-		}
-
-		public void setCoreProperties(CoreProperties coreProperties) {
-			this.coreProperties = coreProperties;
 		}
 
 		public void setUserBaseUrl(String userBaseUrl) {
@@ -194,10 +200,6 @@ public class AuthProperties {
 		public void setBlockUserUrl(String blockUserUrl) {
 			this.blockUserUrl = blockUserUrl;
 		}
-	}
-
-	public CoreProperties getCoreProperties() {
-		return coreProperties;
 	}
 
 
@@ -358,10 +360,6 @@ public class AuthProperties {
 		return jwt;
 	}
 
-	public void setCoreProperties(CoreProperties coreProperties) {
-		this.coreProperties = coreProperties;
-	}
-
 	public void setController(Controller controller) {
 		this.controller = controller;
 	}
@@ -380,5 +378,13 @@ public class AuthProperties {
 
 	public void setJwt(Jwt jwt) {
 		this.jwt = jwt;
+	}
+
+	public String getApplicationUrl() {
+		return applicationUrl;
+	}
+
+	public void setApplicationUrl(String applicationUrl) {
+		this.applicationUrl = applicationUrl;
 	}
 }

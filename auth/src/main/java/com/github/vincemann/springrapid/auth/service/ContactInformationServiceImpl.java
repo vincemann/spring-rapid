@@ -133,7 +133,7 @@ public class ContactInformationServiceImpl implements ContactInformationService 
         log.debug("Mailing change contactInformation link to user: " + user);
         String changeContactInformationLink = UriComponentsBuilder
                 .fromHttpUrl(
-                        properties.getCoreProperties().getApplicationUrl()
+                        properties.getApplicationUrl()
                                 + properties.getController().getChangeContactInformationUrl())
 //                    .queryParam("id", user.getId())
                 .queryParam("code", changeContactInformationCode)

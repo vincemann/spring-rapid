@@ -2,27 +2,21 @@ package com.github.vincemann.springrapid.authtests.tests;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
+import com.github.vincemann.springrapid.authtests.AuthIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
-
-import java.io.Serializable;
 
 import static com.github.vincemann.springrapid.authtests.AuthTestAdapter.USER_CONTACT_INFORMATION;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class VerificationTest extends RapidAuthIntegrationTest {
+public class VerificationTest extends AuthIntegrationTest {
 
-
-	@Override
-	protected void createTestUsers() throws Exception {
-		super.createTestUsers();
-	}
 
 	@Test
 	public void givenUserSignedUp_whenFollowingLinkInMsg_thenUserGetsVerified() throws Exception {
-		AuthMessage msg = signupUser();
+		AuthMessage msg = signupUser(USER_CONTACT_INFORMATION);
 		mvc.perform(userController.verifyUserWithLink(msg.getLink()))
 				.andExpect(status().is(204))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
@@ -30,7 +24,7 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 	}
 	@Test
 	public void cantVerifyTwiceWithSameCode() throws Exception {
-		AuthMessage msg = signupUser();
+		AuthMessage msg = signupUser(USER_CONTACT_INFORMATION);
 		mvc.perform(userController.verifyUserWithLink(msg.getLink()))
 				.andExpect(status().is2xxSuccessful());
 
@@ -40,7 +34,7 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 
 	@Test
 	public void cantVerifyWithInvalidCode() throws Exception {
-		AuthMessage msg = signupUser();
+		AuthMessage msg = signupUser(USER_CONTACT_INFORMATION);
 
 		// null code
 		mvc.perform(userController.verifyUser(null))
@@ -58,11 +52,9 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 
 	@Test
 	public void cantVerifyWithExpiredCode() throws Exception {
-
-
 		mockJwtExpirationTime(50L);
-		AuthMessage msg = signupUser();
-		AbstractUser user = (AbstractUser) userRepository.findByContactInformation(USER_CONTACT_INFORMATION).get();
+		AuthMessage msg = signupUser(USER_CONTACT_INFORMATION);
+		AbstractUser<?> user = testAdapter.fetchUser(USER_CONTACT_INFORMATION);
 		// expired token
 		Thread.sleep(51L);
 		mvc.perform(userController.verifyUserWithLink(msg.getLink()))
@@ -71,10 +63,10 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 
 	@Test
 	public void givenUsersCredentialsUpdatedAfterSignup_whenTryingToUseNowObsoleteVerificationCode_thenForbidden() throws Exception {
-		AuthMessage msg = signupUser();
+		AuthMessage msg = signupUser(USER_CONTACT_INFORMATION);
 
 		transactionTemplate.executeWithoutResult(transactionStatus -> {
-			AbstractUser savedUser = (AbstractUser) userRepository.findByContactInformation(USER_CONTACT_INFORMATION).get();
+			AbstractUser<?> savedUser = testAdapter.fetchUser(USER_CONTACT_INFORMATION);
 			// Credentials updated after the verification token is issued
 			savedUser.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		});
@@ -85,7 +77,7 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 
 
 	protected AuthMessage signupUser(String contactInformation) throws Exception {
-		getTestAdapter().signup(contactInformation);
+		testAdapter.signup(contactInformation);
 		return userController.verifyMsgWasSent(contactInformation);
 	}
 }

@@ -76,14 +76,14 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
 
-    public MockHttpServletRequestBuilder requestContactInformationChange(String token, RequestContactInformationChangeDto dto) throws Exception {
+    public MockHttpServletRequestBuilder requestContactInformationChange(RequestContactInformationChangeDto dto, String token) throws Exception {
         return post(getController().getRequestContactInformationChangeUrl())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .content(serialize(dto));
     }
 
-    public AuthMessage requestContactInformationChange2xx(String token, RequestContactInformationChangeDto dto) throws Exception {
+    public AuthMessage requestContactInformationChange2xx(RequestContactInformationChangeDto dto, String token) throws Exception {
         mvc.perform(post(getController().getRequestContactInformationChangeUrl())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .header(HttpHeaders.AUTHORIZATION, token)
@@ -92,7 +92,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return verifyMsgWasSent(dto.getOldContactInformation());
     }
 
-    public MockHttpServletRequestBuilder changePassword(String token, ChangePasswordDto dto) throws Exception {
+    public MockHttpServletRequestBuilder changePassword(ChangePasswordDto dto,String token) throws Exception {
         return post(getController().getChangePasswordUrl())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)

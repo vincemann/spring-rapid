@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.authtests.tests;
 
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
+import com.github.vincemann.springrapid.authtests.AuthIntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -10,11 +12,12 @@ import static com.github.vincemann.springrapid.authtests.AuthTestAdapter.USER_CO
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-public class ForgotPasswordTest extends RapidAuthIntegrationTest {
+public class ForgotPasswordTest extends AuthIntegrationTest {
 
 
 	@Test
 	public void anonCanIssueForgotPassword() throws Exception {
+		AbstractUser<?> user = testAdapter.createUser();
 		AuthMessage msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
 		Assertions.assertEquals(FORGOT_PASSWORD_AUDIENCE, msg.getTopic());
 		Assertions.assertEquals(USER_CONTACT_INFORMATION,msg.getRecipient());
@@ -23,6 +26,7 @@ public class ForgotPasswordTest extends RapidAuthIntegrationTest {
 
 	@Test
 	public void cantIssueForgotPasswordForInvalidContactInformation() throws Exception {
+		AbstractUser<?> user = testAdapter.createUser();
 
 		// Unknown contactInformation
 		mvc.perform(userController.forgotPassword(UNKNOWN_CONTACT_INFORMATION))

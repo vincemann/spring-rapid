@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import javax.validation.Valid;
 
 @Controller
-public class UserController extends AbstractUserController<User, Long, MyUserService>  {
+public class UserController extends AbstractUserController<MyUserService>  {
 
     private MySignupService signupService;
     private UserMappingService mappingService;

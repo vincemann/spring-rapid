@@ -3,8 +3,6 @@ package com.github.vincemann.springrapid.auth.config;
 import com.github.vincemann.springrapid.acl.config.RapidAclAutoConfiguration;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.sec.*;
-import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.core.config.RapidCoreAutoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -20,17 +18,8 @@ import java.util.List;
 
 @Configuration
 @EnableConfigurationProperties
-@AutoConfigureBefore({RapidCoreAutoConfiguration.class,RapidAclAutoConfiguration.class}) // permission evaluator is overridden this way
+@AutoConfigureBefore(RapidAclAutoConfiguration.class) // permission evaluator is overridden this way
 public class RapidAuthAutoConfiguration {
-
-    @ConfigurationProperties(prefix="rapid-auth")
-    @ConditionalOnMissingBean(AuthProperties.class)
-    @Bean
-    public AuthProperties authProperties(CoreProperties coreProperties) {
-        return new AuthProperties(coreProperties);
-    }
-
-
 
     @ConditionalOnMissingBean(PermissionEvaluator.class)
     @Bean
@@ -58,6 +47,14 @@ public class RapidAuthAutoConfiguration {
     @Bean
     public AdminGlobalSecurityRule adminGlobalSecurityRule(){
         return new AdminGlobalSecurityRule();
+    }
+
+
+    @ConfigurationProperties("rapid-auth")
+    @Bean
+    @ConditionalOnMissingBean(name = "authProperties")
+    public AuthProperties authProperties(){
+        return new AuthProperties();
     }
 
 }

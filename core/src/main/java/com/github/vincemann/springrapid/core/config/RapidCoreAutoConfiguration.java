@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.core.config;
 
-import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.RepositoryAccessor;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
@@ -9,7 +8,6 @@ import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import com.github.vincemann.springrapid.core.util.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -49,13 +47,6 @@ public class RapidCoreAutoConfiguration {
     @Bean
     public Message messageUtils(MessageSource messageSource){
         return new Message(messageSource);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(CoreProperties.class)
-    @ConfigurationProperties(prefix = "rapid-core")
-    public CoreProperties coreProperties(){
-        return new CoreProperties();
     }
 
     @ConditionalOnMissingBean(EndpointService.class)

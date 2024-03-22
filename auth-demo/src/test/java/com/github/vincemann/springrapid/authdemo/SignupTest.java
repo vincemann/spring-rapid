@@ -3,15 +3,14 @@ package com.github.vincemann.springrapid.authdemo;
 import com.github.vincemann.springrapid.authdemo.dto.ReadUserDto;
 import com.github.vincemann.springrapid.authdemo.dto.SignupDto;
 import com.github.vincemann.springrapid.authdemo.suite.MyUserControllerTestTemplate;
-import com.github.vincemann.springrapid.authtests.tests.RapidAuthIntegrationTest;
+import com.github.vincemann.springrapid.authtests.AuthIntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.github.vincemann.springrapid.authtests.AuthTestAdapter.USER_CONTACT_INFORMATION;
 import static com.github.vincemann.springrapid.authtests.AuthTestAdapter.USER_PASSWORD;
 
-public class SignupTest extends RapidAuthIntegrationTest {
+public class SignupTest extends AuthIntegrationTest {
 
     @Autowired
     MyUserControllerTestTemplate userController;

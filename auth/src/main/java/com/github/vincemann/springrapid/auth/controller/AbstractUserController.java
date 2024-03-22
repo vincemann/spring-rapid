@@ -13,11 +13,12 @@ import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenSer
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.core.Root;
-import com.github.vincemann.springrapid.core.controller.EntityController;
+import com.github.vincemann.springrapid.core.controller.AbstractController;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpHeaders;
@@ -31,17 +32,11 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Optional;
 
 
-public abstract class AbstractUserController
-        <
-                U extends AbstractUser<Id>,
-                Id extends Serializable,
-                S extends UserService<U, Id>
-                >
-        extends EntityController<U, Id> {
+public abstract class AbstractUserController<S extends UserService<?,?>>
+        extends AbstractController implements InitializingBean {
 
     private final Log log = LogFactory.getLog(getClass());
 
@@ -190,8 +185,11 @@ public abstract class AbstractUserController
 
 
     @Override
+    public void afterPropertiesSet() throws Exception {
+        initUrls();
+    }
+
     protected void initUrls() {
-        super.initUrls();
         loginUrl = getAuthProperties().getController().getLoginUrl();
 
         resetPasswordUrl = getAuthProperties().getController().getResetPasswordUrl();

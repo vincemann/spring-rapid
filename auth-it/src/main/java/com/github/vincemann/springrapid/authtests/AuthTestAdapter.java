@@ -1,12 +1,15 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Optional;
 
 public abstract class AuthTestAdapter {
 
@@ -16,6 +19,8 @@ public abstract class AuthTestAdapter {
     public static  String INVALID_PASSWORD = "short";
     public static  String UNKNOWN_CONTACT_INFORMATION = "unknown@example.com";
     public static String UNKNOWN_USER_ID = "99";
+
+    public static String WRONG_PASSWORD = "myWrongPass325+346ö+7";
 
     // admins
     public static  String ADMIN_CONTACT_INFORMATION = "admin@example.com";
@@ -40,6 +45,7 @@ public abstract class AuthTestAdapter {
     public static  String BLOCKED_USER_PASSWORD = "blockedUserSanjaySanjay99!";
 
     private UserService userService;
+    private AbstractUserRepository userRepository;
 
 
     public void beforeEach() throws Exception{}
@@ -56,28 +62,40 @@ public abstract class AuthTestAdapter {
 
     public abstract void signup(String contactInformation) throws Exception;
 
-    public AbstractUser createUser() throws BadEntityException {
+    public AbstractUser<?> createUser() throws BadEntityException {
         return userService.create(createTestUser(USER_CONTACT_INFORMATION,USER_PASSWORD, AuthRoles.USER));
     }
 
-    public AbstractUser createSecondUser() throws BadEntityException {
+    public AbstractUser<?> createSecondUser() throws BadEntityException {
         return userService.create(createTestUser(SECOND_USER_CONTACT_INFORMATION,SECOND_USER_PASSWORD, AuthRoles.USER));
     }
 
-    public AbstractUser createBlockedUser() throws BadEntityException {
+    public AbstractUser<?> createBlockedUser() throws BadEntityException {
         return userService.create(createTestUser(BLOCKED_USER_CONTACT_INFORMATION,BLOCKED_USER_PASSWORD, AuthRoles.USER, AuthRoles.BLOCKED));
     }
 
-    public AbstractUser createUnverifiedUser() throws BadEntityException {
+    public AbstractUser<?> createUnverifiedUser() throws BadEntityException {
         return userService.create(createTestUser(UNVERIFIED_USER_CONTACT_INFORMATION,UNVERIFIED_USER_PASSWORD, AuthRoles.USER, AuthRoles.UNVERIFIED));
     }
 
-    public AbstractUser createBlockedAdmin() throws BadEntityException {
+    public AbstractUser<?> createBlockedAdmin() throws BadEntityException {
         return userService.create(createTestUser(BLOCKED_ADMIN_CONTACT_INFORMATION,BLOCKED_ADMIN_PASSWORD, AuthRoles.ADMIN, AuthRoles.BLOCKED));
     }
 
-    public AbstractUser createAdmin() throws BadEntityException {
+    public AbstractUser<?> createAdmin() throws BadEntityException {
         return userService.create(createTestUser(ADMIN_CONTACT_INFORMATION,ADMIN_PASSWORD, AuthRoles.ADMIN));
+    }
+
+    public AbstractUser<?> fetchUser(String contactInformation){
+        Optional<AbstractUser<?>> found = userRepository.findByContactInformation(contactInformation);
+        if (found.isEmpty())
+            throw new IllegalArgumentException("user not found in db with contact information: " +contactInformation);
+        return found.get();
+    }
+
+    @Autowired
+    public void setUserRepository(AbstractUserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Autowired

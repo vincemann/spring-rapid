@@ -23,7 +23,6 @@ import java.util.function.Supplier;
  * simple static wrapper for {@link org.springframework.security.core.context.SecurityContext}, providing typed access to
  * {@link RapidPrincipal}
  */
-// keep non static to allow customization
 public abstract class RapidSecurityContext {
 
     private final static Log log = LogFactory.getLog(RapidSecurityContext.class);

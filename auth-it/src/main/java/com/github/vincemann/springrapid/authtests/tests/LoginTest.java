@@ -1,13 +1,9 @@
 package com.github.vincemann.springrapid.authtests.tests;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.coretest.util.TransactionalTestUtil;
+import com.github.vincemann.springrapid.authtests.AuthIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
-import org.springframework.transaction.TransactionStatus;
-
-import java.io.Serializable;
-import java.util.function.Consumer;
 
 import static com.github.vincemann.springrapid.authtests.AuthTestAdapter.*;
 import static org.hamcrest.Matchers.containsString;
@@ -15,11 +11,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-public class LoginTest extends RapidAuthIntegrationTest {
+public class LoginTest extends AuthIntegrationTest {
 
 
 	@Test
 	public void login() throws Exception {
+		AbstractUser<?> user = testAdapter.createUser();
 		String token = mvc.perform(userController.login(USER_CONTACT_INFORMATION, USER_PASSWORD))
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
@@ -27,13 +24,15 @@ public class LoginTest extends RapidAuthIntegrationTest {
 				.andExpect(jsonPath("$.password").doesNotExist())
 				.andReturn().getResponse().getHeader(HttpHeaders.AUTHORIZATION);
 
-		assertTokenWorks(token,getUser().getId());
+		assertTokenWorks(token,user.getId());
 	}
 
 	@Test
 	public void cantUseExpiredToken() throws Exception {
+		AbstractUser<?> user = testAdapter.createUser();
 		// Test that a 50ms token does not expire before 50ms
-		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD, 50L);
+		mockJwtExpirationTime(50);
+		String token = userController.login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		// but, does expire after 50ms
 		Thread.sleep(51L);
 		assertTokenDoesNotWork(token);
@@ -44,13 +43,14 @@ public class LoginTest extends RapidAuthIntegrationTest {
 	 */
 	@Test
 	public void cantUseObsoleteToken() throws Exception {
+		AbstractUser<?> user = testAdapter.createUser();
 		
 		// credentials updated
-		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
+		String token = userController.login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
 		transactionTemplate.executeWithoutResult(transactionStatus -> {
-			AbstractUser user = (AbstractUser) userRepository.findById(getUser().getId()).get();
-			user.setCredentialsUpdatedMillis(System.currentTimeMillis());
+			AbstractUser update = testAdapter.fetchUser(user.getContactInformation());
+			update.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		});
 
 		assertTokenDoesNotWork(token);
@@ -58,13 +58,15 @@ public class LoginTest extends RapidAuthIntegrationTest {
 
 	@Test
 	public void cantLoginWithWrongPassword() throws Exception {
-		mvc.perform(userController.login(ADMIN_CONTACT_INFORMATION,"wrong-password"))
+		AbstractUser<?> user = testAdapter.createUser();
+		mvc.perform(userController.login(USER_CONTACT_INFORMATION,WRONG_PASSWORD))
 				.andExpect(status().isUnauthorized());
 	}
 
 	@Test
 	public void cantLoginWithBlankPassword() throws Exception {
-		mvc.perform(userController.login(ADMIN_CONTACT_INFORMATION,""))
+		AbstractUser<?> user = testAdapter.createUser();
+		mvc.perform(userController.login(USER_CONTACT_INFORMATION,""))
 				.andExpect(status().isUnauthorized());
 	}
 

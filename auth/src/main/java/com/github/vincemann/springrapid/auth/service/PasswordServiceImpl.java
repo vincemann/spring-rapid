@@ -116,7 +116,7 @@ public class PasswordServiceImpl implements PasswordService {
         // make the link
         String forgotPasswordLink = UriComponentsBuilder
                 .fromHttpUrl(
-                        properties.getCoreProperties().getApplicationUrl()
+                        properties.getApplicationUrl()
                                 + properties.getController().getResetPasswordViewUrl())
                 .queryParam("code", forgotPasswordCode)
                 .toUriString();

@@ -41,10 +41,10 @@ spring:
       enabled: true
       force: true
 
-rapid-core:
-  applicationUrl: http://127.0.0.1:8080
 
 rapid-auth:
+
+  applicationUrl: http://127.0.0.1:8080
 
   # ADMIN users
   admins:

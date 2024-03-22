@@ -1,20 +1,13 @@
 package com.github.vincemann.springrapid.core.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.GenericTypeResolver;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,29 +20,16 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class EntityController
-        <
-                E extends IdAwareEntity<ID>,
-                ID extends Serializable
-        >
-        implements ApplicationListener<ContextRefreshedEvent>, InitializingBean, ApplicationContextAware
+public abstract class AbstractController implements ApplicationListener<ContextRefreshedEvent>
 {
 
     protected final Log log = LogFactory.getLog(getClass());
-
-    protected Class<E> entityClass;
-    protected Class<ID> idClass;
-    protected String baseUrl;
-    protected String entityBaseUrl;
-    protected String urlEntityName;
-    protected CoreProperties coreProperties;
     protected EndpointService endpointService;
 
     protected ObjectMapper objectMapper;
@@ -57,29 +37,8 @@ public abstract class EntityController
     protected Validator validator;
 
     protected List<String> ignoredEndPoints = new ArrayList<>();
-    protected ApplicationContext applicationContext;
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
-    @SuppressWarnings({"all"})
-    public EntityController() {
-        this.entityClass = (Class<E>) GenericTypeResolver.resolveTypeArguments(this.getClass(), EntityController.class)[0];
-        this.idClass = (Class<ID>) GenericTypeResolver.resolveTypeArguments(this.getClass(), EntityController.class)[1];
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        initUrls();
-    }
-
-    protected void initUrls() {
-        this.urlEntityName = createUrlEntityName();
-        this.baseUrl = createBaseUrl();
-        this.entityBaseUrl = baseUrl + "/" + urlEntityName + "/";
-    }
+    public AbstractController() {}
 
 
     protected abstract void registerEndpoints() throws NoSuchMethodException;
@@ -94,20 +53,6 @@ public abstract class EntityController
         log.debug("Exposing " + methodName + " Endpoint for " + this.getClass().getSimpleName());
         endpointService.addMapping(requestMappingInfo,
                 this.getClass().getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class, Model.class), this);
-    }
-
-    protected String createUrlEntityName() {
-        return entityClass.getSimpleName().toLowerCase();
-    }
-
-    /**
-     * Override this if your API for this controller changes.
-     * e.g. from /api/v1 to /api/v2
-     *
-     * @return
-     */
-    protected String createBaseUrl() {
-        return coreProperties.baseUrl;
     }
 
 
@@ -159,30 +104,6 @@ public abstract class EntityController
             throw new ConstraintViolationException(constraintViolations);
     }
 
-    public Class<E> getEntityClass() {
-        return entityClass;
-    }
-
-    public Class<ID> getIdClass() {
-        return idClass;
-    }
-
-    public String getBaseUrl() {
-        return baseUrl;
-    }
-
-    public String getEntityBaseUrl() {
-        return entityBaseUrl;
-    }
-
-    public String getUrlEntityName() {
-        return urlEntityName;
-    }
-
-    public CoreProperties getCoreProperties() {
-        return coreProperties;
-    }
-
     public EndpointService getEndpointService() {
         return endpointService;
     }
@@ -197,13 +118,13 @@ public abstract class EntityController
     }
 
     @Autowired
-    public void setObjectMapper(ObjectMapper mapper) {
-        this.objectMapper = mapper;
+    public void setValidator(Validator validator) {
+        this.validator = validator;
     }
 
     @Autowired
-    public void setCoreProperties(CoreProperties properties) {
-        this.coreProperties = properties;
+    public void setObjectMapper(ObjectMapper mapper) {
+        this.objectMapper = mapper;
     }
 
     @Autowired

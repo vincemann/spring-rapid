@@ -77,7 +77,7 @@ public class VerificationServiceImpl implements VerificationService {
 
         String verifyLink = UriComponentsBuilder
                 .fromHttpUrl(
-                        properties.getCoreProperties().getApplicationUrl()
+                        properties.getApplicationUrl()
                                 + properties.getController().getVerifyUserUrl())
                 .queryParam("code", verificationCode)
                 .toUriString();

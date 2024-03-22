@@ -6,30 +6,25 @@ import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.service.ContactInformationServiceImpl;
 import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
-import com.github.vincemann.springrapid.coretest.util.TransactionalTestUtil;
+import com.github.vincemann.springrapid.authtests.AuthIntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-
-import java.io.Serializable;
-import java.util.function.Consumer;
 
 import static com.github.vincemann.springrapid.authtests.AuthTestAdapter.*;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
-
+public class ChangeContactInformationTest extends AuthIntegrationTest {
 
 
     @Test
     public void userCanChangeOwnContactInformation() throws Exception {
-        String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-        AuthMessage msg = userController.requestContactInformationChange2xx(token,
-                new RequestContactInformationChangeDto(getUser().getContactInformation(), NEW_CONTACT_INFORMATION));
+        AbstractUser<?> user = testAdapter.createUser();
+        String token = userController.login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
+        RequestContactInformationChangeDto dto = new RequestContactInformationChangeDto(user.getContactInformation(), NEW_CONTACT_INFORMATION);
+        AuthMessage msg = userController.requestContactInformationChange2xx(dto,token);
 
         mvc.perform(userController.changeContactInformationWithLink(msg.getLink(), token))
                 //gets new token for new contactInformation to use
@@ -38,16 +33,17 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
                 .andExpect(content().string(""));
 
 
-        AbstractUser updatedUser = (AbstractUser) userRepository.findById(getUser().getId()).get();
+        AbstractUser<?> updatedUser = testAdapter.fetchUser(NEW_CONTACT_INFORMATION);
         Assertions.assertNull(updatedUser.getNewContactInformation());
         Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getContactInformation());
     }
 
     @Test
     public void unverifiedUserCanChangeOwnContactInformation() throws Exception {
-        String token = login2xx(UNVERIFIED_USER_CONTACT_INFORMATION, UNVERIFIED_USER_PASSWORD);
-        AuthMessage msg = userController.requestContactInformationChange2xx(token,
-                new RequestContactInformationChangeDto(getUnverifiedUser().getContactInformation(), NEW_CONTACT_INFORMATION));
+        AbstractUser<?> user = testAdapter.createUnverifiedUser();
+        String token = userController.login2xx(UNVERIFIED_USER_CONTACT_INFORMATION, UNVERIFIED_USER_PASSWORD);
+        RequestContactInformationChangeDto dto = new RequestContactInformationChangeDto(user.getContactInformation(), NEW_CONTACT_INFORMATION);
+        AuthMessage msg = userController.requestContactInformationChange2xx(dto,token);
 
         mvc.perform(userController.changeContactInformationWithLink(msg.getLink(), token))
                 //gets new token for new contactInformation to use
@@ -56,18 +52,21 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
                 .andExpect(content().string(""));
 
 
-        AbstractUser updatedUser = (AbstractUser) userRepository.findById(getUnverifiedUser().getId()).get();
+        AbstractUser<?> updatedUser = testAdapter.fetchUser(NEW_CONTACT_INFORMATION);
         Assertions.assertNull(updatedUser.getNewContactInformation());
         Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getContactInformation());
     }
 
     @Test
     public void userCantChangeContactInformationOfDiffUser() throws Exception {
-        String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-        AuthMessage msg = userController.requestContactInformationChange2xx(token,
-                new RequestContactInformationChangeDto(getUser().getContactInformation(), NEW_CONTACT_INFORMATION));
+        AbstractUser<?> user = testAdapter.createUser();
+        AbstractUser<?> secondUser = testAdapter.createSecondUser();
 
-        token = login2xx(SECOND_USER_CONTACT_INFORMATION, SECOND_USER_PASSWORD);
+        String token = userController.login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
+        RequestContactInformationChangeDto dto = new RequestContactInformationChangeDto(user.getContactInformation(), NEW_CONTACT_INFORMATION);
+        AuthMessage msg = userController.requestContactInformationChange2xx(dto,token);
+
+        token = userController.login2xx(SECOND_USER_CONTACT_INFORMATION, SECOND_USER_PASSWORD);
         // other user has sniffed correct code, but wrong token
         mvc.perform(userController.changeContactInformationWithLink(msg.getLink(), token))
                 //gets new token for new contactInformation to use
@@ -76,9 +75,10 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 
     @Test
     public void cantChangeOwnContactInformationWithSameCodeTwice() throws Exception {
-        String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-        AuthMessage msg = userController.requestContactInformationChange2xx(token,
-                new RequestContactInformationChangeDto(getUser().getContactInformation(), NEW_CONTACT_INFORMATION));
+        AbstractUser<?> user = testAdapter.createUser();
+        String token = userController.login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
+        RequestContactInformationChangeDto dto = new RequestContactInformationChangeDto(user.getContactInformation(), NEW_CONTACT_INFORMATION);
+        AuthMessage msg = userController.requestContactInformationChange2xx(dto,token);
 
         mvc.perform(userController.changeContactInformationWithLink(msg.getLink(), token))
                 //gets new token for new contactInformation to use
@@ -98,9 +98,11 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
      */
     @Test
     public void cantChangeOwnContactInformationWithInvalidCode() throws Exception {
-        String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-        AuthMessage msg = userController.requestContactInformationChange2xx(token,
-                new RequestContactInformationChangeDto(getUser().getContactInformation(), NEW_CONTACT_INFORMATION));
+        AbstractUser<?> user = testAdapter.createUser();
+        AbstractUser<?> secondUser = testAdapter.createSecondUser();
+        String token = userController.login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
+        RequestContactInformationChangeDto dto = new RequestContactInformationChangeDto(user.getContactInformation(), NEW_CONTACT_INFORMATION);
+        AuthMessage msg = userController.requestContactInformationChange2xx(dto,token);
 
 
         // Blank token
@@ -117,7 +119,7 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
 
 
         // Wrong userId subject
-        code = modifyCode(msg.getCode(), null, getSecondUser().getId().toString(), null, null, null);
+        code = modifyCode(msg.getCode(), null, secondUser.getId().toString(), null, null, null);
         mvc.perform(userController.changeContactInformation(code, token))
                 //gets new token for new contactInformation to use
                 .andExpect(status().isForbidden());
@@ -135,19 +137,20 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
      */
     @Test
     public void cantChangeOwnContactInformationWithObsoleteCode() throws Exception {
-        String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-        AuthMessage msg = userController.requestContactInformationChange2xx(token,
-                new RequestContactInformationChangeDto(getUser().getContactInformation(), NEW_CONTACT_INFORMATION));
+        AbstractUser<?> user = testAdapter.createUser();
+        String token = userController.login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
+        RequestContactInformationChangeDto dto = new RequestContactInformationChangeDto(user.getContactInformation(), NEW_CONTACT_INFORMATION);
+        AuthMessage msg = userController.requestContactInformationChange2xx(dto,token);
         // credentials updated after the request for contactInformation change was made
 
         transactionTemplate.executeWithoutResult(transactionStatus -> {
-            AbstractUser user = (AbstractUser) userRepository.findById(getUser().getId()).get();
-            user.setCredentialsUpdatedMillis(System.currentTimeMillis());
+            AbstractUser update = testAdapter.fetchUser(user.getContactInformation());
+            update.setCredentialsUpdatedMillis(System.currentTimeMillis());
         });
 
 
         // A new auth token is needed, because old one would be obsolete!
-        token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
+        token = userController.login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
 
         // now ready to test!
@@ -164,8 +167,9 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
     @Test
     @Disabled // you can never get the real code without requesting contactInformation change first
     public void cantChangeOwnContactInformationWithoutRequestingContactInformationChangeFirst() throws Exception {
-        String code = createChangeContactInformationToken(getUser(), NEW_CONTACT_INFORMATION, 600000L);
-        String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
+        AbstractUser<?> user = testAdapter.createUser();
+        String code = createChangeContactInformationToken(user, NEW_CONTACT_INFORMATION, 600000L);
+        String token = userController.login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
         mvc.perform(userController.changeContactInformation(code, token))
                 //gets new token for new contactInformation to use
                 .andExpect(status().isForbidden());
@@ -178,16 +182,17 @@ public class ChangeContactInformationTest extends RapidAuthIntegrationTest {
      */
     @Test
     public void cantChangeOwnContactInformationWhenNewContactInformationNotUnique() throws Exception {
-
-        String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
-        AuthMessage msg = userController.requestContactInformationChange2xx(token,
-                new RequestContactInformationChangeDto(getUser().getContactInformation(), NEW_CONTACT_INFORMATION));
+        AbstractUser<?> user = testAdapter.createUser();
+        AbstractUser<?> secondUser = testAdapter.createSecondUser();
+        String token = userController.login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
+        RequestContactInformationChangeDto dto = new RequestContactInformationChangeDto(user.getContactInformation(), NEW_CONTACT_INFORMATION);
+        AuthMessage msg = userController.requestContactInformationChange2xx(dto,token);
 
         // Some other user changed to the same contactInformation, before i could issue my request
 
         transactionTemplate.executeWithoutResult(transactionStatus -> {
-            AbstractUser user = (AbstractUser) userRepository.findById(getSecondUser().getId()).get();
-            user.setContactInformation(NEW_CONTACT_INFORMATION);
+            AbstractUser<?> update = testAdapter.fetchUser(secondUser.getContactInformation());
+            update.setContactInformation(NEW_CONTACT_INFORMATION);
         });
 
         mvc.perform(userController.changeContactInformationWithLink(msg.getLink(), token))

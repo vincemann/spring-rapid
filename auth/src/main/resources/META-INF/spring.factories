@@ -6,5 +6,6 @@ com.github.vincemann.springrapid.auth.config.RapidAdminAutoConfiguration,\
 com.github.vincemann.springrapid.auth.config.RapidAuthWebAutoConfiguration,\
 com.github.vincemann.springrapid.auth.config.RapidMailAutoConfiguration, \
 com.github.vincemann.springrapid.auth.config.RapidBruteForceAutoConfiguration, \
-com.github.vincemann.springrapid.auth.config.BruteForceProtectionConfigurer
+com.github.vincemann.springrapid.auth.config.BruteForceProtectionConfigurer, \
+com.github.vincemann.springrapid.auth.config.ContextControllerAutoConfiguration
 

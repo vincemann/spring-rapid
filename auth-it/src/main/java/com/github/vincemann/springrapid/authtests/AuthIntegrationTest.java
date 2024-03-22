@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.authtests.tests;
+package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
@@ -7,9 +7,7 @@ import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.authtest.AbstractUserControllerTestTemplate;
-import com.github.vincemann.springrapid.authtests.AuthTestAdapter;
-import com.github.vincemann.springrapid.authtests.ClearAclCacheTestExecutionListener;
-import com.github.vincemann.springrapid.core.CoreProperties;
+
 import com.github.vincemann.springrapid.core.util.AopProxyUtils;
 import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
 import com.github.vincemann.springrapid.coretest.util.TransactionalTestUtil;
@@ -22,8 +20,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.acls.model.AclCache;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
@@ -41,14 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @SpringBootTest(properties = "rapid-auth.create-admins=false")
-@TestExecutionListeners(
-        value = {
-                ClearAclCacheTestExecutionListener.class,
-        },
-        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
-)
 @Sql(scripts = "classpath:/remove-acl-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public abstract class RapidAuthIntegrationTest extends AbstractMvcTest {
+public abstract class AuthIntegrationTest extends AbstractMvcTest {
 
     @MockBean
     protected MessageSender msgSender;
@@ -57,9 +49,6 @@ public abstract class RapidAuthIntegrationTest extends AbstractMvcTest {
     // use for stubbing i.E. Mockito.doReturn(mockedExpireTime).when(jwt).getExpirationMillis();
     @SpyBean
     protected AuthProperties properties;
-
-    @SpyBean
-    protected CoreProperties coreProperties;
 
     protected AuthProperties.Jwt jwt;
 
@@ -77,6 +66,9 @@ public abstract class RapidAuthIntegrationTest extends AbstractMvcTest {
 
     @Autowired
     protected AbstractUserRepository userRepository;
+
+    @Autowired
+    private AclCache aclCache;
 
     @BeforeEach
     protected void setup() throws Exception {
@@ -104,15 +96,6 @@ public abstract class RapidAuthIntegrationTest extends AbstractMvcTest {
 
     protected void mockJwtExpirationTime(long expirationMillis) {
         Mockito.doReturn(expirationMillis).when(jwt).getExpirationMillis();
-    }
-
-    protected String login2xx(String username, String password, long expirationMillis) throws Exception {
-        mockJwtExpirationTime(expirationMillis);
-        return userController.login2xx(username, password);
-    }
-
-    protected String login2xx(String username, String password) throws Exception {
-        return userController.login2xx(username, password);
     }
 
     protected void assertTokenWorks(String token, Serializable id) throws Exception {
@@ -143,6 +126,7 @@ public abstract class RapidAuthIntegrationTest extends AbstractMvcTest {
         testAdapter.afterEach();
         removeTestUsers();
         Mockito.reset(AopProxyUtils.getUltimateTargetObject(msgSender));
+        aclCache.clearCache();
     }
 
     protected void removeTestUsers(){
