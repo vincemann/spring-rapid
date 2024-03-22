@@ -13,7 +13,7 @@ public class VerifyAccess {
         return entity;
     }
 
-    public static void condition(boolean expression, String msg) throws AccessDeniedException {
+    public static void isTrue(boolean expression, String msg) throws AccessDeniedException {
         if(!expression){
             throw new AccessDeniedException(msg);
         }

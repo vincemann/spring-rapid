@@ -78,7 +78,7 @@ public class SecuredVisitService
         Owner owner = findPresentById(ownerRepository, dto.getOwnerId());
         for (Long petId : dto.getPetIds()) {
             Pet pet = findPresentById(petRepository, petId);
-            VerifyAccess.condition(pet.getOwner().equals(owner),
+            VerifyAccess.isTrue(pet.getOwner().equals(owner),
                     "cant create visit for owner with pets not owned by owner");
         }
         return getDecorated().create(dto);

@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
  *
  * @see EntitySyncStatus
  */
-public abstract class SyncEntityController<E extends AuditingEntity<Id>,Id extends Serializable,S extends SyncService<?,Id>>
+public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends SyncService<E,?>>
         extends AbstractController
         implements InitializingBean {
 
@@ -56,7 +56,8 @@ public abstract class SyncEntityController<E extends AuditingEntity<Id>,Id exten
 
     private String fetchSyncStatusesSinceTsUrl;
 
-    private IdConverter<Id> idConverter;
+    private IdConverter idConverter;
+
 
     @SuppressWarnings("unchecked")
     public SyncEntityController() {
@@ -72,7 +73,7 @@ public abstract class SyncEntityController<E extends AuditingEntity<Id>,Id exten
      */
     public ResponseEntity<String> fetchSyncStatus(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, JsonProcessingException {
         try {
-            Id id = idConverter.toId(readRequestParam(request,"id"));
+            Serializable id = idConverter.toId(readRequestParam(request,"id"));
             log.debug(LogMessage.format("fetching entities sync status for entity with id: %s",id.toString()));
             long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
             log.debug(LogMessage.format("clients last update was at: %s",new Date(lastUpdateTimestamp).toString()));
@@ -250,7 +251,7 @@ public abstract class SyncEntityController<E extends AuditingEntity<Id>,Id exten
     }
 
     @Autowired
-    public void setIdConverter(IdConverter<Id> idConverter) {
+    public void setIdConverter(IdConverter idConverter) {
         this.idConverter = idConverter;
     }
 

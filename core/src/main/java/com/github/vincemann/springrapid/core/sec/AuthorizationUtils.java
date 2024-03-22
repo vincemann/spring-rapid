@@ -8,14 +8,14 @@ public class AuthorizationUtils {
     private AuthorizationUtils(){}
 
     public static void assertAuthenticated() throws AccessDeniedException {
-        VerifyAccess.condition(RapidSecurityContext.isAuthenticated(),"Must be authenticated");
+        VerifyAccess.isTrue(RapidSecurityContext.isAuthenticated(),"Must be authenticated");
     }
 
 
     public static void assertHasRoles(String... roles) throws AccessDeniedException {
         assertAuthenticated();
         for (String role : roles) {
-            VerifyAccess.condition(
+            VerifyAccess.isTrue(
                     RapidSecurityContext.hasRole(role),"User does not have required role: " + role);
         }
     }
@@ -23,7 +23,7 @@ public class AuthorizationUtils {
     public static void assertNotHasRoles(String... roles) throws AccessDeniedException {
         assertAuthenticated();
         for (String role : roles) {
-            VerifyAccess.condition(
+            VerifyAccess.isTrue(
                     !RapidSecurityContext.hasRole(role),"User has forbidden role: " + role);
         }
     }

@@ -20,7 +20,7 @@ public class SecuredUserAuthTokenService implements UserAuthTokenService{
         if (!RapidSecurityContext.getRoles().contains(Roles.ADMIN)){
             // not admin, then can only create token for own user
             VerifyAccess.notNull(RapidSecurityContext.getName(),"must be authenticated");
-            VerifyAccess.condition(RapidSecurityContext.getName().equals(contactInformation),
+            VerifyAccess.isTrue(RapidSecurityContext.getName().equals(contactInformation),
                     Message.get("com.github.vincemann.notGoodAdminOrSameUser"));
         }
         return decorated.createNewAuthToken(contactInformation);
@@ -28,7 +28,7 @@ public class SecuredUserAuthTokenService implements UserAuthTokenService{
 
     @Override
     public String createNewAuthToken() throws EntityNotFoundException {
-        VerifyAccess.condition(RapidSecurityContext.isAuthenticated(),"need to be authenticated to create auth token");
+        VerifyAccess.isTrue(RapidSecurityContext.isAuthenticated(),"need to be authenticated to create auth token");
         return decorated.createNewAuthToken();
     }
 }
