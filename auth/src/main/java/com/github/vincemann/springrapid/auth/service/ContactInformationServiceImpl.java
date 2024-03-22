@@ -30,6 +30,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
 
+import static com.github.vincemann.springrapid.auth.util.UserUtils.extractUserFromClaims;
 import static com.github.vincemann.springrapid.auth.util.UserUtils.findPresentByContactInformation;
 import static com.github.vincemann.springrapid.core.util.RepositoryUtil.findPresentById;
 
@@ -63,7 +64,7 @@ public class ContactInformationServiceImpl implements ContactInformationService 
         VerifyEntity.notEmpty(code,"code");
 
         JWTClaimsSet claims = jweTokenService.parseToken(code);
-        AbstractUser user = extractUserFromClaims(claims);
+        AbstractUser user = extractUserFromClaims(idConverter,userRepository,claims);
 
         JwtUtils.validate(claims, CHANGE_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
 
@@ -148,13 +149,6 @@ public class ContactInformationServiceImpl implements ContactInformationService 
         messageSender.send(message);
 
         log.debug("Change contactInformation link mail queued.");
-    }
-
-    protected AbstractUser extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException {
-        Serializable id = idConverter.toId(claims.getSubject());
-        Assert.notNull(id);
-        // fetch the user
-        return (AbstractUser) findPresentById(userRepository,id);
     }
 
     @Autowired

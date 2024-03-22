@@ -28,6 +28,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
 
+import static com.github.vincemann.springrapid.auth.util.UserUtils.extractUserFromClaims;
 import static com.github.vincemann.springrapid.auth.util.UserUtils.findPresentByContactInformation;
 
 public class VerificationServiceImpl implements VerificationService {
@@ -113,7 +114,7 @@ public class VerificationServiceImpl implements VerificationService {
     @Override
     public AbstractUser verifyUser(String code) throws EntityNotFoundException, BadTokenException, BadEntityException {
         JWTClaimsSet claims = jweTokenService.parseToken(code);
-        AbstractUser user = extractUserFromClaims(claims);
+        AbstractUser user = extractUserFromClaims(idConverter,userRepository,claims);
         JwtUtils.validate(claims, VERIFY_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
 
 
@@ -127,12 +128,6 @@ public class VerificationServiceImpl implements VerificationService {
         return makeVerified(user);
     }
 
-    protected AbstractUser extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException {
-        Serializable id = idConverter.toId(claims.getSubject());
-        Assert.notNull(id);
-        // fetch the user
-        return (AbstractUser) RepositoryUtil.findPresentById(userRepository,id);
-    }
 
     @Autowired
     public void setUserRepository(AbstractUserRepository userRepository) {

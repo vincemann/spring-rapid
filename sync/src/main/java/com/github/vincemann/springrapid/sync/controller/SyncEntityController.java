@@ -15,8 +15,10 @@ import com.github.vincemann.springrapid.sync.model.LastFetchInfo;
 import com.github.vincemann.springrapid.sync.service.SyncService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.log.LogMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,15 +36,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Offers methods for evaluating {@link EntitySyncStatus} of an entity or multiple entities.
+ * Offers endpoints for evaluating {@link EntitySyncStatus} of an entity or multiple entities.
  * Entities need to record audit information -> {@link AuditingEntity}.
  * Client can check if updates need to be done, and what kind of update is required, before actually fetching.
  *
  * @see EntitySyncStatus
  */
-public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id extends Serializable,S extends SyncService<E,Id>>
-        extends AbstractController<E, Id>
-        implements ApplicationContextAware {
+public abstract class SyncEntityController<E extends AuditingEntity<Id>,Id extends Serializable,S extends SyncService<?,Id>>
+        extends AbstractController
+        implements InitializingBean {
 
     private final Log log = LogFactory.getLog(getClass());
 
@@ -196,11 +198,26 @@ public abstract class SyncEntityController<E extends IAuditingEntity<Id>, Id ext
                 .build();
     }
 
+    /**
+     * Default is /api/core/myentity/
+     * given E is MyEntity.class.
+     *
+     * Overwrite if needed.
+     */
+    protected String getBaseUrl(){
+        Class<E> entityClass = (Class<E>) GenericTypeResolver.resolveTypeArguments(this.getClass(), SyncEntityController.class)[0];
+        return "/api/core/"+entityClass.getSimpleName().toLowerCase()+"/";
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        initUrls();
+    }
+
     protected void initUrls() {
-        super.initUrls();
-        this.fetchSyncStatusUrl = entityBaseUrl + "sync-status";
-        this.fetchSyncStatusesUrl = entityBaseUrl + "sync-statuses";
-        this.fetchSyncStatusesSinceTsUrl = entityBaseUrl + "sync-statuses-since";
+        this.fetchSyncStatusUrl = getBaseUrl() + "sync-status";
+        this.fetchSyncStatusesUrl = getBaseUrl() + "sync-statuses";
+        this.fetchSyncStatusesSinceTsUrl = getBaseUrl() + "sync-statuses-since";
     }
 
 

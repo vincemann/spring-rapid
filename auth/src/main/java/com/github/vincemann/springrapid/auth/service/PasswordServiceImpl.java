@@ -30,6 +30,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.Serializable;
 import java.util.Optional;
 
+import static com.github.vincemann.springrapid.auth.util.UserUtils.extractUserFromClaims;
 import static com.github.vincemann.springrapid.auth.util.UserUtils.findPresentByContactInformation;
 
 public class PasswordServiceImpl implements PasswordService {
@@ -71,7 +72,7 @@ public class PasswordServiceImpl implements PasswordService {
         JWTClaimsSet claims = jweTokenService.parseToken(dto.getCode());
         JwtUtils.validate(claims, FORGOT_PASSWORD_AUDIENCE);
 
-        AbstractUser user = extractUserFromClaims(claims);
+        AbstractUser user = extractUserFromClaims(idConverter,userRepository,claims);
         JwtUtils.validateIssuedAfter(claims, user.getCredentialsUpdatedMillis());
 
         passwordValidator.validate(dto.getNewPassword()); // fail fast
@@ -135,12 +136,6 @@ public class PasswordServiceImpl implements PasswordService {
     }
 
 
-    protected AbstractUser extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException {
-        Serializable id = idConverter.toId(claims.getSubject());
-        Assert.notNull(id);
-        // fetch the user
-        return (AbstractUser) RepositoryUtil.findPresentById(userRepository,(id));
-    }
 
     @Autowired
     public void setUserRepository(AbstractUserRepository userRepository) {

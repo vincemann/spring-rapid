@@ -24,6 +24,8 @@ rapid-auth:
   # ADMIN users
   create-admins: false
 
+  application-url: http://127.0.0.1:8080
+
   jwt:
       # An aes-128-cbc key generated at https://asecuritysite.com/encryption/keygen (take the "key" field)
     secret: 841D8A6C80CBA4FCAD32D5367C18C53B

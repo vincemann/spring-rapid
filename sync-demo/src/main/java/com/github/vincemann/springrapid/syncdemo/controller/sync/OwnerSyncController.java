@@ -22,4 +22,5 @@ public class OwnerSyncController extends SyncEntityController<Owner,Long, OwnerS
                 new Timestamp(timestamp), prefix);
         return ResponseEntity.ok(statuses);
     }
+
 }

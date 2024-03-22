@@ -6,14 +6,26 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.core.sec.AuthorizationUtils;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.service.id.IdConverter;
+import com.github.vincemann.springrapid.core.util.RepositoryUtil;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
+import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.util.Assert;
 
+import java.io.Serializable;
 import java.util.Optional;
 
 public abstract class UserUtils {
 
     private UserUtils(){}
+
+    public static AbstractUser extractUserFromClaims(IdConverter idConverter, AbstractUserRepository userRepository, JWTClaimsSet claims) throws EntityNotFoundException {
+        Serializable id = idConverter.toId(claims.getSubject());
+        Assert.notNull(id);
+        // fetch the user
+        return (AbstractUser) RepositoryUtil.findPresentById(userRepository,(id));
+    }
 
     public static <T extends AbstractUser> T findPresentByContactInformation(AbstractUserRepository repository, String contactInformation) throws EntityNotFoundException {
         Optional<T> user = repository.findByContactInformation(contactInformation);
