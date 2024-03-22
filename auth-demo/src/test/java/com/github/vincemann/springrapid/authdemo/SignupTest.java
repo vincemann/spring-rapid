@@ -29,7 +29,7 @@ public class SignupTest extends AuthIntegrationTest {
                 userController.signup(dto), ReadUserDto.class);
         // then
         Assertions.assertEquals("newEmail@mail.com",response.getContactInformation());
-        userController.verifyMsgWasSent("newEmail@mail.com");
+        verifyMsgWasSent("newEmail@mail.com");
     }
 
 }

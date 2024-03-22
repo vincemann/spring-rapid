@@ -19,15 +19,17 @@ public class MyAuthTestAdapter extends AuthTestAdapter {
     }
 
     @Override
-    public void signup(String contactInformation) throws Exception {
+    public AbstractUser<?> signupUser() throws Exception {
         SignupDto dto = SignupDto.builder()
-                .name(contactInformation.split("@")[0])
-                .contactInformation(contactInformation)
+                .name("user")
+                .contactInformation(USER_CONTACT_INFORMATION)
                 .password(USER_PASSWORD)
                 .build();
 
         userController.perform2xxAndDeserialize(userController.signup(dto), ReadUserDto.class);
+        return fetchUser(dto.getContactInformation());
     }
+
 
     @Autowired
     public void setUserController(MyUserControllerTestTemplate userController) {
