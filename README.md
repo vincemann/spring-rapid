@@ -1,19 +1,13 @@
 # Overview  
-Helper library for spring boot projects, that aims to speed up development of relatively simple projects, by providing full solutions for  
-crud, acl, auth, sync, bidir relationship management.   
-It's easiest to take a quick look at the demo projects and their tests.  
+Small Helper library for spring boot projects, provides abstractions for auth,acl and sync.  
   
 Note:  
-Inspired by [**spring-lemon**](https://github.com/naturalprogrammer/spring-lemon) which offer many good modules.  
-Most of them were copied, modified and integrated into this project.  
+Inspired by [**spring-lemon**](https://github.com/naturalprogrammer/spring-lemon)   
+Some modules were copied in modified version into this project.  
   
-# Features  
-* crud  
-* bidirectional relationship management                                                                                                                          
-* dto mapping with id resolving                                                                         
-* acl
-* authentication (jwt)
-* filter & sorting API
+# Features                                                                 
+* authentication (jwt)  
+* acl  
 * sync  
   
 # Requirements  
@@ -47,45 +41,7 @@ you can also run auth-demo's tests seperate via:
 </dependency>  
 ```  
   
-# Crud Example  
-## Controller    
-  
-```java  
-@Controller
-public class OwnerController extends CrudController<Owner, Long, OwnerService> {
-
-
-    @Override
-    protected DtoMappingContext provideDtoMappingContext(CrudDtoMappingContextBuilder builder) {
-        return builder
-  
-                .forEndpoint(getCreateUrl(), CreateOwnerDto.class)  
-                .forUpdate(UpdateOwnerDto.class)
-                
-                .withPrincipal(DtoRequestInfo.Principal.OWN)
-                .forResponse(ReadOwnOwnerDto.class)
-  
-                .withPrincipal(DtoRequestInfo.Principal.FOREIGN)
-                .forResponse(ReadForeignOwnerDto.class)
-  
-                .build();
-    }
-
-}
-
-```
-  
-  
-## Service   
-  
-```java  
-@Service  
-public class JpaOwnerService  
-        extends JPACrudService<Owner,Long,OwnerRepository>  
-                implements OwnerService {  
-}  
-
-```  
-  
+# Example  
+see demo projects for examples  
 
 
