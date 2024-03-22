@@ -16,20 +16,15 @@ import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.repo.*;
-import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
-import com.github.vincemann.springrapid.acldemo.service.VetService;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.authtest.RapidAuthTestUtil;
-import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
-import com.github.vincemann.springrapid.core.Root;
+import com.github.vincemann.springrapid.authtest.RapidUserControllerTestTemplate;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.coretest.controller.MvcAware;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -72,7 +67,7 @@ public class IntegrationTestHelper implements MvcAware {
     @Autowired
     protected VisitControllerTestTemplate visitController;
     @Autowired
-    protected UserControllerTestTemplate userController;
+    protected RapidUserControllerTestTemplate userController;
 
 
     public void setup(){

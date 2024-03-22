@@ -60,7 +60,7 @@ public abstract class AuthTestAdapter {
         return user;
     }
 
-    public abstract void signup(String contactInformation) throws Exception;
+    public abstract AbstractUser<?> signupUser() throws Exception;
 
     public AbstractUser<?> createUser() throws BadEntityException {
         return userService.create(createTestUser(USER_CONTACT_INFORMATION,USER_PASSWORD, AuthRoles.USER));

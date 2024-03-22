@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
+import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
@@ -14,6 +15,7 @@ import com.github.vincemann.springrapid.coretest.util.TransactionalTestUtil;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,9 +33,10 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -94,6 +97,7 @@ public abstract class AuthIntegrationTest extends AbstractMvcTest {
 
 
 
+
     protected void mockJwtExpirationTime(long expirationMillis) {
         Mockito.doReturn(expirationMillis).when(jwt).getExpirationMillis();
     }
@@ -108,6 +112,18 @@ public abstract class AuthIntegrationTest extends AbstractMvcTest {
         mvc.perform(get(properties.getController().getTestTokenUrl())
                         .header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().isUnauthorized());
+    }
+
+    public AuthMessage verifyMsgWasSent(String recipient) {
+        ArgumentCaptor<AuthMessage> msgCaptor = ArgumentCaptor.forClass(AuthMessage.class);
+
+        verify(AopProxyUtils.getUltimateTargetObject(msgSender), atLeast(1))
+                .send(msgCaptor.capture());
+        AuthMessage sentData = msgCaptor.getValue();
+        assertThat("latest msg must be sent to recipient: " +recipient + " but was sent to: " + sentData.getRecipient(),
+                sentData.getRecipient(),equalTo(recipient));
+        Mockito.reset(AopProxyUtils.getUltimateTargetObject(msgSender));
+        return sentData;
     }
 
     protected String modifyCode(String code, String aud, String subject, Long expirationMillis, Long issuedAt, Map<String, Object> otherClaims) throws BadTokenException, ParseException {

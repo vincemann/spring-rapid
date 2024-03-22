@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.acldemo.controller.suite.templates.Visit
 import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.repo.*;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
-import com.github.vincemann.springrapid.authtest.UserControllerTestTemplate;
+import com.github.vincemann.springrapid.authtest.RapidUserControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,7 +68,7 @@ public class MyIntegrationTest extends AbstractMvcTest
     @Autowired
     protected VisitControllerTestTemplate visitController;
     @Autowired
-    protected UserControllerTestTemplate userController;
+    protected RapidUserControllerTestTemplate userController;
 
 
     @BeforeEach

@@ -38,11 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserController>
         extends MvcControllerTestTemplate<C> {
-    /**
-     * needs to be mocked and put into context
-     * just use {@link org.springframework.boot.test.mock.mockito.MockBean}
-     */
-    private MessageSender messageSenderMock;
+
 
     @Autowired
     public void setMessageSenderMock(MessageSender messageSenderMock) {
@@ -178,18 +174,6 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     public RequestBuilder verifyUserWithLink(String link) throws Exception {
         return get(link)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED);
-    }
-
-    public AuthMessage verifyMsgWasSent(String recipient) {
-        ArgumentCaptor<AuthMessage> msgCaptor = ArgumentCaptor.forClass(AuthMessage.class);
-
-        verify(AopProxyUtils.getUltimateTargetObject(messageSenderMock), atLeast(1))
-                .send(msgCaptor.capture());
-        AuthMessage sentData = msgCaptor.getValue();
-        assertThat("latest msg must be sent to recipient: " +recipient + " but was sent to: " + sentData.getRecipient(),
-                sentData.getRecipient(),equalTo(recipient));
-        Mockito.reset(AopProxyUtils.getUltimateTargetObject(messageSenderMock));
-        return sentData;
     }
 
 
