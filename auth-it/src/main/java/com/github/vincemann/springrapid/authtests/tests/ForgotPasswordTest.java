@@ -18,7 +18,8 @@ public class ForgotPasswordTest extends AuthIntegrationTest {
 	@Test
 	public void anonCanIssueForgotPassword() throws Exception {
 		AbstractUser<?> user = testAdapter.createUser();
-		AuthMessage msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+		userController.forgotPassword2xx(user.getContactInformation());
+		AuthMessage msg = verifyMsgWasSent(user.getContactInformation());
 		Assertions.assertEquals(FORGOT_PASSWORD_AUDIENCE, msg.getTopic());
 		Assertions.assertEquals(USER_CONTACT_INFORMATION,msg.getRecipient());
 	}

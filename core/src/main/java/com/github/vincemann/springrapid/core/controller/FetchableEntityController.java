@@ -1,8 +1,7 @@
-package com.github.vincemann.springrapid.sync.controller;
+package com.github.vincemann.springrapid.core.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import com.github.vincemann.springrapid.core.controller.AbstractController;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import org.springframework.beans.factory.InitializingBean;
@@ -19,7 +18,20 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
-public abstract class FetchableEntityController<Dto,Id extends Serializable> extends AbstractController implements InitializingBean {
+
+/**
+ * registers endpoints for exposing a specific dto representation of an entity:
+ * /api/core/find?id=42
+ * /api/core/find-all-by-id (id set in request body in json)
+ * /api/core/find-all
+ *
+ * avoid registering of endpoints by overwriting {@link this#getIgnoredEndPoints()}.
+ *
+ * @param <E> entity class
+ * @param <Id> id type
+ * @param <Dto> dto type
+ */
+public abstract class FetchableEntityController<E,Id extends Serializable,Dto> extends AbstractController implements InitializingBean {
 
 
     private IdConverter<Id> idConverter;
@@ -32,9 +44,17 @@ public abstract class FetchableEntityController<Dto,Id extends Serializable> ext
 
     private String findAllUrl;
 
-    public FetchableEntityController(Class<?> entityClass) {
-        this.entityClass = entityClass;
-        this.idClass = (Class<Id>) GenericTypeResolver.resolveTypeArguments(this.getClass(), FetchableEntityController.class)[1];
+    public FetchableEntityController() {
+        this.idClass = provideIdClass();
+        this.entityClass = provideEntityClass();
+    }
+
+    protected Class<E> provideEntityClass(){
+        return  (Class<E>) GenericTypeResolver.resolveTypeArguments(this.getClass(), FetchableEntityController.class)[0];
+    }
+
+    protected Class<Id> provideIdClass(){
+        return  (Class<Id>) GenericTypeResolver.resolveTypeArguments(this.getClass(), FetchableEntityController.class)[1];
     }
 
     protected String provideBaseUrl(){
@@ -42,6 +62,7 @@ public abstract class FetchableEntityController<Dto,Id extends Serializable> ext
     }
 
     public ResponseEntity<List<Dto>> findAll(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, BadEntityException {
+        log.debug(LogMessage.format("find all request received"));
         List<Dto> dtos = findAll();
         return ResponseEntity.ok(dtos);
     }
@@ -49,12 +70,12 @@ public abstract class FetchableEntityController<Dto,Id extends Serializable> ext
     protected abstract List<Dto> findAll();
 
     public ResponseEntity<List<Dto>> findAllById(HttpServletRequest request, HttpServletResponse response) throws IOException, BadEntityException {
-
         String json = readBody(request);
         log.debug(LogMessage.format("find some request received for ids '%s'",json));
         CollectionType idListType = getObjectMapper()
                 .getTypeFactory().constructCollectionType(List.class, idClass);
         List<Id> ids = getObjectMapper().readValue(json,idListType);
+        log.debug(LogMessage.format("find all by id request received for ids %s",ids));
         List<Dto> dtos = findAllById(ids);
         return ResponseEntity.ok(dtos);
     }

@@ -20,6 +20,21 @@ import java.util.Set;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * helper class for mock mvc integration tests.
+ * Represents a controller in a test.
+ * Example:
+ *
+ * @Autowired
+ * PetControllerTestTemplate petController;
+ *
+ *
+ * @Test
+ * void test(){
+ *      ReadPetDto response = petController.create(new CreatePetDto());
+ * }
+ * @param <C> represented controller type
+ */
 public abstract class MvcControllerTestTemplate<C> implements MvcAware {
     protected C controller;
     protected MockMvc mvc;

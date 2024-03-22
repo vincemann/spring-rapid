@@ -43,6 +43,7 @@ public class ResendVerificationMsgTest extends AuthIntegrationTest {
 		AbstractUser<?> admin = testAdapter.createAdmin();
 		String token = userController.login2xx(ADMIN_CONTACT_INFORMATION, ADMIN_PASSWORD);
 		userController.resendVerificationMsg2xx(user.getContactInformation(),token);
+		verifyMsgWasSent(user.getContactInformation());
 	}
 
 	@Test

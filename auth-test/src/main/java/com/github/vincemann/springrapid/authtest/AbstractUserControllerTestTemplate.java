@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.dto.*;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.core.service.pass.RapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.util.AopProxyUtils;
 import com.github.vincemann.springrapid.coretest.controller.template.MvcControllerTestTemplate;
 import org.mockito.ArgumentCaptor;
@@ -16,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.util.Assert;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -39,18 +41,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserController>
         extends MvcControllerTestTemplate<C> {
 
-
     @Autowired
-    public void setMessageSenderMock(MessageSender messageSenderMock) {
-        this.messageSenderMock = messageSenderMock;
-    }
+    private RapidPasswordEncoder passwordEncoder;
 
     @Override
     public void setMvc(MockMvc mvc) {
         super.setMvc(mvc);
     }
 
-    public String login(AbstractUser user) throws Exception {
+    public String login(AbstractUser<?> user) throws Exception {
+        Assert.isTrue(!passwordEncoder.isEncoded(user.getPassword()),"password must not be encoded - need clear text password." +
+                " Dont use saved user instance");
         return mvc.perform(login(user.getContactInformation(),user.getPassword()))
                 .andReturn()
                 .getResponse()
@@ -62,13 +63,13 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return post(getController().getChangeContactInformationUrl())
                 .param("code", code)
                 .header(HttpHeaders.AUTHORIZATION, token)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED);
     }
 
     public MockHttpServletRequestBuilder changeContactInformationWithLink(String link, String token) {
         return post(link)
                 .header(HttpHeaders.AUTHORIZATION, token)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED);
     }
 
 
@@ -79,13 +80,12 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .content(serialize(dto));
     }
 
-    public AuthMessage requestContactInformationChange2xx(RequestContactInformationChangeDto dto, String token) throws Exception {
+    public void requestContactInformationChange2xx(RequestContactInformationChangeDto dto, String token) throws Exception {
         mvc.perform(post(getController().getRequestContactInformationChangeUrl())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .content(serialize(dto)))
                 .andExpect(status().is2xxSuccessful());
-        return verifyMsgWasSent(dto.getOldContactInformation());
     }
 
     public MockHttpServletRequestBuilder changePassword(ChangePasswordDto dto,String token) throws Exception {
@@ -98,15 +98,14 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     public MockHttpServletRequestBuilder forgotPassword(String contactInformation) throws Exception {
         return post(getController().getForgotPasswordUrl())
                 .param("ci", contactInformation)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED);
     }
 
-    public AuthMessage forgotPassword2xx(String contactInformation) throws Exception {
+    public void forgotPassword2xx(String contactInformation) throws Exception {
         mvc.perform(post(getController().getForgotPasswordUrl())
                 .param("ci", contactInformation)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is2xxSuccessful());
-        return verifyMsgWasSent(contactInformation);
     }
 
     public MockHttpServletRequestBuilder resetPassword(ResetPasswordDto dto) throws Exception {
@@ -128,14 +127,14 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     public MockHttpServletRequestBuilder fetchNewToken(String token) throws Exception {
         return post(getController().getFetchNewAuthTokenUrl())
                 .header(HttpHeaders.AUTHORIZATION, token)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED);
     }
 
     public MockHttpServletRequestBuilder fetchNewToken(String token, String contactInformation) throws Exception {
         return post(getController().getFetchNewAuthTokenUrl())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .param("ci", contactInformation)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED);
     }
 
     public String fetchNewToken2xx(String token, String contactInformation) throws Exception {
@@ -183,10 +182,9 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .header(HttpHeaders.AUTHORIZATION, token);
     }
 
-    public AuthMessage resendVerificationMsg2xx(String contactInformation, String token) throws Exception {
+    public void resendVerificationMsg2xx(String contactInformation, String token) throws Exception {
         mvc.perform(resendVerificationMsg(contactInformation,token))
                 .andExpect(status().is2xxSuccessful());
-        return verifyMsgWasSent(contactInformation);
     }
 
     public String login2xx(AbstractUser user) throws Exception {
@@ -202,7 +200,6 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return get(controller.getBlockUserUrl())
                 .param("ci",ci);
     }
-
 
     public static class ResponseToken {
 

@@ -24,7 +24,8 @@ public class ResetPasswordTest extends AuthIntegrationTest {
     @Test
     public void givenForgotPasswordAndClickedOnCodeInMsg_thenGetDirectedToForgotPasswordPage() throws Exception {
         AbstractUser<?> user = testAdapter.createUser();
-        AuthMessage msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        AuthMessage msg = verifyMsgWasSent(user.getContactInformation());
         String code = msg.getCode();
         String html = mvc.perform(userController.getResetPasswordView(msg.getLink()))
                 .andExpect(status().is2xxSuccessful())
@@ -35,7 +36,8 @@ public class ResetPasswordTest extends AuthIntegrationTest {
     @Test
     public void userCanResetPasswordWithCorrectCode() throws Exception {
         AbstractUser<?> user = testAdapter.createUser();
-        AuthMessage msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        AuthMessage msg = verifyMsgWasSent(user.getContactInformation());
         mvc.perform(userController.resetPassword(resetPasswordDto(NEW_PASSWORD,msg.getCode())))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
@@ -48,7 +50,8 @@ public class ResetPasswordTest extends AuthIntegrationTest {
     @Test
     public void cantResetPasswordWithSameCodeTwice() throws Exception {
         AbstractUser<?> user = testAdapter.createUser();
-        AuthMessage msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        AuthMessage msg = verifyMsgWasSent(user.getContactInformation());
         mvc.perform(userController.resetPassword(resetPasswordDto(NEW_PASSWORD,msg.getCode())))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().string(""));
@@ -66,7 +69,8 @@ public class ResetPasswordTest extends AuthIntegrationTest {
     @Test
     public void cantResetPasswordWithInvalidCode() throws Exception {
         AbstractUser<?> user = testAdapter.createUser();
-        AuthMessage msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        AuthMessage msg = verifyMsgWasSent(user.getContactInformation());
         String code = msg.getCode();
         String invalidCode = code +"invalid";
         mvc.perform(userController.resetPassword(resetPasswordDto(NEW_PASSWORD,invalidCode)))
@@ -77,13 +81,15 @@ public class ResetPasswordTest extends AuthIntegrationTest {
     public void cantResetPasswordWithInvalidNewPassword() throws Exception {
         AbstractUser<?> user = testAdapter.createUser();
         // Blank password
-        AuthMessage msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        AuthMessage msg = verifyMsgWasSent(user.getContactInformation());
         mvc.perform(userController.resetPassword(resetPasswordDto("",msg.getCode())))
                 .andExpect(status().isBadRequest());
 
 
         // Invalid password
-        msg = userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        userController.forgotPassword2xx(USER_CONTACT_INFORMATION);
+        msg = verifyMsgWasSent(user.getContactInformation());
         mvc.perform(userController.resetPassword(resetPasswordDto(INVALID_PASSWORD,msg.getCode())))
                 .andExpect(status().isBadRequest());
     }

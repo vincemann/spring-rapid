@@ -24,7 +24,8 @@ public class ChangeContactInformationTest extends AuthIntegrationTest {
         AbstractUser<?> user = testAdapter.createUser();
         String token = userController.login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
         RequestContactInformationChangeDto dto = new RequestContactInformationChangeDto(user.getContactInformation(), NEW_CONTACT_INFORMATION);
-        AuthMessage msg = userController.requestContactInformationChange2xx(dto,token);
+        userController.requestContactInformationChange2xx(dto,token);
+        AuthMessage msg = verifyMsgWasSent(user.getContactInformation());
 
         mvc.perform(userController.changeContactInformationWithLink(msg.getLink(), token))
                 //gets new token for new contactInformation to use
@@ -43,7 +44,8 @@ public class ChangeContactInformationTest extends AuthIntegrationTest {
         AbstractUser<?> user = testAdapter.createUnverifiedUser();
         String token = userController.login2xx(UNVERIFIED_USER_CONTACT_INFORMATION, UNVERIFIED_USER_PASSWORD);
         RequestContactInformationChangeDto dto = new RequestContactInformationChangeDto(user.getContactInformation(), NEW_CONTACT_INFORMATION);
-        AuthMessage msg = userController.requestContactInformationChange2xx(dto,token);
+        userController.requestContactInformationChange2xx(dto,token);
+        AuthMessage msg = verifyMsgWasSent(user.getContactInformation());
 
         mvc.perform(userController.changeContactInformationWithLink(msg.getLink(), token))
                 //gets new token for new contactInformation to use
@@ -64,7 +66,8 @@ public class ChangeContactInformationTest extends AuthIntegrationTest {
 
         String token = userController.login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
         RequestContactInformationChangeDto dto = new RequestContactInformationChangeDto(user.getContactInformation(), NEW_CONTACT_INFORMATION);
-        AuthMessage msg = userController.requestContactInformationChange2xx(dto,token);
+        userController.requestContactInformationChange2xx(dto,token);
+        AuthMessage msg = verifyMsgWasSent(user.getContactInformation());
 
         token = userController.login2xx(SECOND_USER_CONTACT_INFORMATION, SECOND_USER_PASSWORD);
         // other user has sniffed correct code, but wrong token
@@ -78,7 +81,8 @@ public class ChangeContactInformationTest extends AuthIntegrationTest {
         AbstractUser<?> user = testAdapter.createUser();
         String token = userController.login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
         RequestContactInformationChangeDto dto = new RequestContactInformationChangeDto(user.getContactInformation(), NEW_CONTACT_INFORMATION);
-        AuthMessage msg = userController.requestContactInformationChange2xx(dto,token);
+        userController.requestContactInformationChange2xx(dto,token);
+        AuthMessage msg = verifyMsgWasSent(user.getContactInformation());
 
         mvc.perform(userController.changeContactInformationWithLink(msg.getLink(), token))
                 //gets new token for new contactInformation to use
@@ -102,7 +106,8 @@ public class ChangeContactInformationTest extends AuthIntegrationTest {
         AbstractUser<?> secondUser = testAdapter.createSecondUser();
         String token = userController.login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
         RequestContactInformationChangeDto dto = new RequestContactInformationChangeDto(user.getContactInformation(), NEW_CONTACT_INFORMATION);
-        AuthMessage msg = userController.requestContactInformationChange2xx(dto,token);
+        userController.requestContactInformationChange2xx(dto,token);
+        AuthMessage msg = verifyMsgWasSent(user.getContactInformation());
 
 
         // Blank token
@@ -140,7 +145,8 @@ public class ChangeContactInformationTest extends AuthIntegrationTest {
         AbstractUser<?> user = testAdapter.createUser();
         String token = userController.login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
         RequestContactInformationChangeDto dto = new RequestContactInformationChangeDto(user.getContactInformation(), NEW_CONTACT_INFORMATION);
-        AuthMessage msg = userController.requestContactInformationChange2xx(dto,token);
+        userController.requestContactInformationChange2xx(dto,token);
+        AuthMessage msg = verifyMsgWasSent(user.getContactInformation());
         // credentials updated after the request for contactInformation change was made
 
         transactionTemplate.executeWithoutResult(transactionStatus -> {
@@ -186,7 +192,8 @@ public class ChangeContactInformationTest extends AuthIntegrationTest {
         AbstractUser<?> secondUser = testAdapter.createSecondUser();
         String token = userController.login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
         RequestContactInformationChangeDto dto = new RequestContactInformationChangeDto(user.getContactInformation(), NEW_CONTACT_INFORMATION);
-        AuthMessage msg = userController.requestContactInformationChange2xx(dto,token);
+        userController.requestContactInformationChange2xx(dto,token);
+        AuthMessage msg = verifyMsgWasSent(user.getContactInformation());
 
         // Some other user changed to the same contactInformation, before i could issue my request
 
