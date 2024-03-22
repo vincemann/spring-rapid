@@ -23,7 +23,7 @@ public class ResendVerificationMsgTest extends AuthIntegrationTest {
 		mvc.perform(userController.resendVerificationMsg(user.getContactInformation(),token))
 				.andExpect(status().is2xxSuccessful());
 
-		AuthMessage msg = userController.verifyMsgWasSent(UNVERIFIED_USER_CONTACT_INFORMATION);
+		AuthMessage msg = verifyMsgWasSent(UNVERIFIED_USER_CONTACT_INFORMATION);
 		Assertions.assertEquals(UNVERIFIED_USER_CONTACT_INFORMATION,msg.getRecipient());
 		Assertions.assertEquals(VERIFY_CONTACT_INFORMATION_AUDIENCE,msg.getTopic());
 	}

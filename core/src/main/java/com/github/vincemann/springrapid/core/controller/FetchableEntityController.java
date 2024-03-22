@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.log.LogMessage;
 import org.springframework.http.MediaType;
@@ -25,7 +26,8 @@ import java.util.List;
  * /api/core/find-all-by-id (id set in request body in json)
  * /api/core/find-all
  *
- * avoid registering of endpoints by overwriting {@link this#getIgnoredEndPoints()}.
+ * Endpoint registration can be ignored by overwriting {@link this#getIgnoredEndPoints()}.
+ * For every endpoint that is registered, need to implement respective method like {@link #find(Serializable)}
  *
  * @param <E> entity class
  * @param <Id> id type
@@ -67,7 +69,9 @@ public abstract class FetchableEntityController<E,Id extends Serializable,Dto> e
         return ResponseEntity.ok(dtos);
     }
 
-    protected abstract List<Dto> findAll();
+    protected List<Dto> findAll(){
+        throw new IllegalArgumentException("need to implement findAll method, if registering findAll endpoint");
+    }
 
     public ResponseEntity<List<Dto>> findAllById(HttpServletRequest request, HttpServletResponse response) throws IOException, BadEntityException {
         String json = readBody(request);
@@ -80,7 +84,9 @@ public abstract class FetchableEntityController<E,Id extends Serializable,Dto> e
         return ResponseEntity.ok(dtos);
     }
 
-    protected abstract List<Dto> findAllById(List<Id> ids);
+    protected List<Dto> findAllById(List<Id> ids){
+        throw new IllegalArgumentException("need to implement findAllById method, if registering findAllById endpoint");
+    }
 
     public ResponseEntity<Dto> find(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, JsonProcessingException {
         Id id = idConverter.toId(readRequestParam(request, "id"));
@@ -89,7 +95,7 @@ public abstract class FetchableEntityController<E,Id extends Serializable,Dto> e
         return ResponseEntity.ok(dto);
     }
 
-    protected abstract Dto find(Id id);
+    protected Dto find(Id id){throw new IllegalArgumentException("need to implement find method, if registering find endpoint");}
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -125,6 +131,11 @@ public abstract class FetchableEntityController<E,Id extends Serializable,Dto> e
                 .methods(RequestMethod.GET)
                 .produces(MediaType.APPLICATION_JSON_VALUE)
                 .build();
+    }
+
+    @Autowired
+    public void setIdConverter(IdConverter<Id> idConverter) {
+        this.idConverter = idConverter;
     }
 
     @Override

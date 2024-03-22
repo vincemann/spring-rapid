@@ -60,7 +60,6 @@ public class RapidCoreAutoConfiguration {
         LazyToStringUtil.setEntityManager(entityManager);
     }
 
-
     @Bean
     @ConditionalOnMissingBean(name = "repositoryAccessor")
     public RepositoryAccessor repositoryAccessor(){

@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.syncdemo.controller;
 
+import com.github.vincemann.springrapid.core.controller.FetchableEntityController;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.github.vincemann.springrapid.syncdemo.controller.map.OwnerMappingService;
@@ -19,7 +20,7 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("/api/core/owner/")
-public class OwnerController {
+public class OwnerController extends FetchableEntityController<Owner,Long,ReadOwnerDto> {
 
 
     @Autowired
@@ -32,6 +33,7 @@ public class OwnerController {
         Owner owner = service.create(dto);
         return ResponseEntity.ok(mappingService.map(owner));
     }
+
     @GetMapping("find")
     public ResponseEntity<ReadOwnerDto> find(@RequestParam("id") long id) throws EntityNotFoundException {
         Optional<Owner> byId = service.find(id);
