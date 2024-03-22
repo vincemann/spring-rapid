@@ -1,19 +1,15 @@
 package com.github.vincemann.springrapid.authtests.tests;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
-import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
-import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.authtest.AbstractUserControllerTestTemplate;
-import com.github.vincemann.springrapid.authtests.ClearAclCacheTestExecutionListener;
 import com.github.vincemann.springrapid.authtests.AuthTestAdapter;
+import com.github.vincemann.springrapid.authtests.ClearAclCacheTestExecutionListener;
 import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.core.util.AopProxyUtils;
 import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
 import com.github.vincemann.springrapid.coretest.util.TransactionalTestUtil;
@@ -37,7 +33,6 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Map;
 
-import static com.github.vincemann.springrapid.authtests.AuthTestAdapter.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -55,13 +50,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = "classpath:/remove-acl-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public abstract class RapidAuthIntegrationTest extends AbstractMvcTest {
 
-    private UserService userService;
-
     @MockBean
     protected MessageSender msgSender;
 
 
-    //use for stubbing i.E. Mockito.doReturn(mockedExpireTime).when(jwt).getExpirationMillis();
+    // use for stubbing i.E. Mockito.doReturn(mockedExpireTime).when(jwt).getExpirationMillis();
     @SpyBean
     protected AuthProperties properties;
 
@@ -72,15 +65,6 @@ public abstract class RapidAuthIntegrationTest extends AbstractMvcTest {
 
     @Autowired
     protected JweTokenService jweTokenService;
-
-
-    protected AbstractUser<Serializable> admin;
-    protected AbstractUser<Serializable> secondAdmin;
-    protected AbstractUser<Serializable> blockedAdmin;
-    protected AbstractUser<Serializable> user;
-    protected AbstractUser<Serializable> secondUser;
-    protected AbstractUser<Serializable> unverifiedUser;
-    protected AbstractUser<Serializable> blockedUser;
 
     @Autowired
     protected AuthTestAdapter testAdapter;
@@ -97,11 +81,7 @@ public abstract class RapidAuthIntegrationTest extends AbstractMvcTest {
     @BeforeEach
     protected void setup() throws Exception {
         testAdapter.beforeEach();
-        System.err.println("creating test users");
-        createTestUsers();
-        System.err.println("test users created");
         setupSpies();
-        System.err.println("TEST STARTS HERE -----------------------------------------------------------------------------------------------------------------");
     }
 
     protected void setupSpies() {
@@ -121,16 +101,6 @@ public abstract class RapidAuthIntegrationTest extends AbstractMvcTest {
     }
 
 
-    protected void createTestUsers() throws Exception {
-        admin = userService.create(testAdapter.createTestUser(ADMIN_CONTACT_INFORMATION,/*"Admin",*/ ADMIN_PASSWORD, AuthRoles.ADMIN));
-        secondAdmin = userService.create(testAdapter.createTestUser(SECOND_ADMIN_CONTACT_INFORMATION,/*"Second Admin",*/ SECOND_ADMIN_PASSWORD, AuthRoles.ADMIN));
-        blockedAdmin = userService.create(testAdapter.createTestUser(BLOCKED_ADMIN_CONTACT_INFORMATION,/*"Blocked Admin",*/ BLOCKED_ADMIN_PASSWORD, AuthRoles.ADMIN, AuthRoles.BLOCKED));
-
-        user = userService.create(testAdapter.createTestUser(USER_CONTACT_INFORMATION,/*"User",*/ USER_PASSWORD, AuthRoles.USER));
-        secondUser = userService.create(testAdapter.createTestUser(SECOND_USER_CONTACT_INFORMATION,/*"User",*/ SECOND_USER_PASSWORD, AuthRoles.USER));
-        unverifiedUser = userService.create(testAdapter.createTestUser(UNVERIFIED_USER_CONTACT_INFORMATION,/*"Unverified User",*/ UNVERIFIED_USER_PASSWORD, AuthRoles.USER, AuthRoles.UNVERIFIED));
-        blockedUser = userService.create(testAdapter.createTestUser(BLOCKED_USER_CONTACT_INFORMATION,/*"Blocked User",*/ BLOCKED_USER_PASSWORD, AuthRoles.USER, AuthRoles.BLOCKED));
-    }
 
     protected void mockJwtExpirationTime(long expirationMillis) {
         Mockito.doReturn(expirationMillis).when(jwt).getExpirationMillis();
@@ -157,7 +127,6 @@ public abstract class RapidAuthIntegrationTest extends AbstractMvcTest {
                 .andExpect(status().isUnauthorized());
     }
 
-
     protected String modifyCode(String code, String aud, String subject, Long expirationMillis, Long issuedAt, Map<String, Object> otherClaims) throws BadTokenException, ParseException {
         JWTClaimsSet claims = jweTokenService.parseToken(code);
         claims = JwtUtils.mod(claims, aud, subject, expirationMillis, issuedAt, otherClaims);
@@ -170,81 +139,14 @@ public abstract class RapidAuthIntegrationTest extends AbstractMvcTest {
 
     @AfterEach
     protected void tearDown() throws Exception {
-        System.err.println("TEST ENDS HERE -----------------------------------------------------------------------------------------------------------------");
-        System.err.println("deleting users");
         // dont remove users via sql script, because its db impl specific - use service
-        TransactionalTestUtil.clear(userRepository, transactionTemplate);
-        System.err.println("deleted users");
-
-        Mockito.reset(AopProxyUtils.getUltimateTargetObject(msgSender));
         testAdapter.afterEach();
+        removeTestUsers();
+        Mockito.reset(AopProxyUtils.getUltimateTargetObject(msgSender));
     }
 
-
-    protected MessageSender getMsgSender() {
-        return msgSender;
-    }
-
-    protected AuthProperties getProperties() {
-        return properties;
-    }
-
-    protected CoreProperties getCoreProperties() {
-        return coreProperties;
-    }
-
-    protected AuthProperties.Jwt getJwt() {
-        return jwt;
-    }
-
-    protected JweTokenService getJweTokenService() {
-        return jweTokenService;
-    }
-
-    protected AbstractUser<Serializable> getAdmin() {
-        return admin;
-    }
-
-    protected AbstractUser<Serializable> getSecondAdmin() {
-        return secondAdmin;
-    }
-
-    protected AbstractUser<Serializable> getBlockedAdmin() {
-        return blockedAdmin;
-    }
-
-    protected AbstractUser<Serializable> getUser() {
-        return user;
-    }
-
-    protected AbstractUser<Serializable> getSecondUser() {
-        return secondUser;
-    }
-
-    protected AbstractUser<Serializable> getUnverifiedUser() {
-        return unverifiedUser;
-    }
-
-    protected AbstractUser<Serializable> getBlockedUser() {
-        return blockedUser;
-    }
-
-    protected AuthTestAdapter getTestAdapter() {
-        return testAdapter;
-    }
-
-    protected AbstractUserControllerTestTemplate<?> getUserController() {
-        return userController;
-    }
-
-    protected TransactionTemplate getTransactionTemplate() {
-        return transactionTemplate;
-    }
-
-    @Autowired
-    @Root
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    protected void removeTestUsers(){
+        TransactionalTestUtil.clear(userRepository, transactionTemplate);
     }
 }
 

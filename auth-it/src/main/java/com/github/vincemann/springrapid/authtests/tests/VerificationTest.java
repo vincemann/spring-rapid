@@ -14,7 +14,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class VerificationTest extends RapidAuthIntegrationTest {
 
-	
+
+	@Override
+	protected void createTestUsers() throws Exception {
+		super.createTestUsers();
+	}
+
 	@Test
 	public void givenUserSignedUp_whenFollowingLinkInMsg_thenUserGetsVerified() throws Exception {
 		AuthMessage msg = signupUser();
@@ -78,8 +83,9 @@ public class VerificationTest extends RapidAuthIntegrationTest {
 				.andExpect(status().isForbidden());
 	}
 
-	protected AuthMessage signupUser() throws Exception {
-		getTestAdapter().signup(USER_CONTACT_INFORMATION);
-		return userController.verifyMsgWasSent(USER_CONTACT_INFORMATION);
+
+	protected AuthMessage signupUser(String contactInformation) throws Exception {
+		getTestAdapter().signup(contactInformation);
+		return userController.verifyMsgWasSent(contactInformation);
 	}
 }
