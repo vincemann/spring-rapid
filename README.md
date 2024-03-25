@@ -4,11 +4,12 @@ Small Helper library for spring boot projects, provides abstractions for auth,ac
 Note:  
 Inspired by [**spring-lemon**](https://github.com/naturalprogrammer/spring-lemon)   
 Some modules were copied in modified version into this project.  
+Includes some code from [this repo](https://github.com/dzinot/spring-boot-jpa-data-rest-soft-delete) to implement soft delete syncing.   
   
 # Features                                                                 
 * authentication (jwt)  
 * acl  
-* sync  
+* sync (with soft delete)  
   
 # Requirements  
 jdk: version 11.0.18 (default version for java 11)   
