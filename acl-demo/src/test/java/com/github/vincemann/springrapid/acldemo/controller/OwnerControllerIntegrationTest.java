@@ -203,7 +203,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("illnessIds").doesNotExist())
                 .andReturn().getResponse().getContentAsString();
-        OwnerReadsForeignPetDto dto = petController.jsonToDto(json, OwnerReadsForeignPetDto.class);
+        OwnerReadsForeignPetDto dto = petController.deserialize(json, OwnerReadsForeignPetDto.class);
         Assertions.assertEquals(BELLA,dto.getName());
     }
 }

@@ -24,13 +24,13 @@ public class PetControllerTestTemplate extends MvcControllerTestTemplate<PetCont
 
     public MockHttpServletRequestBuilder create(CreatePetDto dto) throws JsonProcessingException {
         return post("/api/core/pet/create")
-                .content(toJson(dto))
+                .content(serialize(dto))
                 .contentType(MediaType.APPLICATION_JSON_UTF8);
     }
 
     public List<ReadPetDto> findSome2xx(List<Long> ids) throws Exception {
         return perform2xxAndDeserializeToList(get("/api/core/pet/find-some")
-                        .content(toJson(ids))
+                        .content(serialize(ids))
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                 , ReadPetDto.class);
     }

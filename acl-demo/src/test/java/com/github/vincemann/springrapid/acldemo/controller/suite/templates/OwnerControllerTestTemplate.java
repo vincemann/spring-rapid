@@ -19,7 +19,7 @@ public class OwnerControllerTestTemplate extends MvcControllerTestTemplate<Owner
 
     public OwnerReadsOwnOwnerDto signup(SignupOwnerDto dto) throws Exception {
         String json = getMvc().perform(post("/api/core/owner/signup")
-                        .content(toJson(dto))
+                        .content(serialize(dto))
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
@@ -29,7 +29,7 @@ public class OwnerControllerTestTemplate extends MvcControllerTestTemplate<Owner
 
     public MockHttpServletRequestBuilder update(UpdateOwnerDto dto) throws JsonProcessingException {
         return put("/api/core/owner/update")
-                .content(toJson(dto))
+                .content(serialize(dto))
                 .contentType(MediaType.APPLICATION_JSON_UTF8);
     }
 

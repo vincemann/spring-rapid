@@ -17,7 +17,7 @@ public class VisitControllerTestTemplate extends MvcControllerTestTemplate<Visit
 
     public MockHttpServletRequestBuilder create(CreateVisitDto dto) throws JsonProcessingException {
         return post("/api/core/visit/create")
-                .content(toJson(dto))
+                .content(serialize(dto))
                 .contentType(MediaType.APPLICATION_JSON_UTF8);
     }
 

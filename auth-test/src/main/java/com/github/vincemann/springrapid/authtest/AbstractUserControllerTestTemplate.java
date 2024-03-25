@@ -70,14 +70,14 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return post(getController().getRequestContactInformationChangeUrl())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .header(HttpHeaders.AUTHORIZATION, token)
-                .content(toJson(dto));
+                .content(serialize(dto));
     }
 
     public void requestContactInformationChange2xx(RequestContactInformationChangeDto dto, String token) throws Exception {
         mvc.perform(post(getController().getRequestContactInformationChangeUrl())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .header(HttpHeaders.AUTHORIZATION, token)
-                .content(toJson(dto)))
+                .content(serialize(dto)))
                 .andExpect(status().is2xxSuccessful());
     }
 
@@ -85,7 +85,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return post(getController().getChangePasswordUrl())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(toJson(dto));
+                .content(serialize(dto));
     }
 
     public MockHttpServletRequestBuilder forgotPassword(String contactInformation) throws Exception {
@@ -104,7 +104,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     public MockHttpServletRequestBuilder resetPassword(ResetPasswordDto dto) throws Exception {
         return post(getController().getResetPasswordUrl())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(toJson(dto));
+                .content(serialize(dto));
     }
 
     public MockHttpServletRequestBuilder getResetPasswordView(String link) throws Exception {
@@ -114,7 +114,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     public MockHttpServletRequestBuilder resetPassword(String url, ResetPasswordDto dto) throws Exception {
         return post(url)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(toJson(dto));
+                .content(serialize(dto));
     }
 
     public MockHttpServletRequestBuilder fetchNewToken(String token) throws Exception {
@@ -131,13 +131,13 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     public String fetchNewToken2xx(String token, String contactInformation) throws Exception {
-        return jsonToDto(mvc.perform(fetchNewToken(token, contactInformation))
+        return deserialize(mvc.perform(fetchNewToken(token, contactInformation))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), ResponseToken.class).getToken();
     }
 
     public String fetchNewToken2xx(String token) throws Exception {
-        return jsonToDto(mvc.perform(fetchNewToken(token))
+        return deserialize(mvc.perform(fetchNewToken(token))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), ResponseToken.class).getToken();
     }
@@ -146,7 +146,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     public MockHttpServletRequestBuilder login(String contactInformation, String password) throws JsonProcessingException {
         LoginDto dto = new LoginDto(contactInformation,password);
         return post(getController().getLoginUrl())
-                .content(toJson(dto))
+                .content(serialize(dto))
                 .contentType(MediaType.APPLICATION_JSON_UTF8);
     }
 

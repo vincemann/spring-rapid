@@ -25,6 +25,6 @@ public class PetSyncControllerTestTemplate extends SyncControllerTestTemplate<Pe
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andReturn().getResponse().getContentAsString();
 
-        return jsonToList(json,EntitySyncStatus.class);
+        return deserializeToList(json,EntitySyncStatus.class);
     }
 }

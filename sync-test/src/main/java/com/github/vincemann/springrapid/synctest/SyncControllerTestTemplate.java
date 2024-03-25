@@ -87,7 +87,7 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
                 .andReturn().getResponse().getContentAsString();
 
         assertThat("response body must not be emtpy",!json.isEmpty());
-        return jsonToList(json,EntitySyncStatus.class);
+        return deserializeToList(json,EntitySyncStatus.class);
     }
 
     public List<EntitySyncStatus> fetchSyncStatuses_assertUpdates(List<LastFetchInfo> updateInfos) throws Exception {
@@ -95,7 +95,7 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andReturn().getResponse().getContentAsString();
         assertThat("response body must not be emtpy",!json.isEmpty());
-        return jsonToList(json,EntitySyncStatus.class);
+        return deserializeToList(json,EntitySyncStatus.class);
     }
 
     public void fetchSyncStatusesSinceTs_assertNoUpdates(List<LastFetchInfo> updateInfos) throws Exception {

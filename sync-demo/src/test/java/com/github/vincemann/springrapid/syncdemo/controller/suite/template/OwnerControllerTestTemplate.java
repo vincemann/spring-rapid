@@ -18,7 +18,7 @@ public class OwnerControllerTestTemplate extends MvcControllerTestTemplate<Owner
     public ReadOwnerDto create2xx(CreateOwnerDto dto) throws Exception {
         return perform2xxAndDeserialize(post("/api/core/owner/create")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(toJson(dto)), ReadOwnerDto.class);
+                .content(serialize(dto)), ReadOwnerDto.class);
     }
 
     public ReadOwnerDto find2xx(long id) throws Exception {
@@ -28,7 +28,7 @@ public class OwnerControllerTestTemplate extends MvcControllerTestTemplate<Owner
 
     public List<ReadOwnerDto> findSome2xx(List<Long> ids) throws Exception {
         return perform2xxAndDeserializeToList(get("/api/core/owner/find-some")
-                        .content(toJson(ids))
+                        .content(serialize(ids))
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                 , ReadOwnerDto.class);
     }
