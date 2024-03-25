@@ -43,12 +43,12 @@ public abstract class UserUtils {
 
     public static <T extends AbstractUser> T findAuthenticatedUser(AbstractUserRepository userRepository){
         AuthorizationUtils.assertAuthenticated();
-        String name = RapidSecurityContext.getName();
-        Optional<T> user = (Optional<T>) userRepository.findByContactInformation(name);
+        String ci = RapidSecurityContext.getName();
+        Optional<T> user = (Optional<T>) userRepository.findByContactInformation(ci);
         try {
-            VerifyEntity.isPresent(user,"user with contactInformation: " + name+ " could not be found");
+            VerifyEntity.isPresent(user,"user with contactInformation: " + ci+ " could not be found");
         } catch (EntityNotFoundException e) {
-            throw new AccessDeniedException("user with contactInformation: " + name+ " could not be found",e);
+            throw new AccessDeniedException("user with contactInformation: " + ci+ " could not be found",e);
         }
         return user.get();
     }
