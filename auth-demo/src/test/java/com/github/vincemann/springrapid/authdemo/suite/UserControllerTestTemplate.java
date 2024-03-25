@@ -12,7 +12,7 @@ public class UserControllerTestTemplate extends AbstractUserControllerTestTempla
 
     public MockHttpServletRequestBuilder signup(SignupDto dto) throws Exception {
         return post("/api/core/user/signup")
-                .content(serialize(dto))
+                .content(toJson(dto))
                 .contentType(MediaType.APPLICATION_JSON_UTF8);
     }
 }

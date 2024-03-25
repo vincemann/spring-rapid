@@ -15,7 +15,7 @@ public class VetControllerTestTemplate extends MvcControllerTestTemplate<VetCont
 
     public ReadVetDto signup(SignupVetDto dto) throws Exception {
         String json = getMvc().perform(post("/api/core/vet/signup")
-                        .content(serialize(dto))
+                        .content(toJson(dto))
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();

@@ -4,7 +4,6 @@ import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTe
 import com.github.vincemann.springrapid.acldemo.dto.owner.OwnerReadsOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.*;
-import com.github.vincemann.springrapid.acldemo.model.Illness;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
@@ -204,7 +203,7 @@ public class OwnerControllerIntegrationTest extends MyIntegrationTest {
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("illnessIds").doesNotExist())
                 .andReturn().getResponse().getContentAsString();
-        OwnerReadsForeignPetDto dto = petController.deserialize(json, OwnerReadsForeignPetDto.class);
+        OwnerReadsForeignPetDto dto = petController.jsonToDto(json, OwnerReadsForeignPetDto.class);
         Assertions.assertEquals(BELLA,dto.getName());
     }
 }

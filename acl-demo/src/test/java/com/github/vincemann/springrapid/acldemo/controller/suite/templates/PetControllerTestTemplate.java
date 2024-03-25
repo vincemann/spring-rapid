@@ -19,7 +19,7 @@ public class PetControllerTestTemplate extends MvcControllerTestTemplate<PetCont
 
     public MockHttpServletRequestBuilder create(CreatePetDto dto) throws JsonProcessingException {
         return post("/api/core/pet/create")
-                .content(serialize(dto))
+                .content(toJson(dto))
                 .contentType(MediaType.APPLICATION_JSON_UTF8);
     }
 
@@ -33,19 +33,19 @@ public class PetControllerTestTemplate extends MvcControllerTestTemplate<PetCont
 
     public MockHttpServletRequestBuilder ownerUpdatesPet(OwnerUpdatesPetDto dto) throws JsonProcessingException {
         return put("/api/core/pet/owner-update")
-                .content(serialize(dto))
+                .content(toJson(dto))
                 .contentType(MediaType.APPLICATION_JSON_UTF8);
     }
 
     public MockHttpServletRequestBuilder addIllness(UpdateIllnessDto dto) throws JsonProcessingException {
         return put("/api/core/pet/add-illness")
-                .content(serialize(dto))
+                .content(toJson(dto))
                 .contentType(MediaType.APPLICATION_JSON_UTF8);
     }
 
     public MockHttpServletRequestBuilder removeIllness(UpdateIllnessDto dto) throws JsonProcessingException {
         return put("/api/core/pet/remove-illness")
-                .content(serialize(dto))
+                .content(toJson(dto))
                 .contentType(MediaType.APPLICATION_JSON_UTF8);
     }
 

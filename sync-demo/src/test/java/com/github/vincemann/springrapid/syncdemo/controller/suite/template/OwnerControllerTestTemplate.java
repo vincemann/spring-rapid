@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.syncdemo.controller.suite.template;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.coretest.controller.template.MvcControllerTestTemplate;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnerDto;
@@ -19,7 +18,7 @@ public class OwnerControllerTestTemplate extends MvcControllerTestTemplate<Owner
     public ReadOwnerDto create2xx(CreateOwnerDto dto) throws Exception {
         return perform2xxAndDeserialize(post("/api/core/owner/create")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(serialize(dto)), ReadOwnerDto.class);
+                .content(toJson(dto)), ReadOwnerDto.class);
     }
 
     public ReadOwnerDto find2xx(long id) throws Exception {
@@ -29,7 +28,7 @@ public class OwnerControllerTestTemplate extends MvcControllerTestTemplate<Owner
 
     public List<ReadOwnerDto> findSome2xx(List<Long> ids) throws Exception {
         return perform2xxAndDeserializeToList(get("/api/core/owner/find-some")
-                        .content(serialize(ids))
+                        .content(toJson(ids))
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                 , ReadOwnerDto.class);
     }

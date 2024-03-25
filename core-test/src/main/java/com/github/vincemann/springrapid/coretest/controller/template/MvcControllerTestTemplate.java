@@ -70,18 +70,18 @@ public abstract class MvcControllerTestTemplate<C> implements MvcAware {
 
 
     public <Dto> Dto performAndDeserialize(MockHttpServletRequestBuilder requestBuilder, ResultMatcher status, Class<Dto> dtoClass) throws Exception {
-        return deserialize(mvc.perform(requestBuilder)
+        return jsonToDto(mvc.perform(requestBuilder)
                 .andExpect(status)
                 .andReturn().getResponse().getContentAsString(),dtoClass);
     }
 
     public <Dto> Set<Dto> perform2xxAndDeserializeToSet(MockHttpServletRequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
-        return deserializeToSet(mvc.perform(requestBuilder)
+        return jsonToSet(mvc.perform(requestBuilder)
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(),dtoClass);
     }
     public <Dto> List<Dto> perform2xxAndDeserializeToList(MockHttpServletRequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
-        return deserializeToList(mvc.perform(requestBuilder)
+        return jsonToList(mvc.perform(requestBuilder)
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(),dtoClass);
     }
@@ -94,31 +94,31 @@ public abstract class MvcControllerTestTemplate<C> implements MvcAware {
     // SERIALIZATION
 
 
-    public  <Dto> Dto deserialize(String s, Class<Dto> dtoClass) throws IOException {
+    public  <Dto> Dto jsonToDto(String s, Class<Dto> dtoClass) throws IOException {
         return objectMapper.readValue(s,dtoClass);
     }
 
-    public  <Dto> Set<Dto> deserializeToSet(String s, Class<Dto> dtoClass) throws IOException {
+    public  <Dto> Set<Dto> jsonToSet(String s, Class<Dto> dtoClass) throws IOException {
         CollectionType setType = objectMapper
                 .getTypeFactory().constructCollectionType(Set.class, dtoClass);
-        return deserialize(s, setType);
+        return jsonToDto(s, setType);
     }
 
-    public  <Dto> List<Dto> deserializeToList(String s, Class<Dto> dtoClass) throws IOException {
+    public  <Dto> List<Dto> jsonToList(String s, Class<Dto> dtoClass) throws IOException {
         CollectionType setType = objectMapper
                 .getTypeFactory().constructCollectionType(List.class, dtoClass);
-        return deserialize(s, setType);
+        return jsonToDto(s, setType);
     }
 
-    public  <Dto> Dto deserialize(String s, TypeReference<Dto> dtoClass) throws IOException {
+    public  <Dto> Dto jsonToDto(String s, TypeReference<Dto> dtoClass) throws IOException {
         return objectMapper.readValue(s,dtoClass);
     }
 
-    public  <Dto> Dto deserialize(String s, JavaType dtoClass) throws IOException {
+    public  <Dto> Dto jsonToDto(String s, JavaType dtoClass) throws IOException {
         return objectMapper.readValue(s,dtoClass);
     }
 
-    public  String serialize(Object o) throws JsonProcessingException {
+    public  String toJson(Object o) throws JsonProcessingException {
         return objectMapper.writeValueAsString(o);
     }
 
