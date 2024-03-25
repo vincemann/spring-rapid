@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.auth.sec;
 import com.github.vincemann.springrapid.acl.framework.VerboseAclPermissionEvaluator;
 import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.service.RepositoryAccessor;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * call {@link GlobalSecurityRule#checkAccess(IdAwareEntity, Object)} on each permission evaluation.
+ * Calls {@link GlobalSecurityRule#checkAccess(IdAwareEntity, Object)} on each rule for each permission evaluation.
  */
 public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermissionEvaluator {
 
@@ -65,11 +66,12 @@ public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermiss
     public boolean hasPermission(Authentication authentication,
                                  Serializable targetId, String targetType, Object permission) {
         try {
+            Class<?> clazz = Class.forName(targetType);
             Serializable id = idConverter.toId(targetId.toString());
-            CrudRepository repo = repositoryAccessor.findRepository(Class.forName(targetType));
+            CrudRepository repo = repositoryAccessor.findRepository(clazz);
             Optional<IdAwareEntity> entity = repo.findById(id);
             if (entity.isEmpty())
-                throw new IllegalArgumentException("entity permission is checked for does not exist, check before checking acl info");
+                throw new EntityNotFoundException(id,clazz);
             Boolean allowAccess = performGlobalSecurityChecks(entity.get(),permission);
             if (allowAccess != null)
                 return allowAccess;

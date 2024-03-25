@@ -19,7 +19,6 @@ import java.io.IOException;
 /**
  * Filter for token authentication
  */
-
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final Log log = LogFactory.getLog(JwtAuthenticationFilter.class);

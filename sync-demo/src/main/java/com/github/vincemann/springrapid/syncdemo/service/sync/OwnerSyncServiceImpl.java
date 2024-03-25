@@ -26,8 +26,8 @@ public class OwnerSyncServiceImpl
 
     @Transactional(readOnly = true)
     @Override
-    public List<EntitySyncStatus> findEntitySyncStatusesSinceTimestampWithTelnrPrefix(Timestamp clientLastUpdate, String prefix) {
-        return findEntitySyncStatusesSinceTimestamp(clientLastUpdate,new WithTelPrefix(prefix));
+    public List<EntitySyncStatus> findEntitySyncStatusesSinceTimestampWithTelnrPrefix(Timestamp lastClientUpdate, String prefix) {
+        return findEntitySyncStatusesSinceTimestamp(lastClientUpdate,new WithTelPrefix(prefix));
     }
 
     @AllArgsConstructor

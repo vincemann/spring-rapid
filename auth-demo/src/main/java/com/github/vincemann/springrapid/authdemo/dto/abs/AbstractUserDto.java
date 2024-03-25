@@ -16,7 +16,7 @@ public abstract class AbstractUserDto {
     private String contactInformation;
     private Set<String> roles = new HashSet<String>();
 
-    public AbstractUserDto(Set<String> roles, Float rating, Set<Long> schoolIds, String name) {
+    public AbstractUserDto(Set<String> roles,String contactInformation, String name) {
         this.contactInformation = contactInformation;
         if (roles != null)
             this.roles = roles;

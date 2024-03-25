@@ -8,6 +8,6 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public interface OwnerSyncService extends SyncService<Owner,Long> {
-    List<EntitySyncStatus> findEntitySyncStatusesSinceTimestampWithTelnrPrefix(Timestamp clientLastUpdate, String prefix);
+    List<EntitySyncStatus> findEntitySyncStatusesSinceTimestampWithTelnrPrefix(Timestamp lastClientUpdate, String prefix);
 
 }

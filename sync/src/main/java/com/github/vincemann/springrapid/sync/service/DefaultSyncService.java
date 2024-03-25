@@ -77,8 +77,8 @@ public abstract class DefaultSyncService
     @Transactional(readOnly = true)
     @Override
     @Nullable
-    public EntitySyncStatus findEntitySyncStatus(LastFetchInfo clientLastUpdate) {
-        String id = clientLastUpdate.getId();
+    public EntitySyncStatus findEntitySyncStatus(LastFetchInfo lastClientUpdate) {
+        String id = lastClientUpdate.getId();
         Id convertedId = idConverter.toId(id);
         // cant distinguish between removed and has never existed, so just say removed bc I guess the client knows
         // what he is doing
@@ -88,7 +88,7 @@ public abstract class DefaultSyncService
         }
         EntityUpdateInfo lastServerUpdate = auditingRepository.findUpdateInfo(convertedId);
         Assert.notNull(lastServerUpdate,"Could not find EntityUpdateInfo for existing entity: " + id);
-        if (lastServerUpdate.getLastUpdate().after(clientLastUpdate.getLastUpdate())) {
+        if (lastServerUpdate.getLastUpdate().after(lastClientUpdate.getLastUpdate())) {
             return new EntitySyncStatus(id,SyncStatus.UPDATED);
         } else {
             // no update required
@@ -107,9 +107,9 @@ public abstract class DefaultSyncService
      * Example:
      *
      *  @Override
-     *  public List<EntitySyncStatus> findEntitySyncStatusesSinceTimestampOfSubscribedOfModule(Timestamp clientLastUpdate, long moduleId, String user) {
+     *  public List<EntitySyncStatus> findEntitySyncStatusesSinceTimestampOfSubscribedOfModule(Timestamp lastClientUpdate, long moduleId, String user) {
      *      Specification<ExerciseGroup> spec = new WithModuleId(moduleId).and(new Subscribed(user));
-     *      return findEntitySyncStatusesSinceTimestamp(clientLastUpdate,spec);
+     *      return findEntitySyncStatusesSinceTimestamp(lastClientUpdate,spec);
      *  }
      *
      *   @AllArgsConstructor

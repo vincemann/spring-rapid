@@ -60,8 +60,8 @@ public abstract class SoftDeleteSyncService<E extends ISoftDeleteEntity<Id>, Id 
     @Transactional(readOnly = true)
     @Override
     @Nullable
-    public EntitySyncStatus findEntitySyncStatus(LastFetchInfo clientLastUpdate) throws EntityNotFoundException {
-        String id = clientLastUpdate.getId();
+    public EntitySyncStatus findEntitySyncStatus(LastFetchInfo lastClientUpdate) throws EntityNotFoundException {
+        String id = lastClientUpdate.getId();
         Id convertedId = idConverter.toId(id);
         SoftDeleteEntityUpdateInfo lastServerUpdate = auditingRepository.findUpdateInfo(convertedId);
         if (lastServerUpdate == null){
@@ -69,14 +69,14 @@ public abstract class SoftDeleteSyncService<E extends ISoftDeleteEntity<Id>, Id 
             throw new EntityNotFoundException("Could not find EntityUpdateInfo for entity: " + id);
         }
         if (lastServerUpdate.getDeletedDate() != null){
-            if (lastServerUpdate.getDeletedDate().after(clientLastUpdate.getLastUpdate())){
+            if (lastServerUpdate.getDeletedDate().after(lastClientUpdate.getLastUpdate())){
                 return new EntitySyncStatus(id,SyncStatus.REMOVED);
             }else{
                 // no update required, still removed and user knows its removed
                 return null;
             }
         }
-        if (lastServerUpdate.getLastUpdate().after(clientLastUpdate.getLastUpdate())) {
+        if (lastServerUpdate.getLastUpdate().after(lastClientUpdate.getLastUpdate())) {
             return new EntitySyncStatus(id,SyncStatus.UPDATED);
         } else {
             // no update required, entity still in same state as last time client fetched

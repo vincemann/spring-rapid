@@ -5,6 +5,9 @@ import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 
+/**
+ * Allows user with Admin role to perform any operation.
+ */
 public class AdminGlobalSecurityRule implements GlobalSecurityRule{
 
     @Override

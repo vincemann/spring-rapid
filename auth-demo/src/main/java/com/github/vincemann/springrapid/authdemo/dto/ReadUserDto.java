@@ -17,8 +17,8 @@ public class ReadUserDto extends AbstractUserDto {
     private boolean admin = false;
     private boolean goodUser = false;
 
-    public ReadUserDto(Set<String> roles, Float rating, Set<Long> schoolIds, String name, Long id) {
-        super(roles, rating, schoolIds, name);
+    public ReadUserDto(Set<String> roles,String contactInformation, String name, Long id) {
+        super(roles,contactInformation, name);
         this.id = id;
         initFlags();
     }

@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.sec;
 
+import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.UserService;
@@ -21,7 +22,7 @@ import java.util.Optional;
 @Transactional
 public class JwtPrincipalConverterImpl implements JwtPrincipalConverter {
 
-    private UserService userService;
+    private AbstractUserRepository userRepository;
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
 
     @Autowired
@@ -37,22 +38,21 @@ public class JwtPrincipalConverterImpl implements JwtPrincipalConverter {
 
     @Override
     public RapidPrincipal toPrincipal(Map<String,Object> claims) throws AuthenticationCredentialsNotFoundException {
-        String contactInformation = (String) claims.get("contactInformation");
-        if (contactInformation == null)
+        String ci = (String) claims.get("contactInformation");
+        if (ci == null)
             throw new AuthenticationCredentialsNotFoundException("contactInformation claim of claims-set not found");
         try {
-            Optional<AbstractUser<?>> byContactInformation = userService.findByContactInformation(contactInformation);
-            VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+contactInformation+" not found");
+            Optional<AbstractUser<?>> byContactInformation = userRepository.findByContactInformation(ci);
+            VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+ci+" not found");
             AbstractUser<?> user = byContactInformation.get();
             return authenticatedPrincipalFactory.create(user);
         } catch (EntityNotFoundException e) {
-            throw new AuthenticationCredentialsNotFoundException("User with in token encoded contactInformation: " + contactInformation + " does not exist.", e);
+            throw new AuthenticationCredentialsNotFoundException("User with in token encoded contactInformation: " + ci + " does not exist.", e);
         }
     }
 
     @Autowired
-    @Root
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    public void setUserRepository(AbstractUserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 }

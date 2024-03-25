@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.stream.Collectors;
 
 /**
- * expects credentials from body and not from url param, which is considered safer
+ * Expects credentials from body and not from url param, which is considered safer.
  */
 public class DtoUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 

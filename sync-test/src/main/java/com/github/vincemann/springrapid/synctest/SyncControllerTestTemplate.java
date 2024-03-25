@@ -59,6 +59,7 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
                 .andReturn().getResponse().getContentAsString();
 
 
+        assertThat("response body must not be emtpy",!json.isEmpty());
         EntitySyncStatus status = getController().getObjectMapper().readValue(json,EntitySyncStatus.class);
         assertThat(status.getStatus(),equalTo(expectedStatus));
         assertThat(entityId.toString(),equalTo(status.getId()));
@@ -85,7 +86,7 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andReturn().getResponse().getContentAsString();
 
-
+        assertThat("response body must not be emtpy",!json.isEmpty());
         return deserializeToList(json,EntitySyncStatus.class);
     }
 
@@ -93,7 +94,7 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
         String json = mvc.perform(fetchSyncStatuses(updateInfos))
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andReturn().getResponse().getContentAsString();
-
+        assertThat("response body must not be emtpy",!json.isEmpty());
         return deserializeToList(json,EntitySyncStatus.class);
     }
 

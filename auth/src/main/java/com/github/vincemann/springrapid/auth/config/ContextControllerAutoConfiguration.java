@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConditionalOnProperty(name = "rapid-core.expose-context", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "rapid-auth.expose-context", havingValue = "true", matchIfMissing = true)
 public class ContextControllerAutoConfiguration {
 
     @Bean

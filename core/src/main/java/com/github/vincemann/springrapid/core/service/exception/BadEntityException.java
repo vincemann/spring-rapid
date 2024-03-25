@@ -1,9 +1,9 @@
 package com.github.vincemann.springrapid.core.service.exception;
 
 /**
- * Indicates that the client sent an Entity that was malformed.
+ * Indicates bad request.
  */
-public class BadEntityException extends Exception {
+public class BadEntityException extends RuntimeException {
 
     public BadEntityException() {
     }

@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.service.exception;
 
-public class EntityNotFoundException extends Exception {
+public class EntityNotFoundException extends RuntimeException {
 
     public EntityNotFoundException() {
     }

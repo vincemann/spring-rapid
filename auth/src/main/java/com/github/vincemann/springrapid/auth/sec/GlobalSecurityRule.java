@@ -7,11 +7,13 @@ import org.springframework.lang.Nullable;
 public interface GlobalSecurityRule {
 
     /**
-     * Is called whenever acl is checked -> i.E. check if user a has read permission over target entity x
-     * get user a and more from {@link RapidSecurityContext}.
-     *
-     * Check what you need to check and throw runtime exception like {@link org.springframework.security.access.AccessDeniedException} if needed
-     * you can also return true,false meaning access allowed, denied respectively. Otherwise return null
+     * Is called whenever acl expression is evaluated by {@link GlobalRuleEnforcingAclPermissionEvaluator aclPermissionEvalutor}.
+     * Throw {@link org.springframework.security.access.AccessDeniedException} or similar, when access is denied.
+     * @param entity entity permission check is performed on
+     * @param permission permission checked for
+     * @return True if access allowed and further checks skipped. False if access denied and further checks skipped.
+     *         Null if further checks should be performed and this rule effectively skips this case.
+     * @see AdminGlobalSecurityRule
      */
     @Nullable
     Boolean checkAccess(IdAwareEntity<?> entity, Object permission);

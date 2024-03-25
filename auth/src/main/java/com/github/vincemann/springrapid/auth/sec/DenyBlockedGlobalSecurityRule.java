@@ -6,6 +6,9 @@ import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.sec.AuthorizationUtils;
 import org.springframework.lang.Nullable;
 
+/**
+ * Denys user with Blocked role any operation.
+ */
 public class DenyBlockedGlobalSecurityRule implements GlobalSecurityRule {
 
     @Nullable
