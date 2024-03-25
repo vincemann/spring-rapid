@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
  * Client can check if updates need to be fetched, and what kind of update is required, before actually fetching.
  *
  * @see EntitySyncStatus
+ * @see SyncService
  */
 public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends SyncService<E,?>>
         extends AbstractController

@@ -20,6 +20,11 @@ import java.sql.Timestamp;
 import java.util.*;
 
 
+/**
+ * Soft delete impl of {@link SyncService} utilizing {@link SoftDeleteRepository} instead of {@link com.github.vincemann.springrapid.sync.repo.AuditingRepository}.
+ * @param <E> entity type
+ * @param <Id> id type of entity
+ */
 public abstract class SoftDeleteSyncService<E extends ISoftDeleteEntity<Id>, Id extends Serializable>
     implements SyncService<E,Id>, InitializingBean
 {
@@ -79,6 +84,9 @@ public abstract class SoftDeleteSyncService<E extends ISoftDeleteEntity<Id>, Id 
         }
     }
 
+    /**
+     * @see com.github.vincemann.springrapid.sync.service.DefaultSyncService#findEntitySyncStatusesSinceTimestamp(Timestamp, Specification)
+     */
     @Transactional(readOnly = true)
     @Override
     public List<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch) {

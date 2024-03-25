@@ -9,6 +9,10 @@ import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * Extended version of {@link AuditingEntity} also providing deleted timestamp.
+ * @param <ID> id type of entity
+ */
 @MappedSuperclass
 @JsonIgnoreProperties({ "createdById", "lastModifiedById", "createdDate", "lastModifiedDate", "new","deletedDate" })
 public class SoftDeleteEntity<ID extends Serializable>

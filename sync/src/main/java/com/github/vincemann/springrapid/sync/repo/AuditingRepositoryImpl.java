@@ -19,6 +19,11 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 
+/**
+ * Default impl of {@link AuditingRepository} based on {@link SimpleJpaRepository} like your typical {@link org.springframework.data.jpa.repository.JpaRepository}.
+ * @param <E> entity type
+ * @param <Id> id type of entity
+ */
 public class AuditingRepositoryImpl<E extends IAuditingEntity<Id>,Id extends Serializable>
     extends SimpleJpaRepository<E,Id>
         implements AuditingRepository<E,Id> {

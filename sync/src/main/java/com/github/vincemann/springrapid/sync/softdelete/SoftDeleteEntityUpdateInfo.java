@@ -6,6 +6,9 @@ import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import java.util.Date;
 
 
+/**
+ * Extended version of {@link EntityUpdateInfo} providing also deleted timestamp.
+ */
 public class SoftDeleteEntityUpdateInfo extends EntityUpdateInfo {
 
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)

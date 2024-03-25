@@ -15,6 +15,7 @@ import java.util.Optional;
 /**
  *
  * @author Kristijan Georgiev
+ * @modifiedBy vincemann
  *
  * @param <T>
  *            the class of the entity

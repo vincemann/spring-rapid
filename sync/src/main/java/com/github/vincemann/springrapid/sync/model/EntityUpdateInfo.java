@@ -6,7 +6,9 @@ import java.util.Date;
 
 
 /**
- * Encapsulates minimal update information for entity with given {@link #id}.
+ * Encapsulates information about when entity with {@link #getId()} was last updated.
+ *
+ * @see com.github.vincemann.springrapid.sync.repo.AuditingRepository
  */
 public class EntityUpdateInfo {
     private String id;

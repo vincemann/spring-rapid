@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.core.model.IdAwareEntity;
 import com.github.vincemann.springrapid.core.util.MethodNameUtil;
 import com.github.vincemann.springrapid.sync.model.entity.AuditingEntity;
 import com.github.vincemann.springrapid.core.util.Specs;
+import com.github.vincemann.springrapid.sync.repo.AuditingRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
@@ -21,6 +22,11 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 
+/**
+ * Default impl of {@link AuditingRepository} based on {@link SimpleJpaRepository} like your typical {@link org.springframework.data.jpa.repository.JpaRepository}.
+ * @param <E> entity type
+ * @param <Id> id type of entity
+ */
 public class SoftDeleteAuditingRepositoryImpl<E extends ISoftDeleteEntity<Id>, Id extends Serializable>
         extends SimpleJpaRepository<E, Id>
         implements SoftDeleteAuditingRepository<E, Id> {

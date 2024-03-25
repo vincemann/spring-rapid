@@ -17,9 +17,6 @@ import java.util.Date;
 
 /**
  * Base class for all entities that want auditing.
- * 
- * @author Sanjay Patel
- * @modifiedBy vincemann
   */
 @MappedSuperclass
 @JsonIgnoreProperties({ "createdById", "lastModifiedById", "createdDate", "lastModifiedDate", "new" })

@@ -140,7 +140,7 @@ public abstract class DefaultSyncService
     }
 
     /**
-     * only returns set of {@link EntitySyncStatus} for entities that need update.
+     * Only returns set of {@link EntitySyncStatus} for entities that need update or are removed.
      */
     @Transactional(readOnly = true)
     @Override

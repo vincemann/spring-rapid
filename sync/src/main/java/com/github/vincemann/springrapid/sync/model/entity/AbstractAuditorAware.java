@@ -5,13 +5,7 @@ import org.springframework.data.domain.AuditorAware;
 import java.io.Serializable;
 import java.util.Optional;
 
-/**
- * Needed for auto-filling of the
- * AbstractAuditable columns of AbstractUser
- *  
- * @author Sanjay Patel
- * @modifiedBy vincemann
- */
+
 public abstract class AbstractAuditorAware<ID extends Serializable>
 				implements AuditorAware<ID> {
 

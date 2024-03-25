@@ -26,6 +26,7 @@ import static com.github.vincemann.springrapid.sync.softdelete.SoftDeleteSpecs.n
 /**
  *
  * @author Kristijan Georgiev
+ * @modifiedBy vincemann
  *
  * @param <T>
  *            the class of the entity
@@ -33,7 +34,7 @@ import static com.github.vincemann.springrapid.sync.softdelete.SoftDeleteSpecs.n
  *            the ID class of the entity
  *
  *            Custom implementation for soft deleting
- * @modifiedBy vincemann
+ *
  */
 public class SoftDeleteRepositoryImpl<T, ID extends Serializable>
         extends SimpleJpaRepository<T, ID>
