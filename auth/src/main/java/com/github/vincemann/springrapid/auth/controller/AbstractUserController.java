@@ -502,6 +502,10 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
         this.blockUserUrl = blockUserUrl;
     }
 
+    public S getUserService() {
+        return userService;
+    }
+
     //              INJECT DEPENDENCIES
 
 

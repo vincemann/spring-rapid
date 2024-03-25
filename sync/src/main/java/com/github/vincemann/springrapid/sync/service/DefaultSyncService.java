@@ -28,6 +28,16 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 
+/**
+ * Default impl of {@link SyncService}.
+ * Uses {@link AuditingRepository} for getting sync status information and uses {@link CrudRepository} for existence checks.
+ *
+ * @param <E> entity type, must implement {@link IAuditingEntity}
+ * @param <Id> id type of entity
+ *
+ * @see this#findEntitySyncStatusesSinceTimestamp(Timestamp, Specification)
+ * @see SyncService
+ */
 public abstract class DefaultSyncService
         <
                 E extends IAuditingEntity<Id>,
@@ -56,7 +66,7 @@ public abstract class DefaultSyncService
     }
 
     /**
-     * could also overwrite this method with empty impl and create autowired setter method.
+     * could also overwrite this method and annotate with @Autowired when bean is defined in context like:
      * @Bean
      * public AuditingRepository<Foo,Long> fooRepository(){...}
      */
@@ -86,14 +96,36 @@ public abstract class DefaultSyncService
         }
     }
 
-    // not very fast, but comfortable if ram filters are needed (EntityFilter)
     @Transactional(readOnly = true)
     @Override
     public List<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch) {
         return findEntitySyncStatusesSinceTimestamp(lastClientFetch,null);
     }
 
-    protected List<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch,@Nullable Specification<E> specification) {
+    /**
+     * Call this method in implementations of this class, that define methods that wish to add filters.
+     * Example:
+     *
+     *  @Override
+     *  public List<EntitySyncStatus> findEntitySyncStatusesSinceTimestampOfSubscribedOfModule(Timestamp clientLastUpdate, long moduleId, String user) {
+     *      Specification<ExerciseGroup> spec = new WithModuleId(moduleId).and(new Subscribed(user));
+     *      return findEntitySyncStatusesSinceTimestamp(clientLastUpdate,spec);
+     *  }
+     *
+     *   @AllArgsConstructor
+     *   private static class WithModuleId implements Specification<ExerciseGroup> {
+     *
+     *       private Long moduleId;
+     *       @Nullable
+     *       @Override
+     *       public Predicate toPredicate(Root<ExerciseGroup> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+     *            return cb.equal(root.<Module>get("module").get("id"), moduleId);
+     *       }
+     *   }
+     *     ...
+     *
+     */
+    protected List<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastClientFetch, @Nullable Specification<E> specification) {
         // server side update info
         List<EntitySyncStatus> result = new ArrayList<>();
         // cant find out about removed entities - what has been removed must be evaluated by client by comparing own set
@@ -106,9 +138,6 @@ public abstract class DefaultSyncService
         }
         return result;
     }
-
-
-
 
     /**
      * only returns set of {@link EntitySyncStatus} for entities that need update.

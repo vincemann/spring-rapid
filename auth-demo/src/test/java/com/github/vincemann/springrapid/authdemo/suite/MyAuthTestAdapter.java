@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class MyAuthTestAdapter extends AuthTestAdapter {
 
-    MyUserControllerTestTemplate userController;
+    UserControllerTestTemplate userController;
 
 
     @Override
@@ -32,7 +32,7 @@ public class MyAuthTestAdapter extends AuthTestAdapter {
 
 
     @Autowired
-    public void setUserController(MyUserControllerTestTemplate userController) {
+    public void setUserController(UserControllerTestTemplate userController) {
         this.userController = userController;
     }
 }

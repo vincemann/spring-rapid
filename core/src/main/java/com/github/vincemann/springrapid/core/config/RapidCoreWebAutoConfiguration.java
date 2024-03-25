@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.vincemann.springrapid.core.service.EndpointService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,15 +12,22 @@ import org.springframework.http.MediaType;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY;
 
 @Configuration
 @EnableWebMvc
-public class RapidJsonAutoConfiguration implements WebMvcConfigurer {
+public class RapidCoreWebAutoConfiguration implements WebMvcConfigurer {
 
-    public RapidJsonAutoConfiguration() {
+    public RapidCoreWebAutoConfiguration() {
 
+    }
+
+    @ConditionalOnMissingBean(EndpointService.class)
+    @Bean
+    public EndpointService endpointService(RequestMappingHandlerMapping requestMappingHandlerMapping){
+        return new EndpointService(requestMappingHandlerMapping);
     }
 
     @Override

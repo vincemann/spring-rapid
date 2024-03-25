@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.authdemo;
 
 import com.github.vincemann.springrapid.authdemo.dto.ReadUserDto;
 import com.github.vincemann.springrapid.authdemo.dto.SignupDto;
-import com.github.vincemann.springrapid.authdemo.suite.MyUserControllerTestTemplate;
+import com.github.vincemann.springrapid.authdemo.suite.UserControllerTestTemplate;
 import com.github.vincemann.springrapid.authtests.AuthIntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
@@ -15,7 +15,7 @@ import static com.github.vincemann.springrapid.authtests.AuthTestAdapter.USER_PA
 public class SignupTest extends AuthIntegrationTest {
 
     @Autowired
-    MyUserControllerTestTemplate userController;
+    UserControllerTestTemplate userController;
 
     @Test
     public void signup() throws Exception {

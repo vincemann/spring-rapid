@@ -19,17 +19,27 @@ import com.github.vincemann.springrapid.acldemo.repo.*;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
+import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.authtest.RapidAuthTestUtil;
 import com.github.vincemann.springrapid.authtest.RapidUserControllerTestTemplate;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.util.AopProxyUtils;
 import com.github.vincemann.springrapid.coretest.controller.MvcAware;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.Mockito.atLeast;
+
 @Component
 public class IntegrationTestHelper implements MvcAware {
+
+    @MockBean
+    private MessageSender messageSender;
 
     @Autowired
     private TestData testData;
@@ -88,7 +98,7 @@ public class IntegrationTestHelper implements MvcAware {
     public Vet signupVetDiCaprioWithHeartAndVerify() throws Exception {
         Vet dicaprio = signupVetDiCaprioWithHeart();
         // verify
-        AuthMessage msg = userController.verifyMsgWasSent(dicaprio.getContactInformation());
+        AuthMessage msg = verifyMsgWasSent(dicaprio.getContactInformation());
         userController.perform2xx(userController.verifyUserWithLink(msg.getLink()));
 
         Vet saved = vetRepository.findByLastName(dicaprio.getLastName()).get();
@@ -99,7 +109,7 @@ public class IntegrationTestHelper implements MvcAware {
     public Vet signupVetMaxWithDentismAndVerify() throws Exception {
         Vet max = signupVetMaxWithDentism();
         // verify
-        AuthMessage msg = userController.verifyMsgWasSent(max.getContactInformation());
+        AuthMessage msg = verifyMsgWasSent(max.getContactInformation());
         userController.perform2xx(userController.verifyUserWithLink(msg.getLink()));
 
         Vet saved = vetRepository.findByLastName(max.getLastName()).get();
@@ -161,5 +171,16 @@ public class IntegrationTestHelper implements MvcAware {
 
         ReadVisitDto response = visitController.create2xx(dto, token);
         return visitRepository.findById(response.getId()).get();
+    }
+
+    public AuthMessage verifyMsgWasSent(String recipient) {
+        ArgumentCaptor<AuthMessage> msgCaptor = ArgumentCaptor.forClass(AuthMessage.class);
+
+        Mockito.verify(AopProxyUtils.getUltimateTargetObject(messageSender), atLeast(1))
+                .send(msgCaptor.capture());
+        AuthMessage sentData = msgCaptor.getValue();
+        Assertions.assertEquals(sentData.getRecipient(),recipient,"latest msg must be sent to recipient: " +recipient + " but was sent to: " + sentData.getRecipient());
+        Mockito.reset(AopProxyUtils.getUltimateTargetObject(messageSender));
+        return sentData;
     }
 }

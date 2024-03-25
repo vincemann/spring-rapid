@@ -49,7 +49,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         Vet dicaprio = helper.signupVetDiCaprioWithHeart();
 
         // when
-        AuthMessage msg = userController.verifyMsgWasSent(dicaprio.getContactInformation());
+        AuthMessage msg = verifyMsgWasSent(dicaprio.getContactInformation());
         userController.perform(userController.verifyUserWithLink(msg.getLink()))
         // then
                 .andExpect(status().is2xxSuccessful());

@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Controller
-public class PetSyncController extends SyncEntityController<Pet,Long, PetSyncService> {
+public class PetSyncController extends SyncEntityController<Pet,PetSyncService> {
 
     @GetMapping("/api/core/pet/sync-statuses-since-ts-of-owner")
     public ResponseEntity<List<EntitySyncStatus>> fetchSyncStatusesSinceTsOfOwner(@RequestParam("ts") long timestamp, @RequestParam("owner") long ownerId){

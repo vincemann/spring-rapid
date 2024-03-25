@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.controller.AbstractController;
 import com.github.vincemann.springrapid.sync.model.entity.AuditingEntity;
-import com.github.vincemann.springrapid.sync.model.entity.IAuditingEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
@@ -17,7 +16,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.log.LogMessage;
 import org.springframework.http.MediaType;
@@ -37,8 +35,8 @@ import java.util.stream.Collectors;
 
 /**
  * Offers endpoints for evaluating {@link EntitySyncStatus} of an entity or multiple entities.
- * Entities need to record audit information -> {@link AuditingEntity}.
- * Client can check if updates need to be done, and what kind of update is required, before actually fetching.
+ * Entities need to record audit information -> must extend {@link AuditingEntity} or implement {@link com.github.vincemann.springrapid.sync.model.entity.IAuditingEntity}.
+ * Client can check if updates need to be fetched, and what kind of update is required, before actually fetching.
  *
  * @see EntitySyncStatus
  */
@@ -50,11 +48,11 @@ public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends
 
     private S service;
 
-    private String fetchSyncStatusUrl;
+    private String syncEntityUrl;
 
-    private String fetchSyncStatusesUrl;
+    private String syncEntitiesUrl;
 
-    private String fetchSyncStatusesSinceTsUrl;
+    private String syncEntitiesSinceUrl;
 
     private IdConverter idConverter;
 
@@ -66,10 +64,10 @@ public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends
 
 
     /**
-     * used for single entity sync.
-     * GET /api/core/entity/sync-status?id=42,ts=...
-     * returns 200 if updated needed with json body of {@link EntitySyncStatus}.
-     * or 204 if no update is needed
+     * Endpoint for single entity sync.
+     * GET /api/core/entity/sync-entity?id=42,ts=...
+     * Returns 200 if updated with json body of {@link EntitySyncStatus}.
+     * Returns 204 if no update is needed.
      */
     public ResponseEntity<String> fetchSyncStatus(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, JsonProcessingException {
         try {
@@ -97,13 +95,12 @@ public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends
     }
 
     /**
-     * receives Set of {@link EntityUpdateInfo} of client in body and looks these through.
-     * Returns client Set of {@link EntitySyncStatus} for those that need update with respective {@link EntitySyncStatus#getStatus()}.
-     * <p>
+     * Endpoint for finding sync statuses of multiple entities with one request.
+     * Receives List of {@link EntityUpdateInfo} of client in body and looks these through.
+     * Returns List of {@link EntitySyncStatus} for those that need update with respective {@link EntitySyncStatus#getStatus()}.
      * If no updated required at all, returns 204 without body.
      *
-     * POST /api/core/entity/sync-statuses
-     *
+     * POST /api/core/entity/sync-entities
      *
      */
     public ResponseEntity<String> fetchSyncStatuses(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
@@ -128,13 +125,12 @@ public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends
     }
 
     /**
-     * client passes timestamp, of when last update for find-all (with potential filter) was performed, to server.
-     * Client can pass list of filters bean names, that should be applied in that order.
-     * <p>
+     * Endpoint for fetching all updates since a specific timestamp for entity table.
+     * Client passes timestamp of when last client update.
      * Server returns Set of {@link EntitySyncStatus} of all entities, that have been removed, added or updated since then.
-     * <p>
-     * GET /api/core/entity/sync-statuses-since?ts=...
+     * GET /api/core/entity/sync-entities-since?ts=...
      *
+     * Note that removed entities can only be determined when using {@link com.github.vincemann.springrapid.sync.softdelete.SoftDeleteSyncService} on service layer.
      */
     public ResponseEntity<String> fetchSyncStatusesSince(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, JsonProcessingException {
         long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
@@ -153,11 +149,11 @@ public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends
 
     @Override
     protected void registerEndpoints() throws NoSuchMethodException {
-        if (!getIgnoredEndPoints().contains(getFetchSyncStatusUrl()))
+        if (!getIgnoredEndPoints().contains(getSyncEntityUrl()))
             registerEndpoint(createFetchEntitySyncStatusRequestMappingInfo(), "fetchSyncStatus");
-        if (!getIgnoredEndPoints().contains(getFetchSyncStatusesUrl()))
+        if (!getIgnoredEndPoints().contains(getSyncEntitiesUrl()))
             registerEndpoint(createFetchEntitySyncStatusesRequestMappingInfo(), "fetchSyncStatuses");
-        if (!getIgnoredEndPoints().contains(getFetchSyncStatusesSinceTsUrl()))
+        if (!getIgnoredEndPoints().contains(getSyncEntitiesSinceUrl()))
             registerEndpoint(createFetchEntitySyncStatusesSinceTsRequestMappingInfo(), "fetchSyncStatusesSince");
     }
 
@@ -176,7 +172,7 @@ public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends
 
     protected RequestMappingInfo createFetchEntitySyncStatusRequestMappingInfo() {
         return RequestMappingInfo
-                .paths(fetchSyncStatusUrl)
+                .paths(syncEntityUrl)
                 .methods(RequestMethod.GET)
                 .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .build();
@@ -184,7 +180,7 @@ public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends
 
     protected RequestMappingInfo createFetchEntitySyncStatusesSinceTsRequestMappingInfo() {
         return RequestMappingInfo
-                .paths(fetchSyncStatusesSinceTsUrl)
+                .paths(syncEntitiesSinceUrl)
                 .methods(RequestMethod.GET)
                 .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .build();
@@ -192,7 +188,7 @@ public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends
 
     protected RequestMappingInfo createFetchEntitySyncStatusesRequestMappingInfo() {
         return RequestMappingInfo
-                .paths(fetchSyncStatusesUrl)
+                .paths(syncEntitiesUrl)
                 .methods(RequestMethod.POST)
                 .consumes(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -216,9 +212,9 @@ public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends
     }
 
     protected void initUrls() {
-        this.fetchSyncStatusUrl = getBaseUrl() + "sync-status";
-        this.fetchSyncStatusesUrl = getBaseUrl() + "sync-statuses";
-        this.fetchSyncStatusesSinceTsUrl = getBaseUrl() + "sync-statuses-since";
+        this.syncEntityUrl = getBaseUrl() + "sync-entity";
+        this.syncEntitiesUrl = getBaseUrl() + "sync-entities";
+        this.syncEntitiesSinceUrl = getBaseUrl() + "sync-entities-since";
     }
 
 
@@ -226,28 +222,28 @@ public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends
         return service;
     }
 
-    public String getFetchSyncStatusUrl() {
-        return fetchSyncStatusUrl;
+    public String getSyncEntityUrl() {
+        return syncEntityUrl;
     }
 
-    public String getFetchSyncStatusesUrl() {
-        return fetchSyncStatusesUrl;
+    public String getSyncEntitiesUrl() {
+        return syncEntitiesUrl;
     }
 
-    public String getFetchSyncStatusesSinceTsUrl() {
-        return fetchSyncStatusesSinceTsUrl;
+    public String getSyncEntitiesSinceUrl() {
+        return syncEntitiesSinceUrl;
     }
 
-    public void setFetchSyncStatusUrl(String fetchSyncStatusUrl) {
-        this.fetchSyncStatusUrl = fetchSyncStatusUrl;
+    public void setSyncEntityUrl(String syncEntityUrl) {
+        this.syncEntityUrl = syncEntityUrl;
     }
 
-    public void setFetchSyncStatusesUrl(String fetchSyncStatusesUrl) {
-        this.fetchSyncStatusesUrl = fetchSyncStatusesUrl;
+    public void setSyncEntitiesUrl(String syncEntitiesUrl) {
+        this.syncEntitiesUrl = syncEntitiesUrl;
     }
 
-    public void setFetchSyncStatusesSinceTsUrl(String fetchSyncStatusesSinceTsUrl) {
-        this.fetchSyncStatusesSinceTsUrl = fetchSyncStatusesSinceTsUrl;
+    public void setSyncEntitiesSinceUrl(String syncEntitiesSinceUrl) {
+        this.syncEntitiesSinceUrl = syncEntitiesSinceUrl;
     }
 
     @Autowired

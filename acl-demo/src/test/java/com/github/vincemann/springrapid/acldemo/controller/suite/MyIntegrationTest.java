@@ -7,13 +7,19 @@ import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VetCo
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VisitControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.repo.*;
+import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.authtest.RapidUserControllerTestTemplate;
+import com.github.vincemann.springrapid.core.util.AopProxyUtils;
 import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.acls.model.AclCache;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.jdbc.Sql;
@@ -23,13 +29,9 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.mockito.Mockito.atLeast;
+
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-@TestExecutionListeners(
-        value = {
-                ClearAclCacheTestExecutionListener.class,
-        },
-        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
-)
 @Sql(scripts = "classpath:/remove-acl-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class MyIntegrationTest extends AbstractMvcTest
 {
@@ -71,9 +73,29 @@ public class MyIntegrationTest extends AbstractMvcTest
     protected RapidUserControllerTestTemplate userController;
 
 
+    @Autowired
+    private AclCache aclCache;
+
+
     @BeforeEach
     void setUp() {
         helper.setup();
+    }
+
+    @AfterEach
+    void tearDown() {
+        aclCache.clearCache();
+    }
+
+    public AuthMessage verifyMsgWasSent(String recipient) {
+        ArgumentCaptor<AuthMessage> msgCaptor = ArgumentCaptor.forClass(AuthMessage.class);
+
+        Mockito.verify(AopProxyUtils.getUltimateTargetObject(messageSender), atLeast(1))
+                .send(msgCaptor.capture());
+        AuthMessage sentData = msgCaptor.getValue();
+        Assertions.assertEquals(sentData.getRecipient(),recipient,"latest msg must be sent to recipient: " +recipient + " but was sent to: " + sentData.getRecipient());
+        Mockito.reset(AopProxyUtils.getUltimateTargetObject(messageSender));
+        return sentData;
     }
 
     @Override

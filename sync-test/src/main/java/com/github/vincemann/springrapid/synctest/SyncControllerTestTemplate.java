@@ -32,27 +32,27 @@ public abstract class SyncControllerTestTemplate<C extends SyncEntityController>
 
 
     public MockHttpServletRequestBuilder fetchSyncStatus(Long entityId, Date lastClientUpdate) {
-        return MockMvcRequestBuilders.get(controller.getFetchSyncStatusUrl())
+        return MockMvcRequestBuilders.get(controller.getSyncEntityUrl())
                 .param("id", entityId.toString())
                 .param("ts", String.valueOf(lastClientUpdate.getTime()));
     }
 
 
     public MockHttpServletRequestBuilder fetchSyncStatusesSinceTs(Date clientUpdate) {
-        return MockMvcRequestBuilders.get(controller.getFetchSyncStatusesSinceTsUrl())
+        return MockMvcRequestBuilders.get(controller.getSyncEntitiesSinceUrl())
                 .param("ts",String.valueOf(clientUpdate.getTime()));
     }
 
 
     public MockHttpServletRequestBuilder fetchSyncStatuses(List<LastFetchInfo> updateInfos) throws Exception {
         String jsonUpdateInfos = getController().getObjectMapper().writeValueAsString(updateInfos);
-        return MockMvcRequestBuilders.post(controller.getFetchSyncStatusesUrl())
+        return MockMvcRequestBuilders.post(controller.getSyncEntitiesUrl())
                 .content(jsonUpdateInfos).contentType(MediaType.APPLICATION_JSON_UTF8);
     }
 
     public EntitySyncStatus fetchSyncStatus_assertUpdate(Long entityId, Date lastClientUpdate, SyncStatus expectedStatus) throws Exception {
 
-        String json = mvc.perform(MockMvcRequestBuilders.get(controller.getFetchSyncStatusUrl())
+        String json = mvc.perform(MockMvcRequestBuilders.get(controller.getSyncEntityUrl())
                         .param("id", entityId.toString())
                         .param("ts", String.valueOf(lastClientUpdate.getTime())))
                 .andExpect(MockMvcResultMatchers.status().is(200))

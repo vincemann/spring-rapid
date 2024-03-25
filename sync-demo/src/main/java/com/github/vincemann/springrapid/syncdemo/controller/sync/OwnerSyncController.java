@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Controller
-public class OwnerSyncController extends SyncEntityController<Owner,Long, OwnerSyncService> {
+public class OwnerSyncController extends SyncEntityController<Owner,OwnerSyncService> {
 
     @RequestMapping("/api/core/owner/sync-statuses-with-telprefix")
     public ResponseEntity<List<EntitySyncStatus>> fetchSyncStatusesSinceTsWithTelnrPrefix(@RequestParam("ts") long timestamp, @RequestParam("prefix") String prefix){

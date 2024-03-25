@@ -49,12 +49,6 @@ public class RapidCoreAutoConfiguration {
         return new Message(messageSource);
     }
 
-    @ConditionalOnMissingBean(EndpointService.class)
-    @Bean
-    public EndpointService endpointService(RequestMappingHandlerMapping requestMappingHandlerMapping){
-        return new EndpointService(requestMappingHandlerMapping);
-    }
-
     @Autowired
     public void configureLazyToStringUtil(){
         LazyToStringUtil.setEntityManager(entityManager);

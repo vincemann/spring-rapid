@@ -2,8 +2,10 @@ package com.github.vincemann.springrapid.sync.model;
 
 
 /**
- * Response entity returned by controller for client.
+ * Response entity returned by {@link com.github.vincemann.springrapid.sync.controller.SyncEntityController} for client.
  * Encapsulates minimal information about sync status of specific entity.
+ *
+ * @see com.github.vincemann.springrapid.sync.controller.SyncEntityController
  */
 public class EntitySyncStatus {
 

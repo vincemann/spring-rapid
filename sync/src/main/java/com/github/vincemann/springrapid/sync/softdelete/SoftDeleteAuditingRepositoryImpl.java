@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.sync.softdelete;
 
+import com.github.vincemann.springrapid.core.model.IdAwareEntity;
+import com.github.vincemann.springrapid.core.util.MethodNameUtil;
 import com.github.vincemann.springrapid.sync.model.entity.AuditingEntity;
 import com.github.vincemann.springrapid.core.util.Specs;
 import org.springframework.data.domain.Sort;
@@ -101,8 +103,6 @@ public class SoftDeleteAuditingRepositoryImpl<E extends ISoftDeleteEntity<Id>, I
     protected <S, U extends E> Root<U> applySpecificationToCriteria(@Nullable Specification<U> spec, Class<U> domainClass,
                                                                     CriteriaQuery<S> query) {
 
-//        Assert.notNull(domainClass, "Domain class must not be null!");
-//        Assert.notNull(query, "CriteriaQuery must not be null!");
 
         Root<U> root = query.from(domainClass);
 
@@ -131,7 +131,7 @@ public class SoftDeleteAuditingRepositoryImpl<E extends ISoftDeleteEntity<Id>, I
 
         @Override
         public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-            return cb.greaterThan(root.get("lastModifiedDate"), since);
+            return cb.greaterThan(root.get(AuditingEntity.LAST_MOD_FIELD), since);
         }
     }
 

@@ -1,4 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.github.vincemann.springrapid.core.config.RapidCoreAutoConfiguration,\
-com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration,\
+com.github.vincemann.springrapid.core.config.RapidCoreWebAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidExceptionHandlerAutoConfiguration

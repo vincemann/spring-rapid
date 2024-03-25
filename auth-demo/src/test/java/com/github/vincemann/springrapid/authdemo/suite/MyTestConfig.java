@@ -15,8 +15,8 @@ public class MyTestConfig {
     }
 
     @Bean
-    public MyUserControllerTestTemplate userControllerTestTemplate(){
-        return new MyUserControllerTestTemplate();
+    public UserControllerTestTemplate userControllerTestTemplate(){
+        return new UserControllerTestTemplate();
     }
 
 
