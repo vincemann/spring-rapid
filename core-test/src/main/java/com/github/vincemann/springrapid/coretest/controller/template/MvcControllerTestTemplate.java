@@ -31,7 +31,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @Test
  * void test(){
- *      ReadPetDto response = petController.create(new CreatePetDto());
+ *      ReadPetDto response = mvc.perform(petController.create(new CreatePetDto())
+ *                                              .header(HttpHeaders.Authorization,myToken))
+ *                                  .andExpect(status().is2xxSuccessful());
  * }
  * @param <C> represented controller type
  */

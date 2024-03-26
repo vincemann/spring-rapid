@@ -18,8 +18,12 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,11 +31,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Optional;
 
 
@@ -52,6 +60,7 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
     private AuthorizationTokenService authorizationTokenService;
 
     private S userService;
+    private ThymeleafViewResolver viewResolver;
 
     //              CONTROLLER METHODS
 
@@ -96,13 +105,19 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
         return okWithToken(updated.getContactInformation());
     }
 
-    public String showResetPassword(HttpServletRequest request, HttpServletResponse response, Model model) throws BadEntityException {
+    public ResponseEntity<?> showResetPassword(HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
         String code = readRequestParam(request, "code");
         log.debug(LogMessage.format("received show reset password request with code: %s", code));
         model.addAttribute("resetPasswordUrl", getResetPasswordUrl());
         model.addAttribute("resetPasswordDto", new ResetPasswordView());
-        return "reset-password";
+        // Manually resolving the view
+        View view = viewResolver.resolveViewName("reset-password", LocaleContextHolder.getLocale());
+        if (view != null) {
+            view.render(model.asMap(), request, response);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
+
 
 
     public ResponseEntity<Void> changePassword(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
@@ -508,6 +523,11 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
 
     //              INJECT DEPENDENCIES
 
+
+    @Autowired
+    public void setViewResolver(ThymeleafViewResolver viewResolver) {
+        this.viewResolver = viewResolver;
+    }
 
     @Autowired
     @Secured

@@ -1,10 +1,14 @@
 package com.github.vincemann.springrapid.auth.dto;
 
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
 
 public class ResetPasswordDto implements Serializable {
+    @NotEmpty
     String newPassword;
+
+    @NotEmpty
     String code;
 
     public ResetPasswordDto(String newPassword, String code) {

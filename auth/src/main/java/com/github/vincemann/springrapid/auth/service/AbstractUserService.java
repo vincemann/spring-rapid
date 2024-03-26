@@ -4,6 +4,7 @@ package com.github.vincemann.springrapid.auth.service;
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.*;
+import com.github.vincemann.springrapid.auth.service.val.ContactInformationValidator;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -33,6 +34,8 @@ public abstract class AbstractUserService
 
     private RapidPasswordEncoder passwordEncoder;
     private PasswordValidator passwordValidator;
+
+    private ContactInformationValidator contactInformationValidator;
     private RapidAclService aclService;
     private R repository;
 
@@ -148,6 +151,7 @@ public abstract class AbstractUserService
         Assert.notNull(userId);
         Assert.notNull(contactInformation);
 
+        contactInformationValidator.validate(contactInformation);
         U user = RepositoryUtil.findPresentById(repository, userId);
         user.setContactInformation(contactInformation);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
@@ -191,6 +195,12 @@ public abstract class AbstractUserService
         this.repository = repository;
     }
 
+
+    @Autowired
+    public void setContactInformationValidator(ContactInformationValidator contactInformationValidator) {
+        this.contactInformationValidator = contactInformationValidator;
+    }
+
     public R getRepository() {
         return repository;
     }
@@ -211,6 +221,8 @@ public abstract class AbstractUserService
     protected RapidAclService getAclService() {
         return aclService;
     }
+
+
 
 
 }

@@ -18,7 +18,7 @@ public class MyUserServiceImpl
             implements MyUserService
 {
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Optional<User> findByLastName(String name) {
         return getRepository().findByLastName(name);

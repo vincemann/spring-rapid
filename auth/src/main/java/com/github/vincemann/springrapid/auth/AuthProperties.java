@@ -1,9 +1,11 @@
 package com.github.vincemann.springrapid.auth;
 
+import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -231,15 +233,18 @@ public class AuthProperties {
 	 */
 	public static class Admin {
 		/**
-		 * Login ID of the initial Admin user to be created 
+		 * Login ID of the initial Admin user to be created
 		 */
+		@NotEmpty
 		public String contactInformation;
 		
 		/**
 		 * Password of the initial Admin user to be created 
 		 */
+		@NotEmpty
 		public String password;
 
+		@Nullable
 		public Boolean replace;
 
 		public Admin(String contactInformation, String password) {
@@ -248,7 +253,7 @@ public class AuthProperties {
 			this.replace = true;
 		}
 
-		public Admin(String contactInformation, String password, Boolean replace) {
+		public Admin(String contactInformation, String password,@Nullable Boolean replace) {
 			this.contactInformation = contactInformation;
 			this.password = password;
 			this.replace = replace;
