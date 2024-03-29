@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         //todo realize this via security config api
         //https://www.baeldung.com/spring-exclude-filter
-        if (request.getRequestURI().equals(authProperties.getController().getLoginUrl())){
+        if (request.getRequestURI().equals(authProperties.getLoginUrl())){
             filterChain.doFilter(request, response);
             return;
         }

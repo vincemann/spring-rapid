@@ -83,23 +83,23 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void login(HttpSecurity http) throws Exception {
 		// using custom login configurer here to allow safer authentication by sending credentials in body
 		http.apply(new CustomLoginConfigurer<>(objectMapper))
-				.loginPage(loginPage())
-				.loginProcessingUrl(loginProcessingUrl())
+//				.loginPage(loginPage())
+				.loginProcessingUrl(loginUrl())
 				.successHandler(authenticationSuccessHandler)
 				.failureHandler(new SimpleUrlAuthenticationFailureHandler());
 	}
 
-
-	protected String loginProcessingUrl(){
-		return properties.getController().getLoginUrl();
-	}
 	/**
 	 * Override this to change login URL
 	 *
 	 * @return
 	 */
 	protected String loginPage() {
-		return properties.getController().getLoginUrl();
+		return null;
+	}
+
+	protected String loginUrl(){
+		return properties.getLoginUrl();
 	}
 	
 	/**

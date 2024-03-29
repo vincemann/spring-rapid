@@ -205,7 +205,7 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
     }
 
     protected void initUrls() {
-        loginUrl = getAuthProperties().getController().getLoginUrl();
+        loginUrl = getAuthProperties().getLoginUrl();
 
         resetPasswordUrl = getAuthProperties().getController().getResetPasswordUrl();
         resetPasswordViewUrl = getAuthProperties().getController().getResetPasswordViewUrl();

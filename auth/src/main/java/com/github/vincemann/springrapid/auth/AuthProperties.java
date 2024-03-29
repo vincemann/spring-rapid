@@ -18,6 +18,8 @@ public class AuthProperties {
 
 	@NotEmpty
 	public String applicationUrl;
+	@NotEmpty
+	public String loginUrl = "/api/core/login";
 
 	public AuthProperties() {
 		controller = new Controller();
@@ -43,8 +45,6 @@ public class AuthProperties {
 		// init with default values
 		public void initUrls(){
 			userBaseUrl = "/api/core/user";
-			loginUrl = userBaseUrl+"/login";
-
 			signupUrl = getUserBaseUrl() +"/signup";
 			resetPasswordUrl = getUserBaseUrl() +"/reset-password";
 			resetPasswordViewUrl = getUserBaseUrl() +"/reset-password-view";
@@ -62,7 +62,6 @@ public class AuthProperties {
 		}
 
 		public String userBaseUrl;
-		public String loginUrl;
 
 		public String signupUrl;
 		public String resetPasswordUrl;
@@ -79,9 +78,6 @@ public class AuthProperties {
 		public String testTokenUrl;
 		public String blockUserUrl;
 
-		public String getLoginUrl() {
-			return loginUrl;
-		}
 
 		public String getUserBaseUrl() {
 			return userBaseUrl;
@@ -141,10 +137,6 @@ public class AuthProperties {
 
 		public void setUserBaseUrl(String userBaseUrl) {
 			this.userBaseUrl = userBaseUrl;
-		}
-
-		public void setLoginUrl(String loginUrl) {
-			this.loginUrl = loginUrl;
 		}
 
 		public void setSignupUrl(String signupUrl) {
@@ -391,5 +383,13 @@ public class AuthProperties {
 
 	public void setApplicationUrl(String applicationUrl) {
 		this.applicationUrl = applicationUrl;
+	}
+
+	public String getLoginUrl() {
+		return loginUrl;
+	}
+
+	public void setLoginUrl(String loginUrl) {
+		this.loginUrl = loginUrl;
 	}
 }

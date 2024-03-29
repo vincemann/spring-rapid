@@ -66,11 +66,11 @@ public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends
 
     /**
      * Endpoint for single entity sync.
-     * GET /api/core/entity/sync-entity?id=42,ts=...
+     * GET /api/core/entity/sync?id=42,ts=...
      * Returns 200 if updated with json body of {@link EntitySyncStatus}.
      * Returns 204 if no update is needed.
      */
-    public ResponseEntity<String> fetchSyncStatus(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, JsonProcessingException {
+    public ResponseEntity<String> findSyncStatus(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, JsonProcessingException {
         try {
             Serializable id = idConverter.toId(readRequestParam(request,"id"));
             log.debug(LogMessage.format("fetching entities sync status for entity with id: %s",id.toString()));
@@ -101,10 +101,10 @@ public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends
      * Returns List of {@link EntitySyncStatus} for those that need update with respective {@link EntitySyncStatus#getStatus()}.
      * If no updated required at all, returns 204 without body.
      *
-     * POST /api/core/entity/sync-entities
+     * POST /api/core/entity/sync
      *
      */
-    public ResponseEntity<String> fetchSyncStatuses(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
+    public ResponseEntity<String> findSyncStatuses(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
         try {
             String json = readBody(request);
             CollectionType idSetType = getObjectMapper()
@@ -129,11 +129,11 @@ public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends
      * Endpoint for fetching all updates since a specific timestamp for entity table.
      * Client passes timestamp of when last client update.
      * Server returns Set of {@link EntitySyncStatus} of all entities, that have been removed, added or updated since then.
-     * GET /api/core/entity/sync-entities-since?ts=...
+     * GET /api/core/entity/sync-all?ts=...
      *
      * Note that removed entities can only be determined when using {@link com.github.vincemann.springrapid.sync.softdelete.SoftDeleteSyncService} on service layer.
      */
-    public ResponseEntity<String> fetchSyncStatusesSince(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, JsonProcessingException {
+    public ResponseEntity<String> findSyncStatusesSince(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, JsonProcessingException {
         long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
 
         log.debug(LogMessage.format("find sync statuses since timestamp request received. Timestamp: %s",new Date(lastUpdateTimestamp).toString()));
@@ -151,11 +151,11 @@ public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends
     @Override
     protected void registerEndpoints() throws NoSuchMethodException {
         if (!getIgnoredEndPoints().contains(getSyncEntityUrl()))
-            registerEndpoint(createFetchEntitySyncStatusRequestMappingInfo(), "fetchSyncStatus");
+            registerEndpoint(createFetchEntitySyncStatusRequestMappingInfo(), "findSyncStatus");
         if (!getIgnoredEndPoints().contains(getSyncEntitiesUrl()))
-            registerEndpoint(createFetchEntitySyncStatusesRequestMappingInfo(), "fetchSyncStatuses");
+            registerEndpoint(createFetchEntitySyncStatusesRequestMappingInfo(), "findSyncStatuses");
         if (!getIgnoredEndPoints().contains(getSyncEntitiesSinceUrl()))
-            registerEndpoint(createFetchEntitySyncStatusesSinceTsRequestMappingInfo(), "fetchSyncStatusesSince");
+            registerEndpoint(createFetchEntitySyncStatusesSinceTsRequestMappingInfo(), "findSyncStatusesSince");
     }
 
 
@@ -213,9 +213,9 @@ public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends
     }
 
     protected void initUrls() {
-        this.syncEntityUrl = getBaseUrl() + "sync-entity";
-        this.syncEntitiesUrl = getBaseUrl() + "sync-entities";
-        this.syncEntitiesSinceUrl = getBaseUrl() + "sync-entities-since";
+        this.syncEntityUrl = getBaseUrl() + "sync";
+        this.syncEntitiesUrl = getBaseUrl() + "sync";
+        this.syncEntitiesSinceUrl = getBaseUrl() + "sync-all";
     }
 
 

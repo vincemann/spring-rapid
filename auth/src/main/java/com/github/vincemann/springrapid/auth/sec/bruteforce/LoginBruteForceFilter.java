@@ -40,7 +40,7 @@ public class LoginBruteForceFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return !path.equals(properties.getController().getLoginUrl());
+        return !path.equals(properties.getLoginUrl());
     }
 
 }
