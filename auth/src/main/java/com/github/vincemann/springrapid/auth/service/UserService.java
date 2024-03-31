@@ -15,6 +15,7 @@ import java.util.Optional;
 
 public interface UserService<U extends AbstractUser<ID>, ID extends Serializable>
 {
+    int DEFAULT_RATING = 0;
 
     Class<U> getEntityClass();
     U create( U user) throws BadEntityException;
