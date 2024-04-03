@@ -89,7 +89,14 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
     public ResponseEntity<Void> forgotPassword(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException {
         String contactInformation = readRequestParam(request, "ci");
         log.debug(LogMessage.format("received forgot password request for: %s", contactInformation));
-        passwordService.forgotPassword(contactInformation);
+        try {
+            passwordService.forgotPassword(contactInformation);
+        }catch (EntityNotFoundException e){
+            // dont allow to see if user exists
+            log.debug("entity not found, but still sending 204 to avoid scanning if user is registered",e);
+            return okNoContent();
+        }
+
         return okNoContent();
     }
 
