@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.*;
 import com.github.vincemann.springrapid.auth.service.val.ContactInformationValidator;
+import com.github.vincemann.springrapid.auth.service.val.InsufficientPasswordStrengthException;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -63,7 +64,7 @@ public abstract class AbstractUserService
 
     @Transactional
     @Override
-    public U create(U user) throws BadEntityException {
+    public U create(U user) throws BadEntityException, InsufficientPasswordStrengthException {
         Assert.notNull(user,"user to create must not be null");
         VerifyEntity.notNull(user.getPassword(),"password");
         VerifyEntity.notNull(user.getContactInformation(),"contactInformation");
@@ -113,7 +114,7 @@ public abstract class AbstractUserService
 
     @Transactional
     @Override
-    public U updatePassword(Id userId, String password) throws EntityNotFoundException, BadEntityException {
+    public U updatePassword(Id userId, String password) throws EntityNotFoundException, BadEntityException, InsufficientPasswordStrengthException {
         Assert.notNull(password);
         Assert.notNull(userId);
 

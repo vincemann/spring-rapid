@@ -131,7 +131,7 @@ public class RapidAclAutoConfiguration {
     @ConditionalOnMissingBean(LookupStrategy.class)
     @Bean
     public LookupStrategy lookupStrategy() {
-        return new BasicLookupStrategy(dataSource, aclCache(), aclAuthorizationStrategy(), new ConsoleAuditLogger());
+        return new BasicLookupStrategy(dataSource, aclCache(), aclAuthorizationStrategy(),permissionGrantingStrategy());
     }
 
     @ConditionalOnMissingBean(JdbcMutableAclService.class)

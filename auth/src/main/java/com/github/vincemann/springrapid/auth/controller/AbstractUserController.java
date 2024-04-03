@@ -11,6 +11,7 @@ import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.*;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
+import com.github.vincemann.springrapid.auth.service.val.InsufficientPasswordStrengthException;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.core.controller.AbstractController;
@@ -103,7 +104,7 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
     /**
      * Resets password after it's forgotten
      */
-    public ResponseEntity<Void> resetPassword(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, BadTokenException, IOException {
+    public ResponseEntity<Void> resetPassword(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, BadTokenException, IOException, InsufficientPasswordStrengthException {
         log.debug("received reset password request");
         String body = readBody(request);
         ResetPasswordDto dto = getObjectMapper().readValue(body, ResetPasswordDto.class);
@@ -127,7 +128,7 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
 
 
 
-    public ResponseEntity<Void> changePassword(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
+    public ResponseEntity<Void> changePassword(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException, InsufficientPasswordStrengthException {
         log.debug("received change password request");
         String body = readBody(request);
         ChangePasswordDto dto = getObjectMapper().readValue(body, ChangePasswordDto.class);

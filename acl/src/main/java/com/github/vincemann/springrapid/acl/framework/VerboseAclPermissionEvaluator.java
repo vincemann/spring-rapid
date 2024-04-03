@@ -99,7 +99,15 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator {
 
         try {
             // Lookup only ACL for SIDs we're interested in
-            Acl acl = aclService.readAclById(oid, sids);
+            Acl acl;
+            try {
+                acl = aclService.readAclById(oid, sids);
+            }catch (NotFoundException e){
+                log.debug(LogMessage.format("No acl found for oid: '%s'",AclUtils.objectIdentityToString(oid)));
+                log.debug("details: " + e.getMessage());
+                return false;
+            }
+
             if (log.isDebugEnabled()) {
                 AclUtils.logAcl(acl, log);
             }
@@ -116,9 +124,10 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator {
             }
 
         } catch (NotFoundException nfe) {
+            nfe.printStackTrace();
             if (log.isDebugEnabled()) {
-                log.debug(LogMessage.format("No acl found for oid: '%s'",AclUtils.objectIdentityToString(oid)));
-                log.debug("details: " + nfe.getMessage());
+                log.debug("no matching ace found");
+                log.debug(nfe.getMessage());
                 log.debug("Access not granted");
             }
         }

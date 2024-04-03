@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.service.val.InsufficientPasswordStrengthException;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.validation.annotation.Validated;
@@ -18,14 +19,14 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     int DEFAULT_RATING = 0;
 
     Class<U> getEntityClass();
-    U create( U user) throws BadEntityException;
+    U create( U user) throws BadEntityException, InsufficientPasswordStrengthException;
     Optional<U> findByContactInformation(String contactInformation);
 
     U addRole(ID userId, String role) throws EntityNotFoundException, BadEntityException;
 
     U removeRole(ID userId, String role) throws EntityNotFoundException, BadEntityException;
 
-    U updatePassword( ID userId, String password) throws EntityNotFoundException, BadEntityException;
+    U updatePassword( ID userId, String password) throws EntityNotFoundException, BadEntityException, InsufficientPasswordStrengthException;
 
     U updateContactInformation( ID userId, String contactInformation) throws EntityNotFoundException, BadEntityException;
 

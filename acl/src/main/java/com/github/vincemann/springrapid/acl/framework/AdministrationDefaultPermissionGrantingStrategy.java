@@ -40,10 +40,10 @@ public class AdministrationDefaultPermissionGrantingStrategy extends DefaultPerm
                 boolean scanNextSid = true;
 
                 for (AccessControlEntry ace : aces) {
-
                     if (ace.getSid().equals(sid)) {
                         if (log.isDebugEnabled()){
-                           log.debug("checking ace: " + AclUtils.aceToString(ace));
+                            // ace with matching sid
+                            log.debug("checking ace: " + AclUtils.aceToString(ace));
                         }
                         if (isGranted(ace, p)) {
 

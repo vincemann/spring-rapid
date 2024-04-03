@@ -17,6 +17,7 @@ import javax.mail.internet.MimeMessage;
  * using an injected JavaMailSender.
  * 
  * @author Sanjay Patel
+ * @modifiedBy vincemann
  *
  */
 public class SmtpMailSender implements MailSender<MailData> {
@@ -52,7 +53,7 @@ public class SmtpMailSender implements MailSender<MailData> {
 			// set the attributes
 			helper.setSubject(mail.getTopic());
 			helper.setTo(mail.getTo());
-			message.setFrom(Message.get("com.github.vincemann.contactInformationSender"));
+			helper.setFrom(Message.get("com.github.vincemann.contactInformationSender"));
 			helper.setText(mail.getBody(), true); // true indicates html
 			// continue using helper object for more functionalities like adding attachments, etc.  
 			
@@ -61,7 +62,7 @@ public class SmtpMailSender implements MailSender<MailData> {
 		}
 		
 		//send the mail
-		javaMailSender.send(message);		
+		javaMailSender.send(helper.getMimeMessage());
 		log.info("Sent SMTP mail from thread " + Thread.currentThread().getName());    	
 	}
 

@@ -25,18 +25,6 @@ public class RapidMailAutoConfiguration {
     }
 
     /**
-     * Configures a MockMailSender when the property
-     * <code>spring.mail.host</code> isn't defined.
-     */
-    @Bean
-    @ConditionalOnMissingBean(MailSender.class)
-    @ConditionalOnProperty(name="spring.mail.host",matchIfMissing=true)
-    public MailSender<?> mockMailSender() {
-        return new MockMailSender();
-    }
-
-
-    /**
      * Configures an SmtpMailSender when the property
      * <code>spring.mail.host</code> is defined.
      *
@@ -54,5 +42,18 @@ public class RapidMailAutoConfiguration {
     public MailSender<?> smtpMailSender(JavaMailSender javaMailSender) {
         return new SmtpMailSender(javaMailSender);
     }
+
+    /**
+     * Configures a MockMailSender when the property
+     * <code>spring.mail.host</code> isn't defined.
+     */
+    @Bean
+    @ConditionalOnMissingBean(MailSender.class)
+    @ConditionalOnProperty(name="spring.mail.host",matchIfMissing=true)
+    public MailSender<?> mockMailSender() {
+        return new MockMailSender();
+    }
+
+
 
 }

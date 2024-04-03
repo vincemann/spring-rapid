@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.acl.service.SecuredServiceDecorator;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
+import com.github.vincemann.springrapid.auth.service.val.InsufficientPasswordStrengthException;
 import com.github.vincemann.springrapid.core.sec.AuthorizationUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -49,7 +50,7 @@ public abstract class SecuredUserServiceDecorator
 
     @Transactional
     @Override
-    public U create(U user) throws BadEntityException {
+    public U create(U user) throws BadEntityException, InsufficientPasswordStrengthException {
         AuthorizationUtils.assertHasRoles(AuthRoles.ADMIN);
         return getDecorated().create(user);
     }

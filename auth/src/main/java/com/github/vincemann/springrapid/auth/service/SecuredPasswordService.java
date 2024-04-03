@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.acl.AclTemplate;
 import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
+import com.github.vincemann.springrapid.auth.service.val.InsufficientPasswordStrengthException;
 import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
@@ -34,12 +35,12 @@ public class SecuredPasswordService implements PasswordService {
     }
 
     @Override
-    public AbstractUser resetPassword(ResetPasswordDto dto) throws EntityNotFoundException, BadEntityException, BadTokenException {
+    public AbstractUser resetPassword(ResetPasswordDto dto) throws EntityNotFoundException, BadEntityException, BadTokenException, InsufficientPasswordStrengthException {
         return decorated.resetPassword(dto);
     }
 
     @Override
-    public AbstractUser changePassword(ChangePasswordDto dto) throws EntityNotFoundException, BadEntityException {
+    public AbstractUser changePassword(ChangePasswordDto dto) throws EntityNotFoundException, BadEntityException, InsufficientPasswordStrengthException {
         // fail fast
         VerifyEntity.notEmpty(dto.getContactInformation(),"contact information");
         VerifyEntity.notEmpty(dto.getNewPassword(),"new password");

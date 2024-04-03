@@ -8,7 +8,7 @@ import java.util.List;
 
 public class PasswordValidatorImpl implements PasswordValidator {
     @Override
-    public void validate(String password) throws BadEntityException {
+    public void validate(String password) throws InsufficientPasswordStrengthException {
         final org.passay.PasswordValidator validator = new org.passay.PasswordValidator(Arrays.asList(
                 new LengthRule(8, 80),
                 new UppercaseCharacterRule(1),
@@ -22,7 +22,7 @@ public class PasswordValidatorImpl implements PasswordValidator {
         if (ruleResult.isValid()){
             return;
         }
-        throw new BadEntityException(constructErrorMsg(ruleResult));
+        throw new InsufficientPasswordStrengthException(constructErrorMsg(ruleResult));
     }
 
     protected String constructErrorMsg(RuleResult ruleResult){

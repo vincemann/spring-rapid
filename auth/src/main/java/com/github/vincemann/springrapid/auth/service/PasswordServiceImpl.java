@@ -9,6 +9,7 @@ import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
+import com.github.vincemann.springrapid.auth.service.val.InsufficientPasswordStrengthException;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
 import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
@@ -62,7 +63,7 @@ public class PasswordServiceImpl implements PasswordService {
 
     @Transactional
     @Override
-    public AbstractUser resetPassword(ResetPasswordDto dto) throws EntityNotFoundException, BadEntityException, BadTokenException {
+    public AbstractUser resetPassword(ResetPasswordDto dto) throws EntityNotFoundException, BadEntityException, BadTokenException, InsufficientPasswordStrengthException {
         VerifyEntity.notEmpty(dto.getNewPassword(),"newPassword");
         VerifyEntity.notEmpty(dto.getCode(),"code");
 
@@ -80,7 +81,7 @@ public class PasswordServiceImpl implements PasswordService {
 
     @Transactional
     @Override
-    public AbstractUser changePassword(ChangePasswordDto dto) throws EntityNotFoundException, BadEntityException {
+    public AbstractUser changePassword(ChangePasswordDto dto) throws EntityNotFoundException, BadEntityException, InsufficientPasswordStrengthException {
         VerifyEntity.notEmpty(dto.getNewPassword(),"new password");
         VerifyEntity.notEmpty(dto.getOldPassword(),"old password");
         VerifyEntity.notEmpty(dto.getContactInformation(),"contact-information");
