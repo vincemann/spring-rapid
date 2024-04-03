@@ -16,6 +16,7 @@ import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
+import com.github.vincemann.springrapid.core.util.Message;
 import com.github.vincemann.springrapid.core.util.RepositoryUtil;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -83,11 +84,15 @@ public class VerificationServiceImpl implements VerificationService {
                 .queryParam("code", verificationCode)
                 .toUriString();
         log.info("verify link: " + verifyLink);
+
+        String body = Message.get("com.github.vincemann.verifyContactInformation", verifyLink);
+
         AuthMessage message = AuthMessage.Builder.builder()
                 .link(verifyLink)
                 .topic(VERIFY_CONTACT_INFORMATION_AUDIENCE)
                 .code(verificationCode)
                 .recipient(user.getContactInformation())
+                .body(body)
                 .build();
         messageSender.send(message);
 

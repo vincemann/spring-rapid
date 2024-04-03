@@ -16,7 +16,7 @@ import com.github.vincemann.springrapid.core.Root;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.id.IdConverter;
-import com.github.vincemann.springrapid.core.util.RepositoryUtil;
+import com.github.vincemann.springrapid.core.util.Message;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.apache.commons.logging.Log;
@@ -26,9 +26,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.io.Serializable;
-import java.util.Optional;
 
 import static com.github.vincemann.springrapid.auth.util.UserUtils.extractUserFromClaims;
 import static com.github.vincemann.springrapid.auth.util.UserUtils.findPresentByContactInformation;
@@ -122,11 +119,15 @@ public class PasswordServiceImpl implements PasswordService {
                 .queryParam("code", forgotPasswordCode)
                 .toUriString();
         log.info("forgotPasswordLink: " + forgotPasswordLink);
+
+        String body = Message.get("com.github.vincemann.forgotPasswordMsg", forgotPasswordLink);
+
         AuthMessage message = AuthMessage.Builder.builder()
                 .link(forgotPasswordLink)
                 .topic(FORGOT_PASSWORD_AUDIENCE)
                 .code(forgotPasswordCode)
                 .recipient(user.getContactInformation())
+                .body(body)
                 .build();
 
         messageSender.send(message);

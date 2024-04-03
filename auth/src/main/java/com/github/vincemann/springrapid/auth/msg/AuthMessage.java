@@ -5,19 +5,18 @@ public class AuthMessage {
     private String topic;
     private String code;
     private String recipient;
+    private String body;
 
-    public AuthMessage(String link, String topic, String code, String recipient) {
+    public AuthMessage(String link, String topic, String code, String recipient, String body) {
         this.link = link;
         this.topic = topic;
         this.code = code;
         this.recipient = recipient;
+        this.body = body;
     }
 
     public AuthMessage() {
     }
-
-
-
 
 
     public String getLink() {
@@ -36,8 +35,8 @@ public class AuthMessage {
         return recipient;
     }
 
-    public void setRecipient(String recipient) {
-        this.recipient = recipient;
+    public String getBody() {
+        return body;
     }
 
     @Override
@@ -55,6 +54,8 @@ public class AuthMessage {
         private String topic;
         private String code;
         private String recipient;
+
+        private String body;
 
         private Builder() {
         }
@@ -78,13 +79,18 @@ public class AuthMessage {
             return this;
         }
 
+        public Builder body(String body) {
+            this.body = body;
+            return this;
+        }
+
         public Builder recipient(String recipient) {
             this.recipient = recipient;
             return this;
         }
 
         public AuthMessage build() {
-            return new AuthMessage(link, topic, code, recipient);
+            return new AuthMessage(link, topic, code, recipient, body);
         }
     }
 }

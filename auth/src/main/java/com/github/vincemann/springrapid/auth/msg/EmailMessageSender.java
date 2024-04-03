@@ -11,12 +11,10 @@ public class EmailMessageSender implements MessageSender {
 
     @Override
     public void send(AuthMessage message) {
-        String body = Message.get("com.github.vincemann.verifyContactInformation", message.getLink())
-                .replace("contactInformation", "email");
         MailData mailData = MailData.Builder.builder()
                 .to(message.getRecipient())
                 .topic(message.getTopic())
-                .body(body)
+                .body(message.getBody())
                 .link(message.getLink())
                 .code(message.getCode())
                 .build();

@@ -11,6 +11,7 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.EntityUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.LastFetchInfo;
+import com.github.vincemann.springrapid.sync.model.entity.IAuditingEntity;
 import com.github.vincemann.springrapid.sync.service.SyncService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,7 +42,7 @@ import java.util.stream.Collectors;
  * @see EntitySyncStatus
  * @see SyncService
  */
-public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends SyncService<E,?>>
+public abstract class SyncEntityController<E extends IAuditingEntity<?>,S extends SyncService<E,?>>
         extends AbstractController
         implements InitializingBean {
 
@@ -213,7 +214,7 @@ public abstract class SyncEntityController<E extends AuditingEntity<?>,S extends
     }
 
     protected void initUrls() {
-        this.syncEntityUrl = getBaseUrl() + "sync";
+        this.syncEntityUrl = getBaseUrl() + "sync-entity";
         this.syncEntitiesUrl = getBaseUrl() + "sync";
         this.syncEntitiesSinceUrl = getBaseUrl() + "sync-all";
     }
