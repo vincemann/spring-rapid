@@ -120,7 +120,7 @@ public class PasswordServiceImpl implements PasswordService {
                 .toUriString();
         log.info("forgotPasswordLink: " + forgotPasswordLink);
 
-        String body = Message.get("com.github.vincemann.forgotPasswordMsg", forgotPasswordLink);
+        String body = Message.get("com.github.vincemann.forgotPasswordMessage", forgotPasswordLink);
 
         AuthMessage message = AuthMessage.Builder.builder()
                 .link(forgotPasswordLink)

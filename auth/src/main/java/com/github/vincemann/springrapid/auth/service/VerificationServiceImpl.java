@@ -85,7 +85,7 @@ public class VerificationServiceImpl implements VerificationService {
                 .toUriString();
         log.info("verify link: " + verifyLink);
 
-        String body = Message.get("com.github.vincemann.verifyContactInformation", verifyLink);
+        String body = Message.get("com.github.vincemann.verifyContactInformationMessage", verifyLink);
 
         AuthMessage message = AuthMessage.Builder.builder()
                 .link(verifyLink)
