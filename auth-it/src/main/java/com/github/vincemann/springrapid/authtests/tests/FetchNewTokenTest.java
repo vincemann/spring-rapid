@@ -46,14 +46,6 @@ public class FetchNewTokenTest extends AuthIntegrationTest {
 		String newToken = userController.fetchNewToken2xx(token);
 		assertTokenWorks(newToken,user.getId());
 	}
-	
-	@Test
-	public void cantFetchTokenForDiffUser() throws Exception {
-		AbstractUser<?> user = testAdapter.createUser();
-		AbstractUser<?> secondUser = testAdapter.createSecondUser();
-		String token = userController.login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
-		mvc.perform(userController.fetchNewToken(token,SECOND_USER_CONTACT_INFORMATION))
-				.andExpect(status().isForbidden());
-	}
+
 
 }

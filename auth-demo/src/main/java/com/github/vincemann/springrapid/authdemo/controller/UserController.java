@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.authdemo.controller;
 
-import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
+import com.github.vincemann.springrapid.acl.AclUserController;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.authdemo.dto.ReadUserDto;
 import com.github.vincemann.springrapid.authdemo.dto.SignupDto;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 
 @Controller
-public class UserController extends AbstractUserController<MyUserService>  {
+public class UserController extends AclUserController<MyUserService> {
 
     private MySignupService signupService;
     private UserMappingService mappingService;

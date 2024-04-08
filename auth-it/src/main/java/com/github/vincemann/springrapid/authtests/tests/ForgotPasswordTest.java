@@ -26,13 +26,8 @@ public class ForgotPasswordTest extends AuthIntegrationTest {
 
 
 	@Test
-	public void cantIssueForgotPasswordForInvalidContactInformation() throws Exception {
+	public void whenIssueForgotPasswordForNullOrEmptyContactInformation_thenBadRequest() throws Exception {
 		AbstractUser<?> user = testAdapter.createUser();
-
-		// Unknown contactInformation
-		mvc.perform(userController.forgotPassword(UNKNOWN_CONTACT_INFORMATION))
-				.andExpect(status().isNotFound());
-
 
 		// Null contactInformation
 		mvc.perform(userController.forgotPassword(null))
@@ -41,6 +36,18 @@ public class ForgotPasswordTest extends AuthIntegrationTest {
 		// Blank contactInformation
 		mvc.perform(userController.forgotPassword(""))
 				.andExpect(status().isBadRequest());
+
+		verifyNoMsgSent();
+	}
+
+	// avoid user account detection
+	@Test
+	public void givenIssueForgotPasswordForInvalidContactInformation_failsSilently() throws Exception {
+		AbstractUser<?> user = testAdapter.createUser();
+
+		// Unknown contactInformation
+		mvc.perform(userController.forgotPassword(UNKNOWN_CONTACT_INFORMATION))
+				.andExpect(status().is(204));
 
 		verifyNoMsgSent();
 	}

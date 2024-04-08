@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.authexceptions;
+package com.github.vincemann.springrapid.authex;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.lemon.exceptions.AbstractBadRequestExceptionHandler;

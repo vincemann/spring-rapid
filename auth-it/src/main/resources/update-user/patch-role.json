@@ -1,3 +1,0 @@
-[
-  {"op": "replace", "path": "/roles", "value": ["ROLE_ADMIN"]}
-]

@@ -57,7 +57,6 @@ public class AuthenticationSuccessHandler
 
 
 	@Autowired
-	@Root
 	public void setAuthTokenService(UserAuthTokenService authTokenService) {
 		this.authTokenService = authTokenService;
 	}

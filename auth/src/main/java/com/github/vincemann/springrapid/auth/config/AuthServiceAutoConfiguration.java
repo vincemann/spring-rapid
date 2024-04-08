@@ -65,7 +65,6 @@ public class AuthServiceAutoConfiguration {
         return new PasswordServiceImpl();
     }
 
-    @Root
     @Bean
     @ConditionalOnMissingBean(name = "userAuthTokenService")
     public UserAuthTokenService userAuthTokenService(){

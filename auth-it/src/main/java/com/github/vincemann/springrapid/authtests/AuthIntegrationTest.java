@@ -1,11 +1,13 @@
 package com.github.vincemann.springrapid.authtests;
 
+import com.github.vincemann.springrapid.auth.AbstractUser;
 import com.github.vincemann.springrapid.auth.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.jwt.BadTokenException;
 import com.github.vincemann.springrapid.auth.jwt.JweTokenService;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
+import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.util.AopProxyUtils;
 import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.authtest.AbstractUserControllerTestTemplate;
@@ -29,7 +31,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.Serializable;
 import java.text.ParseException;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -40,7 +44,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @SpringBootTest(properties = "rapid-auth.create-admins=false")
-@Sql(scripts = "classpath:/test-data/clear-acl-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public abstract class AuthIntegrationTest {
@@ -66,6 +69,9 @@ public abstract class AuthIntegrationTest {
 
     @Autowired
     protected TransactionTemplate transactionTemplate;
+
+    @Autowired
+    protected AbstractUserService userService;
 
     @Autowired
     protected AbstractUserRepository userRepository;
@@ -139,7 +145,8 @@ public abstract class AuthIntegrationTest {
     }
 
     protected void removeTestUsers(){
-        userRepository.deleteAll();
+        userRepository.findAll().stream().map((user) -> ((AbstractUser) user).getId())
+                .forEach(id -> userService.delete(((Serializable) id)));
     }
 }
 

@@ -1,7 +1,7 @@
-package com.github.vincemann.springrapid.authexceptions.config;
+package com.github.vincemann.springrapid.authex.config;
 
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
-import com.github.vincemann.springrapid.authexceptions.*;
+import com.github.vincemann.springrapid.authex.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

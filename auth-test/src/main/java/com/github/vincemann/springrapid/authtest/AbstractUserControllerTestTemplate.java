@@ -40,6 +40,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     @Autowired
     private AuthProperties properties;
 
+    @Autowired
     @Override
     public void setMvc(MockMvc mvc) {
         super.setMvc(mvc);
@@ -126,18 +127,6 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED);
     }
 
-    public MockHttpServletRequestBuilder fetchNewToken(String token, String contactInformation) throws Exception {
-        return post(getController().getFetchNewAuthTokenUrl())
-                .header(HttpHeaders.AUTHORIZATION, token)
-                .param("ci", contactInformation)
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED);
-    }
-
-    public String fetchNewToken2xx(String token, String contactInformation) throws Exception {
-        return deserialize(mvc.perform(fetchNewToken(token, contactInformation))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString(), ResponseToken.class).getToken();
-    }
 
     public String fetchNewToken2xx(String token) throws Exception {
         return deserialize(mvc.perform(fetchNewToken(token))

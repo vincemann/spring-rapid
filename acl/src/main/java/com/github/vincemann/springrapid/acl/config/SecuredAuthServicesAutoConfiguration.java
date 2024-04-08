@@ -28,13 +28,6 @@ public class SecuredAuthServicesAutoConfiguration {
 
     @Secured
     @Bean
-    @ConditionalOnMissingBean(name = "securedUserAuthTokenService")
-    public UserAuthTokenService securedUserAuthTokenService(@Root UserAuthTokenService service){
-        return new SecuredUserAuthTokenService(service);
-    }
-
-    @Secured
-    @Bean
     @ConditionalOnMissingBean(name = "securedPasswordService")
     public PasswordService securedPasswordService(@Root PasswordService service){
         return new SecuredPasswordService(service);

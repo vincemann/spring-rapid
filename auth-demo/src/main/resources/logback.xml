@@ -3,36 +3,12 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
-
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
     </root>
+
     <logger name="com.github.vincemann" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
 
-    <logger name="org.springframework.jdbc.datasource.init.ScriptUtils" level="DEBUG" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
-
-
-
-    <logger name="com.github.vincemann.smartlogger" level="info" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
-    <logger name="com.github.vincemann.aoplog" level="INFO" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
-    <logger name="org.springframework.security.acls" level="DEBUG" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
-
-<!--     avoid unlogical error Feld "class_id_type" nicht gefunden-->
-    <logger name="org.springframework.security.acls.jdbc.AclClassIdUtils" level="INFO" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
-
-    <logger name="com.zaxxer.hikari" level="debug" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
 </configuration>

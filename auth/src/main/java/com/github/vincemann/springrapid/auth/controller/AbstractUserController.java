@@ -155,15 +155,8 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
      * Fetch a new token - for session sliding, switch user etc.
      */
     public ResponseEntity<String> createNewAuthToken(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, JsonProcessingException, EntityNotFoundException {
-        Optional<String> contactInformation = readOptionalRequestParam(request, "ci");
-        log.debug(LogMessage.format("received create new auth token request for: %s", contactInformation));
-
-        String token;
-        if (contactInformation.isEmpty()) {
-            token = authTokenService.createNewAuthToken();
-        } else {
-            token = authTokenService.createNewAuthToken(contactInformation.get());
-        }
+        log.debug(LogMessage.format("received create new auth token request"));
+        String token = authTokenService.createNewAuthToken();
         // result = {token:asfsdfjsdjfnd}
         return ok(getObjectMapper().writeValueAsString(MapUtils.mapOf("token", token)));
     }

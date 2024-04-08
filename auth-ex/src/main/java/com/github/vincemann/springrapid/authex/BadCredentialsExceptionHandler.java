@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.authexceptions;
+package com.github.vincemann.springrapid.authex;
 
 
 import org.springframework.core.Ordered;

@@ -35,11 +35,10 @@
 			<version>1.18.8</version>
 		</dependency>
 
-<!--        using lower version to be compatible with springs logback-->
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.30</version>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>3.2.0</version>
 		</dependency>
 
 <!--		DB-->

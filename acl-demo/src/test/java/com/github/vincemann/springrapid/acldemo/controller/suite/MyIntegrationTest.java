@@ -93,7 +93,6 @@ public class MyIntegrationTest
     @BeforeEach
     void setUp() {
         helper.setup();
-        helper.getUserController().setMvc(mvc);
     }
 
     @AfterEach
