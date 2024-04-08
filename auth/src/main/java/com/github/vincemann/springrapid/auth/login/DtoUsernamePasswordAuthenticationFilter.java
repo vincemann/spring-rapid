@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.framework;
+package com.github.vincemann.springrapid.auth.login;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vincemann.springrapid.auth.dto.LoginDto;

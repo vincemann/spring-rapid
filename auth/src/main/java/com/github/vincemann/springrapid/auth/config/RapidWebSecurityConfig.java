@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.framework.CustomLoginConfigurer;
+import com.github.vincemann.springrapid.auth.login.CustomLoginConfigurer;
 import com.github.vincemann.springrapid.auth.handler.RapidAuthenticationSuccessHandler;
 import com.github.vincemann.springrapid.auth.sec.JwtAuthenticationFilter;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;

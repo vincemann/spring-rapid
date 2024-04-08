@@ -1,9 +1,9 @@
 package com.github.vincemann.springrapid.auth.dto;
 
 public class ChangePasswordDto {
-    String contactInformation;
-    String oldPassword;
-    String newPassword;
+    private String contactInformation;
+    private String oldPassword;
+    private String newPassword;
 
     public ChangePasswordDto(String contactInformation, String oldPassword, String newPassword) {
         this.contactInformation = contactInformation;

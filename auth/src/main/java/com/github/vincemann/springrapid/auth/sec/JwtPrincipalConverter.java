@@ -12,7 +12,7 @@ public interface JwtPrincipalConverter {
      * Creates {@link RapidPrincipal} from Jwt claims.
      * @throws AuthenticationCredentialsNotFoundException  if expected claims not given ( = not present in token)
      */
-    public RapidPrincipal toPrincipal(Map<String,Object> claims) throws AuthenticationCredentialsNotFoundException;
+    RapidPrincipal toPrincipal(Map<String,Object> claims) throws AuthenticationCredentialsNotFoundException;
 
-    public Map<String,Object> toClaims(RapidPrincipal user);
+    Map<String,Object> toClaims(RapidPrincipal user);
 }

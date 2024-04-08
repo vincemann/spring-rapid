@@ -4,5 +4,5 @@ import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 
 public interface AuthenticatedPrincipalFactory {
-    public RapidPrincipal create(AbstractUser<?> user);
+    RapidPrincipal create(AbstractUser<?> user);
 }
