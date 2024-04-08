@@ -1,18 +1,19 @@
 # Overview  
 Spring Boot helper lib for authentication and acl.  
 This is an extended fork of [**spring-lemon**](https://github.com/naturalprogrammer/spring-lemon).  
+The auth features were reduced to the (almost always needed) core and acl was added on top of it.   
   
 # Features                                                                 
-* authentication (jwt)  
+* auth (jwt)  
 * acl  
 * exception handling  
   
 # Requirements  
-jdk17  
-spring-boot-starter-parent = 3.1.1.RELEASE   
+* jdk:17  
+* spring-boot: 3.1.1.RELEASE   
     
  # Include   
-* replace MODULE with the module you want to include (module-name = directory-name)  
+* replace MODULE with the module you want to include (acl,auth,auth-ex)  
  ### Maven  
  ```code  
 <repositories>    
