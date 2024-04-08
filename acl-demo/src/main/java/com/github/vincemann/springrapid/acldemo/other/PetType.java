@@ -1,5 +1,6 @@
-package com.github.vincemann.springrapid.acldemo;
+package com.github.vincemann.springrapid.acldemo.other;
 
+import com.github.vincemann.springrapid.acldemo.MyEntity;
 import lombok.*;
 
 import jakarta.persistence.Column;

@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acl;
+package com.github.vincemann.springrapid.auth;
 
 import java.io.Serializable;
 

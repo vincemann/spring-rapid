@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class JwtTokenAutoConfiguration {
+public class JwtAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(JwtPrincipalConverter.class)
     public JwtPrincipalConverter jwtClaimsPrincipalConverter(){

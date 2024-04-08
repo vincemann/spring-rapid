@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.controller.suite;
 
+import com.github.vincemann.springrapid.acldemo.other.PetTypeRepository;
+import com.github.vincemann.springrapid.acldemo.other.SpecialtyRepository;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VetControllerTestTemplate;
@@ -16,12 +18,11 @@ import com.github.vincemann.springrapid.acldemo.pet.Pet;
 import com.github.vincemann.springrapid.acldemo.vet.Vet;
 import com.github.vincemann.springrapid.acldemo.visit.Visit;
 import com.github.vincemann.springrapid.acldemo.owner.OwnerRepository;
-import com.github.vincemann.springrapid.acldemo.repo.*;
 import com.github.vincemann.springrapid.acldemo.pet.PetService;
 import com.github.vincemann.springrapid.acldemo.vet.VetRepository;
 import com.github.vincemann.springrapid.acldemo.visit.VisitRepository;
 import com.github.vincemann.springrapid.auth.RapidSecurityContext;
-import com.github.vincemann.springrapid.acl.Roles;
+import com.github.vincemann.springrapid.auth.Roles;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.auth.util.AopProxyUtils;

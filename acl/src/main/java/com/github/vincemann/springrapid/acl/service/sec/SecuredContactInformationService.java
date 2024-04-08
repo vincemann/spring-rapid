@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.service;
+package com.github.vincemann.springrapid.acl.service.sec;
 
 import com.github.vincemann.springrapid.acl.AclTemplate;
 import com.github.vincemann.springrapid.auth.AbstractUserRepository;
@@ -9,6 +9,9 @@ import com.github.vincemann.springrapid.auth.jwt.BadTokenException;
 import com.github.vincemann.springrapid.auth.jwt.JweTokenService;
 import com.github.vincemann.springrapid.auth.BadEntityException;
 import com.github.vincemann.springrapid.auth.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
+import com.github.vincemann.springrapid.auth.service.ContactInformationService;
+import com.github.vincemann.springrapid.auth.service.UserService;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
@@ -19,7 +22,7 @@ import java.io.Serializable;
 
 import static com.github.vincemann.springrapid.auth.util.UserUtils.findPresentByContactInformation;
 
-public class SecuredContactInformationService implements ContactInformationService{
+public class SecuredContactInformationService implements ContactInformationService {
 
     private ContactInformationService decorated;
     private JweTokenService jweTokenService;

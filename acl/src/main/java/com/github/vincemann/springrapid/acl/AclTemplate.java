@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acl;
 
+import com.github.vincemann.springrapid.auth.IdAware;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.model.Permission;
 

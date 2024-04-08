@@ -1,5 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.github.vincemann.springrapid.auth.config.JwtTokenAutoConfiguration,\
+com.github.vincemann.springrapid.auth.config.JwtAutoConfiguration,\
 com.github.vincemann.springrapid.auth.config.AuthServiceAutoConfiguration,\
 com.github.vincemann.springrapid.auth.config.AuthAutoConfiguration,\
 com.github.vincemann.springrapid.auth.config.AdminAutoConfiguration,\

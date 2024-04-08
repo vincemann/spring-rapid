@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
-import com.github.vincemann.springrapid.acldemo.Illness;
+import com.github.vincemann.springrapid.acldemo.other.Illness;
 import com.github.vincemann.springrapid.acldemo.Roles;
 import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTest;
 import com.github.vincemann.springrapid.acldemo.pet.dto.VetReadsPetDto;

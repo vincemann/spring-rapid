@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.auth.util;
 
-import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.security.access.AccessDeniedException;
 

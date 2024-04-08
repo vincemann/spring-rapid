@@ -3,8 +3,8 @@ package com.github.vincemann.springrapid.acldemo.pet;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 
-import com.github.vincemann.springrapid.acldemo.Illness;
-import com.github.vincemann.springrapid.acldemo.PetType;
+import com.github.vincemann.springrapid.acldemo.other.Illness;
+import com.github.vincemann.springrapid.acldemo.other.PetType;
 import com.github.vincemann.springrapid.acldemo.MyEntity;
 import com.github.vincemann.springrapid.acldemo.owner.Owner;
 import lombok.Builder;

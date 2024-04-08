@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.vet;
 
-import com.github.vincemann.springrapid.acldemo.Specialty;
+import com.github.vincemann.springrapid.acldemo.other.Specialty;
 import com.github.vincemann.springrapid.acldemo.user.User;
 
 import lombok.Builder;

@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.acl;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.acl.util.AuthorizationUtils;
 import com.github.vincemann.springrapid.auth.AuthPrincipal;
+import com.github.vincemann.springrapid.auth.IdAware;
 import com.github.vincemann.springrapid.auth.RapidSecurityContext;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;

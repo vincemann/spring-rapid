@@ -4,7 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.vincemann.springrapid.acl.AclTemplate;
 import com.github.vincemann.springrapid.acl.AclTemplateImpl;
 import com.github.vincemann.springrapid.acl.AdminPermissionGrantingStrategy;
-import com.github.vincemann.springrapid.acl.Roles;
+import com.github.vincemann.springrapid.auth.Roles;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverterImpl;
 import com.github.vincemann.springrapid.acl.service.RapidAclService;

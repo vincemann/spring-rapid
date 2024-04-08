@@ -1,7 +1,8 @@
-package com.github.vincemann.springrapid.auth.service;
+package com.github.vincemann.springrapid.acl.service.sec;
 
 import com.github.vincemann.springrapid.acl.AclTemplate;
 import com.github.vincemann.springrapid.auth.AbstractUserRepository;
+import com.github.vincemann.springrapid.auth.service.PasswordService;
 import com.github.vincemann.springrapid.auth.val.InsufficientPasswordStrengthException;
 import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;

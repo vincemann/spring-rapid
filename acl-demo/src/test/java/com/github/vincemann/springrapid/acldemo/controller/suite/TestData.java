@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.acldemo.controller.suite;
 
-import com.github.vincemann.springrapid.acldemo.Illness;
-import com.github.vincemann.springrapid.acldemo.PetType;
-import com.github.vincemann.springrapid.acldemo.Specialty;
+import com.github.vincemann.springrapid.acldemo.other.Illness;
+import com.github.vincemann.springrapid.acldemo.other.PetType;
+import com.github.vincemann.springrapid.acldemo.other.Specialty;
 import com.github.vincemann.springrapid.acldemo.owner.Owner;
 import com.github.vincemann.springrapid.acldemo.pet.Pet;
 import com.github.vincemann.springrapid.acldemo.vet.Vet;

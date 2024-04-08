@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.vet;
 
 import com.github.vincemann.springrapid.acldemo.vet.dto.ReadVetDto;
-import com.github.vincemann.springrapid.acldemo.Specialty;
+import com.github.vincemann.springrapid.acldemo.other.Specialty;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

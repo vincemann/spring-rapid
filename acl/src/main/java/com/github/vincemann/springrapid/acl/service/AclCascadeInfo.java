@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acl.service;
 
-import com.github.vincemann.springrapid.acl.IdAware;
+import com.github.vincemann.springrapid.auth.IdAware;
 import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.util.Assert;
 

@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.auth.util;
 
-import com.github.vincemann.springrapid.acl.util.AuthorizationUtils;
 import com.github.vincemann.springrapid.auth.AbstractUser;
 import com.github.vincemann.springrapid.auth.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.service.UserService;
@@ -20,7 +19,7 @@ public abstract class UserUtils {
 
     public static AbstractUser extractUserFromClaims(IdConverter idConverter, AbstractUserRepository userRepository, JWTClaimsSet claims) throws EntityNotFoundException {
         Serializable id = idConverter.toId(claims.getSubject());
-        Assert.notNull(id);
+        Assert.notNull(id,"user id must not be null");
         // fetch the user
         return (AbstractUser) RepositoryUtil.findPresentById(userRepository,(id));
     }
@@ -40,14 +39,12 @@ public abstract class UserUtils {
     }
 
     public static <T extends AbstractUser> T findAuthenticatedUser(AbstractUserRepository userRepository){
-        AuthorizationUtils.assertAuthenticated();
         String ci = RapidSecurityContext.getName();
+        if (ci == null)
+            throw new AccessDeniedException("no authenticated user");
         Optional<T> user = (Optional<T>) userRepository.findByContactInformation(ci);
-        try {
-            VerifyEntity.isPresent(user,"user with contactInformation: " + ci+ " could not be found");
-        } catch (EntityNotFoundException e) {
-            throw new AccessDeniedException("user with contactInformation: " + ci+ " could not be found",e);
-        }
+        if (user.isEmpty())
+            throw new AccessDeniedException("user with contactInformation: " + ci+ " could not be found");
         return user.get();
     }
 

@@ -1,6 +1,7 @@
-package com.github.vincemann.springrapid.acldemo;
+package com.github.vincemann.springrapid.acldemo.other;
 
 
+import com.github.vincemann.springrapid.acldemo.MyEntity;
 import com.github.vincemann.springrapid.acldemo.pet.Pet;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import lombok.*;

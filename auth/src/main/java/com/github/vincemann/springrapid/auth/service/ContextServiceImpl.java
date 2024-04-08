@@ -3,12 +3,11 @@ package com.github.vincemann.springrapid.auth.service;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.AuthPrincipal;
 import com.github.vincemann.springrapid.auth.RapidSecurityContext;
+import com.github.vincemann.springrapid.auth.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.github.vincemann.springrapid.auth.util.PrincipalUtils.isAnon;
 
 public class ContextServiceImpl implements ContextService{
 
@@ -19,7 +18,7 @@ public class ContextServiceImpl implements ContextService{
         context.put("shared", properties.getShared());
         AuthPrincipal principal = RapidSecurityContext.currentPrincipal();
         if (principal != null) {
-            if (!isAnon(principal)) {
+            if (!principal.getRoles().contains(Roles.ANON)) {
                 AuthPrincipal withoutPw = new AuthPrincipal(principal);
                 withoutPw.setPassword(null);
                 context.put("user", withoutPw);

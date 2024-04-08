@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.acldemo.controller.suite;
 
-import com.github.vincemann.springrapid.acldemo.Specialty;
+import com.github.vincemann.springrapid.acldemo.other.IllnessRepository;
+import com.github.vincemann.springrapid.acldemo.other.Specialty;
+import com.github.vincemann.springrapid.acldemo.other.SpecialtyRepository;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VetControllerTestTemplate;
@@ -9,7 +11,6 @@ import com.github.vincemann.springrapid.acldemo.owner.Owner;
 import com.github.vincemann.springrapid.acldemo.owner.OwnerRepository;
 import com.github.vincemann.springrapid.acldemo.pet.Pet;
 import com.github.vincemann.springrapid.acldemo.pet.PetRepository;
-import com.github.vincemann.springrapid.acldemo.repo.*;
 import com.github.vincemann.springrapid.acldemo.vet.Vet;
 import com.github.vincemann.springrapid.acldemo.vet.VetRepository;
 import com.github.vincemann.springrapid.acldemo.visit.VisitRepository;

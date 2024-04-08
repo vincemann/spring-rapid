@@ -1,9 +1,10 @@
-package com.github.vincemann.springrapid.auth.service;
+package com.github.vincemann.springrapid.acl.service.sec;
 
 import com.github.vincemann.springrapid.acl.AclTemplate;
 import com.github.vincemann.springrapid.auth.AbstractUser;
 import com.github.vincemann.springrapid.auth.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.jwt.BadTokenException;
+import com.github.vincemann.springrapid.auth.service.VerificationService;
 import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.auth.BadEntityException;
 import com.github.vincemann.springrapid.auth.EntityNotFoundException;
@@ -11,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;
 
-public class SecuredVerificationService implements VerificationService{
+public class SecuredVerificationService implements VerificationService {
 
     private VerificationService decorated;
     private AbstractUserRepository repository;

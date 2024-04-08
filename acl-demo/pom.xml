@@ -15,7 +15,7 @@
 
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>auth</artifactId>
+            <artifactId>acl</artifactId>
             <version>${project.version}</version>
         </dependency>
 

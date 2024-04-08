@@ -1,13 +1,14 @@
-package com.github.vincemann.springrapid.auth.service;
+package com.github.vincemann.springrapid.acl.service.sec;
 
 import com.github.vincemann.springrapid.auth.RapidSecurityContext;
-import com.github.vincemann.springrapid.acl.Roles;
+import com.github.vincemann.springrapid.auth.Roles;
 import com.github.vincemann.springrapid.auth.BadEntityException;
 import com.github.vincemann.springrapid.auth.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.service.UserAuthTokenService;
 import com.github.vincemann.springrapid.auth.util.Message;
 import com.github.vincemann.springrapid.auth.util.VerifyAccess;
 
-public class SecuredUserAuthTokenService implements UserAuthTokenService{
+public class SecuredUserAuthTokenService implements UserAuthTokenService {
 
     private UserAuthTokenService decorated;
 

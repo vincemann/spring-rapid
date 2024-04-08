@@ -1,7 +1,5 @@
 package com.github.vincemann.springrapid.auth;
 
-import com.github.vincemann.springrapid.acl.Roles;
-import com.google.common.collect.Sets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.log.LogMessage;
@@ -14,10 +12,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -107,7 +102,7 @@ public abstract class RapidSecurityContext {
 
     public static AuthPrincipal getAnonUser() {
         AuthPrincipal principal = new AuthPrincipal();
-        principal.setRoles(Sets.newHashSet(Roles.ANON));
+        principal.setRoles(Set.of(com.github.vincemann.springrapid.auth.Roles.ANON));
         return principal;
     }
 
@@ -146,7 +141,7 @@ public abstract class RapidSecurityContext {
     public static AuthPrincipal getSystemUser() {
         AuthPrincipal principal = new AuthPrincipal();
         principal.setName("system");
-        principal.setRoles(Sets.newHashSet(Roles.SYSTEM));
+        principal.setRoles(Set.of(Roles.SYSTEM));
         return principal;
     }
 

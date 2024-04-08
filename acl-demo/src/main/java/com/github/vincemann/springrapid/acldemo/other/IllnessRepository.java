@@ -1,6 +1,5 @@
-package com.github.vincemann.springrapid.acldemo.repo;
+package com.github.vincemann.springrapid.acldemo.other;
 
-import com.github.vincemann.springrapid.acldemo.Illness;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

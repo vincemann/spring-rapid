@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.acl.Roles;
+import com.github.vincemann.springrapid.auth.Roles;
 import com.github.vincemann.springrapid.auth.*;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.google.common.collect.Sets;

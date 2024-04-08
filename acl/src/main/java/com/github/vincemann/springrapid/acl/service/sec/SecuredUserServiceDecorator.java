@@ -1,8 +1,8 @@
-package com.github.vincemann.springrapid.auth.service;
+package com.github.vincemann.springrapid.acl.service.sec;
 
-import com.github.vincemann.springrapid.acl.Roles;
-import com.github.vincemann.springrapid.acl.service.sec.SecuredServiceDecorator;
+import com.github.vincemann.springrapid.auth.Roles;
 import com.github.vincemann.springrapid.auth.*;
+import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.val.InsufficientPasswordStrengthException;
 import com.github.vincemann.springrapid.acl.util.AuthorizationUtils;
 import org.springframework.core.GenericTypeResolver;

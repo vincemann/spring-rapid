@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.vet.dto;
 
 import com.github.vincemann.springrapid.acldemo.AbstractSignupDto;
-import com.github.vincemann.springrapid.acldemo.Specialty;
+import com.github.vincemann.springrapid.acldemo.other.Specialty;
 import com.github.vincemann.springrapid.acldemo.vet.Vet;
 
 import lombok.Builder;
