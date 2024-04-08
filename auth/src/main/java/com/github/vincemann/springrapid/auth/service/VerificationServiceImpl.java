@@ -1,33 +1,28 @@
 package com.github.vincemann.springrapid.auth.service;
 
-import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
+import com.github.vincemann.springrapid.auth.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
-import com.github.vincemann.springrapid.auth.msg.mail.SmtpMailSender;
-import com.github.vincemann.springrapid.core.Root;
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.model.AuthRoles;
-import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
-import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
+import com.github.vincemann.springrapid.auth.Root;
+import com.github.vincemann.springrapid.auth.AbstractUser;
+import com.github.vincemann.springrapid.auth.Roles;
+import com.github.vincemann.springrapid.auth.jwt.BadTokenException;
+import com.github.vincemann.springrapid.auth.jwt.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.service.id.IdConverter;
-import com.github.vincemann.springrapid.core.util.Message;
-import com.github.vincemann.springrapid.core.util.RepositoryUtil;
-import com.github.vincemann.springrapid.core.util.VerifyEntity;
+import com.github.vincemann.springrapid.auth.ex.BadEntityException;
+import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.IdConverter;
+import com.github.vincemann.springrapid.auth.util.Message;
+import com.github.vincemann.springrapid.auth.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.io.Serializable;
 
 import static com.github.vincemann.springrapid.auth.util.UserUtils.extractUserFromClaims;
 import static com.github.vincemann.springrapid.auth.util.UserUtils.findPresentByContactInformation;

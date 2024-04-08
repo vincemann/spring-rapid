@@ -1,12 +1,10 @@
 package com.github.vincemann.springrapid.acldemo.controller.map;
 
-import com.github.vincemann.springrapid.acldemo.Roles;
 import com.github.vincemann.springrapid.acldemo.dto.owner.OwnerReadsForeignOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.OwnerReadsOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.VetReadsOwnerDto;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

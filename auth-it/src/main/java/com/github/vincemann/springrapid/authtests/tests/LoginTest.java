@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.authtests.tests;
 
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.AbstractUser;
 import com.github.vincemann.springrapid.authtests.AuthIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;

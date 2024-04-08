@@ -2,15 +2,13 @@ package com.github.vincemann.springrapid.auth.service;
 
 
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
-import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.model.*;
+import com.github.vincemann.springrapid.auth.*;
 import com.github.vincemann.springrapid.auth.service.val.ContactInformationValidator;
-import com.github.vincemann.springrapid.auth.service.val.InsufficientPasswordStrengthException;
+import com.github.vincemann.springrapid.auth.ex.InsufficientPasswordStrengthException;
 import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.service.pass.RapidPasswordEncoder;
-import com.github.vincemann.springrapid.core.util.*;
+import com.github.vincemann.springrapid.auth.ex.BadEntityException;
+import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.util.VerifyEntity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.GenericTypeResolver;
@@ -53,7 +51,7 @@ public abstract class AbstractUserService
         U adminUser = createUser();
         adminUser.setContactInformation(admin.getContactInformation());
         adminUser.setPassword(admin.getPassword());
-        adminUser.getRoles().add(AuthRoles.ADMIN);
+        adminUser.getRoles().add(Roles.ADMIN);
         return adminUser;
     }
 
@@ -91,7 +89,8 @@ public abstract class AbstractUserService
         Assert.notNull(role,"role to add must not be null");
         Assert.notNull(userId,"user id must not be null");
 
-        U user = RepositoryUtil.findPresentById(repository,userId);
+        U user = repository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(userId,AbstractUser.class));
         user.getRoles().add(role);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
         return user;
@@ -104,7 +103,8 @@ public abstract class AbstractUserService
         Assert.notNull(role,"role to remove must not be null");
         Assert.notNull(userId,"user id must not be null");
 
-        U user = RepositoryUtil.findPresentById(repository,userId);
+        U user = repository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(userId,AbstractUser.class));
         boolean removed = user.getRoles().remove(role);
         Assert.isTrue(removed,"user did not contain role to remove: " + role);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
@@ -140,10 +140,10 @@ public abstract class AbstractUserService
         VerifyEntity.notEmpty(contactInformation,"contact-information");
 
         U user = findPresentByContactInformation(repository,contactInformation);
-        if (user.hasRole(AuthRoles.BLOCKED)){
+        if (user.hasRole(Roles.BLOCKED)){
             throw new BadEntityException("user is already blocked");
         }
-        return addRole(user.getId(),AuthRoles.BLOCKED);
+        return addRole(user.getId(),Roles.BLOCKED);
     }
 
     @Transactional

@@ -16,16 +16,9 @@
 
     <dependencies>
 
-
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
             <artifactId>auth</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>core-test</artifactId>
             <version>${project.version}</version>
         </dependency>
 

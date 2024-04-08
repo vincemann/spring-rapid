@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.github.vincemann.springrapid.authtest.config.RapidAuthControllerTestTemplateAutoConfiguration
+com.github.vincemann.springrapid.authtest.config.UserControllerTestTemplateAutoConfiguration

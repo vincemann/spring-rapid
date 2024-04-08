@@ -24,19 +24,13 @@
 
     <modules>
         <module>auth</module>
-        <module>sync</module>
-        <module>lemon-exceptions</module>
+        <module>lemon-ex</module>
+        <module>auth-ex</module>
         <module>auth-demo</module>
         <module>auth-test</module>
         <module>auth-it</module>
-        <module>core</module>
         <module>acl</module>
-        <module>core-test</module>
-        <module>exceptions-api</module>
         <module>acl-demo</module>
-        <module>acl-test</module>
-        <module>sync-demo</module>
-        <module>sync-test</module>
     </modules>
 
     <dependencies>

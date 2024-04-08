@@ -1,15 +1,15 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
+import com.github.vincemann.springrapid.auth.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
-import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
-import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
+import com.github.vincemann.springrapid.auth.jwt.BadTokenException;
+import com.github.vincemann.springrapid.auth.jwt.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.authtest.AbstractUserControllerTestTemplate;
 
-import com.github.vincemann.springrapid.core.util.AopProxyUtils;
+import com.github.vincemann.springrapid.auth.util.AopProxyUtils;
 import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
 import com.github.vincemann.springrapid.coretest.util.TransactionalTestUtil;
 import com.nimbusds.jwt.JWTClaimsSet;

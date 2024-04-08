@@ -5,9 +5,9 @@ import com.github.vincemann.springrapid.acldemo.controller.map.PetMappingService
 import com.github.vincemann.springrapid.acldemo.dto.pet.*;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.VerifyEntity;
+import com.github.vincemann.springrapid.auth.ex.BadEntityException;
+import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

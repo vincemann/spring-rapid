@@ -7,12 +7,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.AbstractUser;
 import com.github.vincemann.springrapid.authtests.AuthIntegrationTest;
 
-import com.github.vincemann.springrapid.authtests.AuthTestAdapter;
-import com.github.vincemann.springrapid.core.sec.Roles;
-import com.github.vincemann.springrapid.core.util.AopProxyUtils;
+import com.github.vincemann.springrapid.auth.Roles;
+import com.github.vincemann.springrapid.auth.util.AopProxyUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

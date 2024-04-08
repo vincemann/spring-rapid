@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acl.service;
 
-import com.github.vincemann.springrapid.core.model.IdAwareEntity;
+import com.github.vincemann.springrapid.acl.IdAware;
 import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.util.Assert;
 
@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.function.Predicate;
 
 
-public class AclCascadeInfo<S extends IdAwareEntity,T extends IdAwareEntity> {
+public class AclCascadeInfo<S extends IdAware,T extends IdAware> {
 
     private Class<S> source;
     private Predicate<S> sourceFilter;
@@ -83,11 +83,11 @@ public class AclCascadeInfo<S extends IdAwareEntity,T extends IdAwareEntity> {
                 '}';
     }
 
-    public static <S extends IdAwareEntity,T extends IdAwareEntity> Builder<S,T> builder(){
+    public static <S extends IdAware,T extends IdAware> Builder<S,T> builder(){
         return new Builder<>();
     }
 
-    public static final class Builder<S extends IdAwareEntity,T extends IdAwareEntity> {
+    public static final class Builder<S extends IdAware,T extends IdAware> {
         private Class<S> source;
         private Predicate<S> sourceFilter;
         private TargetSupplier<S, T> targetSupplier;

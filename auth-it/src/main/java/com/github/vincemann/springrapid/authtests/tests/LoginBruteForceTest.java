@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authtests.tests;
 
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.sec.bruteforce.LoginAttemptService;
+import com.github.vincemann.springrapid.auth.AbstractUser;
+import com.github.vincemann.springrapid.auth.jwt.bruteforce.LoginAttemptService;
 import com.github.vincemann.springrapid.authtests.AuthIntegrationTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

@@ -1,13 +1,9 @@
 package com.github.vincemann.springrapid.auth.service;
 
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
-import javax.validation.constraints.NotBlank;
+import com.github.vincemann.springrapid.auth.AbstractUser;
+import com.github.vincemann.springrapid.auth.jwt.BadTokenException;
+import com.github.vincemann.springrapid.auth.ex.BadEntityException;
+import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
 
 public interface VerificationService {
 

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authtests.tests;
 
 import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.AbstractUser;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.service.ContactInformationServiceImpl;
 import com.github.vincemann.springrapid.auth.util.JwtUtils;

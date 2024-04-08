@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.service;
 
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.AbstractUser;
 
 import java.io.Serializable;
 

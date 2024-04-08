@@ -1,9 +1,9 @@
 package com.github.vincemann.springrapid.authdemo.suite;
 
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.AbstractUser;
 import com.github.vincemann.springrapid.authdemo.dto.ReadUserDto;
 import com.github.vincemann.springrapid.authdemo.dto.SignupDto;
-import com.github.vincemann.springrapid.authdemo.model.User;
+import com.github.vincemann.springrapid.authdemo.User;
 import com.github.vincemann.springrapid.authtests.AuthTestAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 

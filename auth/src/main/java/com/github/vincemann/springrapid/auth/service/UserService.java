@@ -2,15 +2,11 @@ package com.github.vincemann.springrapid.auth.service;
 
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.service.val.InsufficientPasswordStrengthException;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import org.springframework.validation.annotation.Validated;
+import com.github.vincemann.springrapid.auth.AbstractUser;
+import com.github.vincemann.springrapid.auth.ex.InsufficientPasswordStrengthException;
+import com.github.vincemann.springrapid.auth.ex.BadEntityException;
+import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import java.io.Serializable;
 import java.util.Optional;
 

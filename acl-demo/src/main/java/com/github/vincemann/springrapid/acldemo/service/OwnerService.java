@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acldemo.service;
 import com.github.vincemann.springrapid.acldemo.dto.owner.UpdateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
 
 import java.util.Optional;
 

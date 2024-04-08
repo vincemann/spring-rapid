@@ -1,13 +1,12 @@
 package com.github.vincemann.springrapid.auth.service;
 
-import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
-import com.github.vincemann.springrapid.core.Root;
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
+import com.github.vincemann.springrapid.auth.AbstractUserRepository;
+import com.github.vincemann.springrapid.auth.AbstractUser;
+import com.github.vincemann.springrapid.auth.AuthenticatedPrincipalFactory;
 
 
-import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
-import com.github.vincemann.springrapid.core.util.Message;
+import com.github.vincemann.springrapid.auth.AuthPrincipal;
+import com.github.vincemann.springrapid.auth.util.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,7 +26,7 @@ public class RapidUserDetailsService
 
     @Transactional
     @Override
-    public RapidPrincipal loadUserByUsername(String contactInformation) throws UsernameNotFoundException {
+    public AuthPrincipal loadUserByUsername(String contactInformation) throws UsernameNotFoundException {
         Optional<AbstractUser<?>> user = userRepository.findByContactInformation(contactInformation);
         if (user.isEmpty()) {
             throw new UsernameNotFoundException(

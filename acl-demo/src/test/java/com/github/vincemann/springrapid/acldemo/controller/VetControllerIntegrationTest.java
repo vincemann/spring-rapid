@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.visit.CreateVisitDto;
 import com.github.vincemann.springrapid.acldemo.dto.visit.ReadVisitDto;
 import com.github.vincemann.springrapid.acldemo.model.*;
-import com.github.vincemann.springrapid.auth.model.AuthRoles;
+import com.github.vincemann.springrapid.auth.Roles;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.google.common.collect.Sets;
 import org.junit.jupiter.api.Assertions;

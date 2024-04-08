@@ -1,11 +1,11 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.github.vincemann.springrapid.auth.config.RapidTokenAutoConfiguration,\
-com.github.vincemann.springrapid.auth.config.RapidAuthServiceAutoConfiguration,\
-com.github.vincemann.springrapid.auth.config.RapidAuthAutoConfiguration,\
-com.github.vincemann.springrapid.auth.config.RapidAdminAutoConfiguration,\
-com.github.vincemann.springrapid.auth.config.RapidAuthWebAutoConfiguration,\
-com.github.vincemann.springrapid.auth.config.RapidMailAutoConfiguration, \
-com.github.vincemann.springrapid.auth.config.RapidBruteForceAutoConfiguration, \
-com.github.vincemann.springrapid.auth.config.BruteForceProtectionConfigurer, \
+com.github.vincemann.springrapid.auth.config.JwtTokenAutoConfiguration,\
+com.github.vincemann.springrapid.auth.config.AuthServiceAutoConfiguration,\
+com.github.vincemann.springrapid.auth.config.AuthAutoConfiguration,\
+com.github.vincemann.springrapid.auth.config.AdminAutoConfiguration,\
+com.github.vincemann.springrapid.auth.config.AuthWebAutoConfiguration,\
+com.github.vincemann.springrapid.auth.config.MailAutoConfiguration, \
+com.github.vincemann.springrapid.bruteforce.RapidBruteForceAutoConfiguration, \
+com.github.vincemann.springrapid.bruteforce.BruteForceProtectionConfigurer, \
 com.github.vincemann.springrapid.auth.config.ContextControllerAutoConfiguration
 

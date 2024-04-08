@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.acldemo.controller.suite;
 
-import com.github.vincemann.acltest.ClearAclCacheTestExecutionListener;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VetControllerTestTemplate;
@@ -10,7 +9,7 @@ import com.github.vincemann.springrapid.acldemo.repo.*;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.authtest.RapidUserControllerTestTemplate;
-import com.github.vincemann.springrapid.core.util.AopProxyUtils;
+import com.github.vincemann.springrapid.auth.util.AopProxyUtils;
 import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -21,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.acls.model.AclCache;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 

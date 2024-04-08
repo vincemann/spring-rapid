@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.acldemo.dto.pet.CreatePetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerReadsOwnPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerUpdatesPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.UpdateIllnessDto;
-import com.github.vincemann.springrapid.coretest.controller.template.MvcControllerTestTemplate;
+import com.github.vincemann.springrapid.authtest.MvcControllerTestTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acl;
 
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
-import com.github.vincemann.springrapid.core.model.IdAwareEntity;
+import com.github.vincemann.springrapid.acl.IdAware;
 import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
 import com.github.vincemann.springrapid.core.sec.AuthorizationUtils;
 import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
@@ -51,7 +51,7 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
     }
 
     @Override
-    public <E extends IdAwareEntity<? extends Serializable>, C extends Collection<E>> C filter(C toFilter, Permission permission) {
+    public <E extends IdAware<? extends Serializable>, C extends Collection<E>> C filter(C toFilter, Permission permission) {
         AuthorizationUtils.assertAuthenticated();
         Collection<E> filtered = new HashSet<>();
         for (E entity : toFilter) {
@@ -88,7 +88,7 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
         return checkExpression("hasPermission(" + id + ",'" + clazz.getName() + "','" + permissionString + "')");
     }
 
-    public void checkPermission(IdAwareEntity<?> entity, Permission permission) throws AccessDeniedException {
+    public void checkPermission(IdAware<?> entity, Permission permission) throws AccessDeniedException {
         Assert.notNull(entity,"checked permission must not be null");
         Assert.notNull(entity,"entity must not be null");
         Assert.notNull(entity.getId(),"id must not be null");

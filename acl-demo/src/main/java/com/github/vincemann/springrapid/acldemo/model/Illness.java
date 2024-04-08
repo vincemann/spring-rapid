@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
-import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareImpl;
 
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import lombok.*;
@@ -16,7 +16,7 @@ import java.util.Set;
 @Setter
 @Table(name = "illnesss", uniqueConstraints = @UniqueConstraint(name = "unique name", columnNames = "name"))
 @Entity
-public class Illness extends IdAwareEntityImpl<Long> {
+public class Illness extends IdAwareImpl<Long> {
 
     @NotBlank
     @Size(min = 2, max = 30)

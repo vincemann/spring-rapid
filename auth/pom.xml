@@ -29,14 +29,6 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
-<!--        SPRING RAPID-->
-
-        <dependency>
-            <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
             <artifactId>acl</artifactId>

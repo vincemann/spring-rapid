@@ -2,8 +2,8 @@ package com.github.vincemann.springrapid.acldemo.service;
 
 import com.github.vincemann.springrapid.acldemo.dto.visit.CreateVisitDto;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.ex.BadEntityException;
+import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
 
 import java.util.Optional;
 

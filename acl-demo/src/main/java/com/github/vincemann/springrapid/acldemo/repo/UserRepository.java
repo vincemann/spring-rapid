@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.repo;
 
 import com.github.vincemann.springrapid.acldemo.model.abs.User;
-import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
+import com.github.vincemann.springrapid.auth.AbstractUserRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 

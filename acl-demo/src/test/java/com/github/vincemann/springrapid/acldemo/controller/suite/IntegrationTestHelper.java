@@ -17,13 +17,13 @@ import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.repo.*;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
-import com.github.vincemann.springrapid.auth.model.AuthRoles;
+import com.github.vincemann.springrapid.auth.Roles;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
-import com.github.vincemann.springrapid.authtest.RapidAuthTestUtil;
+import com.github.vincemann.springrapid.authtest.AuthTestUtil;
 import com.github.vincemann.springrapid.authtest.RapidUserControllerTestTemplate;
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.util.AopProxyUtils;
+import com.github.vincemann.springrapid.auth.RapidSecurityContext;
+import com.github.vincemann.springrapid.auth.util.AopProxyUtils;
 import com.github.vincemann.springrapid.coretest.controller.MvcAware;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.ArgumentCaptor;
@@ -139,7 +139,7 @@ public class IntegrationTestHelper implements MvcAware {
 
     public Owner signupKahnWithBella() throws Exception {
         Owner owner = signupOwner(testData.getKahn());
-        RapidAuthTestUtil.authenticate(owner);
+        AuthTestUtil.authenticate(owner);
         testData.getBella().setOwner(owner);
         Pet bella = petService.create(new CreatePetDto(testData.getBella()));
         RapidSecurityContext.clear();
@@ -148,7 +148,7 @@ public class IntegrationTestHelper implements MvcAware {
 
     public Owner signupMeierWithBello() throws Exception {
         Owner owner = signupOwner(testData.getMeier());
-        RapidAuthTestUtil.authenticate(owner);
+        AuthTestUtil.authenticate(owner);
         testData.getBello().setOwner(owner);
         Pet bello = petService.create(new CreatePetDto(testData.getBello()));
         RapidSecurityContext.clear();

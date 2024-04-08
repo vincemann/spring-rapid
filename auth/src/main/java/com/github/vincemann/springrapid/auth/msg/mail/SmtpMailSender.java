@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.msg.mail;
 
-import com.github.vincemann.springrapid.core.util.Message;
+import com.github.vincemann.springrapid.auth.util.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.log.LogMessage;

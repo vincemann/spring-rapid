@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.repo.VetRepository;
 import com.github.vincemann.springrapid.acldemo.service.VetService;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
-import com.github.vincemann.springrapid.core.Root;
+import com.github.vincemann.springrapid.auth.Root;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,11 +1,11 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
-import com.github.vincemann.springrapid.auth.model.AuthRoles;
+import com.github.vincemann.springrapid.auth.AbstractUser;
+import com.github.vincemann.springrapid.auth.AbstractUserRepository;
+import com.github.vincemann.springrapid.auth.Roles;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.core.Root;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.auth.Root;
+import com.github.vincemann.springrapid.auth.ex.BadEntityException;
 import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 

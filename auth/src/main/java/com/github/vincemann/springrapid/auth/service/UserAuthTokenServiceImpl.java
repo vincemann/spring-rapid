@@ -1,16 +1,15 @@
 package com.github.vincemann.springrapid.auth.service;
 
-import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
-import com.github.vincemann.springrapid.core.Root;
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.model.AuthRoles;
-import com.github.vincemann.springrapid.auth.sec.AuthenticatedPrincipalFactory;
-import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
-import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.VerifyEntity;
+import com.github.vincemann.springrapid.auth.AbstractUserRepository;
+import com.github.vincemann.springrapid.auth.AbstractUser;
+import com.github.vincemann.springrapid.auth.Roles;
+import com.github.vincemann.springrapid.auth.AuthenticatedPrincipalFactory;
+import com.github.vincemann.springrapid.auth.jwt.AuthorizationTokenService;
+import com.github.vincemann.springrapid.auth.AuthPrincipal;
+import com.github.vincemann.springrapid.auth.RapidSecurityContext;
+import com.github.vincemann.springrapid.auth.ex.BadEntityException;
+import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
@@ -32,7 +31,7 @@ public class UserAuthTokenServiceImpl implements UserAuthTokenService {
     public String createNewAuthToken() throws EntityNotFoundException {
         Assert.isTrue(!RapidSecurityContext.getRoles().contains(AuthRoles.ANON),"cannot create token for anon user");
         Assert.isTrue(!RapidSecurityContext.getRoles().contains(AuthRoles.SYSTEM),"cannot create token for system user");
-        RapidPrincipal authenticated = RapidSecurityContext.currentPrincipal();
+        AuthPrincipal authenticated = RapidSecurityContext.currentPrincipal();
         Assert.isTrue(authenticated != null,"must be authenticated");
         try {
             return createNewAuthToken(authenticated.getName());

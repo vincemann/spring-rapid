@@ -2,12 +2,12 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.acl.service.SecuredServiceDecorator;
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.model.AuthRoles;
-import com.github.vincemann.springrapid.auth.service.val.InsufficientPasswordStrengthException;
-import com.github.vincemann.springrapid.core.sec.AuthorizationUtils;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.AbstractUser;
+import com.github.vincemann.springrapid.auth.Roles;
+import com.github.vincemann.springrapid.auth.ex.InsufficientPasswordStrengthException;
+import com.github.vincemann.springrapid.auth.util.AuthorizationUtils;
+import com.github.vincemann.springrapid.auth.ex.BadEntityException;
+import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;

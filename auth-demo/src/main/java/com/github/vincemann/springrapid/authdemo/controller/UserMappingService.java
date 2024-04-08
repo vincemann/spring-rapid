@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authdemo.controller;
 
 import com.github.vincemann.springrapid.authdemo.dto.ReadUserDto;
-import com.github.vincemann.springrapid.authdemo.model.User;
+import com.github.vincemann.springrapid.authdemo.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 

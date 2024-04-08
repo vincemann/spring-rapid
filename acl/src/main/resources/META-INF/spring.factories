@@ -1,4 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.github.vincemann.springrapid.acl.config.RapidAclAutoConfiguration,\
-com.github.vincemann.springrapid.acl.config.RapidAclMethodSecurityAutoConfiguration,\
-com.github.vincemann.springrapid.acl.config.RapidAclSchemaAutoConfiguration
+com.github.vincemann.springrapid.acl.config.AclAutoConfiguration,\
+com.github.vincemann.springrapid.acl.config.AclMethodSecurityAutoConfiguration,\
+com.github.vincemann.springrapid.acl.config.AclSchemaAutoConfiguration

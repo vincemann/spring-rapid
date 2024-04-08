@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareImpl;
 
 
 import lombok.Builder;
@@ -24,7 +24,7 @@ import java.util.Set;
         @UniqueConstraint(columnNames = {"name"})
 })
 @Entity
-public class Pet extends IdAwareEntityImpl<Long> {
+public class Pet extends IdAwareImpl<Long> {
 
     @NotEmpty
     @Column(name = "name", nullable = false, unique = true)

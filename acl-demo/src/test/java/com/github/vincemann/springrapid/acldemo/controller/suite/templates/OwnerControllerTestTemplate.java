@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.acldemo.controller.OwnerController;
 import com.github.vincemann.springrapid.acldemo.dto.owner.OwnerReadsOwnOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.UpdateOwnerDto;
-import com.github.vincemann.springrapid.coretest.controller.template.MvcControllerTestTemplate;
+import com.github.vincemann.springrapid.authtest.MvcControllerTestTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;

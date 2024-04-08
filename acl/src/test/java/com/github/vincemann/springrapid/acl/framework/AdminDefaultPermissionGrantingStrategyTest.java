@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acl.framework;
 
+import com.github.vincemann.springrapid.acl.AdminPermissionGrantingStrategy;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ class AdminDefaultPermissionGrantingStrategyTest {
     @Mock
     AuditLogger auditLogger;
     @InjectMocks
-    AdministrationDefaultPermissionGrantingStrategy permissionGrantingStrategy;
+    AdminPermissionGrantingStrategy permissionGrantingStrategy;
     @Mock
     AccessControlEntry entry;
     Permission readPermission;

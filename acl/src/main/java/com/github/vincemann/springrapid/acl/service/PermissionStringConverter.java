@@ -4,6 +4,6 @@ import org.springframework.security.acls.model.Permission;
 
 public interface PermissionStringConverter {
 
-    public String convert(Permission permission);
-    public Permission convert(String permission);
+    String convert(Permission permission);
+    Permission convert(String permission);
 }

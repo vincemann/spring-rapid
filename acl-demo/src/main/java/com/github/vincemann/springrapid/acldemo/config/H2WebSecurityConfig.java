@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.config;
 
-import com.github.vincemann.springrapid.auth.config.RapidWebSecurityConfig;
+import com.github.vincemann.springrapid.auth.config.WebSecurityConfig;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @Configuration
 @EnableWebSecurity
 // only run it like this in dev or test env
-public class H2WebSecurityConfig extends RapidWebSecurityConfig {
+public class H2WebSecurityConfig extends WebSecurityConfig {
 
 
     @Override

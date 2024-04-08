@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.model.abs;
 
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.AbstractUser;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

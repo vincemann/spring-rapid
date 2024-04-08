@@ -24,7 +24,7 @@
 
 		<dependency>
 			<groupId>com.github.vincemann.spring-rapid</groupId>
-			<artifactId>lemon-exceptions</artifactId>
+			<artifactId>auth-ex</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

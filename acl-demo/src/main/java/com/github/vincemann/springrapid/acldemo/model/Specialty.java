@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
-import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareImpl;
 
 
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
@@ -17,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "specialties", uniqueConstraints = @UniqueConstraint(name = "unique description", columnNames = "description"))
 @Entity
-public class Specialty extends IdAwareEntityImpl<Long>
+public class Specialty extends IdAwareImpl<Long>
 {
 
     @NotEmpty

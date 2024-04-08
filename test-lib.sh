@@ -1,2 +1,2 @@
 #!/bin/bash
-./mvnw -pl \!core-demo,\!auth-demo,\!acl-demo clean test
+./mvnw -pl \!auth-demo,\!acl-demo clean test

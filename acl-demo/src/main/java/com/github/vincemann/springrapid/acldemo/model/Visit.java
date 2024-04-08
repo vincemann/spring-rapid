@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
 
-import com.github.vincemann.springrapid.core.model.IdAwareEntityImpl;
+import com.github.vincemann.springrapid.core.model.IdAwareImpl;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "visits")
 @Entity
-public class Visit extends IdAwareEntityImpl<Long> {
+public class Visit extends IdAwareImpl<Long> {
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "pet_id")

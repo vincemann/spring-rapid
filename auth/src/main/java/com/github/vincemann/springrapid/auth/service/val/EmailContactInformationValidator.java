@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.service.val;
 
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.auth.ex.BadEntityException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -10,7 +10,7 @@ import javax.validation.constraints.Email;
 import java.util.Set;
 
 /**
- * enforces the {@link Email} constraint programmatically
+ * Enforces the {@link Email} constraint programmatically
  */
 public class EmailContactInformationValidator implements ContactInformationValidator {
 

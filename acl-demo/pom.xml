@@ -23,15 +23,10 @@
 
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>bidir</artifactId>
+            <artifactId>auth-ex</artifactId>
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>lemon-exceptions</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
 <!--        UTIL-->
 
@@ -57,13 +52,6 @@
         </dependency>
 
 <!--        TEST-->
-
-        <dependency>
-            <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>core-test</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>

@@ -2,8 +2,8 @@ package com.github.vincemann.springrapid.authdemo.service;
 
 import com.github.vincemann.springrapid.acl.Secured;
 import com.github.vincemann.springrapid.auth.service.SecuredUserServiceDecorator;
-import com.github.vincemann.springrapid.authdemo.model.User;
-import com.github.vincemann.springrapid.core.Root;
+import com.github.vincemann.springrapid.authdemo.User;
+import com.github.vincemann.springrapid.auth.Root;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

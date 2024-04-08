@@ -1,14 +1,12 @@
 package com.github.vincemann.springrapid.auth.util;
 
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
+import com.github.vincemann.springrapid.auth.AbstractUser;
+import com.github.vincemann.springrapid.auth.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.core.sec.AuthorizationUtils;
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.service.id.IdConverter;
-import com.github.vincemann.springrapid.core.util.RepositoryUtil;
-import com.github.vincemann.springrapid.core.util.VerifyEntity;
+import com.github.vincemann.springrapid.auth.RapidSecurityContext;
+import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.IdConverter;
+import com.github.vincemann.springrapid.auth.util.RepositoryUtil;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.Assert;
