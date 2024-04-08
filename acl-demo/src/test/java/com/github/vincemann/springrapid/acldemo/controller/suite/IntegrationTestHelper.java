@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Assertions;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.stereotype.Component;
 
 import static org.mockito.Mockito.atLeast;
@@ -40,8 +39,8 @@ import static org.mockito.Mockito.atLeast;
 @Component
 public class IntegrationTestHelper {
 
-    @MockBean
-    private MessageSender messageSender;
+    @Autowired // will autowire mock
+    private MessageSender messageSenderMock;
 
     @Autowired
     private TestData testData;
@@ -168,11 +167,11 @@ public class IntegrationTestHelper {
     public AuthMessage verifyMsgWasSent(String recipient) {
         ArgumentCaptor<AuthMessage> msgCaptor = ArgumentCaptor.forClass(AuthMessage.class);
 
-        Mockito.verify(AopProxyUtils.unproxy(messageSender), atLeast(1))
+        Mockito.verify(AopProxyUtils.unproxy(messageSenderMock), atLeast(1))
                 .send(msgCaptor.capture());
         AuthMessage sentData = msgCaptor.getValue();
         Assertions.assertEquals(sentData.getRecipient(),recipient,"latest msg must be sent to recipient: " +recipient + " but was sent to: " + sentData.getRecipient());
-        Mockito.reset(AopProxyUtils.unproxy(messageSender));
+        Mockito.reset(AopProxyUtils.unproxy(messageSenderMock));
         return sentData;
     }
 }

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.controller.suite.templates;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.vincemann.springrapid.acldemo.controller.PetController;
+import com.github.vincemann.springrapid.acldemo.pet.PetController;
 import com.github.vincemann.springrapid.acldemo.pet.dto.CreatePetDto;
 import com.github.vincemann.springrapid.acldemo.pet.dto.OwnerReadsOwnPetDto;
 import com.github.vincemann.springrapid.acldemo.pet.dto.OwnerUpdatesPetDto;

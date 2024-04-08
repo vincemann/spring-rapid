@@ -20,7 +20,6 @@ import jakarta.validation.Validator;
 import java.util.Optional;
 
 import static com.github.vincemann.springrapid.auth.util.RepositoryUtil.findPresentById;
-import static com.github.vincemann.springrapid.core.util.ValidationUtils.validate;
 
 
 @Primary
@@ -78,14 +77,14 @@ public class PetServiceImpl implements PetService {
     public Pet ownerUpdatesPet(OwnerUpdatesPetDto dto) throws EntityNotFoundException, BadEntityException {
         Pet pet = findPresentById(repository, dto.getId());
         if (dto.getName() != null){
-            validate(validator,dto,dto::getName);
+            validator.validateProperty(dto,"name");
             Optional<Pet> duplicate = repository.findByName(dto.getName());
             if (duplicate.isPresent())
                 throw new BadEntityException("A pet with that name already exists");
             pet.setName(dto.getName());
         }
         if (dto.getBirthDate() != null){
-            validate(validator,dto,dto::getBirthDate);
+            validator.validateProperty(dto,"birthDate");
             pet.setBirthDate(dto.getBirthDate());
         }
         return pet;

@@ -15,6 +15,8 @@ public class AbstractUser<Id extends Serializable> implements IdAware<Id>
 {
 	public static final int CONTACT_INFORMATION_MAX = 250;
 
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@jakarta.persistence.Id
 	protected Id id;
 
 	// contactInformation can be email or phone number - dont hardcode to email constraint

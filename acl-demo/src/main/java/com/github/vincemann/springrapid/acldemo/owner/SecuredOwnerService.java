@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.acldemo.owner;
 
 import com.github.vincemann.springrapid.acl.Secured;
+import com.github.vincemann.springrapid.acl.service.sec.SecuredUserServiceDecorator;
 import com.github.vincemann.springrapid.acldemo.owner.dto.UpdateOwnerDto;
-import com.github.vincemann.springrapid.auth.service.SecuredUserServiceDecorator;
 import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

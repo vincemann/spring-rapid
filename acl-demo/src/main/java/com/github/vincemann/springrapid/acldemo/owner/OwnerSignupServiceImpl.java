@@ -6,10 +6,11 @@ import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.service.VerificationService;
 import com.github.vincemann.springrapid.auth.BadEntityException;
 import com.github.vincemann.springrapid.auth.EntityNotFoundException;
-import com.google.common.collect.Sets;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service(value = "signupService")  // disables autoconfiguring spring rapids SignupServiceImpl bean
 public class OwnerSignupServiceImpl implements OwnerSignupService {

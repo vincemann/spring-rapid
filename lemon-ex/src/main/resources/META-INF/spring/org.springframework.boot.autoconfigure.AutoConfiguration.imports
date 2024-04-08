@@ -1,0 +1,3 @@
+com.github.vincemann.springrapid.lemon.exceptions.config.LemonWebExceptionsAutoConfiguration
+com.github.vincemann.springrapid.lemon.exceptions.config.LemonExceptionHandlerAutoConfiguration
+com.github.vincemann.springrapid.lemon.exceptions.config.LemonExceptionUtilsAutoConfiguration

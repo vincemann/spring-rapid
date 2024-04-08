@@ -1,11 +1,11 @@
 package com.github.vincemann.springrapid.acldemo.owner;
 
+import com.github.vincemann.springrapid.acl.service.AclUserService;
 import com.github.vincemann.springrapid.acldemo.owner.dto.UpdateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.pet.Pet;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.UpdateHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import static com.github.vincemann.springrapid.auth.util.RepositoryUtil.findPres
 @Root
 @Service
 public class OwnerServiceImpl
-        extends AbstractUserService<Owner,Long, OwnerRepository>
+        extends AclUserService<Owner,Long, OwnerRepository>
                 implements OwnerService
 {
 
@@ -36,7 +36,26 @@ public class OwnerServiceImpl
     public Owner update(UpdateOwnerDto dto) throws EntityNotFoundException {
         Long id = dto.getId();
         Owner owner = findPresentById(getRepository(), id);
-        new UpdateHelper(validator).copyProperties(dto,owner);
+        if (dto.getAddress() != null){
+            validator.validateProperty(dto,"address");
+            owner.setAddress(dto.getAddress());
+        }
+        if (dto.getCity() != null){
+            validator.validateProperty(dto,"city");
+            owner.setCity(dto.getCity());
+        }
+        if (dto.getFirstName() != null){
+            validator.validateProperty(dto,"firstName");
+            owner.setFirstName(dto.getFirstName());
+        }
+        if (dto.getLastName() != null){
+            validator.validateProperty(dto,"lastName");
+            owner.setLastName(dto.getLastName());
+        }
+        if (dto.getTelephone() != null){
+            validator.validateProperty(dto,"telephone");
+            owner.setTelephone(dto.getTelephone());
+        }
         return owner;
     }
 

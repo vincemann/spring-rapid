@@ -1,15 +1,13 @@
 package com.github.vincemann.springrapid.lemon.exceptions;
 
+import com.github.vincemann.springrapid.lemon.exceptions.util.LemonExceptionUtils;
+import jakarta.validation.ConstraintViolation;
+import org.springframework.http.HttpStatus;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.github.vincemann.springrapid.lemon.exceptions.util.LemonExceptionUtils;
-import com.github.vincemann.springrapid.lemon.exceptions.util.Message;
-import jakarta.validation.ConstraintViolation;
-
-import org.springframework.http.HttpStatus;
 
 
 /**
@@ -62,28 +60,28 @@ public class MultiErrorException extends RuntimeException {
 		return this;
 	}
 
-	/**
-	 * Adds a field-error if the given condition isn't true
-	 */
-	public MultiErrorException validateField(String fieldName, boolean valid,
-			String messageKey, Object... args) {
-		
-		if (!valid)
-			errors.add(new FieldError(fieldName, messageKey,
-				Message.get(messageKey, args)));
-			
-		return this;
-	}
+//	/**
+//	 * Adds a field-error if the given condition isn't true
+//	 */
+//	public MultiErrorException validateField(String fieldName, boolean valid,
+//			String messageKey, Object... args) {
+//
+//		if (!valid)
+//			errors.add(new FieldError(fieldName, messageKey,
+//				Message.get(messageKey, args)));
+//
+//		return this;
+//	}
 
-	/**
-	 * Adds a global-error if the given condition isn't true
-	 */
-	public MultiErrorException validate(boolean valid,
-			String messageKey, Object... args) {
-		
-		// delegate
-		return validateField(null, valid, messageKey, args);
-	}
+//	/**
+//	 * Adds a global-error if the given condition isn't true
+//	 */
+//	public MultiErrorException validate(boolean valid,
+//			String messageKey, Object... args) {
+//
+//		// delegate
+//		return validateField(null, valid, messageKey, args);
+//	}
 
 	public <T> MultiErrorException validateBean(String beanName, T bean) {
 		

@@ -43,4 +43,8 @@ public class AclUserService <
     public void setAclService(RapidAclService aclService) {
         this.aclService = aclService;
     }
+
+    protected RapidAclService getAclService() {
+        return aclService;
+    }
 }
