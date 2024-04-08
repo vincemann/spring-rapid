@@ -1,9 +1,6 @@
 package com.github.vincemann.springrapid.acl.service;
 
-import com.github.vincemann.springrapid.auth.AbstractUser;
-import com.github.vincemann.springrapid.auth.AbstractUserRepository;
-import com.github.vincemann.springrapid.auth.BadEntityException;
-import com.github.vincemann.springrapid.auth.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.*;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.val.InsufficientPasswordStrengthException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +26,7 @@ public class AclUserService <
     }
 
     protected void saveAclInfo(U saved){
+        aclService.grantRolePermissionForEntity(Roles.ADMIN,saved,BasePermission.ADMINISTRATION);
         aclService.grantUserPermissionForEntity(saved.getContactInformation(),saved, BasePermission.ADMINISTRATION);
     }
 
