@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acl.service;
+package com.github.vincemann.springrapid.acl.service.sec;
 
 import com.github.vincemann.springrapid.acl.AclTemplate;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class AbstractController implements ApplicationListener<ContextRefreshedEvent>
+abstract class AbstractController implements ApplicationListener<ContextRefreshedEvent>
 {
 
     protected final Log log = LogFactory.getLog(getClass());

@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acl;
 
+import com.github.vincemann.springrapid.acl.service.sec.SecuredServiceDecorator;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.lang.annotation.*;
@@ -7,7 +8,7 @@ import java.lang.annotation.*;
 /**
  * This is used as a qualifier for dependency injection.
  * Indicates, that service bean annotated with this annotation is secured.
- * Usually used in combination with {@link com.github.vincemann.springrapid.acl.service.SecuredServiceDecorator}.
+ * Usually used in combination with {@link SecuredServiceDecorator}.
  * Usually it exists one "normal" version of the bean and one "secured" version of the bean. The secured service decorates
  * the root service with security checks.
  *

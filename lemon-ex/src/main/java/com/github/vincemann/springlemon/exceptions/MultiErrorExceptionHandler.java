@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.exceptions.handlers;
+package com.github.vincemann.springlemon.exceptions;
 
 import java.util.Collection;
 

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.visit;
 
 import com.github.vincemann.springrapid.acl.Secured;
-import com.github.vincemann.springrapid.acl.service.SecuredServiceDecorator;
+import com.github.vincemann.springrapid.acl.service.sec.SecuredServiceDecorator;
 import com.github.vincemann.springrapid.acldemo.visit.dto.CreateVisitDto;
 import com.github.vincemann.springrapid.acldemo.owner.Owner;
 import com.github.vincemann.springrapid.acldemo.pet.Pet;

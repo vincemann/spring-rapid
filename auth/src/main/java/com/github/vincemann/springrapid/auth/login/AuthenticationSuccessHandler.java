@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.authexceptions;
+package com.github.vincemann.springrapid.auth.login;
 
 import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.service.UserAuthTokenService;

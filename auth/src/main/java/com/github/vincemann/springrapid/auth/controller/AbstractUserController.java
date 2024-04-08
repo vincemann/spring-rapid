@@ -14,7 +14,6 @@ import com.github.vincemann.springrapid.auth.jwt.BadTokenException;
 import com.github.vincemann.springrapid.auth.val.InsufficientPasswordStrengthException;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.Root;
-import com.github.vincemann.springrapid.core.controller.AbstractController;
 import com.github.vincemann.springrapid.auth.BadEntityException;
 import com.github.vincemann.springrapid.auth.EntityNotFoundException;
 import org.apache.commons.logging.Log;

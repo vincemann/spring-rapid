@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.authexceptions.config;
 
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.authexceptions.*;
-import com.github.vincemann.springrapid.core.handler.JsonProcessingExceptionHandler;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +14,13 @@ public class AuthExceptionHandlerAutoConfiguration {
     public UsernameNotFoundExceptionHandler usernameNotFoundExceptionHandler(){
         return new UsernameNotFoundExceptionHandler();
     }
+
+    @Bean
+    @ConditionalOnMissingBean(InsufficientPasswordStrengthExceptionHandler.class)
+    public InsufficientPasswordStrengthExceptionHandler insufficientPasswordStrengthExceptionHandler(){
+        return new InsufficientPasswordStrengthExceptionHandler();
+    }
+
 
     @Bean
     @ConditionalOnMissingBean(AccessDeniedExceptionHandler.class)
@@ -42,38 +48,38 @@ public class AuthExceptionHandlerAutoConfiguration {
 
 
     @Bean
-    @ConditionalOnMissingBean(com.github.vincemann.springrapid.core.handler.WebExchangeBindExceptionHandler.class)
-    public com.github.vincemann.springrapid.core.handler.WebExchangeBindExceptionHandler webExchangeBindExceptionHandler(){
-        return new com.github.vincemann.springrapid.core.handler.WebExchangeBindExceptionHandler();
+    @ConditionalOnMissingBean(WebExchangeBindExceptionHandler.class)
+    public WebExchangeBindExceptionHandler webExchangeBindExceptionHandler(){
+        return new WebExchangeBindExceptionHandler();
     }
 
     @Bean
-    @ConditionalOnMissingBean(com.github.vincemann.springrapid.core.handler.ConstraintViolationExceptionHandler.class)
-    public com.github.vincemann.springrapid.core.handler.ConstraintViolationExceptionHandler constraintViolationExceptionHandler(){
-        return new com.github.vincemann.springrapid.core.handler.ConstraintViolationExceptionHandler();
+    @ConditionalOnMissingBean(ConstraintViolationExceptionHandler.class)
+    public ConstraintViolationExceptionHandler constraintViolationExceptionHandler(){
+        return new ConstraintViolationExceptionHandler();
     }
 
     @Bean
-    @ConditionalOnMissingBean(com.github.vincemann.springrapid.core.handler.BadEntityExceptionHandler.class)
-    public com.github.vincemann.springrapid.core.handler.BadEntityExceptionHandler badEntityExceptionHandler(){
-        return new com.github.vincemann.springrapid.core.handler.BadEntityExceptionHandler();
+    @ConditionalOnMissingBean(BadEntityExceptionHandler.class)
+    public BadEntityExceptionHandler badEntityExceptionHandler(){
+        return new BadEntityExceptionHandler();
     }
 
     @Bean
-    @ConditionalOnMissingBean(com.github.vincemann.springrapid.core.handler.EntityNotFoundExceptionHandler.class)
-    public com.github.vincemann.springrapid.core.handler.EntityNotFoundExceptionHandler entityNotFoundExceptionHandler() {
-        return new com.github.vincemann.springrapid.core.handler.EntityNotFoundExceptionHandler();
+    @ConditionalOnMissingBean(EntityNotFoundExceptionHandler.class)
+    public EntityNotFoundExceptionHandler entityNotFoundExceptionHandler() {
+        return new EntityNotFoundExceptionHandler();
     }
 
     @Bean
-    @ConditionalOnMissingBean(com.github.vincemann.springrapid.core.handler.JsonParseExceptionHandler.class)
-    public com.github.vincemann.springrapid.core.handler.JsonParseExceptionHandler jsonParseExceptionHandler(){
-        return new com.github.vincemann.springrapid.core.handler.JsonParseExceptionHandler();
+    @ConditionalOnMissingBean(JsonParseExceptionHandler.class)
+    public JsonParseExceptionHandler jsonParseExceptionHandler(){
+        return new JsonParseExceptionHandler();
     }
 
     @Bean
-    @ConditionalOnMissingBean(com.github.vincemann.springrapid.core.handler.JsonProcessingExceptionHandler.class)
-    public com.github.vincemann.springrapid.core.handler.JsonProcessingExceptionHandler jsonProcessingExceptionHandler(){
+    @ConditionalOnMissingBean(JsonProcessingExceptionHandler.class)
+    public JsonProcessingExceptionHandler jsonProcessingExceptionHandler(){
         return new JsonProcessingExceptionHandler();
     }
 }

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.pet;
 
 import com.github.vincemann.springrapid.acl.Secured;
-import com.github.vincemann.springrapid.acl.service.SecuredServiceDecorator;
+import com.github.vincemann.springrapid.acl.service.sec.SecuredServiceDecorator;
 import com.github.vincemann.springrapid.acldemo.Roles;
 import com.github.vincemann.springrapid.acldemo.pet.dto.CreatePetDto;
 import com.github.vincemann.springrapid.acldemo.pet.dto.OwnerUpdatesPetDto;

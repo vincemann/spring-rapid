@@ -1,8 +1,6 @@
 package com.github.vincemann.springrapid.auth.config;
 
 
-import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
-import com.github.vincemann.springrapid.core.handler.JsonProcessingExceptionHandler;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +20,7 @@ public class AuthWebAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(AuthenticationSuccessHandler.class)
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
-        return new AuthenticationSuccessHandler();
+        return new com.github.vincemann.springrapid.auth.login.AuthenticationSuccessHandler();
     }
 
     /**

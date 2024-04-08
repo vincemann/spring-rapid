@@ -5,7 +5,6 @@ import com.github.vincemann.springrapid.auth.AbstractUser;
 import java.io.Serializable;
 
 public class SecuredUserService
-        // looks ugly but is just UserService in raw form
         extends SecuredUserServiceDecorator
         <
                         UserService<AbstractUser<Serializable>, Serializable>,

@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.auth.*;
+import com.github.vincemann.springrapid.auth.util.RepositoryUtil;
 import com.github.vincemann.springrapid.auth.val.ContactInformationValidator;
 import com.github.vincemann.springrapid.auth.val.InsufficientPasswordStrengthException;
 import com.github.vincemann.springrapid.auth.val.PasswordValidator;

@@ -1,30 +1,30 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.AbstractUserRepository;
-import com.github.vincemann.springrapid.auth.msg.AuthMessage;
-import com.github.vincemann.springrapid.auth.msg.MessageSender;
+import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.jwt.BadTokenException;
 import com.github.vincemann.springrapid.auth.jwt.JweTokenService;
+import com.github.vincemann.springrapid.auth.msg.AuthMessage;
+import com.github.vincemann.springrapid.auth.msg.MessageSender;
+import com.github.vincemann.springrapid.auth.util.AopProxyUtils;
 import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.authtest.AbstractUserControllerTestTemplate;
-
-import com.github.vincemann.springrapid.auth.util.AopProxyUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.acls.model.AclCache;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.util.AopTestUtils;
-import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.Serializable;
@@ -41,7 +41,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(properties = "rapid-auth.create-admins=false")
 @Sql(scripts = "classpath:/remove-acl-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public abstract class AuthIntegrationTest extends AbstractMvcTest {
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+public abstract class AuthIntegrationTest {
 
     @MockBean
     protected MessageSender msgSender;
@@ -71,6 +73,9 @@ public abstract class AuthIntegrationTest extends AbstractMvcTest {
     @Autowired
     private AclCache aclCache;
 
+    @Autowired
+    protected MockMvc mvc;
+
     @BeforeEach
     protected void setup() throws Exception {
         testAdapter.beforeEach();
@@ -84,16 +89,6 @@ public abstract class AuthIntegrationTest extends AbstractMvcTest {
                 .when(properties)
                 .getJwt();
     }
-
-
-    @Override
-    protected DefaultMockMvcBuilder createMvcBuilder() {
-        DefaultMockMvcBuilder mvcBuilder = super.createMvcBuilder();
-        mvcBuilder.apply(SecurityMockMvcConfigurers.springSecurity());
-        return mvcBuilder;
-    }
-
-
 
 
     protected void mockJwtExpirationTime(long expirationMillis) {
@@ -144,7 +139,7 @@ public abstract class AuthIntegrationTest extends AbstractMvcTest {
     }
 
     protected void removeTestUsers(){
-        TransactionalTestUtil.clear(userRepository, transactionTemplate);
+        userRepository.deleteAll();
     }
 }
 

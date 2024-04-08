@@ -109,13 +109,12 @@ public class AuthServiceAutoConfiguration {
         return new SecuredVerificationService(service);
     }
 
-
-//    @ConditionalOnMissingBean(name = "securedUserService")
-//    @Bean
-//    @Secured
-//    public UserService securedUserService(@Root UserService service) {
-//        return new SecuredUserService(service);
-//    }
+    @ConditionalOnMissingBean(name = "securedUserService")
+    @Bean
+    @Secured
+    public UserService securedUserService(@Root UserService service) {
+        return new SecuredUserService(service);
+    }
 
     @Bean
     @ConditionalOnMissingBean(AuthorizationTokenService.class)
