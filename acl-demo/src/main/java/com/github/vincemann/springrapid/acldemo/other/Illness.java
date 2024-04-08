@@ -3,12 +3,14 @@ package com.github.vincemann.springrapid.acldemo.other;
 
 import com.github.vincemann.springrapid.acldemo.MyEntity;
 import com.github.vincemann.springrapid.acldemo.pet.Pet;
-import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
-import lombok.*;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,7 +42,7 @@ public class Illness extends MyEntity {
         return "Illness{" +
                 "id=" + (getId() == null ? "null" : getId().toString()) +
                 ", name='" + name + '\'' +
-                ", pets=" + LazyToStringUtil.toStringIfLoaded(pets,Pet::getName) +
+                ", pets=" + pets.stream().map(Pet::getName).toList() +
                 '}';
     }
 }

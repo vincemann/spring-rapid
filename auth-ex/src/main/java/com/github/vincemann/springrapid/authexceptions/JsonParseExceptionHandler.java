@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authexceptions;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.github.vincemann.springrapid.exceptionsapi.AbstractBadRequestExceptionHandler;
+import com.github.vincemann.springrapid.lemon.exceptions.AbstractBadRequestExceptionHandler;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 

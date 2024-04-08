@@ -62,6 +62,12 @@
             <version>${passay.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version> <!-- Or the latest version -->
+        </dependency>
+
 <!--        jwt-->
         <dependency>
             <groupId>com.nimbusds</groupId>

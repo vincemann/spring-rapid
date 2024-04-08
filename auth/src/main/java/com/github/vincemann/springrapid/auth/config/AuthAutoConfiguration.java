@@ -11,6 +11,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.Validator;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 @Configuration
@@ -23,11 +25,11 @@ public class AuthAutoConfiguration {
         return new AuthPrincipalFactoryImpl();
     }
 
-//    @Bean
-//    @ConditionalOnMissingBean(Validator.class)
-//    public jakarta.validation.Validator localValidatorFactoryBean() {
-//        return new LocalValidatorFactoryBean();
-//    }
+    @Bean
+    @ConditionalOnMissingBean(Validator.class)
+    public jakarta.validation.Validator localValidatorFactoryBean() {
+        return new LocalValidatorFactoryBean();
+    }
 
     @ConditionalOnMissingBean(EndpointService.class)
     @Bean

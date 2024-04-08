@@ -21,7 +21,7 @@ public class OwnerSignupServiceImpl implements OwnerSignupService {
     public Owner signup(SignupOwnerDto dto) throws BadEntityException {
         ModelMapper mapper = new ModelMapper();
         Owner owner = mapper.map(dto, Owner.class);
-        owner.setRoles(Sets.newHashSet(Roles.OWNER, Roles.USER));
+        owner.setRoles(Set.of(Roles.OWNER, Roles.USER));
 
         Owner saved = ownerService.create(owner);
         try {

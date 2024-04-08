@@ -19,7 +19,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.stream.Collectors;
 
-import static com.github.vincemann.springrapid.core.util.RepositoryUtil.findPresentById;
+import static com.github.vincemann.springrapid.auth.util.RepositoryUtil.findPresentById;
 
 @Service
 public class VisitMappingService {

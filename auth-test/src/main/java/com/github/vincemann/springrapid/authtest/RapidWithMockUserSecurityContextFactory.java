@@ -1,11 +1,11 @@
 package com.github.vincemann.springrapid.authtest;
 
-import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
-import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
-import com.google.common.collect.Sets;
+import com.github.vincemann.springrapid.auth.AuthPrincipal;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 import org.springframework.util.StringUtils;
+
+import java.util.Set;
 
 public class RapidWithMockUserSecurityContextFactory implements WithSecurityContextFactory<WithRapidMockUser> {
 
@@ -17,8 +17,8 @@ public class RapidWithMockUserSecurityContextFactory implements WithSecurityCont
                     + " cannot have null username on both username and value properites");
         }
 
-        RapidPrincipal principal = new RapidPrincipal(username, withUser.password(),
-                Sets.newHashSet(withUser.authorities()), withUser.id().isEmpty() ? null : withUser.id());
-        return RapidTestUtil.createMockSecurityContext(principal);
+        AuthPrincipal principal = new AuthPrincipal(username, withUser.password(),
+                Set.of(withUser.authorities()), withUser.id().isEmpty() ? null : withUser.id());
+        return AuthTestUtil.createMockSecurityContext(principal);
     }
 }

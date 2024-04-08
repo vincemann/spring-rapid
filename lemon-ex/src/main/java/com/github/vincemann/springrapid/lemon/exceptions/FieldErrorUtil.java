@@ -1,10 +1,9 @@
-package com.github.vincemann.springrapid.auth.util;
+package com.github.vincemann.springrapid.lemon.exceptions;
 
-import org.springframework.validation.FieldError;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.ObjectError;
 
 import jakarta.validation.ConstraintViolation;
-import org.thymeleaf.util.StringUtils;
 
 public class FieldErrorUtil {
 

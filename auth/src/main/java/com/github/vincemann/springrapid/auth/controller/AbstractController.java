@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.auth.BadEntityException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

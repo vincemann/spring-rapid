@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Validator;
 import java.util.Optional;
 
-import static com.github.vincemann.springrapid.core.util.RepositoryUtil.findPresentById;
+import static com.github.vincemann.springrapid.auth.util.RepositoryUtil.findPresentById;
 import static com.github.vincemann.springrapid.core.util.ValidationUtils.validate;
 
 

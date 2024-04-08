@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.auth;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.lang.Nullable;
 import java.io.Serializable;

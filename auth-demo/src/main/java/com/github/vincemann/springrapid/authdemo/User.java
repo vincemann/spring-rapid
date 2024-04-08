@@ -34,7 +34,7 @@ public class User extends AbstractUser<Long> {
 	public User(String contactInformation, String password, String name, String... roles) {
 		this.contactInformation = contactInformation;
 		this.password = password;
-		this.roles= Sets.newHashSet(roles);
+		this.roles= Set.of(roles);
 		this.name = name;
 	}
 

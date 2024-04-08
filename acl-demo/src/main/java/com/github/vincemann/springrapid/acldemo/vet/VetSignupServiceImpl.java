@@ -21,7 +21,7 @@ public class VetSignupServiceImpl implements VetSignupService {
     public Vet signup(SignupVetDto dto) throws BadEntityException {
         ModelMapper mapper = new ModelMapper();
         Vet vet = mapper.map(dto, Vet.class);
-        vet.setRoles(Sets.newHashSet(Roles.VET, Roles.USER));
+        vet.setRoles(Set.of(Roles.VET, Roles.USER));
 
         Vet saved = vetService.create(vet);
         try {

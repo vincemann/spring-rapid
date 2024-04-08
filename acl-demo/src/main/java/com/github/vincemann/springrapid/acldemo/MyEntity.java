@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo;
 
-import com.github.vincemann.springrapid.acl.IdAware;
 
+import com.github.vincemann.springrapid.auth.IdAware;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.MappedSuperclass;

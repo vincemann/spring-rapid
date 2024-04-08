@@ -111,7 +111,7 @@ public class AuthPrincipal implements AuthenticatedPrincipal, CredentialsContain
 
     @Override
     public String toString() {
-        return "RapidPrincipal{" +
+        return "AuthPrincipal{" +
                 "name='" + name + '\'' +
                 ", roles=" + roles +
                 ", password='" + password + '\'' +
@@ -139,7 +139,7 @@ public class AuthPrincipal implements AuthenticatedPrincipal, CredentialsContain
         private Builder() {
         }
 
-        public static Builder aRapidPrincipal() {
+        public static Builder aAuthPrincipal() {
             return new Builder();
         }
 

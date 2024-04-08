@@ -60,7 +60,7 @@ public abstract class RapidSecurityContext {
             return null;
         }
         Object principal = authentication.getPrincipal();
-        Assert.isInstanceOf(AuthPrincipal.class, principal, "principal must be of type RapidPrincipal");
+        Assert.isInstanceOf(AuthPrincipal.class, principal, "principal must be of type AuthPrincipal");
         return (AuthPrincipal) authentication.getPrincipal();
     }
 

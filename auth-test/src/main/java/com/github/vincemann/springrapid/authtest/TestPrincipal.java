@@ -2,9 +2,9 @@ package com.github.vincemann.springrapid.authtest;
 
 import com.github.vincemann.springrapid.auth.AuthPrincipal;
 import com.github.vincemann.springrapid.auth.RapidSecurityContext;
-import org.assertj.core.util.Sets;
 
 import java.util.Arrays;
+import java.util.Set;
 
 /**
  * Convenience class for creating test principals that can be logged in with {@link RapidSecurityContext} for a test.
@@ -16,7 +16,7 @@ public class TestPrincipal {
         AuthPrincipal principal = new AuthPrincipal();
         principal.setName(name);
         principal.setPassword("password");
-        principal.setRoles(Sets.newHashSet(Arrays.asList(roles)));
+        principal.setRoles(Set.of(roles));
         return principal;
     }
 
@@ -25,7 +25,7 @@ public class TestPrincipal {
         AuthPrincipal principal = new AuthPrincipal();
         principal.setName("test user");
         principal.setPassword("password");
-        principal.setRoles(Sets.newHashSet(Arrays.asList(roles)));
+        principal.setRoles(Set.of(roles));
         return principal;
     }
 }

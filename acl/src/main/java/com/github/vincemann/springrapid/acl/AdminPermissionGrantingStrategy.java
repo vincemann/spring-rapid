@@ -106,7 +106,7 @@ public class AdminPermissionGrantingStrategy extends DefaultPermissionGrantingSt
     }
 
     @Override
-    protected boolean isGranted(AccessControlEntry ace, Permission p) {
+    public boolean isGranted(AccessControlEntry ace, Permission p) {
         if (ace.isGranting() && p.getMask() != 0) {
             int givenPermissionMask = ace.getPermission().getMask();
             int requestedPermissionMask = p.getMask();

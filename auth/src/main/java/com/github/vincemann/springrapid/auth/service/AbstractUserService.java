@@ -13,7 +13,6 @@ import com.github.vincemann.springrapid.auth.util.VerifyEntity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -36,7 +35,6 @@ public abstract class AbstractUserService
     private PasswordValidator passwordValidator;
 
     private ContactInformationValidator contactInformationValidator;
-    private RapidAclService aclService;
     private R repository;
 
     private Class<U> entityClass;
@@ -47,7 +45,7 @@ public abstract class AbstractUserService
 
     //only called internally
     public U createAdmin(AuthProperties.Admin admin) {
-        Assert.notNull(admin);
+        Assert.notNull(admin,"admin must not be null");
         // create the adminUser
         U adminUser = createUser();
         adminUser.setContactInformation(admin.getContactInformation());
@@ -72,14 +70,9 @@ public abstract class AbstractUserService
         if (user.getPassword() != null && !passwordEncoder.isEncoded(user.getPassword()))
             passwordValidator.validate(user.getPassword());
         user.setPassword(encodePasswordIfNeeded(user.getPassword()));
-        U saved = repository.save(user);
-        saveAclInfo(saved);
-        return saved;
+        return repository.save(user);
     }
 
-    protected void saveAclInfo(U saved){
-        aclService.grantUserPermissionForEntity(saved.getContactInformation(),saved, BasePermission.ADMINISTRATION);
-    }
 
 
     // helper methods for special updates that enforce basic database rules but not more complex stuff like sending msges to user
@@ -116,8 +109,8 @@ public abstract class AbstractUserService
     @Transactional
     @Override
     public U updatePassword(Id userId, String password) throws EntityNotFoundException, BadEntityException, InsufficientPasswordStrengthException {
-        Assert.notNull(password);
-        Assert.notNull(userId);
+        Assert.notNull(password,"password must not be null");
+        Assert.notNull(userId,"userid must not be null");
 
         if (!passwordEncoder.isEncoded(password))
             passwordValidator.validate(password);
@@ -150,8 +143,8 @@ public abstract class AbstractUserService
     @Transactional
     @Override
     public U updateContactInformation(Id userId, String contactInformation) throws EntityNotFoundException {
-        Assert.notNull(userId);
-        Assert.notNull(contactInformation);
+        Assert.notNull(userId,"userid must not be null");
+        Assert.notNull(contactInformation,"contact information must not be null");
 
         contactInformationValidator.validate(contactInformation);
         U user = RepositoryUtil.findPresentById(repository, userId);
@@ -164,7 +157,7 @@ public abstract class AbstractUserService
     @Transactional(readOnly = true)
     @Override
     public Optional<U> findByContactInformation(String contactInformation) {
-        Assert.notNull(contactInformation);
+        Assert.notNull(contactInformation,"contact information must not be null");
         return getRepository().findByContactInformation(contactInformation);
     }
 
@@ -172,7 +165,6 @@ public abstract class AbstractUserService
     public void delete(Id id) throws EntityNotFoundException {
         if (!repository.existsById(id))
             throw new EntityNotFoundException(id,getEntityClass());
-        aclService.deleteAclOfEntity(getEntityClass(),id,false);
         repository.deleteById(id);
     }
 
@@ -185,11 +177,6 @@ public abstract class AbstractUserService
     @Autowired
     public void setPasswordValidator(PasswordValidator passwordValidator) {
         this.passwordValidator = passwordValidator;
-    }
-
-    @Autowired
-    public void setAclService(RapidAclService aclService) {
-        this.aclService = aclService;
     }
 
     @Autowired
@@ -219,12 +206,6 @@ public abstract class AbstractUserService
     protected PasswordValidator getPasswordValidator() {
         return passwordValidator;
     }
-
-    protected RapidAclService getAclService() {
-        return aclService;
-    }
-
-
 
 
 }

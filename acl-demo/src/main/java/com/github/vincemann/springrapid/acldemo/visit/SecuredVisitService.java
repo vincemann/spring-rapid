@@ -12,6 +12,7 @@ import com.github.vincemann.springrapid.acldemo.vet.VetRepository;
 import com.github.vincemann.springrapid.acl.util.AuthorizationUtils;
 import com.github.vincemann.springrapid.auth.BadEntityException;
 import com.github.vincemann.springrapid.auth.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.Roles;
 import com.github.vincemann.springrapid.auth.util.VerifyAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,7 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.github.vincemann.springrapid.core.util.RepositoryUtil.findPresentById;
+import static com.github.vincemann.springrapid.auth.util.RepositoryUtil.findPresentById;
+
 
 @Secured
 @Service

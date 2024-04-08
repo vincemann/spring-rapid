@@ -1,19 +1,13 @@
 package com.github.vincemann.springrapid.auth.service;
 
-import com.github.vincemann.springrapid.auth.AbstractUserRepository;
+import com.github.vincemann.springrapid.auth.*;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
-import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
-import com.github.vincemann.springrapid.auth.Root;
-import com.github.vincemann.springrapid.auth.AbstractUser;
 import com.github.vincemann.springrapid.auth.jwt.BadTokenException;
 import com.github.vincemann.springrapid.auth.jwt.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
-import com.github.vincemann.springrapid.auth.BadEntityException;
-import com.github.vincemann.springrapid.auth.EntityNotFoundException;
-import com.github.vincemann.springrapid.auth.IdConverter;
 import com.github.vincemann.springrapid.auth.util.Message;
 import com.github.vincemann.springrapid.auth.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;

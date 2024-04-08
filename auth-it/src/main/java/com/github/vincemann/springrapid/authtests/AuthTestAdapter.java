@@ -1,12 +1,11 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.auth.Roles;
 import com.github.vincemann.springrapid.auth.*;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
+import java.util.Set;
 
 public abstract class AuthTestAdapter {
 
@@ -53,7 +52,7 @@ public abstract class AuthTestAdapter {
         AbstractUser user = userService.createUser();
         user.setContactInformation(contactInformation);
         user.setPassword(password);
-        user.setRoles(Sets.newHashSet(roles));
+        user.setRoles(Set.of(roles));
         return user;
     }
 

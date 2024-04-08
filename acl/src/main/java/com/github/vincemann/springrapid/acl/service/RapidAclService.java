@@ -14,17 +14,17 @@ public interface RapidAclService {
 
     void grantRolePermissionForEntity(String role, IdAware<?> entity, Permission... permissions);
 
-    void revokeRolesPermissionForEntity(String role, IdAware<?> entity, boolean ignoreNotFound, Permission... permissions) throws NotFoundException, AceNotFoundException;
+    void revokeRolesPermissionForEntity(String role, IdAware<?> entity, boolean ignoreNotFound, Permission... permissions) throws NotFoundException;
 
     void grantAuthenticatedPermissionForEntity(IdAware<?> entity, Permission... permissions);
 
-    void revokeAuthenticatedPermissionForEntity(IdAware<?> entity, boolean ignoreNotFound, Permission... permissions) throws NotFoundException, AceNotFoundException;
+    void revokeAuthenticatedPermissionForEntity(IdAware<?> entity, boolean ignoreNotFound, Permission... permissions) throws NotFoundException;
 
     void grantUserPermissionForEntity(String user, IdAware<?> entity, Permission... permissions);
 
     public void deleteAclOfEntity(IdAware<?> entity, boolean deleteCascade);
 
-    void revokeUsersPermissionForEntity(String user, IdAware<?> entity, boolean ignoreNotFound, Permission... permissions) throws NotFoundException, AceNotFoundException;
+    void revokeUsersPermissionForEntity(String user, IdAware<?> entity, boolean ignoreNotFound, Permission... permissions) throws NotFoundException;
 
 
     public void deleteAclOfEntity(Class<? extends IdAware> clazz, Serializable id, boolean deleteCascade);
