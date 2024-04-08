@@ -4,6 +4,8 @@ import com.github.vincemann.springrapid.auth.*;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -52,7 +54,7 @@ public abstract class AuthTestAdapter {
         AbstractUser user = userService.createUser();
         user.setContactInformation(contactInformation);
         user.setPassword(password);
-        user.setRoles(Set.of(roles));
+        user.setRoles(new HashSet<>(Arrays.asList(roles)));
         return user;
     }
 

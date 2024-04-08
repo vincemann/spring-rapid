@@ -16,6 +16,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -34,7 +37,7 @@ public class User extends AbstractUser<Long> {
 	public User(String contactInformation, String password, String name, String... roles) {
 		this.contactInformation = contactInformation;
 		this.password = password;
-		this.roles= Set.of(roles);
+		this.roles= new HashSet<>(Arrays.asList(roles));
 		this.name = name;
 	}
 

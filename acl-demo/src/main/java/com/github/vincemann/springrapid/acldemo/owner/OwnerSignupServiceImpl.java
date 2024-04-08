@@ -10,6 +10,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 @Service(value = "signupService")  // disables autoconfiguring spring rapids SignupServiceImpl bean
@@ -22,7 +24,7 @@ public class OwnerSignupServiceImpl implements OwnerSignupService {
     public Owner signup(SignupOwnerDto dto) throws BadEntityException {
         ModelMapper mapper = new ModelMapper();
         Owner owner = mapper.map(dto, Owner.class);
-        owner.setRoles(Set.of(Roles.OWNER, Roles.USER));
+        owner.setRoles(new HashSet<>(Arrays.asList(Roles.OWNER, Roles.USER)));
 
         Owner saved = ownerService.create(owner);
         try {

@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @SpringBootTest(properties = "rapid-auth.create-admins=false")
-@Sql(scripts = "classpath:/remove-acl-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "classpath:/test-data/clear-acl-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public abstract class AuthIntegrationTest {

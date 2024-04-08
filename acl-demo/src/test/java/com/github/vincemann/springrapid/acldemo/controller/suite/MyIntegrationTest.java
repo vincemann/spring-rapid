@@ -39,7 +39,7 @@ import java.util.Set;
 import static org.mockito.Mockito.atLeast;
 
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-@Sql(scripts = "classpath:/remove-acl-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "classpath:/clear-acl-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @AutoConfigureMockMvc
 @SpringBootTest
 @ActiveProfiles("test")

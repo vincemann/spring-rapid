@@ -5,6 +5,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 public class RapidWithMockUserSecurityContextFactory implements WithSecurityContextFactory<WithRapidMockUser> {
@@ -18,7 +20,7 @@ public class RapidWithMockUserSecurityContextFactory implements WithSecurityCont
         }
 
         AuthPrincipal principal = new AuthPrincipal(username, withUser.password(),
-                Set.of(withUser.authorities()), withUser.id().isEmpty() ? null : withUser.id());
+                new HashSet<>(Arrays.asList(withUser.roles())), withUser.id().isEmpty() ? null : withUser.id());
         return AuthTestUtil.createMockSecurityContext(principal);
     }
 }

@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.auth.AuthPrincipal;
 import com.github.vincemann.springrapid.auth.RapidSecurityContext;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -16,7 +17,7 @@ public class TestPrincipal {
         AuthPrincipal principal = new AuthPrincipal();
         principal.setName(name);
         principal.setPassword("password");
-        principal.setRoles(Set.of(roles));
+        principal.setRoles(new HashSet<>(Arrays.asList(roles)));
         return principal;
     }
 
@@ -25,7 +26,7 @@ public class TestPrincipal {
         AuthPrincipal principal = new AuthPrincipal();
         principal.setName("test user");
         principal.setPassword("password");
-        principal.setRoles(Set.of(roles));
+        principal.setRoles(new HashSet<>(Arrays.asList(roles)));
         return principal;
     }
 }

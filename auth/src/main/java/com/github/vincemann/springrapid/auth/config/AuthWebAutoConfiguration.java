@@ -1,11 +1,11 @@
 package com.github.vincemann.springrapid.auth.config;
 
 
+import com.github.vincemann.springrapid.auth.login.AuthenticationSuccessHandler;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -20,7 +20,7 @@ public class AuthWebAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(AuthenticationSuccessHandler.class)
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
-        return new com.github.vincemann.springrapid.auth.login.AuthenticationSuccessHandler();
+        return new AuthenticationSuccessHandler();
     }
 
     /**

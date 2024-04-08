@@ -1,5 +1,5 @@
 -- Disable foreign key constraints
-SET FOREIGN_KEY_CHECKS = 0;
+SET REFERENTIAL_INTEGRITY FALSE;
 
 DELETE FROM PUBLIC.owners;
 DELETE FROM PUBLIC.pets;
@@ -11,4 +11,4 @@ DELETE FROM PUBLIC.specialties;
 DELETE FROM PUBLIC.usr;
 
 -- Re-enable foreign key constraints
-SET FOREIGN_KEY_CHECKS = 1;
+SET REFERENTIAL_INTEGRITY TRUE;

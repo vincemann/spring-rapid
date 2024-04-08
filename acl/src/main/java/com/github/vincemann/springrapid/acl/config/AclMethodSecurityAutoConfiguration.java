@@ -11,24 +11,23 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 
 
-@Configuration
-@EnableMethodSecurity(securedEnabled = true)
-@AutoConfigureAfter(AclAutoConfiguration.class)
-public class AclMethodSecurityAutoConfiguration extends GlobalMethodSecurityConfiguration {
-
-    public AclMethodSecurityAutoConfiguration() {
-
-    }
-
-
-    @Autowired
-    MethodSecurityExpressionHandler defaultMethodSecurityExpressionHandler;
-
-    @ConditionalOnMissingBean(MethodSecurityExpressionHandler.class)
-    @Override
-    protected MethodSecurityExpressionHandler createExpressionHandler() {
-        return defaultMethodSecurityExpressionHandler;
-    }
-
-}
+//@Configuration
+//@EnableMethodSecurity(/*securedEnabled = true*/)
+//public class AclMethodSecurityAutoConfiguration /*extends GlobalMethodSecurityConfiguration*/ {
+//
+////    public AclMethodSecurityAutoConfiguration() {
+////
+////    }
+////
+////
+////    @Autowired
+////    MethodSecurityExpressionHandler defaultMethodSecurityExpressionHandler;
+////
+////    @ConditionalOnMissingBean(MethodSecurityExpressionHandler.class)
+////    @Override
+////    protected MethodSecurityExpressionHandler createExpressionHandler() {
+////        return defaultMethodSecurityExpressionHandler;
+////    }
+//
+//}
 
