@@ -14,7 +14,6 @@
 	</parent>
 
 	<dependencies>
-<!--		SPRING RAPID-->
 
 		<dependency>
 			<groupId>com.github.vincemann.spring-rapid</groupId>
@@ -36,7 +35,7 @@
 			<version>1.18.8</version>
 		</dependency>
 
-		<!--        using lower version to be compatible with springs logback-->
+<!--        using lower version to be compatible with springs logback-->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
