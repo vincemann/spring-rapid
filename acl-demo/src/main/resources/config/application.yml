@@ -1,5 +1,4 @@
 spring:
-
   jpa:
     hibernate:
       ddl-auto: create
@@ -20,10 +19,7 @@ spring:
       force: true
 
 rapid-auth:
-
-  # ADMIN users
   create-admins: false
-
   application-url: http://127.0.0.1:8080
 
   jwt:
