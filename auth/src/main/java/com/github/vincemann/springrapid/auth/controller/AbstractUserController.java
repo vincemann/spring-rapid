@@ -30,6 +30,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.util.pattern.PathPatternParser;
 import org.thymeleaf.spring6.view.ThymeleafViewResolver;
 
 import java.io.IOException;
@@ -268,6 +269,7 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
     protected RequestMappingInfo createTestTokenRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(getTestTokenUrl())
+                .options(withPathPatternParser())
                 .methods(RequestMethod.GET)
                 .build();
     }
@@ -276,6 +278,7 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
     protected RequestMappingInfo createResendVerificationContactInformationRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(getResendVerificationMessageUrl())
+                        .options(withPathPatternParser())
                 .methods(RequestMethod.POST)
                 .build();
     }
@@ -283,6 +286,7 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
     protected RequestMappingInfo createVerifyUserRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(getVerifyUserUrl())
+                .options(withPathPatternParser())
                 .methods(RequestMethod.GET)
                 .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .build();
@@ -291,6 +295,7 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
     protected RequestMappingInfo createForgotPasswordRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(getForgotPasswordUrl())
+                .options(withPathPatternParser())
                 .methods(RequestMethod.POST)
                 .build();
     }
@@ -298,6 +303,7 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
     protected RequestMappingInfo createResetPasswordViewRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(getResetPasswordViewUrl())
+                .options(withPathPatternParser())
                 .methods(RequestMethod.GET)
                 .build();
     }
@@ -306,6 +312,7 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
         return RequestMappingInfo
                 .paths(getResetPasswordUrl())
                 .methods(RequestMethod.POST)
+                .options(withPathPatternParser())
                 .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .consumes(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .build();
@@ -315,6 +322,7 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
     protected RequestMappingInfo createChangePasswordRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(getChangePasswordUrl())
+                .options(withPathPatternParser())
                 .methods(RequestMethod.POST)
                 .build();
     }
@@ -323,6 +331,7 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
     protected RequestMappingInfo createRequestContactInformationChangeRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(getRequestContactInformationChangeUrl())
+                .options(withPathPatternParser())
                 .methods(RequestMethod.POST)
                 .consumes(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .build();
@@ -331,6 +340,7 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
     protected RequestMappingInfo createChangeContactInformationRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(getChangeContactInformationUrl())
+                .options(withPathPatternParser())
                 .methods(RequestMethod.POST)
                 .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .build();
@@ -339,6 +349,7 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
 //	protected RequestMappingInfo createChangeContactInformationRequestViewMappingInfo() {
 //		return RequestMappingInfo
 //				.paths(getChangeContactInformationViewUrl())
+                //.options(withPathPatternParser())
 //				.methods(RequestMethod.GET)
 //				.produces(getMediaType())
 //				.build();
@@ -347,6 +358,7 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
     protected RequestMappingInfo createNewAuthTokenRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(getFetchNewAuthTokenUrl())
+                .options(withPathPatternParser())
                 .methods(RequestMethod.POST)
                 .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .build();
@@ -355,8 +367,15 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
     private RequestMappingInfo createBlockUserRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(getBlockUserUrl())
+                .options(withPathPatternParser())
                 .methods(RequestMethod.GET)
                 .build();
+    }
+
+    private RequestMappingInfo.BuilderConfiguration withPathPatternParser() {
+        RequestMappingInfo.BuilderConfiguration options = new RequestMappingInfo.BuilderConfiguration();
+        options.setPatternParser(new PathPatternParser());
+        return options;
     }
 
     //				HELPERS

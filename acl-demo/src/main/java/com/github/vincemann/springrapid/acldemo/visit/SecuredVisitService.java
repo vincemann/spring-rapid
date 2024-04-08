@@ -42,21 +42,21 @@ public class SecuredVisitService
 
 
     @Transactional
-    @PreAuthorize("hasPermission(#visitId, 'com.github.vincemann.springrapid.acldemo.model.Visit', 'administration')")
+    @PreAuthorize("hasPermission(#visitId, 'com.github.vincemann.springrapid.acldemo.visit.Visit', 'administration')")
     @Override
     public void addSpectator(Long spectatorId, Long visitId) throws EntityNotFoundException {
         getDecorated().addSpectator(spectatorId,visitId);
     }
 
     @Transactional
-    @PreAuthorize("hasPermission(#id, 'com.github.vincemann.springrapid.acldemo.model.Visit', 'read')")
+    @PreAuthorize("hasPermission(#id, 'com.github.vincemann.springrapid.acldemo.visit.Visit', 'read')")
     @Override
     public Optional<Visit> find(long id) {
         return getDecorated().find(id);
     }
 
     @Transactional
-    @PreAuthorize("hasPermission(#visitId, 'com.github.vincemann.springrapid.acldemo.model.Visit', 'administration')")
+    @PreAuthorize("hasPermission(#visitId, 'com.github.vincemann.springrapid.acldemo.visit.Visit', 'administration')")
     @Override
     public void removeSpectator(Long spectatorId, Long visitId) throws EntityNotFoundException {
         getDecorated().removeSpectator(spectatorId,visitId);

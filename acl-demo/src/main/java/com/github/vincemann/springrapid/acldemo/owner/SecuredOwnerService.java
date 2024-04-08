@@ -43,7 +43,7 @@ public class SecuredOwnerService
 
     @Transactional
     @Override
-    @PreAuthorize("hasPermission(#targetOwnerId, 'com.github.vincemann.springrapid.acldemo.model.Owner', 'administration')")
+    @PreAuthorize("hasPermission(#targetOwnerId, 'com.github.vincemann.springrapid.acldemo.owner.Owner', 'administration')")
     public void addPetSpectator(long permittedOwnerId, long targetOwnerId) throws EntityNotFoundException {
         getDecorated().addPetSpectator(permittedOwnerId,targetOwnerId);
     }

@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.user;
 
+import com.github.vincemann.springrapid.acl.service.AclUserService;
 import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import org.springframework.context.annotation.Primary;
@@ -12,7 +13,7 @@ import java.util.Optional;
 @Root
 @Primary
 public class MyUserServiceImpl
-        extends AbstractUserService<User,Long, UserRepository>
+        extends AclUserService<User,Long, UserRepository>
             implements MyUserService
 {
 

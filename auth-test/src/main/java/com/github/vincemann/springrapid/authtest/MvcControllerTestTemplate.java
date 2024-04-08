@@ -41,15 +41,6 @@ public abstract class MvcControllerTestTemplate<C> {
     protected MockMvc mvc;
     private ObjectMapper objectMapper;
 
-    @Autowired
-    public void setController(C controller) {
-        this.controller = controller;
-    }
-
-    @Autowired
-    public void setMvc(MockMvc mvc) {
-        this.mvc = mvc;
-    }
 
     public ResultActions perform(RequestBuilder requestBuilder) throws Exception {
         return mvc.perform(requestBuilder);
@@ -130,6 +121,16 @@ public abstract class MvcControllerTestTemplate<C> {
     @Autowired
     public void setObjectMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+    }
+
+    @Autowired
+    public void setController(C controller) {
+        this.controller = controller;
+    }
+
+    @Autowired
+    public void setMvc(MockMvc mvc) {
+        this.mvc = mvc;
     }
 
     protected C getController() {

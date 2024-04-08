@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.auth.EntityNotFoundException;
 import com.github.vincemann.springrapid.auth.service.UserAuthTokenService;
 import com.github.vincemann.springrapid.auth.util.Message;
 import com.github.vincemann.springrapid.auth.util.VerifyAccess;
+import org.springframework.security.access.AccessDeniedException;
 
 public class SecuredUserAuthTokenService implements UserAuthTokenService {
 
@@ -20,8 +21,9 @@ public class SecuredUserAuthTokenService implements UserAuthTokenService {
     public String createNewAuthToken(String contactInformation) throws EntityNotFoundException, BadEntityException {
         if (!RapidSecurityContext.getRoles().contains(Roles.ADMIN)){
             // not admin, then can only create token for own user
-            VerifyAccess.notNull(RapidSecurityContext.getName(),"must be authenticated");
-            VerifyAccess.isTrue(RapidSecurityContext.getName().equals(contactInformation),
+            String authenticated = RapidSecurityContext.getName();
+            if (authenticated == null) throw new AccessDeniedException("must be authenticated");
+            VerifyAccess.isTrue(authenticated.equals(contactInformation),
                     Message.get("com.github.vincemann.notGoodAdminOrSameUser"));
         }
         return decorated.createNewAuthToken(contactInformation);

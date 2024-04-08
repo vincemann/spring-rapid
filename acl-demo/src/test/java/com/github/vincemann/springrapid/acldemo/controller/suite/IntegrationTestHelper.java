@@ -78,6 +78,9 @@ public class IntegrationTestHelper {
     protected RapidUserControllerTestTemplate userController;
 
 
+    public RapidUserControllerTestTemplate getUserController() {
+        return userController;
+    }
 
     public void setup(){
         testData.savedDogPetType = petTypeRepository.save(testData.getDogPetType());

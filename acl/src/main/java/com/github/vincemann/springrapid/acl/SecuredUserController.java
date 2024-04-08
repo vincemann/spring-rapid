@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acl;
 
 import com.github.vincemann.springrapid.acl.Secured;
+import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ public class SecuredUserController<S extends UserService<?,?>>
     }
 
     @Autowired
-    @Secured
+    @Root
     public void setUserAuthTokenService(UserAuthTokenService authTokenService) {
         super.setUserAuthTokenService(authTokenService);
     }

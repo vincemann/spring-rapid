@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.vet;
 
+import com.github.vincemann.springrapid.acl.service.AclUserService;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.Root;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ import java.util.Optional;
 @Root
 @Service
 public class VetServiceImpl
-        extends AbstractUserService<Vet,Long, VetRepository>
+        extends AclUserService<Vet,Long, VetRepository>
                 implements VetService {
 
     @Transactional
