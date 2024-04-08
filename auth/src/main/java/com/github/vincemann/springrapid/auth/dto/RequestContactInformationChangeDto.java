@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.dto;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 public class RequestContactInformationChangeDto {
     private String oldContactInformation;

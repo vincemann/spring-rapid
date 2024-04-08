@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.authexceptions;
 
 import com.github.vincemann.springrapid.auth.ErrorCodes;
 import com.github.vincemann.springrapid.auth.val.InsufficientPasswordStrengthException;
-import com.github.vincemann.springrapid.exceptionsapi.AbstractExceptionHandler;
+import com.github.vincemann.springrapid.lemon.exceptions.AbstractExceptionHandler;
 import org.springframework.http.HttpStatus;
 
 public class InsufficientPasswordStrengthExceptionHandler extends AbstractExceptionHandler<InsufficientPasswordStrengthException> {

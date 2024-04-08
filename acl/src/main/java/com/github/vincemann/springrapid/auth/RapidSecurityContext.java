@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth;
 
+import com.github.vincemann.springrapid.acl.Roles;
 import com.google.common.collect.Sets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

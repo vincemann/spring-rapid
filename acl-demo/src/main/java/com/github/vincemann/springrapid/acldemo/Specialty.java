@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;

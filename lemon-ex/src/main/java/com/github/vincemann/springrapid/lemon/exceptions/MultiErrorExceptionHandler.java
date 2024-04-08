@@ -1,10 +1,7 @@
-package com.github.vincemann.springlemon.exceptions;
+package com.github.vincemann.springrapid.lemon.exceptions;
 
 import java.util.Collection;
 
-import com.github.vincemann.springlemon.exceptions.MultiErrorException;
-import com.github.vincemann.springlemon.exceptions.AbstractExceptionHandler;
-import com.github.vincemann.springlemon.exceptions.FieldError;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;

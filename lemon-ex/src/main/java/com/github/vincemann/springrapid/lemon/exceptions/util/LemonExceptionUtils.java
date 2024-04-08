@@ -1,6 +1,6 @@
-package com.github.vincemann.springlemon.exceptions.util;
+package com.github.vincemann.springrapid.lemon.exceptions.util;
 
-import com.github.vincemann.springlemon.exceptions.ExceptionIdMaker;
+import com.github.vincemann.springrapid.lemon.exceptions.ExceptionIdMaker;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /**

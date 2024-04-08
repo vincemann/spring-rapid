@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.auth.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.Optional;
 
 

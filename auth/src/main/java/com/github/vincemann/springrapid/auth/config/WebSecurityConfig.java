@@ -2,14 +2,16 @@ package com.github.vincemann.springrapid.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vincemann.springrapid.auth.AuthProperties;
+import com.github.vincemann.springrapid.auth.login.AuthenticationSuccessHandler;
 import com.github.vincemann.springrapid.auth.login.CustomLoginConfigurer;
-import com.github.vincemann.springrapid.auth.handler.AuthenticationSuccessHandler;
 import com.github.vincemann.springrapid.auth.jwt.JwtAuthenticationFilter;
 import com.github.vincemann.springrapid.auth.jwt.AuthorizationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -22,156 +24,93 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * @author Sanjay Patel
  * @modifiedBy vincemann
  */
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig {
 
 
 	protected AuthProperties properties;
 	protected AuthorizationTokenService authorizationTokenService;
 	protected AuthenticationSuccessHandler authenticationSuccessHandler;
-
 	protected ObjectMapper objectMapper;
 
 	public WebSecurityConfig() {
-
+		// Default constructor
 	}
 
-
-//	@Override
-//	public void configure(WebSecurity web) throws Exception {
-//		disableFilterForLogin(web);
-//	}
-
-	/**
-	 * Security configuration, calling protected methods
-	 */
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		
-		sessionCreationPolicy(http); // set session creation policy
-		logout(http); // logout related configuration
-		exceptionHandling(http); // exception handling
-		tokenAuthentication(http); // configure token authentication filter
-		csrf(http); // CSRF configuration
-		authorizeRequests(http); // authorize requests
-		otherConfigurations(http); // override this to add more configurations
-		login(http); // authentication
-		exceptionHandling(http); // exception handling
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		sessionCreationPolicy(http); // Sets the session creation policy
+		logout(http); // Configures logout behavior
+		exceptionHandling(http); // Handles exceptions like forbidden access
+		tokenAuthentication(http); // Adds JWT token authentication filter
+		csrf(http); // Disables CSRF protection as stateless
+		authorizeRequests(http); // Configures URL-based authorization
+		login(http); // Configures custom login behavior
+		otherConfigurations(http); // Additional HTTP configurations can be added here
+		return http.build();
 	}
 
-
-
-	// make sure to enable Spring Security when testing with mvc
-				/*
-
-				@Override
-				protected DefaultMockMvcBuilder createMvcBuilder() {
-					DefaultMockMvcBuilder mvcBuilder = super.createMvcBuilder();
-					mvcBuilder.apply(SecurityMockMvcConfigurers.springSecurity());
-					return mvcBuilder;
-				}
-				 */
 	/**
-	 * Configuring authentication.
+	 * Configures custom login behavior using credentials in the request body.
 	 */
 	protected void login(HttpSecurity http) throws Exception {
-		// using custom login configurer here to allow safer authentication by sending credentials in body
 		http.apply(new CustomLoginConfigurer<>(objectMapper))
-//				.loginPage(loginPage())
-				.loginProcessingUrl(loginUrl())
+				.loginProcessingUrl(properties.getLoginUrl())
 				.successHandler(authenticationSuccessHandler)
 				.failureHandler(new SimpleUrlAuthenticationFailureHandler());
 	}
 
 	/**
-	 * Override this to change login URL
-	 *
-	 * @return
-	 */
-	protected String loginPage() {
-		return null;
-	}
-
-	protected String loginUrl(){
-		return properties.getLoginUrl();
-	}
-	
-	/**
-	 * Configuring session creation policy
+	 * Configures the session creation policy to STATELESS as required by stateless applications.
 	 */
 	protected void sessionCreationPolicy(HttpSecurity http) throws Exception {
-		
-		// No session
-		http.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		http.sessionManagement(customizer -> customizer
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 	}
 
-		
 	/**
-	 * Logout related configuration
+	 * Disables logout functionality since stateless applications do not use sessions.
 	 */
 	protected void logout(HttpSecurity http) throws Exception {
-		
-		http
-			.logout().disable(); // we are stateless; so /logout endpoint not needed			
+		http.logout(AbstractHttpConfigurer::disable);
 	}
 
-	
 	/**
-	 * Configures exception-handling
+	 * Configures exception handling to prevent redirection to login page when unauthorized access occurs.
 	 */
 	protected void exceptionHandling(HttpSecurity http) throws Exception {
-		
-		http
-		.exceptionHandling()
-		
-			/***********************************************
-			 * To prevent redirection to the login page
-			 * when someone tries to access a restricted page
-			 **********************************************/
-			.authenticationEntryPoint(new Http403ForbiddenEntryPoint());
+		http.exceptionHandling(customizer -> customizer
+				.authenticationEntryPoint(new Http403ForbiddenEntryPoint()));
 	}
 
-
 	/**
-	 * Configuring token authentication filter
+	 * Adds a JWT authentication filter before the username and password authentication filter.
 	 */
 	protected void tokenAuthentication(HttpSecurity http) throws Exception {
-		//needs to be created with new, cant be autowired for some spring internal reasons
-		http.addFilterBefore(new JwtAuthenticationFilter(authorizationTokenService,properties),
+		http.addFilterBefore(new JwtAuthenticationFilter(authorizationTokenService, properties),
 				UsernamePasswordAuthenticationFilter.class);
 	}
 
-
-
 	/**
-	 * Disables CSRF. We are stateless.
+	 * Disables CSRF protection to support a stateless application architecture.
 	 */
 	protected void csrf(HttpSecurity http) throws Exception {
-		
-		http
-			.csrf().disable();
+		http.csrf(AbstractHttpConfigurer::disable);
 	}
 
-
-	
 	/**
-	 * URL based authorization configuration. Override this if needed.
+	 * Configures URL-based authorization rules. Override this method to customize the authorization strategy.
 	 */
 	protected void authorizeRequests(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-			.mvcMatchers("/**").permitAll();
+		http.authorizeHttpRequests(customizer -> customizer
+				.requestMatchers("/**").permitAll()
+				.anyRequest().authenticated());
 	}
-	
 
 	/**
-	 * Override this to add more http configurations,
-	 * such as more authentication methods.
-	 * 
-	 * @param http
-	 * @throws Exception
+	 * Placeholder method for adding additional HTTP security configurations.
 	 */
-	protected void otherConfigurations(HttpSecurity http)  throws Exception {
-
+	protected void otherConfigurations(HttpSecurity http) throws Exception {
+		// Additional configuration can be implemented here
 	}
 
 	@Autowired

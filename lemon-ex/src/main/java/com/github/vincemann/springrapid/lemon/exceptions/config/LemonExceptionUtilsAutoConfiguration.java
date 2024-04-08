@@ -1,8 +1,8 @@
-package com.github.vincemann.springlemon.exceptions.config;
+package com.github.vincemann.springrapid.lemon.exceptions.config;
 
-import com.github.vincemann.springlemon.exceptions.ExceptionIdMaker;
-import com.github.vincemann.springlemon.exceptions.util.LemonExceptionUtils;
-import com.github.vincemann.springlemon.exceptions.util.Message;
+import com.github.vincemann.springrapid.lemon.exceptions.ExceptionIdMaker;
+import com.github.vincemann.springrapid.lemon.exceptions.util.LemonExceptionUtils;
+import com.github.vincemann.springrapid.lemon.exceptions.util.Message;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;

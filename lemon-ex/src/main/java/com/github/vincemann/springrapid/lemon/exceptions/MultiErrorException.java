@@ -1,14 +1,14 @@
-package com.github.vincemann.springlemon.exceptions;
+package com.github.vincemann.springrapid.lemon.exceptions;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.validation.ConstraintViolation;
+import com.github.vincemann.springrapid.lemon.exceptions.util.LemonExceptionUtils;
+import com.github.vincemann.springrapid.lemon.exceptions.util.Message;
+import jakarta.validation.ConstraintViolation;
 
-import com.github.vincemann.springlemon.exceptions.util.LemonExceptionUtils;
-import com.github.vincemann.springlemon.exceptions.util.Message;
 import org.springframework.http.HttpStatus;
 
 

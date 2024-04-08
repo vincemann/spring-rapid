@@ -1,18 +1,19 @@
 package com.github.vincemann.springrapid.acl.config;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.vincemann.springrapid.acl.AclTemplate;
 import com.github.vincemann.springrapid.acl.AclTemplateImpl;
 import com.github.vincemann.springrapid.acl.AdminPermissionGrantingStrategy;
+import com.github.vincemann.springrapid.acl.Roles;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverterImpl;
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.acl.service.RapidAclServiceImpl;
 import com.github.vincemann.springrapid.acl.util.AclUtils;
-import com.github.vincemann.springrapid.core.sec.Roles;
-import net.sf.ehcache.CacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.cache.ehcache.EhCacheFactoryBean;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.PermissionEvaluator;
@@ -23,7 +24,7 @@ import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.domain.AclAuthorizationStrategy;
 import org.springframework.security.acls.domain.AclAuthorizationStrategyImpl;
 import org.springframework.security.acls.domain.ConsoleAuditLogger;
-import org.springframework.security.acls.domain.EhCacheBasedAclCache;
+import org.springframework.security.acls.domain.SpringCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.acls.jdbc.LookupStrategy;
@@ -32,6 +33,7 @@ import org.springframework.security.acls.model.PermissionGrantingStrategy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.sql.DataSource;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Auto-configures AclBeans and Acl-Caching.
@@ -47,6 +49,29 @@ public class AclAutoConfiguration {
     DataSource dataSource;
 
 
+    @Bean
+    public Caffeine<Object, Object> caffeineConfig() {
+        return Caffeine.newBuilder()
+                .expireAfterWrite(60, TimeUnit.MINUTES)
+                .maximumSize(10000);
+    }
+
+    @Bean
+    public CacheManager cacheManager() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        cacheManager.setCaffeine(caffeineConfig());
+        return cacheManager;
+    }
+
+    @Bean
+    public SpringCacheBasedAclCache aclCache() {
+        return new SpringCacheBasedAclCache(
+                cacheManager().getCache("aclCache"),
+                permissionGrantingStrategy(),
+                aclAuthorizationStrategy()
+        );
+    }
+
 
     @Bean
     @ConditionalOnMissingBean(AclTemplate.class)
@@ -54,34 +79,6 @@ public class AclAutoConfiguration {
         return new AclTemplateImpl();
     }
 
-
-
-    @Bean
-    public CacheManager aclCacheManager() {
-        // Reuse the existing CacheManager instance if it exists
-        return CacheManager.getCacheManager("rapidCacheManager");
-    }
-
-    @ConditionalOnMissingBean(EhCacheBasedAclCache.class)
-    @Bean
-    public EhCacheBasedAclCache aclCache() {
-        return new EhCacheBasedAclCache(
-                aclEhCacheFactoryBean().getObject(),
-                permissionGrantingStrategy(),
-                aclAuthorizationStrategy()
-        );
-    }
-
-
-    @ConditionalOnMissingBean(EhCacheFactoryBean.class)
-    @Bean
-    public EhCacheFactoryBean aclEhCacheFactoryBean() {
-        EhCacheFactoryBean factoryBean = new EhCacheFactoryBean();
-//        factoryBean.setCacheManager(aclCacheManagerBean().getObject());
-        factoryBean.setCacheManager(aclCacheManager());
-        factoryBean.setCacheName("aclCache");
-        return factoryBean;
-    }
 
     @ConditionalOnMissingBean(PermissionGrantingStrategy.class)
     @Bean

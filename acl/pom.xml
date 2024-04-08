@@ -10,12 +10,17 @@
     <parent>
         <groupId>com.github.vincemann</groupId>
         <artifactId>spring-rapid</artifactId>
-        <version>1.0.0-SNAPSHOT.17</version>
+        <version>1.0.0</version>
     </parent>
 
     <dependencies>
 
-<!--        SPRING-->
+        <dependency>
+            <groupId>com.github.vincemann.spring-rapid</groupId>
+            <artifactId>auth</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -36,22 +41,16 @@
             <artifactId>spring-context-support</artifactId>
         </dependency>
 
-<!--        SPRING RAPID-->
 
         <dependency>
-            <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>        <!-- caching ACLs-->
-            <groupId>net.sf.ehcache</groupId>
-            <artifactId>ehcache-core</artifactId>
-            <version>2.6.11</version>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>3.1.6</version>
         </dependency>
 
 
-<!--        TEST-->
+
+        <!--        TEST-->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>

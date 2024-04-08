@@ -1,21 +1,21 @@
 package com.github.vincemann.springrapid.auth.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.vincemann.springrapid.acl.Secured;
+import com.github.vincemann.springrapid.auth.AbstractUser;
 import com.github.vincemann.springrapid.auth.AuthProperties;
+import com.github.vincemann.springrapid.auth.BadEntityException;
+import com.github.vincemann.springrapid.auth.EntityNotFoundException;
 import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
 import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.dto.ResetPasswordView;
-import com.github.vincemann.springrapid.auth.AbstractUser;
-import com.github.vincemann.springrapid.auth.service.*;
 import com.github.vincemann.springrapid.auth.jwt.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.jwt.BadTokenException;
-import com.github.vincemann.springrapid.auth.val.InsufficientPasswordStrengthException;
+import com.github.vincemann.springrapid.auth.service.*;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
-import com.github.vincemann.springrapid.auth.Root;
-import com.github.vincemann.springrapid.auth.BadEntityException;
-import com.github.vincemann.springrapid.auth.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.val.InsufficientPasswordStrengthException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -30,10 +30,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
-import org.thymeleaf.spring5.view.ThymeleafViewResolver;
+import org.thymeleaf.spring6.view.ThymeleafViewResolver;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -45,10 +43,7 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
 
 
     private AuthProperties authProperties;
-    private S unsecuredService;    // use getService() to get secured version
-
     private UserAuthTokenService authTokenService;
-    private UserAuthTokenService unsecuredAuthTokenService;
     private PasswordService passwordService;
     private ContactInformationService contactInformationService;
     private VerificationService verificationService;
@@ -369,14 +364,14 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
 
     protected ResponseEntity<Void> okWithToken(String contactInformation) throws EntityNotFoundException, BadEntityException {
         HttpHeaders headers = new HttpHeaders();
-        String token = unsecuredAuthTokenService.createNewAuthToken(contactInformation);
+        String token = authTokenService.createNewAuthToken(contactInformation);
         headers.add(HttpHeaders.AUTHORIZATION, token);
         return ResponseEntity.status(204).headers(headers).build();
     }
 
     protected <T> ResponseEntity<T> okWithToken(T body, String contactInformation) throws EntityNotFoundException, BadEntityException {
         HttpHeaders headers = new HttpHeaders();
-        String token = unsecuredAuthTokenService.createNewAuthToken(contactInformation);
+        String token = authTokenService.createNewAuthToken(contactInformation);
         headers.add(HttpHeaders.AUTHORIZATION, token);
         return ResponseEntity.status(200).headers(headers).body(body);
     }
@@ -385,16 +380,8 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
         return authProperties;
     }
 
-    public S getUnsecuredService() {
-        return unsecuredService;
-    }
-
     public UserAuthTokenService getAuthTokenService() {
         return authTokenService;
-    }
-
-    public UserAuthTokenService getUnsecuredAuthTokenService() {
-        return unsecuredAuthTokenService;
     }
 
     public PasswordService getPasswordService() {
@@ -530,17 +517,9 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
     public void setViewResolver(ThymeleafViewResolver viewResolver) {
         this.viewResolver = viewResolver;
     }
-
     @Autowired
-    @Secured
     public void setUserService(S userService) {
         this.userService = userService;
-    }
-
-    @Autowired
-    @Root
-    public void setUnsecuredService(S Service) {
-        this.unsecuredService = Service;
     }
 
     @Autowired
@@ -549,31 +528,21 @@ public abstract class AbstractUserController<S extends UserService<?,?>>
     }
 
     @Autowired
-    @Secured
     public void setUserAuthTokenService(UserAuthTokenService authTokenService) {
         this.authTokenService = authTokenService;
     }
 
     @Autowired
-    @Root
-    public void setUnsecuredAuthTokenService(UserAuthTokenService unsecuredAuthTokenService) {
-        this.unsecuredAuthTokenService = unsecuredAuthTokenService;
-    }
-
-    @Autowired
-    @Secured
     public void setPasswordService(PasswordService passwordService) {
         this.passwordService = passwordService;
     }
 
     @Autowired
-    @Secured
     public void setContactInformationService(ContactInformationService contactInformationService) {
         this.contactInformationService = contactInformationService;
     }
 
     @Autowired
-    @Secured
     public void setVerificationService(VerificationService verificationService) {
         this.verificationService = verificationService;
     }

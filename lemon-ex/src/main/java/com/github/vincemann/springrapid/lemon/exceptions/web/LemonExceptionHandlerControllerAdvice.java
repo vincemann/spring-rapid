@@ -1,7 +1,7 @@
-package com.github.vincemann.springlemon.exceptions.web;
+package com.github.vincemann.springrapid.lemon.exceptions.web;
 
-import com.github.vincemann.springlemon.exceptions.ErrorResponse;
-import com.github.vincemann.springlemon.exceptions.ErrorResponseFactory;
+import com.github.vincemann.springrapid.lemon.exceptions.ErrorResponse;
+import com.github.vincemann.springrapid.lemon.exceptions.ErrorResponseFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;

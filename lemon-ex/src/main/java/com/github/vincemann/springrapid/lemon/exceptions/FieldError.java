@@ -1,11 +1,10 @@
-package com.github.vincemann.springlemon.exceptions;
+package com.github.vincemann.springrapid.lemon.exceptions;
 
 
 /**
  * Holds a field or form error
  * 
  * @author Sanjay Patel
- * @modifiedBy vincemann
  */
 public class FieldError {
 	

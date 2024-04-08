@@ -1,10 +1,9 @@
 package com.github.vincemann.springrapid.acl;
 
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
-import com.github.vincemann.springrapid.acl.IdAware;
-import com.github.vincemann.springrapid.core.sec.RapidPrincipal;
-import com.github.vincemann.springrapid.core.sec.AuthorizationUtils;
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
+import com.github.vincemann.springrapid.acl.util.AuthorizationUtils;
+import com.github.vincemann.springrapid.auth.AuthPrincipal;
+import com.github.vincemann.springrapid.auth.RapidSecurityContext;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -68,7 +67,7 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
 
         boolean permitted = _checkPermission(id, clazz, permission);
         if (!permitted) {
-            RapidPrincipal principal = RapidSecurityContext.currentPrincipal();
+            AuthPrincipal principal = RapidSecurityContext.currentPrincipal();
             String permissionString = permissionStringConverter.convert(permission);
             throw new AccessDeniedException("Permission not Granted! Principal: " + principal.shortToString() +
                     " does not have Permission: " + permissionString + " for entity: {" + clazz.getSimpleName() + ", id: " + id + "}");
@@ -95,7 +94,7 @@ public class AclTemplateImpl implements AclTemplate, ApplicationContextAware {
 
         boolean permitted = _checkPermission(entity.getId(), entity.getClass(), permission);
         if (!permitted) {
-            RapidPrincipal principal = RapidSecurityContext.currentPrincipal();
+            AuthPrincipal principal = RapidSecurityContext.currentPrincipal();
             String permissionString = permissionStringConverter.convert(permission);
             throw new AccessDeniedException("Permission not Granted! Principal: " + principal.shortToString() +
                     " does not have Permission: " + permissionString + " for entity: " + entity);

@@ -1,5 +1,8 @@
 package com.github.vincemann.springrapid.auth.service;
 
+import com.github.vincemann.springrapid.auth.AuthPrincipal;
+import com.github.vincemann.springrapid.auth.RapidSecurityContext;
+import com.github.vincemann.springrapid.acl.Roles;
 import com.github.vincemann.springrapid.auth.*;
 import com.github.vincemann.springrapid.auth.jwt.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.util.VerifyEntity;

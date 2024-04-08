@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.acldemo.owner.Owner;
 import com.github.vincemann.springrapid.auth.BadEntityException;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @Validated
 public interface OwnerSignupService {

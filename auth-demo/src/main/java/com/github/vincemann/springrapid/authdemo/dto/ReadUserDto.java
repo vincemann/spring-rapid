@@ -1,8 +1,7 @@
 package com.github.vincemann.springrapid.authdemo.dto;
 
-import com.github.vincemann.springrapid.auth.Roles;
+import com.github.vincemann.springrapid.acl.Roles;
 import com.github.vincemann.springrapid.authdemo.dto.abs.AbstractUserDto;
-import com.github.vincemann.springrapid.auth.Roles;
 import lombok.*;
 
 import java.util.Set;

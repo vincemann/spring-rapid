@@ -1,7 +1,5 @@
 package com.github.vincemann.springrapid.acl.service;
 
-import com.google.common.collect.Sets;
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.security.acls.model.Permission;
@@ -15,7 +13,7 @@ public class AceFilters {
 
 
     public static Predicate<AccessControlEntry> permissions(Permission... permissions){
-        return permissions(Sets.newHashSet(permissions));
+        return permissions(Set.of(permissions));
     }
 
     public static Predicate<AccessControlEntry> permissions(Set<Permission> permissions){

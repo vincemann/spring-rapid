@@ -1,6 +1,6 @@
-package com.github.vincemann.springlemon.exceptions.config;
+package com.github.vincemann.springrapid.lemon.exceptions.config;
 
-import com.github.vincemann.springlemon.exceptions.MultiErrorExceptionHandler;
+import com.github.vincemann.springrapid.lemon.exceptions.MultiErrorExceptionHandler;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

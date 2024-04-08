@@ -2,16 +2,16 @@ package com.github.vincemann.springrapid.acldemo;
 
 import com.github.vincemann.springrapid.acl.IdAware;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.MappedSuperclass;
 import java.util.Objects;
 
 @MappedSuperclass
 public abstract class MyEntity implements IdAware<Long> {
 
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @javax.persistence.Id
+    @jakarta.persistence.Id
     private Long id;
 
     public MyEntity() {

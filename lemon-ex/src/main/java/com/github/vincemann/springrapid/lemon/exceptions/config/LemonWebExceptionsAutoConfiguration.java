@@ -1,11 +1,11 @@
-package com.github.vincemann.springlemon.exceptions.config;
+package com.github.vincemann.springrapid.lemon.exceptions.config;
 
-import com.github.vincemann.springlemon.exceptions.ErrorResponseFactory;
-import com.github.vincemann.springlemon.exceptions.LemonErrorResponseFactory;
-import com.github.vincemann.springlemon.exceptions.web.LemonErrorAttributes;
-import com.github.vincemann.springlemon.exceptions.web.LemonErrorController;
-import com.github.vincemann.springlemon.exceptions.web.LemonExceptionHandlerControllerAdvice;
-import com.github.vincemann.springlemon.exceptions.AbstractExceptionHandler;
+import com.github.vincemann.springrapid.lemon.exceptions.ErrorResponseFactory;
+import com.github.vincemann.springrapid.lemon.exceptions.LemonErrorResponseFactory;
+import com.github.vincemann.springrapid.lemon.exceptions.web.LemonErrorAttributes;
+import com.github.vincemann.springrapid.lemon.exceptions.web.LemonErrorController;
+import com.github.vincemann.springrapid.lemon.exceptions.web.LemonExceptionHandlerControllerAdvice;
+import com.github.vincemann.springrapid.lemon.exceptions.AbstractExceptionHandler;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorViewResolver;

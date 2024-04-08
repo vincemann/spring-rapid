@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.acldemo.vet.Vet;
 import com.github.vincemann.springrapid.acldemo.owner.OwnerRepository;
 import com.github.vincemann.springrapid.acldemo.pet.PetRepository;
 import com.github.vincemann.springrapid.acldemo.vet.VetRepository;
-import com.github.vincemann.springrapid.auth.util.AuthorizationUtils;
+import com.github.vincemann.springrapid.acl.util.AuthorizationUtils;
 import com.github.vincemann.springrapid.auth.BadEntityException;
 import com.github.vincemann.springrapid.auth.EntityNotFoundException;
 import com.github.vincemann.springrapid.auth.util.VerifyAccess;

@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.exceptionsapi.FieldError;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.ObjectError;
 
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 
 public class FieldErrorUtil {
 

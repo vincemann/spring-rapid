@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.util;
 
+import com.github.vincemann.springrapid.acl.util.AuthorizationUtils;
 import com.github.vincemann.springrapid.auth.AbstractUser;
 import com.github.vincemann.springrapid.auth.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.service.UserService;

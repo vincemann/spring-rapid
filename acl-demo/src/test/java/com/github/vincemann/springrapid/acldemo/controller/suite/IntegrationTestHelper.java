@@ -21,7 +21,7 @@ import com.github.vincemann.springrapid.acldemo.pet.PetService;
 import com.github.vincemann.springrapid.acldemo.vet.VetRepository;
 import com.github.vincemann.springrapid.acldemo.visit.VisitRepository;
 import com.github.vincemann.springrapid.auth.RapidSecurityContext;
-import com.github.vincemann.springrapid.auth.Roles;
+import com.github.vincemann.springrapid.acl.Roles;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.auth.util.AopProxyUtils;

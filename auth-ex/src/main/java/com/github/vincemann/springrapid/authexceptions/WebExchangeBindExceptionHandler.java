@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authexceptions;
 
 import com.github.vincemann.springrapid.auth.util.FieldErrorUtil;
-import com.github.vincemann.springrapid.exceptionsapi.AbstractExceptionHandler;
+import com.github.vincemann.springrapid.lemon.exceptions.AbstractExceptionHandler;
 import com.github.vincemann.springrapid.exceptionsapi.FieldError;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -11,8 +11,6 @@ import org.springframework.web.bind.support.WebExchangeBindException;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class WebExchangeBindExceptionHandler extends AbstractExceptionHandler<WebExchangeBindException> {

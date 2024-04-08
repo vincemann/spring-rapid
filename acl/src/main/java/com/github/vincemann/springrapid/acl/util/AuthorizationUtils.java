@@ -1,6 +1,7 @@
-package com.github.vincemann.springrapid.auth.util;
+package com.github.vincemann.springrapid.acl.util;
 
 import com.github.vincemann.springrapid.auth.RapidSecurityContext;
+import com.github.vincemann.springrapid.auth.util.VerifyAccess;
 import org.springframework.security.access.AccessDeniedException;
 
 public class AuthorizationUtils {

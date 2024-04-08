@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.acldemo.vet.dto.SignupVetDto;
 import com.github.vincemann.springrapid.auth.BadEntityException;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @Validated
 public interface VetSignupService {

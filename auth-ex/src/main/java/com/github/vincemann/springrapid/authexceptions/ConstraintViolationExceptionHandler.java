@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.exceptionsapi.FieldError;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolationException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 

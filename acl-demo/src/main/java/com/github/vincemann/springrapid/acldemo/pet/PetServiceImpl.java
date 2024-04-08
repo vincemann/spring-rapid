@@ -16,7 +16,7 @@ import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Validator;
+import jakarta.validation.Validator;
 import java.util.Optional;
 
 import static com.github.vincemann.springrapid.core.util.RepositoryUtil.findPresentById;

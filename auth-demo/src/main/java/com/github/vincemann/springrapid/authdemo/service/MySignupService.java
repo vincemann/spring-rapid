@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.authdemo.User;
 import com.github.vincemann.springrapid.auth.BadEntityException;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @Validated
 public interface MySignupService {

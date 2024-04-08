@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.exceptions;
+package com.github.vincemann.springrapid.lemon.exceptions;
 
 import java.util.List;
 import java.util.Map;

@@ -37,7 +37,7 @@ You can also run demo tests seperate via:
 <dependency>  
     <groupId>com.github.vincemann.spring-rapid</groupId>  
     <artifactId>MODULE</artifactId>  
-    <version>1.0.0-SNAPSHOT.17</version>  
+    <version>1.0.0</version>  
 </dependency>  
 ```  
   

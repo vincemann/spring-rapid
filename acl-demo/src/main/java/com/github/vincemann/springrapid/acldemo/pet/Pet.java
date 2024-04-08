@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;

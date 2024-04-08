@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 

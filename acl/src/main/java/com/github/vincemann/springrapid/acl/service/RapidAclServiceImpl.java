@@ -1,9 +1,9 @@
 package com.github.vincemann.springrapid.acl.service;
 
+import com.github.vincemann.springrapid.acl.Roles;
 import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.acl.IdAware;
-import com.github.vincemann.springrapid.core.sec.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.sec.Roles;
+import com.github.vincemann.springrapid.auth.RapidSecurityContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

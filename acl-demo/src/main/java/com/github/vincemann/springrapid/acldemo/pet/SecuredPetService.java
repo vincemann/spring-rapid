@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.acldemo.pet.dto.CreatePetDto;
 import com.github.vincemann.springrapid.acldemo.pet.dto.OwnerUpdatesPetDto;
 import com.github.vincemann.springrapid.acldemo.pet.dto.UpdateIllnessDto;
 import com.github.vincemann.springrapid.acldemo.owner.Owner;
-import com.github.vincemann.springrapid.auth.util.AuthorizationUtils;
+import com.github.vincemann.springrapid.acl.util.AuthorizationUtils;
 import com.github.vincemann.springrapid.auth.BadEntityException;
 import com.github.vincemann.springrapid.auth.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

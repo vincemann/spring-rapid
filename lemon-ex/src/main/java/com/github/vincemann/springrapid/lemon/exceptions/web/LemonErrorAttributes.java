@@ -1,7 +1,8 @@
-package com.github.vincemann.springlemon.exceptions.web;
+package com.github.vincemann.springrapid.lemon.exceptions.web;
 
-import com.github.vincemann.springlemon.exceptions.ErrorResponseFactory;
-import com.github.vincemann.springlemon.exceptions.util.LemonExceptionUtils;
+import com.github.vincemann.springrapid.lemon.exceptions.ErrorResponseFactory;
+import com.github.vincemann.springrapid.lemon.exceptions.util.LemonExceptionUtils;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.web.context.request.WebRequest;
 
@@ -22,21 +23,20 @@ public class LemonErrorAttributes<T extends Throwable> extends DefaultErrorAttri
     public LemonErrorAttributes(ErrorResponseFactory<T> errorResponseFactory) {
 		this.errorResponseFactory = errorResponseFactory;
 	}
-	
-    /**
-     * Calls the base class and then adds our details
-     */
+
+	/**
+	 * Calls the base class and then adds our details
+	 */
 	@Override
-	public Map<String, Object> getErrorAttributes(WebRequest request,
-			boolean includeStackTrace) {
-			
+	public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
 		Map<String, Object> errorAttributes =
-				super.getErrorAttributes(request, includeStackTrace);
-		
-		addLemonErrorDetails(errorAttributes, request);
-		
+				super.getErrorAttributes(webRequest, options);
+
+		addLemonErrorDetails(errorAttributes, webRequest);
+
 		return errorAttributes;
 	}
+
 
 	/**
      * Handles exceptions
