@@ -1,11 +1,11 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTest;
-import com.github.vincemann.springrapid.acldemo.dto.visit.CreateVisitDto;
-import com.github.vincemann.springrapid.acldemo.model.Owner;
-import com.github.vincemann.springrapid.acldemo.model.Pet;
-import com.github.vincemann.springrapid.acldemo.model.Vet;
-import com.github.vincemann.springrapid.acldemo.model.Visit;
+import com.github.vincemann.springrapid.acldemo.visit.dto.CreateVisitDto;
+import com.github.vincemann.springrapid.acldemo.owner.Owner;
+import com.github.vincemann.springrapid.acldemo.pet.Pet;
+import com.github.vincemann.springrapid.acldemo.vet.Vet;
+import com.github.vincemann.springrapid.acldemo.visit.Visit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

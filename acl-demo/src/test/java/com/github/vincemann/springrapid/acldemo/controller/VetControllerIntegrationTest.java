@@ -1,17 +1,19 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
+import com.github.vincemann.springrapid.acldemo.Illness;
 import com.github.vincemann.springrapid.acldemo.Roles;
 import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTest;
-import com.github.vincemann.springrapid.acldemo.dto.pet.VetReadsPetDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.UpdateIllnessDto;
-import com.github.vincemann.springrapid.acldemo.dto.vet.ReadVetDto;
-import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
-import com.github.vincemann.springrapid.acldemo.dto.visit.CreateVisitDto;
-import com.github.vincemann.springrapid.acldemo.dto.visit.ReadVisitDto;
-import com.github.vincemann.springrapid.acldemo.model.*;
-import com.github.vincemann.springrapid.auth.Roles;
+import com.github.vincemann.springrapid.acldemo.pet.dto.VetReadsPetDto;
+import com.github.vincemann.springrapid.acldemo.pet.dto.UpdateIllnessDto;
+import com.github.vincemann.springrapid.acldemo.vet.Vet;
+import com.github.vincemann.springrapid.acldemo.vet.dto.ReadVetDto;
+import com.github.vincemann.springrapid.acldemo.vet.dto.SignupVetDto;
+import com.github.vincemann.springrapid.acldemo.visit.Visit;
+import com.github.vincemann.springrapid.acldemo.visit.dto.CreateVisitDto;
+import com.github.vincemann.springrapid.acldemo.visit.dto.ReadVisitDto;
+import com.github.vincemann.springrapid.acldemo.owner.Owner;
+import com.github.vincemann.springrapid.acldemo.pet.Pet;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
-import com.google.common.collect.Sets;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -35,8 +37,8 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
         Assertions.assertEquals(VET_DICAPRIO,response.getLastName());
         Assertions.assertEquals(VET_DICAPRIO_EMAIL,response.getContactInformation());
         Assertions.assertTrue(response.getRoles().contains(Roles.VET));
-        Assertions.assertTrue(response.getRoles().contains(AuthRoles.USER));
-        Assertions.assertTrue(response.getRoles().contains(AuthRoles.UNVERIFIED));
+        Assertions.assertTrue(response.getRoles().contains(Roles.USER));
+        Assertions.assertTrue(response.getRoles().contains(Roles.UNVERIFIED));
         Assertions.assertEquals(3,response.getRoles().size());
 
         Assertions.assertTrue(vetRepository.findByLastName(VET_DICAPRIO).isPresent());
@@ -55,7 +57,7 @@ public class VetControllerIntegrationTest extends MyIntegrationTest {
                 .andExpect(status().is2xxSuccessful());
 
         Vet saved = vetRepository.findByLastName(VET_DICAPRIO).get();
-        Assertions.assertFalse(saved.getRoles().contains(AuthRoles.UNVERIFIED));
+        Assertions.assertFalse(saved.getRoles().contains(Roles.UNVERIFIED));
     }
 
     @Test

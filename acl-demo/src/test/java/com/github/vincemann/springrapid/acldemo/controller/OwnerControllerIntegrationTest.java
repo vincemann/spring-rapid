@@ -1,12 +1,12 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acldemo.controller.suite.MyIntegrationTest;
-import com.github.vincemann.springrapid.acldemo.dto.owner.OwnerReadsOwnOwnerDto;
-import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.*;
-import com.github.vincemann.springrapid.acldemo.model.Owner;
-import com.github.vincemann.springrapid.acldemo.model.Pet;
-import com.github.vincemann.springrapid.acldemo.service.PetService;
+import com.github.vincemann.springrapid.acldemo.owner.dto.OwnerReadsOwnOwnerDto;
+import com.github.vincemann.springrapid.acldemo.owner.dto.SignupOwnerDto;
+import com.github.vincemann.springrapid.acldemo.owner.Owner;
+import com.github.vincemann.springrapid.acldemo.pet.Pet;
+import com.github.vincemann.springrapid.acldemo.pet.dto.*;
+import com.github.vincemann.springrapid.acldemo.pet.PetService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

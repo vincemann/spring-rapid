@@ -33,7 +33,7 @@ public class AuthContextTest extends AuthIntegrationTest {
 
 		AuthProperties propertiesSpy = AopTestUtils.getUltimateTargetObject(this.properties);
 		Mockito.doReturn(testSharedProperties)
-						.when(AopProxyUtils.getUltimateTargetObject(propertiesSpy)).getShared();
+						.when(AopProxyUtils.unproxy(propertiesSpy)).getShared();
 	}
 
 

@@ -6,14 +6,13 @@ import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
 import com.github.vincemann.springrapid.auth.Root;
 import com.github.vincemann.springrapid.auth.AbstractUser;
-import com.github.vincemann.springrapid.auth.Roles;
 import com.github.vincemann.springrapid.auth.jwt.BadTokenException;
 import com.github.vincemann.springrapid.auth.jwt.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
-import com.github.vincemann.springrapid.auth.ex.BadEntityException;
-import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.BadEntityException;
+import com.github.vincemann.springrapid.auth.EntityNotFoundException;
 import com.github.vincemann.springrapid.auth.IdConverter;
 import com.github.vincemann.springrapid.auth.util.Message;
 import com.github.vincemann.springrapid.auth.util.VerifyEntity;
@@ -48,8 +47,8 @@ public class VerificationServiceImpl implements VerificationService {
     @Transactional
     @Override
     public AbstractUser makeUnverified(AbstractUser user) throws BadEntityException, EntityNotFoundException {
-        VerifyEntity.isTrue(!user.getRoles().contains(AuthRoles.UNVERIFIED),"Already unverified");
-        AbstractUser updated = userService.addRole(user.getId(), AuthRoles.UNVERIFIED);
+        VerifyEntity.isTrue(!user.getRoles().contains(Roles.UNVERIFIED),"Already unverified");
+        AbstractUser updated = userService.addRole(user.getId(), Roles.UNVERIFIED);
         TransactionalUtils.afterCommit(() -> sendVerificationMessage(updated));
         return updated;
     }
@@ -58,8 +57,8 @@ public class VerificationServiceImpl implements VerificationService {
     @Transactional
     @Override
     public AbstractUser makeVerified(AbstractUser user) throws BadEntityException, EntityNotFoundException {
-        VerifyEntity.isTrue(user.getRoles().contains(AuthRoles.UNVERIFIED),"Already verified");
-        return userService.removeRole(user.getId(),AuthRoles.UNVERIFIED);
+        VerifyEntity.isTrue(user.getRoles().contains(Roles.UNVERIFIED),"Already verified");
+        return userService.removeRole(user.getId(),Roles.UNVERIFIED);
     }
 
     protected void sendVerificationMessage(AbstractUser user) {
@@ -101,7 +100,7 @@ public class VerificationServiceImpl implements VerificationService {
         VerifyEntity.notEmpty(contactInformation,"contact-information");
         AbstractUser user = findPresentByContactInformation(userRepository,contactInformation);
         // must be unverified
-        VerifyEntity.isTrue(user.getRoles().contains(AuthRoles.UNVERIFIED), " Already verified");
+        VerifyEntity.isTrue(user.getRoles().contains(Roles.UNVERIFIED), " Already verified");
 
         TransactionalUtils.afterCommit(() -> sendVerificationMessage(user));
         return user;
@@ -120,7 +119,7 @@ public class VerificationServiceImpl implements VerificationService {
 
         // ensure that user is unverified
         // this makes sense to do here not in security plugin
-        VerifyEntity.isTrue(user.hasRole(AuthRoles.UNVERIFIED), "Already Verified");
+        VerifyEntity.isTrue(user.hasRole(Roles.UNVERIFIED), "Already Verified");
         //verificationCode is jwtToken
 
         //no login needed bc token of user is appended in controller -> we avoid dynamic logins in a stateless env

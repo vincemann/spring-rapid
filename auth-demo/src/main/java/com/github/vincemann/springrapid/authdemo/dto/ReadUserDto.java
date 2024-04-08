@@ -24,8 +24,8 @@ public class ReadUserDto extends AbstractUserDto {
     }
 
     public void initFlags() {
-        verified = !getRoles().contains(AuthRoles.UNVERIFIED);
-        blocked = getRoles().contains(AuthRoles.BLOCKED);
+        verified = !getRoles().contains(Roles.UNVERIFIED);
+        blocked = getRoles().contains(Roles.BLOCKED);
         admin = getRoles().contains(Roles.ADMIN);
         goodUser = !(!verified || blocked);
 //        goodAdmin = goodUser && admin;

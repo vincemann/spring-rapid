@@ -10,8 +10,6 @@ import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.authtest.AbstractUserControllerTestTemplate;
 
 import com.github.vincemann.springrapid.auth.util.AopProxyUtils;
-import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
-import com.github.vincemann.springrapid.coretest.util.TransactionalTestUtil;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -117,12 +115,12 @@ public abstract class AuthIntegrationTest extends AbstractMvcTest {
     public AuthMessage verifyMsgWasSent(String recipient) {
         ArgumentCaptor<AuthMessage> msgCaptor = ArgumentCaptor.forClass(AuthMessage.class);
 
-        verify(AopProxyUtils.getUltimateTargetObject(msgSender), atLeast(1))
+        verify(AopProxyUtils.unproxy(msgSender), atLeast(1))
                 .send(msgCaptor.capture());
         AuthMessage sentData = msgCaptor.getValue();
         assertThat("latest msg must be sent to recipient: " +recipient + " but was sent to: " + sentData.getRecipient(),
                 sentData.getRecipient(),equalTo(recipient));
-        Mockito.reset(AopProxyUtils.getUltimateTargetObject(msgSender));
+        Mockito.reset(AopProxyUtils.unproxy(msgSender));
         return sentData;
     }
 
@@ -133,7 +131,7 @@ public abstract class AuthIntegrationTest extends AbstractMvcTest {
     }
 
     protected void verifyNoMsgSent(){
-        verify(AopProxyUtils.getUltimateTargetObject(msgSender), never()).send(any());
+        verify(AopProxyUtils.unproxy(msgSender), never()).send(any());
     }
 
     @AfterEach
@@ -141,7 +139,7 @@ public abstract class AuthIntegrationTest extends AbstractMvcTest {
         // dont remove users via sql script, because its db impl specific - use service
         testAdapter.afterEach();
         removeTestUsers();
-        Mockito.reset(AopProxyUtils.getUltimateTargetObject(msgSender));
+        Mockito.reset(AopProxyUtils.unproxy(msgSender));
         aclCache.clearCache();
     }
 

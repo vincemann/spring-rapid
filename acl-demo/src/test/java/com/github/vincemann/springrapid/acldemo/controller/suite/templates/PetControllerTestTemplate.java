@@ -2,10 +2,10 @@ package com.github.vincemann.springrapid.acldemo.controller.suite.templates;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.acldemo.controller.PetController;
-import com.github.vincemann.springrapid.acldemo.dto.pet.CreatePetDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerReadsOwnPetDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerUpdatesPetDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.UpdateIllnessDto;
+import com.github.vincemann.springrapid.acldemo.pet.dto.CreatePetDto;
+import com.github.vincemann.springrapid.acldemo.pet.dto.OwnerReadsOwnPetDto;
+import com.github.vincemann.springrapid.acldemo.pet.dto.OwnerUpdatesPetDto;
+import com.github.vincemann.springrapid.acldemo.pet.dto.UpdateIllnessDto;
 import com.github.vincemann.springrapid.authtest.MvcControllerTestTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

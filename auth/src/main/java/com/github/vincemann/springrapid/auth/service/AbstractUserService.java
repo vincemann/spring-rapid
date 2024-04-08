@@ -3,11 +3,11 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.acl.service.RapidAclService;
 import com.github.vincemann.springrapid.auth.*;
-import com.github.vincemann.springrapid.auth.service.val.ContactInformationValidator;
-import com.github.vincemann.springrapid.auth.ex.InsufficientPasswordStrengthException;
-import com.github.vincemann.springrapid.auth.service.val.PasswordValidator;
-import com.github.vincemann.springrapid.auth.ex.BadEntityException;
-import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.val.ContactInformationValidator;
+import com.github.vincemann.springrapid.auth.val.InsufficientPasswordStrengthException;
+import com.github.vincemann.springrapid.auth.val.PasswordValidator;
+import com.github.vincemann.springrapid.auth.BadEntityException;
+import com.github.vincemann.springrapid.auth.EntityNotFoundException;
 import com.github.vincemann.springrapid.auth.util.VerifyEntity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.AuthPrincipal;
-import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.EntityNotFoundException;
 import com.github.vincemann.springrapid.auth.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Autowired;

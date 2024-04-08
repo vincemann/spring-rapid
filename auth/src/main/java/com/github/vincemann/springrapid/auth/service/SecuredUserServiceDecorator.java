@@ -3,11 +3,10 @@ package com.github.vincemann.springrapid.auth.service;
 import com.github.vincemann.springrapid.acl.service.SecuredServiceDecorator;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.AbstractUser;
-import com.github.vincemann.springrapid.auth.Roles;
-import com.github.vincemann.springrapid.auth.ex.InsufficientPasswordStrengthException;
+import com.github.vincemann.springrapid.auth.val.InsufficientPasswordStrengthException;
 import com.github.vincemann.springrapid.auth.util.AuthorizationUtils;
-import com.github.vincemann.springrapid.auth.ex.BadEntityException;
-import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.BadEntityException;
+import com.github.vincemann.springrapid.auth.EntityNotFoundException;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +50,7 @@ public abstract class SecuredUserServiceDecorator
     @Transactional
     @Override
     public U create(U user) throws BadEntityException, InsufficientPasswordStrengthException {
-        AuthorizationUtils.assertHasRoles(AuthRoles.ADMIN);
+        AuthorizationUtils.assertHasRoles(Roles.ADMIN);
         return getDecorated().create(user);
     }
 
@@ -65,14 +64,14 @@ public abstract class SecuredUserServiceDecorator
     @Transactional
     @Override
     public U addRole(Id userId, String role) throws EntityNotFoundException, BadEntityException {
-        AuthorizationUtils.assertHasRoles(AuthRoles.ADMIN);
+        AuthorizationUtils.assertHasRoles(Roles.ADMIN);
         return getDecorated().addRole(userId, role);
     }
 
     @Transactional
     @Override
     public U removeRole(Id userId, String role) throws EntityNotFoundException, BadEntityException {
-        AuthorizationUtils.assertHasRoles(AuthRoles.ADMIN);
+        AuthorizationUtils.assertHasRoles(Roles.ADMIN);
         return getDecorated().removeRole(userId, role);
     }
 
@@ -103,7 +102,7 @@ public abstract class SecuredUserServiceDecorator
     @Transactional
     @Override
     public U blockUser(String contactInformation) throws EntityNotFoundException, BadEntityException {
-        AuthorizationUtils.assertHasRoles(AuthRoles.ADMIN);
+        AuthorizationUtils.assertHasRoles(Roles.ADMIN);
         return getDecorated().blockUser(contactInformation);
     }
 

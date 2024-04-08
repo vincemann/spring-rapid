@@ -2,14 +2,14 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.auth.*;
 import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
-import com.github.vincemann.springrapid.auth.ex.BadEntityException;
-import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.BadEntityException;
+import com.github.vincemann.springrapid.auth.EntityNotFoundException;
 import com.github.vincemann.springrapid.auth.jwt.BadTokenException;
 import com.github.vincemann.springrapid.auth.jwt.JweTokenService;
 import com.github.vincemann.springrapid.auth.Roles;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
-import com.github.vincemann.springrapid.auth.service.val.ContactInformationValidator;
+import com.github.vincemann.springrapid.auth.val.ContactInformationValidator;
 import com.github.vincemann.springrapid.auth.util.*;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.apache.commons.logging.Log;

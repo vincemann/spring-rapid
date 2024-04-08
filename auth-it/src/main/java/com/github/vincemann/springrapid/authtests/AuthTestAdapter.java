@@ -2,10 +2,9 @@ package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.AbstractUser;
 import com.github.vincemann.springrapid.auth.AbstractUserRepository;
-import com.github.vincemann.springrapid.auth.Roles;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.Root;
-import com.github.vincemann.springrapid.auth.ex.BadEntityException;
+import com.github.vincemann.springrapid.auth.BadEntityException;
 import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -63,27 +62,27 @@ public abstract class AuthTestAdapter {
     public abstract AbstractUser<?> signupUser() throws Exception;
 
     public AbstractUser<?> createUser() throws BadEntityException {
-        return userService.create(createTestUser(USER_CONTACT_INFORMATION,USER_PASSWORD, AuthRoles.USER));
+        return userService.create(createTestUser(USER_CONTACT_INFORMATION,USER_PASSWORD, Roles.USER));
     }
 
     public AbstractUser<?> createSecondUser() throws BadEntityException {
-        return userService.create(createTestUser(SECOND_USER_CONTACT_INFORMATION,SECOND_USER_PASSWORD, AuthRoles.USER));
+        return userService.create(createTestUser(SECOND_USER_CONTACT_INFORMATION,SECOND_USER_PASSWORD, Roles.USER));
     }
 
     public AbstractUser<?> createBlockedUser() throws BadEntityException {
-        return userService.create(createTestUser(BLOCKED_USER_CONTACT_INFORMATION,BLOCKED_USER_PASSWORD, AuthRoles.USER, AuthRoles.BLOCKED));
+        return userService.create(createTestUser(BLOCKED_USER_CONTACT_INFORMATION,BLOCKED_USER_PASSWORD, Roles.USER, Roles.BLOCKED));
     }
 
     public AbstractUser<?> createUnverifiedUser() throws BadEntityException {
-        return userService.create(createTestUser(UNVERIFIED_USER_CONTACT_INFORMATION,UNVERIFIED_USER_PASSWORD, AuthRoles.USER, AuthRoles.UNVERIFIED));
+        return userService.create(createTestUser(UNVERIFIED_USER_CONTACT_INFORMATION,UNVERIFIED_USER_PASSWORD, Roles.USER, Roles.UNVERIFIED));
     }
 
     public AbstractUser<?> createBlockedAdmin() throws BadEntityException {
-        return userService.create(createTestUser(BLOCKED_ADMIN_CONTACT_INFORMATION,BLOCKED_ADMIN_PASSWORD, AuthRoles.ADMIN, AuthRoles.BLOCKED));
+        return userService.create(createTestUser(BLOCKED_ADMIN_CONTACT_INFORMATION,BLOCKED_ADMIN_PASSWORD, Roles.ADMIN, Roles.BLOCKED));
     }
 
     public AbstractUser<?> createAdmin() throws BadEntityException {
-        return userService.create(createTestUser(ADMIN_CONTACT_INFORMATION,ADMIN_PASSWORD, AuthRoles.ADMIN));
+        return userService.create(createTestUser(ADMIN_CONTACT_INFORMATION,ADMIN_PASSWORD, Roles.ADMIN));
     }
 
     public AbstractUser<?> fetchUser(String contactInformation){

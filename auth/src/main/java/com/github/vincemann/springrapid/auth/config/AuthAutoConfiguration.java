@@ -22,9 +22,9 @@ public class AuthAutoConfiguration {
     // there can only be ONE Factory
     // if user wishes to create AuthPrincipal differently or with diff subtypes he can define own bean
     @Bean
-    @ConditionalOnMissingBean(AuthenticatedPrincipalFactory.class)
-    public AuthenticatedPrincipalFactory authenticatedPrincipalFactory(){
-        return new AuthenticatedPrincipalFactoryImpl();
+    @ConditionalOnMissingBean(AuthPrincipalFactory.class)
+    public AuthPrincipalFactory authenticatedPrincipalFactory(){
+        return new AuthPrincipalFactoryImpl();
     }
 
     @Bean

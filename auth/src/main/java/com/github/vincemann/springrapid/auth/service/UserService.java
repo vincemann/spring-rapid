@@ -3,16 +3,15 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.AbstractUser;
-import com.github.vincemann.springrapid.auth.ex.InsufficientPasswordStrengthException;
-import com.github.vincemann.springrapid.auth.ex.BadEntityException;
-import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.val.InsufficientPasswordStrengthException;
+import com.github.vincemann.springrapid.auth.BadEntityException;
+import com.github.vincemann.springrapid.auth.EntityNotFoundException;
 
 import java.io.Serializable;
 import java.util.Optional;
 
 public interface UserService<U extends AbstractUser<ID>, ID extends Serializable>
 {
-    int DEFAULT_RATING = 0;
 
     Class<U> getEntityClass();
     U create( U user) throws BadEntityException, InsufficientPasswordStrengthException;

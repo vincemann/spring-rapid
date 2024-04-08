@@ -14,7 +14,7 @@ public abstract class AopProxyUtils {
 //        }
 //    }
 
-    public static <T> T getUltimateTargetObject(T object) {
+    public static <T> T unproxy(T object) {
         if (org.springframework.aop.framework.AopProxyUtils.ultimateTargetClass(object) != null) {
             return (T) org.springframework.aop.framework.AopProxyUtils.ultimateTargetClass(object).cast(object);
         } else {

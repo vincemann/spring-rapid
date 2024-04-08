@@ -7,8 +7,8 @@ import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChange
 import com.github.vincemann.springrapid.auth.AbstractUser;
 import com.github.vincemann.springrapid.auth.jwt.BadTokenException;
 import com.github.vincemann.springrapid.auth.jwt.JweTokenService;
-import com.github.vincemann.springrapid.auth.ex.BadEntityException;
-import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.BadEntityException;
+import com.github.vincemann.springrapid.auth.EntityNotFoundException;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;

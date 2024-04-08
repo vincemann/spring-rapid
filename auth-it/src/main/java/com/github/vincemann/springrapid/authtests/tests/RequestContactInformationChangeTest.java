@@ -32,7 +32,7 @@ public class RequestContactInformationChangeTest extends AuthIntegrationTest {
 		mvc.perform(userController.requestContactInformationChange(dto,token))
 				.andExpect(status().is(204));
 
-		verify(AopProxyUtils.getUltimateTargetObject(msgSender)).send(any());
+		verify(AopProxyUtils.unproxy(msgSender)).send(any());
 
 		AbstractUser<?> updatedUser = testAdapter.fetchUser(unverifiedUser.getContactInformation());
 		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getNewContactInformation());
@@ -47,7 +47,7 @@ public class RequestContactInformationChangeTest extends AuthIntegrationTest {
 		mvc.perform(userController.requestContactInformationChange(dto,token))
 				.andExpect(status().is(204));
 
-		verify(AopProxyUtils.getUltimateTargetObject(msgSender)).send(any());
+		verify(AopProxyUtils.unproxy(msgSender)).send(any());
 
 		AbstractUser<?> updatedUser = testAdapter.fetchUser(user.getContactInformation());
 		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getNewContactInformation());

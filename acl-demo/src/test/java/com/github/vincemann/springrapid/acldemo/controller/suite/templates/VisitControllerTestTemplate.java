@@ -1,9 +1,9 @@
 package com.github.vincemann.springrapid.acldemo.controller.suite.templates;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.vincemann.springrapid.acldemo.controller.VisitController;
-import com.github.vincemann.springrapid.acldemo.dto.visit.CreateVisitDto;
-import com.github.vincemann.springrapid.acldemo.dto.visit.ReadVisitDto;
+import com.github.vincemann.springrapid.acldemo.visit.VisitController;
+import com.github.vincemann.springrapid.acldemo.visit.dto.CreateVisitDto;
+import com.github.vincemann.springrapid.acldemo.visit.dto.ReadVisitDto;
 import com.github.vincemann.springrapid.authtest.MvcControllerTestTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

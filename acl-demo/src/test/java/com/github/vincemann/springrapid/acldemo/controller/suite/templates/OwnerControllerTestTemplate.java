@@ -1,10 +1,10 @@
 package com.github.vincemann.springrapid.acldemo.controller.suite.templates;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.vincemann.springrapid.acldemo.controller.OwnerController;
-import com.github.vincemann.springrapid.acldemo.dto.owner.OwnerReadsOwnOwnerDto;
-import com.github.vincemann.springrapid.acldemo.dto.owner.SignupOwnerDto;
-import com.github.vincemann.springrapid.acldemo.dto.owner.UpdateOwnerDto;
+import com.github.vincemann.springrapid.acldemo.owner.OwnerController;
+import com.github.vincemann.springrapid.acldemo.owner.dto.OwnerReadsOwnOwnerDto;
+import com.github.vincemann.springrapid.acldemo.owner.dto.SignupOwnerDto;
+import com.github.vincemann.springrapid.acldemo.owner.dto.UpdateOwnerDto;
 import com.github.vincemann.springrapid.authtest.MvcControllerTestTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;

@@ -3,8 +3,8 @@ package com.github.vincemann.springrapid.auth.service;
 import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
 import com.github.vincemann.springrapid.auth.AbstractUser;
 import com.github.vincemann.springrapid.auth.jwt.BadTokenException;
-import com.github.vincemann.springrapid.auth.ex.BadEntityException;
-import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.BadEntityException;
+import com.github.vincemann.springrapid.auth.EntityNotFoundException;
 
 public interface ContactInformationService {
 

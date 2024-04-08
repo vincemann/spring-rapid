@@ -1,7 +1,5 @@
 package com.github.vincemann.springrapid.auth;
 
-import com.github.vincemann.springrapid.auth.ex.BadEntityException;
-import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import org.apache.commons.logging.Log;

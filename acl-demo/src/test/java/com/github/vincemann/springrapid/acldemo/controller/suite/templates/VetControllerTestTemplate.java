@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.acldemo.controller.suite.templates;
 
-import com.github.vincemann.springrapid.acldemo.controller.VetController;
-import com.github.vincemann.springrapid.acldemo.dto.vet.ReadVetDto;
-import com.github.vincemann.springrapid.acldemo.dto.vet.SignupVetDto;
+import com.github.vincemann.springrapid.acldemo.vet.VetController;
+import com.github.vincemann.springrapid.acldemo.vet.dto.ReadVetDto;
+import com.github.vincemann.springrapid.acldemo.vet.dto.SignupVetDto;
 import com.github.vincemann.springrapid.authtest.MvcControllerTestTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;

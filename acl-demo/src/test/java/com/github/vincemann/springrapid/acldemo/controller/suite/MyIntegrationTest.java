@@ -1,27 +1,35 @@
 package com.github.vincemann.springrapid.acldemo.controller.suite;
 
+import com.github.vincemann.springrapid.acldemo.Specialty;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.suite.templates.VisitControllerTestTemplate;
-import com.github.vincemann.springrapid.acldemo.model.*;
+import com.github.vincemann.springrapid.acldemo.owner.Owner;
+import com.github.vincemann.springrapid.acldemo.owner.OwnerRepository;
+import com.github.vincemann.springrapid.acldemo.pet.Pet;
+import com.github.vincemann.springrapid.acldemo.pet.PetRepository;
 import com.github.vincemann.springrapid.acldemo.repo.*;
+import com.github.vincemann.springrapid.acldemo.vet.Vet;
+import com.github.vincemann.springrapid.acldemo.vet.VetRepository;
+import com.github.vincemann.springrapid.acldemo.visit.VisitRepository;
 import com.github.vincemann.springrapid.auth.msg.AuthMessage;
 import com.github.vincemann.springrapid.auth.msg.MessageSender;
-import com.github.vincemann.springrapid.authtest.RapidUserControllerTestTemplate;
 import com.github.vincemann.springrapid.auth.util.AopProxyUtils;
-import com.github.vincemann.springrapid.coretest.controller.AbstractMvcTest;
+import com.github.vincemann.springrapid.authtest.RapidUserControllerTestTemplate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.acls.model.AclCache;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -31,7 +39,10 @@ import static org.mockito.Mockito.atLeast;
 
 @Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @Sql(scripts = "classpath:/remove-acl-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-public class MyIntegrationTest extends AbstractMvcTest
+@AutoConfigureMockMvc
+@SpringBootTest
+@ActiveProfiles("test")
+public class MyIntegrationTest
 {
 
     @Autowired
@@ -74,6 +85,8 @@ public class MyIntegrationTest extends AbstractMvcTest
     @Autowired
     private AclCache aclCache;
 
+    @Autowired
+    protected MockMvc mvc;
 
     @BeforeEach
     void setUp() {
@@ -88,20 +101,14 @@ public class MyIntegrationTest extends AbstractMvcTest
     public AuthMessage verifyMsgWasSent(String recipient) {
         ArgumentCaptor<AuthMessage> msgCaptor = ArgumentCaptor.forClass(AuthMessage.class);
 
-        Mockito.verify(AopProxyUtils.getUltimateTargetObject(messageSender), atLeast(1))
+        Mockito.verify(AopProxyUtils.unproxy(messageSender), atLeast(1))
                 .send(msgCaptor.capture());
         AuthMessage sentData = msgCaptor.getValue();
         Assertions.assertEquals(sentData.getRecipient(),recipient,"latest msg must be sent to recipient: " +recipient + " but was sent to: " + sentData.getRecipient());
-        Mockito.reset(AopProxyUtils.getUltimateTargetObject(messageSender));
+        Mockito.reset(AopProxyUtils.unproxy(messageSender));
         return sentData;
     }
 
-    @Override
-    protected DefaultMockMvcBuilder createMvcBuilder() {
-        DefaultMockMvcBuilder mvcBuilder = super.createMvcBuilder();
-        mvcBuilder.apply(SecurityMockMvcConfigurers.springSecurity());
-        return mvcBuilder;
-    }
 
     protected void assertVetHasSpecialties(String vetName, String... descriptions) {
         Optional<Vet> vetOptional = vetRepository.findByLastName(vetName);
@@ -133,20 +140,6 @@ public class MyIntegrationTest extends AbstractMvcTest
         Assertions.assertEquals(vets, specialty.getVets());
     }
 
-    protected void assertPetHasIllnesses(String petName, String... illnessNames) {
-        Optional<Pet> petOptional = petRepository.findByName(petName);
-        Assertions.assertTrue(petOptional.isPresent());
-        Pet pet = petOptional.get();
-
-        Set<Illness> illnesses = new HashSet<>();
-        for (String illness : illnessNames) {
-            Optional<Illness> optionalIllness = illnessRepository.findByName(illness);
-            Assertions.assertTrue(optionalIllness.isPresent());
-            illnesses.add(optionalIllness.get());
-        }
-        System.err.println("Checking pet: " + petName);
-        Assertions.assertEquals(illnesses, pet.getIllnesses());
-    }
 
     protected void assertOwnerHasPets(String ownerName, String... petNames) {
         Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);

@@ -2,8 +2,8 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.springrapid.auth.RapidSecurityContext;
 import com.github.vincemann.springrapid.auth.Roles;
-import com.github.vincemann.springrapid.auth.ex.BadEntityException;
-import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.BadEntityException;
+import com.github.vincemann.springrapid.auth.EntityNotFoundException;
 import com.github.vincemann.springrapid.auth.util.Message;
 import com.github.vincemann.springrapid.auth.util.VerifyAccess;
 

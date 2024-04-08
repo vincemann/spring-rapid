@@ -2,11 +2,11 @@ package com.github.vincemann.springrapid.auth.jwt;
 
 import com.github.vincemann.springrapid.auth.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.AbstractUser;
-import com.github.vincemann.springrapid.auth.AuthenticatedPrincipalFactory;
+import com.github.vincemann.springrapid.auth.AuthPrincipalFactory;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 
 import com.github.vincemann.springrapid.auth.AuthPrincipal;
-import com.github.vincemann.springrapid.auth.ex.EntityNotFoundException;
+import com.github.vincemann.springrapid.auth.EntityNotFoundException;
 import com.github.vincemann.springrapid.auth.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -22,11 +22,11 @@ import java.util.Optional;
 public class JwtPrincipalConverterImpl implements JwtPrincipalConverter {
 
     private AbstractUserRepository userRepository;
-    private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
+    private AuthPrincipalFactory authPrincipalFactory;
 
     @Autowired
-    public void setAuthenticatedPrincipalFactory(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {
-        this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
+    public void setAuthenticatedPrincipalFactory(AuthPrincipalFactory authPrincipalFactory) {
+        this.authPrincipalFactory = authPrincipalFactory;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class JwtPrincipalConverterImpl implements JwtPrincipalConverter {
             Optional<AbstractUser<?>> byContactInformation = userRepository.findByContactInformation(ci);
             VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+ci+" not found");
             AbstractUser<?> user = byContactInformation.get();
-            return authenticatedPrincipalFactory.create(user);
+            return authPrincipalFactory.create(user);
         } catch (EntityNotFoundException e) {
             throw new AuthenticationCredentialsNotFoundException("User with in token encoded contactInformation: " + ci + " does not exist.", e);
         }
