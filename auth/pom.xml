@@ -15,6 +15,8 @@
 
     <properties>
         <passay.version>1.0</passay.version>
+        <commons-logging.version>1.2</commons-logging.version>
+        <nimbus-jose-jwt.version>9.23</nimbus-jose-jwt.version>
     </properties>
 
     <dependencies>
@@ -52,7 +54,6 @@
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
-            <version>3.0.2</version>
         </dependency>
 
 <!-- Password Validation -->
@@ -65,14 +66,14 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>1.2</version>
+            <version>${commons-logging.version}</version>
         </dependency>
 
 <!--        jwt-->
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
-            <version>9.23</version>
+            <version>${nimbus-jose-jwt.version}</version>
         </dependency>
 
     </dependencies>

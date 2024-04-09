@@ -13,7 +13,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.1.1</version>
-        <relativePath/> <!-- This tells Maven there's no parent POM physically located above this project's directory -->
+        <relativePath/>
     </parent>
 
     <properties>
@@ -45,7 +45,6 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>2.22.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -78,13 +77,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
+                <version>3.2.0</version>
                 <configuration>
                     <author>false</author>
                 </configuration>
             </plugin>
-
-
         </plugins>
     </build>
 </project>
