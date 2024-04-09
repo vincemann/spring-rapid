@@ -1,11 +1,9 @@
 package com.github.vincemann.springrapid.auth;
 
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -197,12 +195,6 @@ public class AuthProperties {
 	}
 
 
-	@Min(1)
-	public int maxLoginAttempts = 25;
-
-	public boolean bruteForceProtection = false;
-
-
 	/**
 	 * These admins will be created on Application start, if not present already
 	 */
@@ -341,14 +333,6 @@ public class AuthProperties {
 		return controller;
 	}
 
-	public int getMaxLoginAttempts() {
-		return maxLoginAttempts;
-	}
-
-	public boolean isBruteForceProtection() {
-		return bruteForceProtection;
-	}
-
 	public List<Admin> getAdmins() {
 		return admins;
 	}
@@ -359,14 +343,6 @@ public class AuthProperties {
 
 	public void setController(Controller controller) {
 		this.controller = controller;
-	}
-
-	public void setMaxLoginAttempts(int maxLoginAttempts) {
-		this.maxLoginAttempts = maxLoginAttempts;
-	}
-
-	public void setBruteForceProtection(boolean bruteForceProtection) {
-		this.bruteForceProtection = bruteForceProtection;
 	}
 
 	public void setAdmins(List<Admin> admins) {
