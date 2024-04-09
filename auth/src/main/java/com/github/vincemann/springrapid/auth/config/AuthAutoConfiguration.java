@@ -31,28 +31,15 @@ public class AuthAutoConfiguration {
         return new LocalValidatorFactoryBean();
     }
 
-    @ConditionalOnMissingBean(EndpointService.class)
-    @Bean
-    public EndpointService endpointService(RequestMappingHandlerMapping requestMappingHandlerMapping){
-        return new EndpointService(requestMappingHandlerMapping);
-    }
-
-    @ConditionalOnMissingBean(ObjectMapper.class)
-    @Bean
-    public ObjectMapper objectMapper(){
-        ObjectMapper mapper= new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        return mapper;
-    }
 
     @Bean
     public Message messageUtils(MessageSource messageSource){
         return new Message(messageSource);
     }
 
-    @ConditionalOnMissingBean(name = "idConverter")
+    @ConditionalOnMissingBean(name = "authLongIdConverter")
     @Bean
-    public IdConverter<Long> idConverter(){
+    public IdConverter<Long> authLongIdConverter(){
         return new LongIdConverter();
     }
 

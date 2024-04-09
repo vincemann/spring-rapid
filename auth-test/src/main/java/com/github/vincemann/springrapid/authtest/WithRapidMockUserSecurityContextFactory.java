@@ -7,9 +7,8 @@ import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
-public class RapidWithMockUserSecurityContextFactory implements WithSecurityContextFactory<WithRapidMockUser> {
+public class WithRapidMockUserSecurityContextFactory implements WithSecurityContextFactory<WithRapidMockUser> {
 
     public SecurityContext createSecurityContext(WithRapidMockUser withUser) {
         String username = StringUtils.hasLength(withUser.username()) ? withUser

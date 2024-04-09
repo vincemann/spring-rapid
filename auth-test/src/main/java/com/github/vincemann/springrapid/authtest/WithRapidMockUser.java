@@ -13,7 +13,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-@WithSecurityContext(factory = RapidWithMockUserSecurityContextFactory.class)
+@WithSecurityContext(factory = WithRapidMockUserSecurityContextFactory.class)
 public @interface WithRapidMockUser {
     String value() default "user";
 
