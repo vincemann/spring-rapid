@@ -9,7 +9,6 @@ The auth features were reduced to the (almost always needed) core and acl was ad
 * exception handling  
   
 # Requirements  
-* jdk:17  
 * spring-boot: 3.1.1.RELEASE   
     
  # Include   
